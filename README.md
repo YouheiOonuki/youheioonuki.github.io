@@ -61,6 +61,14 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    - ツール固有のこと（ブラウザに何を保存するか、利用上の注意、データの出典・ライセンスなど）は、**ツールの使い方ページ**に「ご利用上の注意・データの扱い」として書く
    - 共通ページはツール名を出さない書き方にしてある（「一部のツールは〜」）。次のような**これまでに無い種類の機能**を持つツールを作るときだけ、共通ページに一般的な1文を足す：アカウント登録・ログイン、サーバーへのデータ送信やファイルのアップロード、マイク・カメラなど位置情報以外の端末機能、決済、外部サービスとの連携、Cookie を使う仕組み
 
+9. **フォントは端末のフォントで、`font-family` の並びだけ全ツールで揃える。Web フォントは読まない**（2026-09-23 決定。実測は下の「フォント」の節）
+
+   ```css
+   font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+   ```
+
+   Android は Noto Sans CJK が標準搭載なので端末側のフォントで Noto Sans JP になり、iOS はヒラギノ、Windows はメイリオで出る。hoshizora-sanpo は `--sans` にこの並びを入れる（見出しの明朝 `--serif` はそのまま）
+
 ## AdSense
 
 - publisher ID: `ca-pub-5375267956079717`
@@ -83,4 +91,16 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | 共通 CSS | 配色（和紙風）と `font-family` を各ツールの `style.css` にコピーしている。`legal.css` は共通ページ専用 | ドメイン直下に共通 CSS を置いて各ツールから読むか、コピーのままにするか |
 | OGP / JSON-LD の雛形 | 各ツールの `<head>` に手書き | 雛形をこの README に置くか（AdSense・Cloudflare の例と同じ形） |
 | 共通の確認テスト | 無い | リンク切れ・AdSense タグと Cloudflare ビーコンの有無・canonical の URL を、全ツールで機械的に確かめるスクリプト（置き場はこのリポジトリ） |
-| フォント | 全ツール `'Segoe UI', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif`（端末のフォント）。hoshizora-sanpo だけ独自の `--sans` / `--serif` | オーナーは **Noto Sans JP でサイト全体を統一したい**。決めるのは 読み込み方法（Google Fonts か自前配信か）・使う太さの数・PWA（オフライン対応ツール）での扱い・表示速度への影響・共通プライバシーポリシーへの追記の要否 |
+
+フォントは 2026-09-23 に決めた（「ツールを追加するとき」の 9。経緯は下）。
+
+## フォント
+
+オーナーの希望は Noto Sans JP でのサイト全体の統一だったが、**Web フォント（Google Fonts）は 2026-09-23 に実測して取りやめた**。ローカル配信・Lighthouse 12・モバイル・Performance のみで、main と導入版を同条件で比較:
+
+| ページ | 導入前 | Google Fonts 導入（400/700・`display=swap`・CSS 同期読み込み） |
+|---|---|---|
+| web-roulette | 90（LCP 2.9s・342KiB） | **59**（LCP 6.7s・779KiB。うちフォント 447KB） |
+| shaho-check | 99（LCP 2.1s・320KiB） | **83**（LCP 3.7s・953KiB。うちフォント 648KB） |
+
+日本語フォントは文字集合が大きく、Google Fonts の分割配信でもページに出る文字の分だけで 450〜650KB になる。企画の受け入れ条件（Performance 90 以上）を満たせないので、Web フォントは使わず `font-family` の並びだけ揃える。非同期読み込みと `display=optional` は測っていない（optional は初回訪問が端末フォントになり「統一」にならないので、測る前に取りやめた）。本番 URL での導入前の値は web-roulette 78・shaho-check 90（同日。ローカルより低いのは配信経路と広告の分）。
