@@ -12,7 +12,10 @@ const BEACON_TOKEN = 'b79bf821e1fd4b6683866d493b1de426';
 
 // 決まりの例外（理由つき）
 // 全画面で操作するツール本体は、広告スクリプトを入れず所有確認の meta だけ（README「ツールを追加するとき」5）
-const META_ONLY_PAGES = new Set(['/hoshizora-sanpo/']);
+const META_ONLY_PAGES = new Set([
+  '/hoshizora-sanpo/',     // プラネタリウムの全画面の本体
+  '/todofuken-quiz/',      // こどもが遊ぶ画面（決定 D18: 広告は保護者向けの guide.html だけ）
+]);
 // 共通ページへの直リンクを持たなくてよいページ（全画面の本体。運営者情報へは「このアプリについて」から 1 ホップ）
 const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/']);
 
