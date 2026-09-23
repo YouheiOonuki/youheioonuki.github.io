@@ -98,8 +98,13 @@
     .tool img { width: 48px; height: 48px; flex: none; }
     .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
     .tool p { font-size: 0.85rem; color: var(--muted); }
-    /* 便利ツールとはジャンルが違うもの（学び・遊び）は別の見出しにまとめる */
-    .more { margin-top: 2rem; }
+    /* ツールはカテゴリごとの見出しにまとめる（くらし・お金／しごと・べんり／まなび・あそび） */
+    .cat-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
+    .cat-nav a { padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .cat-nav a:hover, .cat-nav a:focus-visible { background: var(--accent); color: var(--card); }
+    .cat + .cat { margin-top: 2rem; }
+    .cat h2 { margin-bottom: 0.2rem; }
+    .cat-lead { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
     .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
     .about p + p { margin-top: 0.4rem; }
     footer {
@@ -120,52 +125,23 @@
   </header>
 
   <main>
-    <section aria-labelledby="tools-heading">
-      <h2 id="tools-heading">ツール一覧</h2>
+    <nav class="cat-nav" aria-label="カテゴリ">
+      <a href="#kurashi">くらし・お金</a>
+      <a href="#shigoto">しごと・べんり</a>
+      <a href="#manabi">まなび・あそび</a>
+    </nav>
+
+    <section class="cat" id="kurashi" aria-labelledby="kurashi-heading">
+      <h2 id="kurashi-heading">くらし・お金</h2>
+      <p class="cat-lead">家計や制度にかかわる計算。根拠と確認日つき。</p>
       <ul class="tools">
-        <!-- ツールを増やすときは、この <li> を複製してリンク先と説明を変える -->
-        <li class="tool">
-          <a href="./web-roulette/">
-            <img src="./web-roulette/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ルーレット・くじ引き</h3>
-              <p>候補を入れてスタートを押すだけ。複数選択・重み付け・シャッフルに対応。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./easy-split/">
-            <img src="./easy-split/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>傾斜割り勘・飲み会の清算</h3>
-              <p>上司・若手の係数、幹事0円、2次会の合算、100円単位の集金に対応。結果はそのままLINEで送れます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./shaho-check/">
-            <img src="./shaho-check/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>社会保険 加入チェッカー</h3>
-              <p>パート・アルバイトの方が、社会保険の加入対象かを質問に答えるだけで確認。2026年10月の「106万円の壁」撤廃に対応。</p>
-            </div>
-          </a>
-        </li>
+        <!-- ツールを増やすときは、合うカテゴリの <li> を複製してリンク先と説明を変える -->
         <li class="tool">
           <a href="./loan-sim/">
             <img src="./loan-sim/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>住宅ローン 返済シミュレーター</h3>
               <p>変動金利の上昇と繰上返済（期間短縮・返済額軽減）を組み合わせて試算。5年ルール・125%ルールにも対応。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./nittei-kouho/">
-            <img src="./nittei-kouho/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>日程調整 候補日ジェネレーター</h3>
-              <p>期間と曜日を選ぶだけで、祝日を外した候補日と、フォーム・メール・LINEに貼る文面を作成。2段階調整にも対応。</p>
             </div>
           </a>
         </li>
@@ -179,19 +155,54 @@
           </a>
         </li>
         <li class="tool">
-          <a href="./web-metronome/">
-            <img src="./web-metronome/favicon.svg" alt="" width="48" height="48">
+          <a href="./shaho-check/">
+            <img src="./shaho-check/favicon.svg" alt="" width="48" height="48">
             <div>
-              <h3>メトロノーム</h3>
-              <p>BPM を決めて再生を押すだけ。変則拍子・アクセント・裏拍に対応し、オフラインでも使えます。</p>
+              <h3>社会保険 加入チェッカー</h3>
+              <p>パート・アルバイトの方が、社会保険の加入対象かを質問に答えるだけで確認。2026年10月の「106万円の壁」撤廃に対応。</p>
             </div>
           </a>
         </li>
       </ul>
     </section>
 
-    <section class="more" aria-labelledby="play-heading">
-      <h2 id="play-heading">まなび・あそび</h2>
+    <section class="cat" id="shigoto" aria-labelledby="shigoto-heading">
+      <h2 id="shigoto-heading">しごと・べんり</h2>
+      <p class="cat-lead">集まりの準備や、ちょっとした作業をすばやく。</p>
+      <ul class="tools">
+        <li class="tool">
+          <a href="./nittei-kouho/">
+            <img src="./nittei-kouho/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>日程調整 候補日ジェネレーター</h3>
+              <p>期間と曜日を選ぶだけで、祝日を外した候補日と、フォーム・メール・LINEに貼る文面を作成。2段階調整にも対応。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./easy-split/">
+            <img src="./easy-split/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>傾斜割り勘・飲み会の清算</h3>
+              <p>上司・若手の係数、幹事0円、2次会の合算、100円単位の集金に対応。結果はそのままLINEで送れます。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./web-roulette/">
+            <img src="./web-roulette/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>ルーレット・くじ引き</h3>
+              <p>候補を入れてスタートを押すだけ。複数選択・重み付け・シャッフルに対応。</p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="cat" id="manabi" aria-labelledby="manabi-heading">
+      <h2 id="manabi-heading">まなび・あそび</h2>
+      <p class="cat-lead">こどもといっしょに、音や星や地図で。</p>
       <ul class="tools">
         <li class="tool">
           <a href="./hoshizora-sanpo/">
@@ -199,6 +210,15 @@
             <div>
               <h3>ほしぞらさんぽ（Webプラネタリウム）</h3>
               <p>今夜の星空と月・惑星を天文計算で再現。星座をタップすると神話が読めます。ひらがなモードでこどもといっしょに。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./web-metronome/">
+            <img src="./web-metronome/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>メトロノーム</h3>
+              <p>BPM を決めて再生を押すだけ。変則拍子・アクセント・裏拍に対応し、オフラインでも使えます。</p>
             </div>
           </a>
         </li>
