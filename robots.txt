@@ -8,3 +8,4 @@ Sitemap: https://yorozu-craft.com/easy-split/sitemap.xml
 Sitemap: https://yorozu-craft.com/web-metronome/sitemap.xml
 Sitemap: https://yorozu-craft.com/hoshizora-sanpo/sitemap.xml
 Sitemap: https://yorozu-craft.com/shaho-check/sitemap.xml
+Sitemap: https://yorozu-craft.com/loan-sim/sitemap.xml
