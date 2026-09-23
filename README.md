@@ -105,6 +105,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 
 - Cloudflare Web Analytics（Cookie 不使用）。Cloudflare ダッシュボード → Analytics & Logs → Web Analytics → `yorozu-craft.com` で閲覧
 - DNS は DNS only（Cloudflare のプロキシを通さない）なので、自動挿入は効かない。各ページに手動でビーコンを入れる（上の「ツールを追加するとき」の 6）
+- DNS の構成（2026-09-23 確認）: ルート `yorozu-craft.com` は GitHub Pages の A 4 件・AAAA 4 件（GitHub Docs が案内している正規の値）、`www` は `youheioonuki.github.io` への CNAME。**どちらもプロキシ OFF（灰色・DNS only）にする**。プロキシ ON にすると GitHub が Let's Encrypt の証明書を発行・更新できず、Enforce HTTPS が使えなくなる（www が一時 ON になっていたのを OFF に戻した）
 - `404.html` にも入れているので、存在しない URL へのアクセス（リンク切れ）も集計される
 
 ## 共通化の方針（2026-09-23 決定。経緯は yorozu-plans の ROADMAP 3 章・6 章）
