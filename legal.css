@@ -1,0 +1,63 @@
+/* 運営者情報・プライバシーポリシー（サイト共通ページ）のスタイル。配色はトップページと同じ和紙風 */
+:root {
+  --bg: #f0ebe0;
+  --bg-2: #e6dfd0;
+  --card: #faf6ee;
+  --text: #3a3025;
+  --muted: #6e604f;
+  --accent: #8b4513;
+  --border: #cfc0a0;
+  --shadow: rgba(58, 48, 37, 0.12);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+}
+a { color: var(--accent); }
+.site-bar {
+  background: var(--bg-2);
+  border-bottom: 2px solid var(--border);
+  padding: 0.7rem 1rem;
+}
+.site-bar a { font-weight: 700; color: var(--accent); text-decoration: none; }
+main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 2rem; }
+article {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.4rem 1.3rem;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+h1 { font-size: 1.4rem; color: var(--accent); margin-bottom: 0.3rem; }
+h2 {
+  font-size: 1.05rem;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3rem;
+  margin: 1.6rem 0 0.6rem;
+}
+h3 { font-size: 0.95rem; margin: 1.1rem 0 0.3rem; scroll-margin-top: 1rem; }
+p, li { font-size: 0.9rem; }
+p + p { margin-top: 0.5rem; }
+ul { padding-left: 1.3rem; margin: 0.3rem 0; }
+.last-updated { font-size: 0.8rem; color: var(--muted); }
+.info-list { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1.2rem; font-size: 0.9rem; }
+.info-list dt { font-weight: 600; }
+.info-list dd { color: var(--muted); }
+/* ツールごとの項目。アンカーで飛んできたときに目立たせる */
+.tool-section { border-left: 3px solid var(--border); padding-left: 0.8rem; margin-top: 1rem; }
+.tool-section:target { border-left-color: var(--accent); background: #f3e6d8; border-radius: 0 6px 6px 0; padding: 0.3rem 0.8rem; }
+.tool-section h3 { margin-top: 0; }
+footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+footer nav ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.4rem 1.2rem; margin-bottom: 0.5rem; }
+footer nav a { color: var(--muted); text-decoration: none; }
+footer nav a[aria-current="page"] { color: var(--accent); }
