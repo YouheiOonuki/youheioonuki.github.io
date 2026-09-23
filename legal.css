@@ -47,10 +47,6 @@ ul { padding-left: 1.3rem; margin: 0.3rem 0; }
 .info-list { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1.2rem; font-size: 0.9rem; }
 .info-list dt { font-weight: 600; }
 .info-list dd { color: var(--muted); }
-/* ツールごとの項目。アンカーで飛んできたときに目立たせる */
-.tool-section { border-left: 3px solid var(--border); padding-left: 0.8rem; margin-top: 1rem; }
-.tool-section:target { border-left-color: var(--accent); background: #f3e6d8; border-radius: 0 6px 6px 0; padding: 0.3rem 0.8rem; }
-.tool-section h3 { margin-top: 0; }
 footer {
   text-align: center;
   padding: 1rem;
