@@ -18,6 +18,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/shaho-check/ | [shaho-check](https://github.com/YouheiOonuki/shaho-check) |
 | https://yorozu-craft.com/loan-sim/ | [loan-sim](https://github.com/YouheiOonuki/loan-sim) |
 | https://yorozu-craft.com/nittei-kouho/ | [nittei-kouho](https://github.com/YouheiOonuki/nittei-kouho) |
+| https://yorozu-craft.com/denki-dai/ | [denki-dai](https://github.com/YouheiOonuki/denki-dai) |
 
 ## ファイル
 
