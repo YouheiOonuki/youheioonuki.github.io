@@ -45,6 +45,12 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    ```html
    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
    ```
+7. PWA（Service Worker）にするツールは、**キャッシュ名を `<リポジトリ名>-` で始め（例: `web-metronome-v1`）、古いキャッシュを消すときもその名前で始まるものだけを消す**。全ツールが同じオリジン（`yorozu-craft.com`）でキャッシュ領域を共有しているため、ほかのツールのキャッシュを消すと、そのツールがオフラインで開けなくなる。`manifest.webmanifest` に `id` を書くなら `/<リポジトリ名>/` にする（`./` はドメイン直下と解釈され、ほかのツールと同じアプリ扱いになる）
+
+   ```js
+   // sw.js の activate（自分のキャッシュだけを掃除する）
+   keys.filter(k => k.startsWith('<リポジトリ名>-') && k !== CACHE).map(k => caches.delete(k))
+   ```
 
 ## AdSense
 
