@@ -61,6 +61,18 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    - ツール固有のこと（ブラウザに何を保存するか、利用上の注意、データの出典・ライセンスなど）は、**ツールの使い方ページ**に「ご利用上の注意・データの扱い」として書く
    - 共通ページはツール名を出さない書き方にしてある（「一部のツールは〜」）。次のような**これまでに無い種類の機能**を持つツールを作るときだけ、共通ページに一般的な1文を足す：アカウント登録・ログイン、サーバーへのデータ送信やファイルのアップロード、マイク・カメラなど位置情報以外の端末機能、決済、外部サービスとの連携、Cookie を使う仕組み
 
+9. **フォントは Noto Sans JP（Google Fonts・太さは 400 と 700 だけ）。** ツールの全ページの `<head>`（自分のスタイルシートの `<link>` より前）に次の 3 行を入れ、CSS の `font-family` を `"Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif` にする（2026-09-23）。400/700 以外の太さを使わない —— 転送量は太さの数に比例する。読み込み中は端末のフォントで表示される（`display=swap`）。ブラウザが Google に接続することは共通のプライバシーポリシー 7.4 に書いてある
+
+   ```html
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
+   ```
+
+   - PWA（Service Worker）のツールは、フォントを precache に入れない。`fonts.googleapis.com` と `fonts.gstatic.com` への fetch を cache-first の runtime cache に入れる（キャッシュ名は 7 の規則どおり `<リポジトリ名>-fonts-v1`）。初回オフラインは端末のフォントで表示されるだけで、動作は変わらない
+   - hoshizora-sanpo のプラネタリウム画面（canvas に文字を描く）と明朝体（`--serif`）は対象外
+   - 自前配信にしない理由: 日本語フォントは 1 太さで数 MB あり、実用にするには文字集合ごとに 100 前後へ分割したファイルを維持することになる。Google Fonts は同じ分割を向こうが持ち、ページに出た文字の分だけ落ちる。Lighthouse（モバイル・Performance）の前後の実測は下の「フォント」の節
+
 ## AdSense
 
 - publisher ID: `ca-pub-5375267956079717`
@@ -83,4 +95,14 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | 共通 CSS | 配色（和紙風）と `font-family` を各ツールの `style.css` にコピーしている。`legal.css` は共通ページ専用 | ドメイン直下に共通 CSS を置いて各ツールから読むか、コピーのままにするか |
 | OGP / JSON-LD の雛形 | 各ツールの `<head>` に手書き | 雛形をこの README に置くか（AdSense・Cloudflare の例と同じ形） |
 | 共通の確認テスト | 無い | リンク切れ・AdSense タグと Cloudflare ビーコンの有無・canonical の URL を、全ツールで機械的に確かめるスクリプト（置き場はこのリポジトリ） |
-| フォント | 全ツール `'Segoe UI', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif`（端末のフォント）。hoshizora-sanpo だけ独自の `--sans` / `--serif` | オーナーは **Noto Sans JP でサイト全体を統一したい**。決めるのは 読み込み方法（Google Fonts か自前配信か）・使う太さの数・PWA（オフライン対応ツール）での扱い・表示速度への影響・共通プライバシーポリシーへの追記の要否 |
+
+フォントは 2026-09-23 に決めた（「ツールを追加するとき」の 9）。
+
+## フォント
+
+Noto Sans JP（Google Fonts・400/700）。決めた経緯と規則は「ツールを追加するとき」の 9。導入前後の実測（Lighthouse モバイル・Performance）は下の表。**Performance が 90 を切る変更は入れない**（企画の受け入れ条件）。
+
+| ページ | 導入前 | 導入後 |
+|---|---|---|
+| web-roulette | （測定中） | — |
+| shaho-check | （測定中） | — |
