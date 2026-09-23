@@ -36,7 +36,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 
 ## ツールを追加するとき
 
-1. `yorozu-template` の「Use this template」でツール用のリポジトリを作り（名前は URL になるので、短いローマ字＋種類。例: `loan-sim`、`nittei-kouho`。2026-09-23 決定 D9）、Settings → Pages で `main` / `(root)` を公開する。証明書が発行されたら **Enforce HTTPS にチェック**（2026-09-23 に 6 リポジトリすべて on にした。それまで http のまま 200 を返していた。API なら `gh api -X PUT repos/YouheiOonuki/<リポジトリ名>/pages -F https_enforced=true`）
+1. `yorozu-template` の「Use this template」でツール用のリポジトリを作り（名前は URL になるので、短いローマ字＋種類。例: `loan-sim`、`nittei-kouho`。2026-09-23 決定 D9）、クローンして `node tools/init.mjs <リポジトリ名> "<ツール名>" "<説明文>" [--pwa]` を 1 回だけ実行する（名前・説明・日付を置き換え、`--pwa` なしならオフライン対応の部分を消す。詳しくは yorozu-template の README）。Settings → Pages で `main` / `(root)` を公開する。証明書が発行されたら **Enforce HTTPS にチェック**（2026-09-23 に 6 リポジトリすべて on にした。それまで http のまま 200 を返していた。API なら `gh api -X PUT repos/YouheiOonuki/<リポジトリ名>/pages -F https_enforced=true`）
 2. `index.html` の `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明を書き換える（便利ツールは「ツール一覧」、プラネタリウムのような学び・遊びは「まなび・あそび」の見出しに入れる）
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
