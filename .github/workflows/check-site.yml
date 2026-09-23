@@ -1,0 +1,23 @@
+# サイト横断チェック（README「共通の確認テスト」）
+# 毎週月曜 9:00（日本時間）に本番の公開ページを巡回する。失敗すると GitHub から通知メールが届く。
+# Actions タブの「Run workflow」で手動実行もできる。
+name: check-site
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'   # UTC の月曜 0:00 = 日本時間の月曜 9:00
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/check-site.mjs
