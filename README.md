@@ -23,6 +23,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `robots.txt` | 検索エンジン向けの指示。**ドメイン直下のものしか読まれない**ので、全ツールのサイトマップをここに並べる |
 | `sitemap.xml` | トップページのサイトマップ |
 | `favicon.svg` | ファビコン |
+| `ads.txt` | AdSense の販売者情報。ドメイン直下に1つだけ置く（全ツール共通） |
 
 ## ツールを追加するとき
 
@@ -30,7 +31,16 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 2. `index.html` の `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明を書き換える
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
+5. ツールの**全ページの `<head>` に AdSense のタグを入れる**（審査とドメインの確認は済んでいるので、ツールごとの申請は不要）
+
+   ```html
+   <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+        crossorigin="anonymous"></script>
+   ```
 
 ## AdSense
 
-審査に通ったら、発行される `ads.txt` をこのリポジトリの直下に置く（ドメイン直下にしか置けないため、全ツール共通でここに1つ）。
+- publisher ID: `ca-pub-5375267956079717`
+- `ads.txt` はドメイン直下にしか置けないため、全ツール分をこのリポジトリの1ファイルで兼ねる
+- 各ページの `<head>` にタグが必要（トップページと各ツールの全ページ。上の「ツールを追加するとき」の 5 を参照）
