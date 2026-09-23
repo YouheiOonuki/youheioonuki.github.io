@@ -13,6 +13,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/ | このリポジトリ |
 | https://yorozu-craft.com/web-roulette/ | [web-roulette](https://github.com/YouheiOonuki/web-roulette) |
 | https://yorozu-craft.com/easy-split/ | [easy-split](https://github.com/YouheiOonuki/easy-split) |
+| https://yorozu-craft.com/web-metronome/ | [web-metronome](https://github.com/YouheiOonuki/web-metronome) |
 
 ## ファイル
 
