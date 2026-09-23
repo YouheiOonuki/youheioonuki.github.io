@@ -38,9 +38,20 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
         crossorigin="anonymous"></script>
    ```
+6. ツールの**全ページの `</body>` 直前に Cloudflare Web Analytics のビーコンを入れる**（トークンはドメイン共通なので、そのまま同じものを使う）。あわせて、ツールのプライバシーポリシーに Cloudflare Web Analytics を使っていることを書く
+
+   ```html
+   <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+   ```
 
 ## AdSense
 
 - publisher ID: `ca-pub-5375267956079717`
 - `ads.txt` はドメイン直下にしか置けないため、全ツール分をこのリポジトリの1ファイルで兼ねる
 - 各ページの `<head>` にタグが必要（トップページと各ツールの全ページ。上の「ツールを追加するとき」の 5 を参照）
+
+## アクセス解析
+
+- Cloudflare Web Analytics（Cookie 不使用）。Cloudflare ダッシュボード → Analytics & Logs → Web Analytics → `yorozu-craft.com` で閲覧
+- DNS は DNS only（Cloudflare のプロキシを通さない）なので、自動挿入は効かない。各ページに手動でビーコンを入れる（上の「ツールを追加するとき」の 6）
+- `404.html` にも入れているので、存在しない URL へのアクセス（リンク切れ）も集計される
