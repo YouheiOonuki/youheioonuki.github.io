@@ -26,6 +26,8 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `robots.txt` | 検索エンジン向けの指示。**ドメイン直下のものしか読まれない**ので、全ツールのサイトマップをここに並べる |
 | `sitemap.xml` | トップページのサイトマップ |
 | `favicon.svg` | ファビコン |
+| `about.html` / `privacy-policy.html` | **全ツール共通**の運営者情報・免責事項 / プライバシーポリシー。ツールごとの項目は `id="<リポジトリ名>"` の節にまとめる |
+| `legal.css` | 上の2ページのスタイル |
 | `ads.txt` | AdSense の販売者情報。ドメイン直下に1つだけ置く（全ツール共通） |
 
 ## ツールを追加するとき
@@ -42,7 +44,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
         crossorigin="anonymous"></script>
    ```
-6. ツールの**全ページの `</body>` 直前に Cloudflare Web Analytics のビーコンを入れる**（トークンはドメイン共通なので、そのまま同じものを使う）。あわせて、ツールのプライバシーポリシーに Cloudflare Web Analytics を使っていることを書く
+6. ツールの**全ページの `</body>` 直前に Cloudflare Web Analytics のビーコンを入れる**（トークンはドメイン共通なので、そのまま同じものを使う）。（共通のプライバシーポリシーに記載済み）
 
    ```html
    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
@@ -53,6 +55,11 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    // sw.js の activate（自分のキャッシュだけを掃除する）
    keys.filter(k => k.startsWith('<リポジトリ名>-') && k !== CACHE).map(k => caches.delete(k))
    ```
+
+8. **運営者情報・プライバシーポリシーはツールごとに作らない。** このリポジトリの共通ページにリンクする
+   - ツールのフッターには `../about.html#<リポジトリ名>`（運営者情報）と `../privacy-policy.html#<リポジトリ名>`（プライバシーポリシー）へのリンクを置く
+   - このリポジトリの `about.html` の「ツールごとの注意事項」と、`privacy-policy.html` の「6. ツールごとのデータの取り扱い」に、`<section class="tool-section" id="<リポジトリ名>">` の節を追加する（ブラウザに何を保存するか、位置情報やマイクを使うか、共有リンクに何が入るか、など）。`about.html` の「公開しているツール」にも追加する
+   - ツール固有の詳しい説明（使い方・データの出典・ライセンスなど）は、ツール側のページに書いてよい
 
 ## AdSense
 
