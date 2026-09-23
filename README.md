@@ -14,6 +14,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/web-roulette/ | [web-roulette](https://github.com/YouheiOonuki/web-roulette) |
 | https://yorozu-craft.com/easy-split/ | [easy-split](https://github.com/YouheiOonuki/easy-split) |
 | https://yorozu-craft.com/web-metronome/ | [web-metronome](https://github.com/YouheiOonuki/web-metronome) |
+| https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo) |
 
 ## ファイル
 
@@ -30,10 +31,11 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 ## ツールを追加するとき
 
 1. ツール用のリポジトリを作り、Settings → Pages で `main` / `(root)` を公開する
-2. `index.html` の `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明を書き換える
+2. `index.html` の `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明を書き換える（便利ツールは「ツール一覧」、プラネタリウムのような学び・遊びは「まなび・あそび」の見出しに入れる）
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
-5. ツールの**全ページの `<head>` に AdSense のタグを入れる**（審査とドメインの確認は済んでいるので、ツールごとの申請は不要）
+5. ツールの**全ページの `<head>` に AdSense のタグを入れる**（審査とドメインの確認は済んでいるので、ツールごとの申請は不要）。
+   ただし、全画面で操作するツール本体（例: hoshizora-sanpo のプラネタリウム画面）は、自動広告が操作ボタンを隠さないよう `<meta name="google-adsense-account">` だけにして、広告は図鑑・使い方などの読みものページで出す
 
    ```html
    <meta name="google-adsense-account" content="ca-pub-5375267956079717">

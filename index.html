@@ -96,6 +96,8 @@
     .tool img { width: 48px; height: 48px; flex: none; }
     .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
     .tool p { font-size: 0.85rem; color: var(--muted); }
+    /* 便利ツールとはジャンルが違うもの（学び・遊び）は別の見出しにまとめる */
+    .more { margin-top: 2rem; }
     .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
     .about p + p { margin-top: 0.4rem; }
     footer {
@@ -144,6 +146,21 @@
             <div>
               <h3>メトロノーム</h3>
               <p>BPM を決めて再生を押すだけ。変則拍子・アクセント・裏拍に対応し、オフラインでも使えます。</p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="more" aria-labelledby="play-heading">
+      <h2 id="play-heading">まなび・あそび</h2>
+      <ul class="tools">
+        <li class="tool">
+          <a href="./hoshizora-sanpo/">
+            <img src="./hoshizora-sanpo/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>ほしぞらさんぽ（Webプラネタリウム）</h3>
+              <p>今夜の星空と月・惑星を天文計算で再現。星座をタップすると神話が読めます。ひらがなモードでこどもといっしょに。</p>
             </div>
           </a>
         </li>
