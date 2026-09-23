@@ -1,10 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- ルーレット盤（和紙風テーマの配色） -->
-  <circle cx="32" cy="34" r="28" fill="#faf6ee" stroke="#8b4513" stroke-width="4"/>
-  <path d="M32 34 L32 6 A28 28 0 0 1 56.2 20 Z" fill="#8b4513"/>
-  <path d="M32 34 L56.2 48 A28 28 0 0 1 32 62 Z" fill="#8b4513"/>
-  <path d="M32 34 L7.8 48 A28 28 0 0 1 7.8 20 Z" fill="#8b4513"/>
-  <circle cx="32" cy="34" r="6" fill="#5a7a3a"/>
-  <!-- 針 -->
-  <path d="M32 0 L38 10 L26 10 Z" fill="#5a7a3a"/>
+  <!-- yorozu-craft のマーク「万」（和紙風の配色）。小さく表示しても潰れないよう線を太めにしている -->
+  <circle cx="32" cy="32" r="30" fill="#faf6ee" stroke="#8b4513" stroke-width="3.5"/>
+  <g fill="none" stroke-linecap="square" stroke-linejoin="miter" stroke-width="7.5">
+    <line x1="16.5" y1="19" x2="47.5" y2="19" stroke="#8b4513"/>
+    <polyline points="28.5,22.5 24.5,34 18,47" stroke="#8b4513"/>
+    <polyline points="26.5,32 44.5,32 44.5,45 38,45" stroke="#3f6b2a"/>
+  </g>
 </svg>
