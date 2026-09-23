@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>yorozu-craft｜ブラウザですぐ使える無料ツール集</title>
+  <meta name="description" content="yorozu-craft（よろずクラフト）は、登録不要・無料でブラウザからすぐ使えるツールを作って公開しているサイトです。ルーレット・くじ引きなど、ちょっと便利なものを少しずつ増やしています。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/">
+
+  <meta property="og:title" content="yorozu-craft｜ブラウザですぐ使える無料ツール集">
+  <meta property="og:description" content="登録不要・無料でブラウザからすぐ使えるツールを公開しています。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/web-roulette/og-image.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#8b4513">
+
+  <!-- サイト全体の構造化データ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "yorozu-craft",
+    "alternateName": "よろずクラフト",
+    "url": "https://yorozu-craft.com/",
+    "inLanguage": "ja"
+  }
+  </script>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <style>
+    /* ツール側（web-roulette）の和紙風テーマと同じ配色 */
+    :root {
+      --bg: #f0ebe0;
+      --bg-2: #e6dfd0;
+      --card: #faf6ee;
+      --text: #3a3025;
+      --muted: #7a6b5a;
+      --accent: #8b4513;
+      --border: #cfc0a0;
+      --shadow: rgba(58, 48, 37, 0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+      background: var(--bg-2);
+      border-bottom: 2px solid var(--border);
+    }
+    header h1 { font-size: 2rem; color: var(--accent); letter-spacing: 0.02em; }
+    header .kana { font-size: 0.85rem; color: var(--muted); }
+    header .lead { margin-top: 0.6rem; font-size: 0.95rem; color: var(--muted); }
+    main { width: 100%; max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 2rem; flex: 1; }
+    h2 {
+      font-size: 1.05rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    /* ツール一覧のカード */
+    .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .tool a {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      height: 100%;
+      padding: 1.1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px var(--shadow);
+      color: inherit;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .tool a:hover, .tool a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 14px var(--shadow); }
+    .tool a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tool img { width: 48px; height: 48px; flex: none; }
+    .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
+    .tool p { font-size: 0.85rem; color: var(--muted); }
+    .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
+    .about p + p { margin-top: 0.4rem; }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>yorozu-craft</h1>
+    <p class="kana">よろずクラフト</p>
+    <p class="lead">ブラウザですぐ使える、ちょっと便利なものを作っています。</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="tools-heading">
+      <h2 id="tools-heading">ツール一覧</h2>
+      <ul class="tools">
+        <!-- ツールを増やすときは、この <li> を複製してリンク先と説明を変える -->
+        <li class="tool">
+          <a href="./web-roulette/">
+            <img src="./web-roulette/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>ルーレット・くじ引き</h3>
+              <p>候補を入れてスタートを押すだけ。複数選択・重み付け・シャッフルに対応。</p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="about" aria-label="このサイトについて">
+      <p>すべてのツールは無料・登録不要で、ブラウザだけで動きます。入力したデータはお使いのブラウザ内にだけ保存され、外部に送信されることはありません。</p>
+      <p>各ツールの使い方・運営者情報・プライバシーポリシーは、それぞれのツールのページ下部から確認できます。</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

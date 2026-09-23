@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- ルーレット盤（和紙風テーマの配色） -->
+  <circle cx="32" cy="34" r="28" fill="#faf6ee" stroke="#8b4513" stroke-width="4"/>
+  <path d="M32 34 L32 6 A28 28 0 0 1 56.2 20 Z" fill="#8b4513"/>
+  <path d="M32 34 L56.2 48 A28 28 0 0 1 32 62 Z" fill="#8b4513"/>
+  <path d="M32 34 L7.8 48 A28 28 0 0 1 7.8 20 Z" fill="#8b4513"/>
+  <circle cx="32" cy="34" r="6" fill="#5a7a3a"/>
+  <!-- 針 -->
+  <path d="M32 0 L38 10 L26 10 Z" fill="#5a7a3a"/>
+</svg>
