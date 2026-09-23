@@ -15,13 +15,14 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/easy-split/ | [easy-split](https://github.com/YouheiOonuki/easy-split) |
 | https://yorozu-craft.com/web-metronome/ | [web-metronome](https://github.com/YouheiOonuki/web-metronome) |
 | https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo) |
+| https://yorozu-craft.com/shaho-check/ | [shaho-check](https://github.com/YouheiOonuki/shaho-check) |
 
 ## ファイル
 
 | ファイル | 役割 |
 |---------|------|
 | `index.html` | ツール一覧のトップページ |
-| `404.html` | 存在しない URL を開いたときのページ（全ツール共通） |
+| `404.html` | 存在しない URL を開いたときのページ。ドメイン直下のみ有効。ツール配下は各ツールの 404.html（「ツールを追加するとき」の 10） |
 | `CNAME` | 独自ドメインの設定。消すとドメインが外れるので注意 |
 | `robots.txt` | 検索エンジン向けの指示。**ドメイン直下のものしか読まれない**ので、全ツールのサイトマップをここに並べる |
 | `sitemap.xml` | トップページのサイトマップ |
@@ -68,6 +69,10 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    ```
 
    Android は Noto Sans CJK が標準搭載なので端末側のフォントで Noto Sans JP になり、iOS はヒラギノ、Windows はメイリオで出る。hoshizora-sanpo は `--sans` にこの並びを入れる（見出しの明朝 `--serif` はそのまま）
+
+10. **ツールの直下に `404.html` を置く**（このリポジトリの `404.html` と同じもの。リンクは絶対パス `/`、`noindex`、Cloudflare ビーコンあり、AdSense なし）。GitHub Pages はツール配下の存在しない URL に、ドメイン直下の 404.html ではなく、そのリポジトリの 404.html（無ければ GitHub の既定ページ）を返すため
+11. **入力内容を含む共有 URL は `#` 以降に入れる**（`?` クエリに入れない。共通プライバシーポリシー 5 節「入力内容は URL の『#』以降に入っているため、リンクを開いても当サイトのサーバーには送信されません」に合わせる。例: easy-split の `#s=`）。`?` は、入力内容を含まない目印（例: web-roulette の `?debug=1`）にだけ使う
+12. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
 
 ## AdSense
 
