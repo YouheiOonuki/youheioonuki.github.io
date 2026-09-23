@@ -4,3 +4,4 @@ Allow: /
 # 各ツールのサイトマップ（robots.txt はドメイン直下のものだけが読まれるため、ここに集約する）
 Sitemap: https://yorozu-craft.com/sitemap.xml
 Sitemap: https://yorozu-craft.com/web-roulette/sitemap.xml
+Sitemap: https://yorozu-craft.com/easy-split/sitemap.xml
