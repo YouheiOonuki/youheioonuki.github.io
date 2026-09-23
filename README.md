@@ -72,3 +72,15 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 - Cloudflare Web Analytics（Cookie 不使用）。Cloudflare ダッシュボード → Analytics & Logs → Web Analytics → `yorozu-craft.com` で閲覧
 - DNS は DNS only（Cloudflare のプロキシを通さない）なので、自動挿入は効かない。各ページに手動でビーコンを入れる（上の「ツールを追加するとき」の 6）
 - `404.html` にも入れているので、存在しない URL へのアクセス（リンク切れ）も集計される
+
+## 共通化がまだ決まっていないもの（2026-09-23）
+
+各ツールが別々に持っていて、揃え方を決めていないもの。決めたら「ツールを追加するとき」に手順として書き、この節から消す。
+
+| 対象 | いまの状態 | 決めること |
+|---|---|---|
+| ビルドスクリプト | ツールごとに有無も形も違う（easy-split は `package.json`＋テスト、hoshizora-sanpo は `tools/build-*.js`、他は素の HTML） | 共通の `build.mjs` を持つか、素の HTML のままにするか |
+| 共通 CSS | 配色（和紙風）と `font-family` を各ツールの `style.css` にコピーしている。`legal.css` は共通ページ専用 | ドメイン直下に共通 CSS を置いて各ツールから読むか、コピーのままにするか |
+| OGP / JSON-LD の雛形 | 各ツールの `<head>` に手書き | 雛形をこの README に置くか（AdSense・Cloudflare の例と同じ形） |
+| 共通の確認テスト | 無い | リンク切れ・AdSense タグと Cloudflare ビーコンの有無・canonical の URL を、全ツールで機械的に確かめるスクリプト（置き場はこのリポジトリ） |
+| フォント | 全ツール `'Segoe UI', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif`（端末のフォント）。hoshizora-sanpo だけ独自の `--sans` / `--serif` | オーナーは **Noto Sans JP でサイト全体を統一したい**。決めるのは 読み込み方法（Google Fonts か自前配信か）・使う太さの数・PWA（オフライン対応ツール）での扱い・表示速度への影響・共通プライバシーポリシーへの追記の要否 |
