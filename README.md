@@ -21,7 +21,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/gengo/ | [gengo](https://github.com/YouheiOonuki/gengo)（日英） |
 | https://yorozu-craft.com/furigana/ | [furigana](https://github.com/YouheiOonuki/furigana)（日英） |
 | https://yorozu-craft.com/web-metronome/ | [web-metronome](https://github.com/YouheiOonuki/web-metronome) |
-| https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo) |
+| https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo)（日英。英語は本体と天文カレンダー。星座図鑑は日本語のみ） |
 | https://yorozu-craft.com/shaho-check/ | [shaho-check](https://github.com/YouheiOonuki/shaho-check) |
 | https://yorozu-craft.com/loan-sim/ | [loan-sim](https://github.com/YouheiOonuki/loan-sim) |
 | https://yorozu-craft.com/nittei-kouho/ | [nittei-kouho](https://github.com/YouheiOonuki/nittei-kouho) |
