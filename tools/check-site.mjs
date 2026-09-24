@@ -79,19 +79,35 @@ const sitemaps = [...robots.body.matchAll(/^Sitemap:\s*(\S+)/gim)].map(m => toBa
 if (!sitemaps.length) fail('robots.txt', 'Sitemap の行が無い');
 
 const pages = new Set([BASE, BASE + 'about.html', BASE + 'privacy-policy.html']);
+const toolsWithEn = new Set(); // sitemap に /<ツール>/en/ を載せているツール
 for (const sm of sitemaps) {
   const r = await get(sm);
   if (r.status !== 200) { fail(path(sm), `sitemap が ${r.status}`); continue; }
-  for (const m of r.body.matchAll(/<loc>([^<]+)<\/loc>/g)) pages.add(toBase(m[1].trim()));
+  const tool = path(sm).split('/').filter(Boolean).length >= 2 ? path(sm).split('/')[1] : null;
+  for (const m of r.body.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+    const loc = toBase(m[1].trim());
+    pages.add(loc);
+    if (tool && path(loc).startsWith(`/${tool}/en/`)) toolsWithEn.add(tool);
+  }
 }
 
 // 2. トップのツール一覧と robots.txt の sitemap が一致しているか
 const top = await get(BASE);
-const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]));
+// ./en/ は英語のトップ（ツールではない）
+const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]).filter(t => t !== 'en'));
 // ツールの sitemap は /<ツール>/sitemap.xml。ドメイン直下の /sitemap.xml（トップ自身）は除く
 const toolsInRobots = new Set(sitemaps.map(s => path(s).split('/').filter(Boolean)).filter(seg => seg.length >= 2).map(seg => seg[0]));
 for (const t of toolsOnTop) if (!toolsInRobots.has(t)) fail('robots.txt', `トップに載っている ${t} の Sitemap が無い`);
 for (const t of toolsInRobots) if (!toolsOnTop.has(t)) fail('index.html', `robots.txt にある ${t} がトップのツール一覧に無い`);
+
+// 2b. 英語のトップ（/en/）の一覧と、sitemap に英語ページ（/<ツール>/en/）を載せているツールが一致しているか（README「ツールを追加するとき」23）
+// ルートの sitemap.xml に /en/ が載っているときだけ確かめる（英語のトップを公開する前の本番でも通るように）
+if (pages.has(BASE + 'en/')) {
+  const enTop = await get(BASE + 'en/');
+  const toolsOnEn = new Set(hrefs(enTop.body).map(h => h.match(/^\.\.\/([^/]+)\/en\/$/)).filter(Boolean).map(m => m[1]));
+  for (const t of toolsWithEn) if (!toolsOnEn.has(t)) fail('/en/', `sitemap に英語ページ /${t}/en/ があるのに、英語のトップの一覧に無い`);
+  for (const t of toolsOnEn) if (!toolsWithEn.has(t)) fail('/en/', `英語のトップにある ${t} の英語ページ（/${t}/en/）が ${t} の sitemap に無い`);
+} else if (toolsWithEn.size) notes.push(`英語のトップ /en/ がルートの sitemap.xml に無いため、英語ページの一覧の確認を省略（英語ページのあるツール: ${[...toolsWithEn].join(', ')}）`);
 
 // 3. 各ページの中身
 const internalLinks = new Map(); // リンク先 → 出現元

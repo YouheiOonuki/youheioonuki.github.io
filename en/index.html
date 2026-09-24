@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>yorozu-craft – small free tools for IT admins and Japanese dates</title>
+  <meta name="description" content="Free tools from yorozu-craft: a PAC file tester, ADSearch (Get-ADUser without RSAT), a FILETIME / LDAP timestamp converter and a Japanese era converter. No sign-up.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/en/">
+  <link rel="alternate" hreflang="ja" href="https://yorozu-craft.com/">
+  <link rel="alternate" hreflang="en" href="https://yorozu-craft.com/en/">
+  <link rel="alternate" hreflang="x-default" href="https://yorozu-craft.com/">
+
+  <meta property="og:title" content="yorozu-craft – small free tools for IT admins and Japanese dates">
+  <meta property="og:description" content="A PAC file tester, ADSearch, a FILETIME converter and a Japanese era converter. Free, no sign-up.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/en/">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/og-image.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#8b4513">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "yorozu-craft",
+    "url": "https://yorozu-craft.com/en/",
+    "inLanguage": "en"
+  }
+  </script>
+
+  <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <style>
+    /* 日本語のトップ（/index.html）と同じ配色・カード。ダークモードも日本語のトップに合わせて無し */
+    :root {
+      --bg: #f0ebe0;
+      --bg-2: #e6dfd0;
+      --card: #faf6ee;
+      --text: #3a3025;
+      --muted: #7a6b5a;
+      --accent: #8b4513;
+      --border: #cfc0a0;
+      --shadow: rgba(58, 48, 37, 0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .lang-bar { background: var(--bg-2); text-align: right; padding: 0.5rem 1rem 0; font-size: 0.85rem; }
+    .lang-bar a { color: var(--accent); }
+    header {
+      text-align: center;
+      padding: 1.5rem 1rem 2rem;
+      background: var(--bg-2);
+      border-bottom: 2px solid var(--border);
+    }
+    header h1 { font-size: 2rem; color: var(--accent); letter-spacing: 0.02em; }
+    header .lead { margin-top: 0.6rem; font-size: 0.95rem; color: var(--muted); }
+    main { width: 100%; max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 2rem; flex: 1; }
+    h2 {
+      font-size: 1.05rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .tool > a {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      height: 100%;
+      padding: 1.1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px var(--shadow);
+      color: inherit;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .tool > a:hover, .tool > a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 14px var(--shadow); }
+    .tool > a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tool img { width: 48px; height: 48px; flex: none; }
+    .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
+    .tool p { font-size: 0.85rem; color: var(--muted); }
+    .cat + .cat { margin-top: 2rem; }
+    .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
+    .about p + p { margin-top: 0.4rem; }
+    .about a { color: var(--accent); }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lang-bar"><a href="../" hreflang="ja" lang="ja">日本語</a></div>
+  <header>
+    <h1>yorozu-craft</h1>
+    <p class="lead">Small, free tools. No sign-up. The browser tools keep what you enter in your browser.</p>
+  </header>
+
+  <main>
+    <!-- 英語版のあるツールだけを載せる（README「ツールを追加するとき」23）。英語版を足したら、合う節に <li> を 1 つ足す -->
+    <section class="cat" aria-labelledby="it-heading">
+      <h2 id="it-heading">IT admin tools</h2>
+      <ul class="tools">
+        <li class="tool">
+          <a href="../pac-tester/en/">
+            <img src="../pac-tester/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>PAC File Tester</h3>
+              <p>Test a proxy.pac against a list of URLs, with syntax checks and an old/new diff. Runs offline. Screen in Japanese, with an English label list.</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="../ADSearch/en/">
+            <img src="../ADSearch/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>ADSearch</h3>
+              <p>Get-ADUser without RSAT: a read-only PowerShell module that queries Active Directory as an ordinary domain user.</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="../filetime/en/">
+            <img src="../filetime/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>FILETIME &amp; LDAP Timestamp Converter</h3>
+              <p>Turn 18-digit AD timestamps such as pwdLastSet and lastLogonTimestamp into dates and back.</p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="cat" aria-labelledby="ja-heading">
+      <h2 id="ja-heading">Japanese dates</h2>
+      <ul class="tools">
+        <li class="tool">
+          <a href="../gengo/en/">
+            <img src="../gengo/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>Japanese Era Converter</h3>
+              <p>Convert Reiwa, Heisei and Shōwa years to Western years and back. Also age, school year and a printable age chart.</p>
+            </div>
+          </a>
+        </li>
+        <!-- furigana の英語版（/furigana/en/）が公開されたらここに <li> を足し、見出しを "Japanese dates and text" などに変える。
+             公開前に足すと check-site がリンク切れで失敗する -->
+      </ul>
+    </section>
+
+    <section class="about" aria-label="About this site">
+      <p>More tools, in Japanese: <a href="../" hreflang="ja">yorozu-craft (Japanese)</a>.</p>
+      <p><a href="./about.html">About and disclaimer</a> · <a href="./privacy-policy.html">Privacy policy</a> (shared by all tools)</p>
+    </section>
+  </main>
+
+  <footer>
+    <p><a href="./about.html" style="color:inherit">About</a>　<a href="./privacy-policy.html" style="color:inherit">Privacy policy</a></p>
+    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+  </footer>
+
+  <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

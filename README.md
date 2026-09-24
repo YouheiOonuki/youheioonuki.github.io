@@ -28,7 +28,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/todofuken-quiz/ | [todofuken-quiz](https://github.com/YouheiOonuki/todofuken-quiz) |
 | https://yorozu-craft.com/md-viewer/ | [md-viewer](https://github.com/YouheiOonuki/md-viewer) |
 | https://yorozu-craft.com/pac-tester/ | [pac-tester](https://github.com/YouheiOonuki/pac-tester) |
-| https://yorozu-craft.com/seido-keisan/ | [seido-keisan](https://github.com/YouheiOonuki/seido-keisan)（制度の計算機。`/nenmatsu/` 年末調整、`/juminzei/` 住民税、`/ikukyu/` 育休・産休。今後ページを足す） |
+| https://yorozu-craft.com/seido-keisan/ | [seido-keisan](https://github.com/YouheiOonuki/seido-keisan)（制度の計算機。`/nenmatsu/` 年末調整、`/juminzei/` 住民税、`/ikukyu/` 育休・産休、`/iryohi/` 医療費控除。今後ページを足す） |
 | https://yorozu-craft.com/ADSearch/ | [ADSearch](https://github.com/YouheiOonuki/ADSearch)（PowerShell ライブラリ。紹介ページは `docs/` から公開） |
 
 ## ファイル
@@ -43,6 +43,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `favicon.svg` / `favicon-32.png` / `apple-touch-icon.png` | yorozu-craft のマーク「万」。トップページ・共通ページ・404 のタブのアイコン（PNG は SVG 非対応のブラウザ用と、iPhone のホーム画面用）。各ツールのアイコンはツールごとに持つ |
 | `og-image.png` | トップページの SNS 共有用画像（1200×630、「万」のマークと yorozu-craft）。`index.html` の `og:image` から参照。各ツールの共有用画像はツールごとに持つ |
 | `about.html` / `privacy-policy.html` | **全ツール共通**の運営者情報・免責事項 / プライバシーポリシー。ツール名を出さない書き方にしてあり、ツールを追加しても直さない（これまでに無い種類の機能を持つツールを作るときだけ追記。「ツールを追加するとき」の 8） |
+| `en/index.html` | 英語のトップ `https://yorozu-craft.com/en/`（2026-09-24）。**英語版のあるツールだけ**を載せ、全部の一覧は日本語のトップへ案内する。日本語のトップと `hreflang` で結んである。英語のツールページのフッターのホーム（`../../en/`）はここに向ける |
 | `en/about.html` / `en/privacy-policy.html` | 上の2ページの英語版（2026-09-24。英語のツールページのフッターはこちらに向ける。「ツールを追加するとき」の 23）。日本語版と食い違ったら日本語版が優先と明記してある。**日本語版を直したら英語版も同じ日に直す** |
 | `legal.css` | 上の4ページのスタイル（日英の切り替えリンク・翻訳の注記を含む。ダークモードは無い） |
 | `print-help.html` | **全ツール共通**の「スマホで印刷する」（家のプリンター・PDF・コンビニ・A5 冊子と横向き）。2026-09-24。手順は公式ページ（Apple・Google・ネットプリント・シャープ・ローソン）で確かめたものだけ書き、出典と確認日をページ内の折りたたみに置く。印刷できるツールの印刷ボタンの近くと使い方ページから `../print-help.html` で 1 行リンクする。スタイルは `legal.css` ＋ページ内のダークモード。日本語だけ（英語版を作るときは hreflang を足す） |
@@ -120,6 +121,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
      <link rel="alternate" hreflang="x-default" href="https://yorozu-craft.com/<リポジトリ名>/">
      ```
    - 英語ページも sitemap.xml に載せる。画面の上の方に日英の切り替えリンク（`hreflang` と `lang` 付き）を置く
+   - **英語版を足したら、英語のトップ `/en/index.html` の一覧に 1 行（`<li>`）足す**（リンクは `../<リポジトリ名>/en/`。説明は英語ページの冒頭の文から取る）。フッターのホームは英語のトップ（`../../en/`）に向ける
    - フッターの共通ページへのリンクは**英語の共通ページ**（`../../en/about.html`・`../../en/privacy-policy.html`）に向ける（15 と同じく相対パス）。日本語の共通ページには向けない
    - 制度の値・確認日など**日付のついた値は、日本語ページと同じ定数ファイル（`constants.js` など）から読む**。英語ページに値を書き写さない（値を 2 か所に持たない）
    - 名前は英語で検索される言い方にする（サジェストに出る語。例: "PAC file tester"）。romaji は本文で 1 回だけ併記する（"residence tax (juminzei)"）。学習者向けは日本語の語を見出しに残す
@@ -169,7 +171,8 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - トップのツール一覧と `robots.txt` の sitemap が一致している
 - 各ページ: AdSense の meta が 1 個・スクリプトが 1 個（全画面の本体は meta だけ）、手動・空の広告枠が無い、Cloudflare ビーコンがフッターの後に 1 個、canonical が自分の公開 URL、ツールのページは共通の運営者情報・プライバシーポリシーへリンクしている（noindex のページは省略）
 - 英語ページ（`<html lang="en">`）: 共通ページへのリンクは英語版（`/en/about.html`・`/en/privacy-policy.html`）であること（日本語の共通ページへのリンクは NG）。`hreflang="ja"` の対のページがあり（200）、そのページが `hreflang="en"` でこのページの URL を指し返していること。`hreflang="x-default"` があること。逆に、日本語ページに `hreflang="en"` があれば、その英語ページが 200 で `hreflang="ja"` で指し返していること
-- 英語の共通ページ（`/en/about.html`・`/en/privacy-policy.html`）は、ルートの sitemap.xml に載っていれば巡回する（ツールの英語ページは各ツールの sitemap に載せる）
+- 英語の共通ページ（`/en/about.html`・`/en/privacy-policy.html`）と英語のトップ（`/en/`）は、ルートの sitemap.xml に載っていれば巡回する（ツールの英語ページは各ツールの sitemap に載せる）
+- 英語のトップ（`/en/`）の一覧と、sitemap に `/<リポジトリ名>/en/` を載せているツールが一致している（英語版を足したのに英語のトップに載せ忘れた、またはその逆）。ルートの sitemap.xml に `/en/` が無いときは省略
 - サイト内リンクがすべて存在する（リンク切れ）
 - 印刷物の着地ページ（`/<リポジトリ名>/print/`）があれば: `noindex`、Cloudflare ビーコン 1 個、AdSense の meta 1 個
 - 各ツール: 存在しない URL がツールの `404.html`（ビーコンあり）になる、`manifest.webmanifest` の `id` が `/<リポジトリ名>/`、`sw.js` のキャッシュ名が `<リポジトリ名>-` で始まる
