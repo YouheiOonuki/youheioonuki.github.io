@@ -79,7 +79,7 @@
     }
     /* ツール一覧のカード */
     .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-    .tool a {
+    .tool > a {
       display: flex;
       gap: 0.9rem;
       align-items: flex-start;
@@ -93,11 +93,17 @@
       text-decoration: none;
       transition: transform 0.15s, box-shadow 0.15s;
     }
-    .tool a:hover, .tool a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 14px var(--shadow); }
-    .tool a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tool > a:hover, .tool > a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 14px var(--shadow); }
+    .tool > a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .tool img { width: 48px; height: 48px; flex: none; }
     .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
     .tool p { font-size: 0.85rem; color: var(--muted); }
+    /* ページが複数あるツール: カードの下に各ページへの直接リンク */
+    .tool.has-sub { display: flex; flex-direction: column; gap: 0.5rem; }
+    .tool.has-sub > a { height: auto; flex: 1; }
+    .tool-sub { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
+    .tool-sub a { display: inline-block; padding: 0.35rem 0.8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); font-size: 0.85rem; text-decoration: none; }
+    .tool-sub a:hover, .tool-sub a:focus-visible { border-color: var(--accent); }
     /* ツールはカテゴリごとの見出しにまとめる（くらし・お金／しごと・べんり／まなび・あそび） */
     .cat-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
     .cat-nav a { padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); text-decoration: none; font-size: 0.9rem; }
@@ -163,14 +169,18 @@
             </div>
           </a>
         </li>
-        <li class="tool">
+        <li class="tool has-sub">
           <a href="./seido-keisan/">
             <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
             <div>
-              <h3>制度の計算機（年末調整 令和8年分）</h3>
-              <p>年末調整でいくら戻るかを、国税庁の表で計算。基礎控除104万円などの令和8年度改正に対応し、前年との差も表示。</p>
+              <h3>制度の計算機（年末調整・住民税）</h3>
+              <p>年末調整でいくら戻るか、住民税はいくらか・非課税になるかを、国税庁の表と地方税法で計算。令和8年度改正に対応し、前年との差も表示。</p>
             </div>
           </a>
+          <ul class="tool-sub" aria-label="制度の計算機のページ">
+            <li><a href="./seido-keisan/nenmatsu/">年末調整（令和8年分）</a></li>
+            <li><a href="./seido-keisan/juminzei/">住民税（令和9年度）</a></li>
+          </ul>
         </li>
       </ul>
     </section>
@@ -194,6 +204,15 @@
             <div>
               <h3>傾斜割り勘・飲み会の清算</h3>
               <p>上司・若手の係数、幹事0円、2次会の合算、100円単位の集金に対応。結果はそのままLINEで送れます。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./tabi-shiori/">
+            <img src="./tabi-shiori/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>旅のしおりメーカー</h3>
+              <p>登録不要・印刷無料。行程に移動時間、持ち物、宿、予算と立て替え精算まで。A4 と A5 冊子で印刷・PDF 保存。割り勘ツールとも連携。</p>
             </div>
           </a>
         </li>

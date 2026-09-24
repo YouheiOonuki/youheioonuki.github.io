@@ -16,3 +16,4 @@ Sitemap: https://yorozu-craft.com/md-viewer/sitemap.xml
 Sitemap: https://yorozu-craft.com/pac-tester/sitemap.xml
 Sitemap: https://yorozu-craft.com/seido-keisan/sitemap.xml
 Sitemap: https://yorozu-craft.com/ADSearch/sitemap.xml
+Sitemap: https://yorozu-craft.com/tabi-shiori/sitemap.xml
