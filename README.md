@@ -130,7 +130,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    - 要望フォームは同じ Google フォーム（8 の `entry.585564634=<リポジトリ名>`）。リンクに英語の注記を付ける（例: "Feedback form (Google Forms, in Japanese; you can write in English). We read every message but do not reply."）
    - AdSense（5）・Cloudflare ビーコン（6）の決まりは日本語ページと同じ（同じ自動広告、同じトークン）
    - 本体の UI が日本語のままなら、そのことを英語ページに明記し、画面の日本語ラベルと英語の意味の対応表を置く（例: pac-tester の `/en/`）
-24. **文章の量**（yorozu-plans の `docs/WRITING.md`。2026-09-24 決定 D52〜D58）: 画面の本文は制度の計算機 900 字・道具 400 字、使い方ページは 2,500 字・1,500 字まで（`<select>` と `<details>` の中は数えない）。見出し（h2）は 7・6 まで、FAQ は 5 問・3 問まで（質問に検索語を含める）。免責・出典・データの扱いは WRITING.md 2 章の定型文を使い、条文と対象外の列挙は `<details>` に入れる。公開前に `python3 yorozu-plans/tools/writing/measure.py --type seido|tool <ファイルか URL>` を実行し、「要修正」が無いことを確かめる（英語ページは `--en`。語数で 画面 250・使い方 700／450）
+24. **文章の量**（yorozu-plans の `docs/WRITING.md`。2026-09-24 決定 D52〜D58）: 画面の本文は制度の計算機 900 字・道具 400 字、使い方ページは 2,500 字・1,500 字まで（`<select>` と `<details>` の中は数えない）。見出し（h2）は 7・6 まで、FAQ は 5 問・3 問まで（質問に検索語を含める）。免責・出典・データの扱いは WRITING.md 2 章の定型文を使い、条文と対象外の列挙は `<details>` に入れる。公開前に `python3 yorozu-plans/tools/writing/measure.py --type seido|tool <ファイルか URL>` を実行し、「要修正」が無いことを確かめる（英語ページは `--en`。語数で 画面 250・使い方 800／600。紹介・案内ページは `--type intro`、カレンダーや図鑑などの読み物ページは `--type read`。2026-09-25 見直し）
 25. **画面の骨組み**（yorozu-plans の `docs/SCREEN.md`。2026-09-24 決定 D59〜D66）: 入力 → 結果（計算機・道具）か、設定 → 出力（印刷物・ダウンロード型）のどちらかにする（SCREEN.md 1 章）
    - 必須の入力は 1 つの `<fieldset>`（見出しは `legend`）に、制度 6・道具 3・印刷物 4 項目まで。その直後に結果（`aria-live="polite"` の大きな数字 1 つ）を置き、間に段落や見出しを挟まない
    - 一部の人だけの入力は**結果の後ろ**の `<details>` に置き、`summary` に今の状態を書く（「配偶者: なし」）。保存・書き出しも `<details>` に入れる
@@ -138,7 +138,12 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
    - 印刷では固定バーと広告を消す
    - 部品（CSS・`screen.js`・`index.html` の骨組み）は yorozu-template に入っている
    - 公開前に `NODE_PATH=$(npm root -g) node yorozu-plans/tools/ui/measure_fold.cjs <ベース URL> --type seido|tool|print|download|play <パス>` を実行し、「要修正」が無いことを確かめる。上限（390×844 の画面数）は、結果か主なボタンが 制度 1.5・道具 1.0・印刷物 1.5・ダウンロード型 0.4、最初の操作が 0.6（ダウンロード型 0.4・遊び 0.5）、ページ全体が 4・3・3・2
-26. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
+26. **作業と公開の決まり**（yorozu-plans の ROADMAP 7.8。2026-09-25）
+    - 作業を始める前に必ず `git fetch` し、**最新の origin/main から枝を作る**（古い手元のコピーを土台にすると、公開済みの変更とぶつかる）
+    - **CI（`.github/workflows/test.yml`）が通るまでマージしない**。PR の CI の結果を確かめてからマージする
+    - **辞書などの大きなデータは、画面のキャッシュと分けて持つ**。`sw.js` の画面のキャッシュ名（`<リポジトリ名>-vN`）を上げても大きなデータは消さない（例: furigana の `furigana-dict-lindera-2.0.0`）。取り込む側（Worker など）と `sw.js` で同じ名前にし、テストで一致を確かめる
+    - GitHub Actions は `actions/checkout@v5`・`actions/setup-node@v5` を使う（v4 は Node 20 向けで非推奨。`ubuntu-latest` は 2026-10-19 から Ubuntu 26）
+27. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
 
 ## AdSense
 
