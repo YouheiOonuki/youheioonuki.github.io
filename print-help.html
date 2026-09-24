@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スマホで印刷する方法（PDF 保存・コンビニ・家のプリンター）｜yorozu-craft</title>
+  <meta name="description" content="yorozu-craft の印刷できるツール（旅のしおり・学習プリント・ビンゴカード・座席表・年齢早見表）を、iPhone・Android から家のプリンター・PDF・コンビニで印刷する手順。">
+  <meta name="robots" content="index, follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://yorozu-craft.com/print-help.html">
+  <meta property="og:title" content="スマホで印刷する方法（PDF 保存・コンビニ・家のプリンター）｜yorozu-craft">
+  <meta property="og:description" content="iPhone・Android から、家のプリンター・PDF・コンビニで印刷する手順。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://yorozu-craft.com/print-help.html">
+  <meta property="og:image" content="https://yorozu-craft.com/og-image.png">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta property="og:locale" content="ja_JP">
+
+  <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="./favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <!-- legal.css より先に描かれてもブラウザ既定の余白（8px）で画面がずれないよう、余白の打ち消しだけ直接書く -->
+  <style>body{margin:0}</style>
+  <link rel="stylesheet" href="./legal.css">
+  <!-- このページだけの追加（legal.css を使うほかのページに影響させない）: ダークモード（README「ツールを追加するとき」19。配色はツールと同じ）と折りたたみ -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1814; --bg-2: #25201a; --card: #2b251e; --text: #ece4d6;
+        --muted: #b9ab96; --accent: #e0a066; --border: #4a3f33; --shadow: rgba(0, 0, 0, 0.4);
+      }
+    }
+    details { margin: 0.5rem 0 0.2rem; font-size: 0.9rem; }
+    summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 0.88rem; padding: 0.3rem 0; }
+    details[open] > summary { margin-bottom: 0.3rem; }
+    details ol, details ul { margin: 0.3rem 0 0.6rem; }
+    details li + li { margin-top: 0.2rem; }
+    details .src li { overflow-wrap: anywhere; }
+    h4 { font-size: 0.9rem; margin: 0.8rem 0 0.2rem; }
+  </style>
+</head>
+<body>
+
+  <div class="site-bar"><a href="./">yorozu-craft</a></div>
+
+  <main>
+    <article>
+      <h1>スマホで印刷する</h1>
+      <p>ツールの「印刷する」で印刷の画面が開きます。</p>
+
+      <h2 id="printer">家のプリンターで印刷する</h2>
+      <p>iPhone は「プリンタが選択されていません」から AirPrint 対応のプリンターを、Android は上部でプリンターを選びます。</p>
+      <details>
+        <summary>手順と、プリンターが出ないとき</summary>
+        <h4>iPhone（AirPrint）</h4>
+        <ol>
+          <li>iPhone とプリンターを同じ Wi-Fi につなぎます。</li>
+          <li>「プリンタが選択されていません」を押し、AirPrint 対応のプリンターを選びます。</li>
+          <li>部数やページの範囲を選び、右上の「プリント」を押します。</li>
+        </ol>
+        <h4>Android（Chrome）</h4>
+        <ol>
+          <li>画面上部でプリンターを選びます。印刷の設定は下矢印から変えます。</li>
+          <li>印刷のボタンを押します。</li>
+        </ol>
+        <p>ツールのボタンで開かないときは、Chrome の右上の ⋮ →「共有」→「印刷」でも開きます。プリンターが出ないときは、設定アプリの「接続済みのデバイス」→「接続の設定」→「印刷」で印刷サービスをオンにするか、「サービスを追加」します（Google Pixel の表記）。</p>
+      </details>
+
+      <h2 id="pdf">PDF に保存する</h2>
+      <p>Android は画面上部のプリンターの欄で「PDF として保存」を選びます。</p>
+      <details>
+        <summary>Android の手順と iPhone</summary>
+        <ol>
+          <li>画面上部のプリンターの欄で「PDF として保存」を選びます（端末によっては「PDF形式で保存」）。</li>
+          <li>保存のボタンを押し、保存する場所を選びます。</li>
+        </ol>
+        <p>iPhone：印刷の画面から PDF にする手順は Apple の公式ガイドに無いため、載せていません。コンビニで印刷するなら、下の「かんたんnetprint」へ直接送れます。</p>
+      </details>
+
+      <h2 id="konbini">コンビニで印刷する</h2>
+      <p>セブン‐イレブンは「かんたんnetprint」、ローソン・ファミリーマートなどは「ネットワークプリント」のアプリに登録し、出た番号を店のコピー機に入れます。</p>
+      <details>
+        <summary>店ごとの手順と、A4 の料金</summary>
+        <h4>セブン‐イレブン（netprint）</h4>
+        <ol>
+          <li>iPhone：印刷の画面（プレビュー）の右上の共有アイコン →「かんたんnetprint」→「登録」。</li>
+          <li>Android：上の手順で PDF に保存 →「かんたんnetprint」の「文書ファイルを選ぶ」で選び →「登録」。</li>
+          <li>8 桁のプリント予約番号が出ます。店のマルチコピー機で番号を入れるか、アプリの QR コードをかざし、料金を払ってプリントします。</li>
+        </ol>
+        <h4>ローソン・ファミリーマートなど（ネットワークプリント）</h4>
+        <ol>
+          <li>アプリ「ネットワークプリント」（シャープ）にファイルを登録すると、10 桁のユーザー番号が出ます。</li>
+          <li>店のマルチコピー機のタッチパネルで「ネットワークプリント」を選び、ユーザー番号を入れます。</li>
+        </ol>
+        <p>A4 普通紙 1 枚の料金（2026-09-24 確認、税込）：セブン‐イレブンのネットプリントは白黒 20 円・カラー 60 円。ローソンのネットワークプリントは白黒 20 円・カラー 60 円（1 面）。</p>
+      </details>
+
+      <h2 id="muki">A5 冊子と横向きの紙</h2>
+      <p>座席表と A5 冊子のしおりは A4 横です。iOS 18.2 より前の iPhone は向きの指定が効かないため、パソコンか Android で印刷します。</p>
+      <details>
+        <summary>冊子の折り方</summary>
+        <p>両面印刷の設定と折り方は、<a href="./tabi-shiori/guide.html#print">旅のしおりメーカーの使い方</a>にあります。</p>
+      </details>
+
+      <h2 id="trouble">うまくいかないとき</h2>
+      <p>用紙は A4、拡大・縮小は 100% にします。</p>
+
+      <h2 id="source">出典と確認日</h2>
+      <p class="last-updated">Apple・Google・各社の公式ページほか（確認日 2026-09-24）。</p>
+      <details>
+        <summary>出典の一覧</summary>
+        <ul class="src">
+          <li>Apple サポート「AirPrint を使って iPhone や iPad からプリントする」https://support.apple.com/ja-jp/109349（同じ Wi-Fi、「プリンタが選択されていません」、右上の「プリント」）</li>
+          <li>iPhone ユーザガイド「iPhone からプリントする」https://support.apple.com/ja-jp/guide/iphone/iph92628b8f/ios</li>
+          <li>Google Chrome ヘルプ「Chrome から印刷」（Android）https://support.google.com/chrome/answer/1379552?hl=ja&amp;co=GENIE.Platform%3DAndroid（⋮ →「共有」→「印刷」、上部でプリンター、「PDF として保存」）</li>
+          <li>Google Pixel ヘルプ「デバイスから印刷する」https://support.google.com/pixelphone/answer/3473588?hl=ja（印刷サービスのオン・追加）</li>
+          <li>ネットプリント（富士フイルムビジネスイノベーション）「Safari から Web ページを印刷する」https://www.printing.ne.jp/support/m_kantan/ip_uti_guide_safari.html、「Web ページを Android から印刷する」https://www.printing.ne.jp/support/m_kantan/ad_uti_guide_chrome.html、「ネットプリントの印刷方法」https://www.printing.ne.jp/support/mobile/print_manual.html、料金表 https://www.printing.ne.jp/support/common/pricelist.html</li>
+          <li>シャープマーケティングジャパン「コンビニのマルチコピー機サービス」https://smj.jp.sharp/bs/networkprint/nwp.html、「シール印刷」https://smj.jp.sharp/bs/networkprint/seal.html（ユーザー番号の手順）</li>
+          <li>ローソン「ネットワークプリントサービス」https://www.lawson.co.jp/sp/service/others/multicopy/network-print.html（料金）</li>
+          <li>MDN の互換性データ（@mdn/browser-compat-data 8.1.2）: CSS の <code>@page</code> の <code>size</code> は iOS の Safari 18.2 から対応</li>
+        </ul>
+      </details>
+    </article>
+  </main>
+
+  <footer>
+    <nav aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="./">yorozu-craft トップ</a></li>
+        <li><a href="./about.html">運営者情報</a></li>
+        <li><a href="./privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+  </footer>
+
+  <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
