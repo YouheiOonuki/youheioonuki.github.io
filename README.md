@@ -191,6 +191,12 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - 印刷物の着地ページ（`/<リポジトリ名>/print/`）があれば: `noindex`、Cloudflare ビーコン 1 個、AdSense の meta 1 個
 - 各ツール: 存在しない URL がツールの `404.html`（ビーコンあり）になる、`manifest.webmanifest` の `id` が `/<リポジトリ名>/`、`sw.js` のキャッシュ名が `<リポジトリ名>-` で始まる
 
+- **確認日の期限**: 全ページの同じオリジンの `<script src>`（重複は 1 回だけ取得）から、法令・公式の値の確認日を読み、ツールごとに 1 行（`確認日 <ツール> <ファイル> <日付>（形、経過月数・期限）`）を出す。経過は画面と同じ暦の月の差で数え、**期限−2 か月（既定 10 か月）以上でメモ**（そろそろ出典を確かめ直す）、**期限（既定 12 か月）以上で NG**（画面がすでに「時間がたっています」を出している）。期限はファイルの `STALE_MONTHS` があればそれ、画面が別の期限で注意を出すツールはスクリプトの `STALE_MONTHS_BY_TOOL`（shaho-check は 6 か月）
+  - 読む形: (a) `CHECKED` 定数（`CHECKED: '2026-09-23'` … loan-sim・denki-dai・nittei-kouho の constants.js、`var CHECKED = '2026-09-24'` … seido-keisan の lib/tax2026.js・lib/*-values.js、shaho-check の judge.js、gengo の constants.js）。画面が注意を出す基準なので、あればこれだけを見る。(b) `CHECKED` が無く値ごとに `checked: '2026-09-24'` と書くファイル（furigana・gakushu-print の constants.js）はいちばん古い日
+  - `SOURCES` や値ごとの `checked:` を定義しているのに日付が読めないファイルはメモ（書き方が変わった・書き忘れ）。料率や一覧の「時点」（shaho-check の `RATES.asOf`、脱退一時金の `KYOTEI_ASOF`）は確認日ではないので見ない
+  - ページが読み込まないファイルは見えない（filetime の constants.js はテスト用で画面は読まない。hoshizora-sanpo の確認日はビルド時の `tools/official-events.js` にあり、ページには文として入る）
+  - 何を・いつ更新するかの年間の予定は yorozu-plans の `docs/MAINTENANCE.md`
+
 決まりの例外（全画面の本体など）は、スクリプト冒頭の `META_ONLY_PAGES`・`NO_COMMON_LINK_PAGES` に理由つきで書く。
 
 ### Lighthouse の測り方
