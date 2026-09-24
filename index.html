@@ -109,6 +109,12 @@
     .cat-nav a { padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); text-decoration: none; font-size: 0.9rem; }
     .cat-nav a:hover, .cat-nav a:focus-visible { background: var(--accent); color: var(--card); }
     .cat + .cat { margin-top: 2rem; }
+    /* 新しいツール（公開日の新しい順に 3 件。手で更新する） */
+    .new-tools { margin-bottom: 1.8rem; padding: 0.9rem 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+    .new-tools h2 { font-size: 0.95rem; border: none; padding: 0; margin-bottom: 0.4rem; }
+    .new-tools ul { list-style: none; display: grid; gap: 0.35rem; }
+    .new-tools a { color: var(--accent); font-weight: 700; }
+    .new-tools span { font-size: 0.85rem; color: var(--muted); }
     .cat h2 { margin-bottom: 0.2rem; }
     .cat-lead { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
     .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
@@ -136,6 +142,16 @@
       <a href="#shigoto">しごと・べんり</a>
       <a href="#manabi">まなび・あそび</a>
     </nav>
+
+    <!-- 新しいツール: 公開したら先頭に足し、4 件目を消す（GROWTH 6-2） -->
+    <section class="new-tools" aria-labelledby="new-heading">
+      <h2 id="new-heading">新しいツール</h2>
+      <ul>
+        <li><a href="./tabi-shiori/">旅のしおりメーカー</a> <span>— 行程に移動時間、A5 冊子で印刷（2026-09-24）</span></li>
+        <li><a href="./seido-keisan/juminzei/">住民税の計算・非課税判定</a> <span>— 令和9年度、年末調整の入力を引き継げる（2026-09-24）</span></li>
+        <li><a href="./seido-keisan/nenmatsu/">年末調整の計算</a> <span>— 令和8年分、基礎控除104万円に対応（2026-09-24）</span></li>
+      </ul>
+    </section>
 
     <section class="cat" id="kurashi" aria-labelledby="kurashi-heading">
       <h2 id="kurashi-heading">くらし・お金</h2>
