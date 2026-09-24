@@ -7,6 +7,9 @@
   <meta name="description" content="yorozu-craft（よろずクラフト）は、登録不要・無料でブラウザからすぐ使えるツールを作って公開しているサイトです。ルーレット・くじ引きなど、ちょっと便利なものを少しずつ増やしています。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://yorozu-craft.com/">
+  <link rel="alternate" hreflang="ja" href="https://yorozu-craft.com/">
+  <link rel="alternate" hreflang="en" href="https://yorozu-craft.com/en/">
+  <link rel="alternate" hreflang="x-default" href="https://yorozu-craft.com/">
 
   <meta property="og:title" content="yorozu-craft｜ブラウザですぐ使える無料ツール集">
   <meta property="og:description" content="登録不要・無料でブラウザからすぐ使えるツールを公開しています。">
@@ -60,9 +63,12 @@
       display: flex;
       flex-direction: column;
     }
+    /* 英語のトップ（/en/）への切り替え。英語版のあるツールだけを載せている */
+    .lang-bar { background: var(--bg-2); text-align: right; padding: 0.5rem 1rem 0; font-size: 0.85rem; }
+    .lang-bar a { color: var(--accent); }
     header {
       text-align: center;
-      padding: 2.5rem 1rem 2rem;
+      padding: 1.5rem 1rem 2rem;
       background: var(--bg-2);
       border-bottom: 2px solid var(--border);
     }
@@ -130,6 +136,7 @@
 </head>
 <body>
 
+  <div class="lang-bar"><a href="./en/" hreflang="en" lang="en">English</a></div>
   <header>
     <h1>yorozu-craft</h1>
     <p class="kana">よろずクラフト</p>
