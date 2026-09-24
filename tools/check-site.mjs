@@ -53,6 +53,22 @@ async function pool(items, n, fn) {
 const path = u => new URL(u).pathname;
 const count = (s, re) => (s.match(re) || []).length;
 const hrefs = html => [...html.matchAll(/<a\b[^>]*\shref="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g, '&'));
+// <link rel="alternate" hreflang="…" href="…"> を { 言語: href } にする（属性の順番は問わない）
+const alternates = html => {
+  const out = {};
+  for (const m of html.matchAll(/<link\b[^>]*>/g)) {
+    const tag = m[0];
+    if (!/\srel="alternate"/.test(tag)) continue;
+    const lang = (tag.match(/\shreflang="([^"]+)"/) || [])[1];
+    const href = (tag.match(/\shref="([^"]+)"/) || [])[1];
+    if (lang && href) out[lang] = href;
+  }
+  return out;
+};
+const langOf = html => ((html.match(/<html\b[^>]*\slang="([^"]+)"/) || [])[1] || '');
+// 共通ページ（日本語と英語）
+const COMMON_JA = ['/about.html', '/privacy-policy.html'];
+const COMMON_EN = ['/en/about.html', '/en/privacy-policy.html'];
 // 公開 URL（https://yorozu-craft.com/...）を、確認先のベース URL に読み替える
 const toBase = u => u.replace(/^https:\/\/yorozu-craft\.com\//, BASE);
 
@@ -107,12 +123,35 @@ await pool([...pages], 6, async (url) => {
   else if (canon !== expect) fail(p, `canonical が ${canon}（${expect} のはず）`);
 
   // ツールのページは共通の運営者情報・プライバシーポリシーへリンクする
+  // 英語ページ（<html lang="en">）は英語の共通ページ（/en/…）へ向け、日本語の共通ページには向けない（README「ツールを追加するとき」23）
   const links = hrefs(html);
-  const isTool = p.split('/').filter(Boolean).length >= 1 && !['/about.html', '/privacy-policy.html'].includes(p);
+  const isEn = langOf(html) === 'en';
+  const isTool = p.split('/').filter(Boolean).length >= 1 && ![...COMMON_JA, ...COMMON_EN].includes(p);
   if (isTool && !NO_COMMON_LINK_PAGES.has(p)) {
     const resolved = links.map(h => { try { return path(new URL(toBase(h), url)); } catch { return ''; } });
-    if (!resolved.includes('/about.html')) fail(p, '共通の運営者情報（/about.html）へのリンクが無い');
-    if (!resolved.includes('/privacy-policy.html')) fail(p, '共通のプライバシーポリシー（/privacy-policy.html）へのリンクが無い');
+    const [about, privacy] = isEn ? COMMON_EN : COMMON_JA;
+    if (!resolved.includes(about)) fail(p, `共通の運営者情報（${about}）へのリンクが無い`);
+    if (!resolved.includes(privacy)) fail(p, `共通のプライバシーポリシー（${privacy}）へのリンクが無い`);
+    if (isEn) for (const c of COMMON_JA) if (resolved.includes(c)) fail(p, `英語ページが日本語の共通ページ（${c}）へリンクしている（${COMMON_EN.join('・')} に向ける）`);
+  }
+
+  // 日英の対（hreflang）。英語ページは日本語の対があり、相手が指し返していること。日本語ページが英語の対を持つときも同じ
+  const alt = alternates(html);
+  const self = expect;
+  const pairOf = isEn ? 'ja' : (alt.en ? 'en' : null);
+  if (isEn && !alt.ja) fail(p, '英語ページに hreflang="ja" の対が無い');
+  if (pairOf && alt[pairOf]) {
+    const back = isEn ? 'en' : 'ja';
+    if (alt[back] !== self) fail(p, `hreflang="${back}"（自分自身）が ${alt[back] || '無い'}（${self} のはず）`);
+    if (!alt['x-default']) fail(p, 'hreflang="x-default" が無い');
+    else if (alt['x-default'] !== (isEn ? alt.ja : self)) fail(p, `hreflang="x-default" が ${alt['x-default']}（日本語ページのはず）`);
+    const other = await get(toBase(alt[pairOf]));
+    if (other.status !== 200) fail(p, `hreflang="${pairOf}" の ${path(alt[pairOf])} が ${other.status}`);
+    else {
+      const oalt = alternates(other.body);
+      if (oalt[back] !== self) fail(p, `hreflang="${pairOf}" の ${path(alt[pairOf])} が hreflang="${back}" でこのページを指し返していない（${oalt[back] || '無し'}）`);
+      if (langOf(other.body) !== pairOf) fail(p, `hreflang="${pairOf}" の ${path(alt[pairOf])} の <html lang> が ${langOf(other.body) || '無し'}`);
+    }
   }
 
   // サイト内リンクを集める（あとでまとめて存在確認）
