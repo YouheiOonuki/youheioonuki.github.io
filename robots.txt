@@ -20,3 +20,5 @@ Sitemap: https://yorozu-craft.com/tabi-shiori/sitemap.xml
 Sitemap: https://yorozu-craft.com/gakushu-print/sitemap.xml
 Sitemap: https://yorozu-craft.com/bingo/sitemap.xml
 Sitemap: https://yorozu-craft.com/sekigae/sitemap.xml
+Sitemap: https://yorozu-craft.com/filetime/sitemap.xml
+Sitemap: https://yorozu-craft.com/gengo/sitemap.xml
