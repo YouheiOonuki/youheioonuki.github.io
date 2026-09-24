@@ -17,9 +17,10 @@ const META_ONLY_PAGES = new Set([
   '/todofuken-quiz/',      // こどもが遊ぶ画面（決定 D18: 広告は保護者向けの guide.html だけ）
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
   '/bingo/en/',            // 同上の英語版
+  '/hoshizora-sanpo/en/',  // プラネタリウムの全画面の本体（英語版）
 ]);
 // 共通ページへの直リンクを持たなくてよいページ（全画面の本体。運営者情報へは「このアプリについて」から 1 ホップ）
-const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/']);
+const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/', '/hoshizora-sanpo/en/']);
 
 const failures = [];
 const notes = [];
