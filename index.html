@@ -147,9 +147,9 @@
     <section class="new-tools" aria-labelledby="new-heading">
       <h2 id="new-heading">新しいツール</h2>
       <ul>
+        <li><a href="./filetime/">FILETIME・LDAP タイムスタンプ変換</a> <span>— AD の 18 桁の日時をまとめて変換（2026-09-24）</span></li>
+        <li><a href="./gengo/">元号・西暦・年齢の変換</a> <span>— 和暦と西暦、満年齢・学年、早見表の印刷（2026-09-24）</span></li>
         <li><a href="./sekigae/">席替え・席順くじ</a> <span>— 前回の席・となりを避け、条件つきで席を決める（2026-09-24）</span></li>
-        <li><a href="./bingo/">大人数ビンゴ抽選</a> <span>— 大画面で抽選、カード 200 枚の印刷と番号照合（2026-09-24）</span></li>
-        <li><a href="./seido-keisan/ikukyu/">育休・産休の給付金の計算</a> <span>— 出産手当金・育児休業給付金・手取りの目安を月ごとに（2026-09-24）</span></li>
       </ul>
     </section>
 
@@ -284,6 +284,24 @@
             <div>
               <h3>ADSearch（PowerShell ライブラリ）</h3>
               <p>RSAT なしで、一般のドメインユーザーのまま Active Directory・DNS・GPO・Exchange の情報を取得。Get-ADUser などと同じ書き方で、すべて読み取り専用。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./filetime/">
+            <img src="./filetime/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>FILETIME・LDAP タイムスタンプ変換</h3>
+              <p>AD の pwdLastSet・lastLogonTimestamp・accountExpires などの 18 桁の数字を日時に。Get-ADUser の出力をまとめて変換。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./gengo/">
+            <img src="./gengo/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>元号・西暦・年齢の変換</h3>
+              <p>昭和・平成・令和と西暦の変換、満年齢・学年・早生まれ。年齢早見表を印刷。</p>
             </div>
           </a>
         </li>
