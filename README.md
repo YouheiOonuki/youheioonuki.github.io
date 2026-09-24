@@ -13,6 +13,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/ | このリポジトリ |
 | https://yorozu-craft.com/web-roulette/ | [web-roulette](https://github.com/YouheiOonuki/web-roulette) |
 | https://yorozu-craft.com/easy-split/ | [easy-split](https://github.com/YouheiOonuki/easy-split) |
+| https://yorozu-craft.com/tabi-shiori/ | [tabi-shiori](https://github.com/YouheiOonuki/tabi-shiori) |
 | https://yorozu-craft.com/web-metronome/ | [web-metronome](https://github.com/YouheiOonuki/web-metronome) |
 | https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo) |
 | https://yorozu-craft.com/shaho-check/ | [shaho-check](https://github.com/YouheiOonuki/shaho-check) |
@@ -22,7 +23,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/todofuken-quiz/ | [todofuken-quiz](https://github.com/YouheiOonuki/todofuken-quiz) |
 | https://yorozu-craft.com/md-viewer/ | [md-viewer](https://github.com/YouheiOonuki/md-viewer) |
 | https://yorozu-craft.com/pac-tester/ | [pac-tester](https://github.com/YouheiOonuki/pac-tester) |
-| https://yorozu-craft.com/seido-keisan/ | [seido-keisan](https://github.com/YouheiOonuki/seido-keisan)（制度の計算機。`/nenmatsu/` 年末調整。今後ページを足す） |
+| https://yorozu-craft.com/seido-keisan/ | [seido-keisan](https://github.com/YouheiOonuki/seido-keisan)（制度の計算機。`/nenmatsu/` 年末調整、`/juminzei/` 住民税。今後ページを足す） |
 | https://yorozu-craft.com/ADSearch/ | [ADSearch](https://github.com/YouheiOonuki/ADSearch)（PowerShell ライブラリ。紹介ページは `docs/` から公開） |
 
 ## ファイル
