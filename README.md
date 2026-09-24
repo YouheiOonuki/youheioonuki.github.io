@@ -15,7 +15,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/easy-split/ | [easy-split](https://github.com/YouheiOonuki/easy-split) |
 | https://yorozu-craft.com/tabi-shiori/ | [tabi-shiori](https://github.com/YouheiOonuki/tabi-shiori) |
 | https://yorozu-craft.com/gakushu-print/ | [gakushu-print](https://github.com/YouheiOonuki/gakushu-print) |
-| https://yorozu-craft.com/bingo/ | [bingo](https://github.com/YouheiOonuki/bingo) |
+| https://yorozu-craft.com/bingo/ | [bingo](https://github.com/YouheiOonuki/bingo)（日英） |
 | https://yorozu-craft.com/sekigae/ | [sekigae](https://github.com/YouheiOonuki/sekigae) |
 | https://yorozu-craft.com/filetime/ | [filetime](https://github.com/YouheiOonuki/filetime)（日英） |
 | https://yorozu-craft.com/gengo/ | [gengo](https://github.com/YouheiOonuki/gengo)（日英） |
