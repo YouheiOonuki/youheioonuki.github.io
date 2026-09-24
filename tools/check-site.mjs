@@ -148,6 +148,15 @@ await pool([...toolsOnTop], 4, async (t) => {
     if (id !== undefined && id !== `/${t}/`) fail(`/${t}/manifest.webmanifest`, `id が ${id}（/${t}/ のはず）`);
     if (id === undefined) notes.push(`/${t}/manifest.webmanifest: id が無い（README 13 では必須。start_url が id になる）`);
   }
+  // 印刷物の着地ページ（README 22）: sitemap に載せないので、ここで決まりを見る
+  const pr = await get(`${BASE}${t}/print/`);
+  if (pr.status === 200) {
+    const p = `/${t}/print/`;
+    if (!/<meta[^>]+name="robots"[^>]+noindex/i.test(pr.body)) fail(p, 'noindex が無い');
+    if (count(pr.body, new RegExp(BEACON_TOKEN, 'g')) !== 1) fail(p, 'Cloudflare ビーコンが 1 個でない（紙から来た人を数えられない）');
+    if (count(pr.body, new RegExp(`name="google-adsense-account"\\s+content="${ADSENSE_ID}"`, 'g')) !== 1) fail(p, 'AdSense の meta が 1 個でない');
+    notes.push(`${p}: 印刷物の着地ページあり`);
+  }
   const sw = await get(`${BASE}${t}/sw.js`);
   if (sw.status === 200) {
     const names = [...sw.body.matchAll(/['"`]([a-z0-9-]+-)v?\d*['"`$]/g)].map(m => m[1]);
