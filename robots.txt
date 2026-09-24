@@ -22,3 +22,4 @@ Sitemap: https://yorozu-craft.com/bingo/sitemap.xml
 Sitemap: https://yorozu-craft.com/sekigae/sitemap.xml
 Sitemap: https://yorozu-craft.com/filetime/sitemap.xml
 Sitemap: https://yorozu-craft.com/gengo/sitemap.xml
+Sitemap: https://yorozu-craft.com/furigana/sitemap.xml

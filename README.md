@@ -19,6 +19,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/sekigae/ | [sekigae](https://github.com/YouheiOonuki/sekigae) |
 | https://yorozu-craft.com/filetime/ | [filetime](https://github.com/YouheiOonuki/filetime)（日英） |
 | https://yorozu-craft.com/gengo/ | [gengo](https://github.com/YouheiOonuki/gengo)（日英） |
+| https://yorozu-craft.com/furigana/ | [furigana](https://github.com/YouheiOonuki/furigana)（日英） |
 | https://yorozu-craft.com/web-metronome/ | [web-metronome](https://github.com/YouheiOonuki/web-metronome) |
 | https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo) |
 | https://yorozu-craft.com/shaho-check/ | [shaho-check](https://github.com/YouheiOonuki/shaho-check) |
