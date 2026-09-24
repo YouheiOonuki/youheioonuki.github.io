@@ -39,7 +39,8 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `favicon.svg` / `favicon-32.png` / `apple-touch-icon.png` | yorozu-craft のマーク「万」。トップページ・共通ページ・404 のタブのアイコン（PNG は SVG 非対応のブラウザ用と、iPhone のホーム画面用）。各ツールのアイコンはツールごとに持つ |
 | `og-image.png` | トップページの SNS 共有用画像（1200×630、「万」のマークと yorozu-craft）。`index.html` の `og:image` から参照。各ツールの共有用画像はツールごとに持つ |
 | `about.html` / `privacy-policy.html` | **全ツール共通**の運営者情報・免責事項 / プライバシーポリシー。ツール名を出さない書き方にしてあり、ツールを追加しても直さない（これまでに無い種類の機能を持つツールを作るときだけ追記。「ツールを追加するとき」の 8） |
-| `legal.css` | 上の2ページのスタイル |
+| `en/about.html` / `en/privacy-policy.html` | 上の2ページの英語版（2026-09-24。英語のツールページのフッターはこちらに向ける。「ツールを追加するとき」の 23）。日本語版と食い違ったら日本語版が優先と明記してある。**日本語版を直したら英語版も同じ日に直す** |
+| `legal.css` | 上の4ページのスタイル（日英の切り替えリンク・翻訳の注記を含む。ダークモードは無い） |
 | `ads.txt` | AdSense の販売者情報。ドメイン直下に1つだけ置く（全ツール共通） |
 | `tools/check-site.mjs` / `.github/workflows/check-site.yml` | サイト横断チェックと、その週1回の自動実行（下の「共通の確認テスト」） |
 | `LICENSE` | MIT License（著作権者 Youhei Oonuki） |
@@ -104,7 +105,24 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 20. **ブラウザに保存するツールは、保存している内容を JSON ファイルに書き出し・読み込みできるようにする**（「ファイルに書き出す」「ファイルから読み込む」の 2 つのボタンを、保存・共有のボタンの近くに置く）。形式は `{ "tool": "<リポジトリ名>", "version": 1, "exportedAt": "<ISO 8601>", "data": { localStorage に保存しているものと同じ形 } }`、ファイル名は `<リポジトリ名>-backup-YYYYMMDD.json`。読み込むときは `tool` が自分のツールかを確かめ、中身はそのまま信じずにツールの既存の正規化（`normalize` など）を通し、上書きする前に確認を出す。ファイルは端末の中で作るだけで、どこにも送信しない。使い方ページの「ご利用上の注意・データの扱い」にも 1 行書く。理由: 需要調査（yorozu-plans の DEMAND.md 2 章）で、ストアの低評価レビューのうち「消えた・機種変更で引き継げない・バックアップ」が 750 件を超えていたため（2026-09-24 決定 D31）。書き出し・読み込みの関数とテストは yorozu-template の `calc.js`・`tests/backup.test.js` に入っている
 21. **ほかのツールへの導線**（yorozu-plans の GROWTH.md）: 置くのは**結果が出た直後**だけで、1 画面に**最大 2 つ**。文言は「その結果を使って次にすること」（例:「日程が決まったら → 旅のしおりを作る」）。「関連ツール」「おすすめ」の枠は置かない。値を渡すときは `#` 以降で（11）、計算の前提が違う値（所得税と住民税の課税所得など）は渡さない。共有リンクで開いた画面には「自分のを新しく作る」を置く
 22. **印刷物のクレジット**は `yorozu-craft.com/<リポジトリ名>/print/` の着地ページに向ける（紙から来た人を数えるため）。既定で表示し、設定で外せるようにする。着地ページは `noindex` にして sitemap に載せない
-23. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
+23. **英語版を持つときの決まり**（yorozu-plans の GLOBAL.md 3.2。2026-09-24 オーナー決定 D44・D46・D48〜D50）
+   - 置き場は同じリポジトリの **`/<リポジトリ名>/en/`**（`en/index.html`、必要なら `en/guide.html`）。別ドメイン・`/en/<ツール>/` にはしない
+   - `<html lang="en">`。**canonical は英語ページ自身**。`hreflang` で日英を**両方向**に結ぶ（日本語ページと英語ページの両方に同じ 3 行: `ja`・`en`・`x-default`＝日本語ページ）。対になるページどうしで、片方にだけ書かない
+
+     ```html
+     <link rel="alternate" hreflang="ja" href="https://yorozu-craft.com/<リポジトリ名>/">
+     <link rel="alternate" hreflang="en" href="https://yorozu-craft.com/<リポジトリ名>/en/">
+     <link rel="alternate" hreflang="x-default" href="https://yorozu-craft.com/<リポジトリ名>/">
+     ```
+   - 英語ページも sitemap.xml に載せる。画面の上の方に日英の切り替えリンク（`hreflang` と `lang` 付き）を置く
+   - フッターの共通ページへのリンクは**英語の共通ページ**（`../../en/about.html`・`../../en/privacy-policy.html`）に向ける（15 と同じく相対パス）。日本語の共通ページには向けない
+   - 制度の値・確認日など**日付のついた値は、日本語ページと同じ定数ファイル（`constants.js` など）から読む**。英語ページに値を書き写さない（値を 2 か所に持たない）
+   - 名前は英語で検索される言い方にする（サジェストに出る語。例: "PAC file tester"）。romaji は本文で 1 回だけ併記する（"residence tax (juminzei)"）。学習者向けは日本語の語を見出しに残す
+   - 英語は LLM で下書きし、オーナーが読んでから公開する（機械翻訳のまま出さない）。金額は円のまま（為替換算しない）
+   - 要望フォームは同じ Google フォーム（8 の `entry.585564634=<リポジトリ名>`）。リンクに英語の注記を付ける（例: "Feedback form (Google Forms, in Japanese; you can write in English). We read every message but do not reply."）
+   - AdSense（5）・Cloudflare ビーコン（6）の決まりは日本語ページと同じ（同じ自動広告、同じトークン）
+   - 本体の UI が日本語のままなら、そのことを英語ページに明記し、画面の日本語ラベルと英語の意味の対応表を置く（例: pac-tester の `/en/`）
+24. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
 
 ## AdSense
 
@@ -145,6 +163,8 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - `robots.txt` の各 sitemap と、sitemap に載っている全ページが 200
 - トップのツール一覧と `robots.txt` の sitemap が一致している
 - 各ページ: AdSense の meta が 1 個・スクリプトが 1 個（全画面の本体は meta だけ）、手動・空の広告枠が無い、Cloudflare ビーコンがフッターの後に 1 個、canonical が自分の公開 URL、ツールのページは共通の運営者情報・プライバシーポリシーへリンクしている（noindex のページは省略）
+- 英語ページ（`<html lang="en">`）: 共通ページへのリンクは英語版（`/en/about.html`・`/en/privacy-policy.html`）であること（日本語の共通ページへのリンクは NG）。`hreflang="ja"` の対のページがあり（200）、そのページが `hreflang="en"` でこのページの URL を指し返していること。`hreflang="x-default"` があること。逆に、日本語ページに `hreflang="en"` があれば、その英語ページが 200 で `hreflang="ja"` で指し返していること
+- 英語の共通ページ（`/en/about.html`・`/en/privacy-policy.html`）は、ルートの sitemap.xml に載っていれば巡回する（ツールの英語ページは各ツールの sitemap に載せる）
 - サイト内リンクがすべて存在する（リンク切れ）
 - 印刷物の着地ページ（`/<リポジトリ名>/print/`）があれば: `noindex`、Cloudflare ビーコン 1 個、AdSense の meta 1 個
 - 各ツール: 存在しない URL がツールの `404.html`（ビーコンあり）になる、`manifest.webmanifest` の `id` が `/<リポジトリ名>/`、`sw.js` のキャッシュ名が `<リポジトリ名>-` で始まる
