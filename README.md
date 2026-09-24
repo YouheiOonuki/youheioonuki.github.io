@@ -21,6 +21,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/denki-dai/ | [denki-dai](https://github.com/YouheiOonuki/denki-dai) |
 | https://yorozu-craft.com/todofuken-quiz/ | [todofuken-quiz](https://github.com/YouheiOonuki/todofuken-quiz) |
 | https://yorozu-craft.com/md-viewer/ | [md-viewer](https://github.com/YouheiOonuki/md-viewer) |
+| https://yorozu-craft.com/pac-tester/ | [pac-tester](https://github.com/YouheiOonuki/pac-tester) |
 
 ## ファイル
 

@@ -13,3 +13,4 @@ Sitemap: https://yorozu-craft.com/nittei-kouho/sitemap.xml
 Sitemap: https://yorozu-craft.com/denki-dai/sitemap.xml
 Sitemap: https://yorozu-craft.com/todofuken-quiz/sitemap.xml
 Sitemap: https://yorozu-craft.com/md-viewer/sitemap.xml
+Sitemap: https://yorozu-craft.com/pac-tester/sitemap.xml
