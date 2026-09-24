@@ -18,3 +18,4 @@ Sitemap: https://yorozu-craft.com/seido-keisan/sitemap.xml
 Sitemap: https://yorozu-craft.com/ADSearch/sitemap.xml
 Sitemap: https://yorozu-craft.com/tabi-shiori/sitemap.xml
 Sitemap: https://yorozu-craft.com/gakushu-print/sitemap.xml
+Sitemap: https://yorozu-craft.com/bingo/sitemap.xml
