@@ -104,7 +104,8 @@ for (const t of toolsInRobots) if (!toolsOnTop.has(t)) fail('index.html', `robot
 // ルートの sitemap.xml に /en/ が載っているときだけ確かめる（英語のトップを公開する前の本番でも通るように）
 if (pages.has(BASE + 'en/')) {
   const enTop = await get(BASE + 'en/');
-  const toolsOnEn = new Set(hrefs(enTop.body).map(h => h.match(/^\.\.\/([^/]+)\/en\/$/)).filter(Boolean).map(m => m[1]));
+  // 制度の計算機のように 1 つのツールに英語ページが複数あるときは ../<ツール>/en/<ページ>/ で載せる（seido-keisan、D75）
+  const toolsOnEn = new Set(hrefs(enTop.body).map(h => h.match(/^\.\.\/([^/]+)\/en\/(?:[^/]+\/)?$/)).filter(Boolean).map(m => m[1]));
   for (const t of toolsWithEn) if (!toolsOnEn.has(t)) fail('/en/', `sitemap に英語ページ /${t}/en/ があるのに、英語のトップの一覧に無い`);
   for (const t of toolsOnEn) if (!toolsWithEn.has(t)) fail('/en/', `英語のトップにある ${t} の英語ページ（/${t}/en/）が ${t} の sitemap に無い`);
 } else if (toolsWithEn.size) notes.push(`英語のトップ /en/ がルートの sitemap.xml に無いため、英語ページの一覧の確認を省略（英語ページのあるツール: ${[...toolsWithEn].join(', ')}）`);
