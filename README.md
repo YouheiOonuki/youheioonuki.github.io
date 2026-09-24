@@ -21,7 +21,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/gengo/ | [gengo](https://github.com/YouheiOonuki/gengo)（日英） |
 | https://yorozu-craft.com/furigana/ | [furigana](https://github.com/YouheiOonuki/furigana)（日英） |
 | https://yorozu-craft.com/web-metronome/ | [web-metronome](https://github.com/YouheiOonuki/web-metronome) |
-| https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo) |
+| https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo)（日英。英語は本体と天文カレンダー。星座図鑑は日本語のみ） |
 | https://yorozu-craft.com/shaho-check/ | [shaho-check](https://github.com/YouheiOonuki/shaho-check) |
 | https://yorozu-craft.com/loan-sim/ | [loan-sim](https://github.com/YouheiOonuki/loan-sim) |
 | https://yorozu-craft.com/nittei-kouho/ | [nittei-kouho](https://github.com/YouheiOonuki/nittei-kouho) |
@@ -122,7 +122,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
      <link rel="alternate" hreflang="x-default" href="https://yorozu-craft.com/<リポジトリ名>/">
      ```
    - 英語ページも sitemap.xml に載せる。画面の上の方に日英の切り替えリンク（`hreflang` と `lang` 付き）を置く
-   - **英語版を足したら、英語のトップ `/en/index.html` の一覧に 1 行（`<li>`）足す**（リンクは `../<リポジトリ名>/en/`。説明は英語ページの冒頭の文から取る）。フッターのホームは英語のトップ（`../../en/`）に向ける
+   - **英語版を足したら、英語のトップ `/en/index.html` の一覧に 1 行（`<li>`）足す**（リンクは `../<リポジトリ名>/en/`。1 つのリポジトリに英語ページが複数ある制度の計算機は `../seido-keisan/en/<ページ>/`（D75。例: `en/pension-refund/`）で、hreflang の対は日本語の各ページ（`/seido-keisan/dattai-ichiji/`）。説明は英語ページの冒頭の文から取る）。フッターのホームは英語のトップ（`../../en/`）に向ける
    - フッターの共通ページへのリンクは**英語の共通ページ**（`../../en/about.html`・`../../en/privacy-policy.html`）に向ける（15 と同じく相対パス）。日本語の共通ページには向けない
    - 制度の値・確認日など**日付のついた値は、日本語ページと同じ定数ファイル（`constants.js` など）から読む**。英語ページに値を書き写さない（値を 2 か所に持たない）
    - 名前は英語で検索される言い方にする（サジェストに出る語。例: "PAC file tester"）。romaji は本文で 1 回だけ併記する（"residence tax (juminzei)"）。学習者向けは日本語の語を見出しに残す

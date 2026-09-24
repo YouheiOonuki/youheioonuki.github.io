@@ -17,9 +17,10 @@ const META_ONLY_PAGES = new Set([
   '/todofuken-quiz/',      // こどもが遊ぶ画面（決定 D18: 広告は保護者向けの guide.html だけ）
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
   '/bingo/en/',            // 同上の英語版
+  '/hoshizora-sanpo/en/',  // プラネタリウムの全画面の本体（英語版）
 ]);
 // 共通ページへの直リンクを持たなくてよいページ（全画面の本体。運営者情報へは「このアプリについて」から 1 ホップ）
-const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/']);
+const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/', '/hoshizora-sanpo/en/']);
 
 const failures = [];
 const notes = [];
@@ -105,7 +106,8 @@ for (const t of toolsInRobots) if (!toolsOnTop.has(t)) fail('index.html', `robot
 // ルートの sitemap.xml に /en/ が載っているときだけ確かめる（英語のトップを公開する前の本番でも通るように）
 if (pages.has(BASE + 'en/')) {
   const enTop = await get(BASE + 'en/');
-  const toolsOnEn = new Set(hrefs(enTop.body).map(h => h.match(/^\.\.\/([^/]+)\/en\/$/)).filter(Boolean).map(m => m[1]));
+  // 制度の計算機のように 1 つのツールに英語ページが複数あるときは ../<ツール>/en/<ページ>/ で載せる（seido-keisan、D75）
+  const toolsOnEn = new Set(hrefs(enTop.body).map(h => h.match(/^\.\.\/([^/]+)\/en\/(?:[^/]+\/)?$/)).filter(Boolean).map(m => m[1]));
   for (const t of toolsWithEn) if (!toolsOnEn.has(t)) fail('/en/', `sitemap に英語ページ /${t}/en/ があるのに、英語のトップの一覧に無い`);
   for (const t of toolsOnEn) if (!toolsWithEn.has(t)) fail('/en/', `英語のトップにある ${t} の英語ページ（/${t}/en/）が ${t} の sitemap に無い`);
 } else if (toolsWithEn.size) notes.push(`英語のトップ /en/ がルートの sitemap.xml に無いため、英語ページの一覧の確認を省略（英語ページのあるツール: ${[...toolsWithEn].join(', ')}）`);
