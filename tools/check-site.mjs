@@ -114,11 +114,20 @@ if (pages.has(BASE + 'en/')) {
 
 // 3. 各ページの中身
 const internalLinks = new Map(); // リンク先 → 出現元
+const scriptSrcs = new Map();    // 同じオリジンのスクリプト → 最初に見つけたページ
 await pool([...pages], 6, async (url) => {
   const p = path(url);
   const r = await get(url);
   if (r.status !== 200) { fail(p, `status ${r.status}`); return; }
   const html = r.body;
+  // 同じオリジンの <script src> を集める（あとで確認日を読む。noindex のページも対象）
+  for (const m of html.matchAll(/<script\b[^>]*\ssrc=["']([^"']+)["']/g)) {
+    let u;
+    try { u = new URL(toBase(m[1].replace(/&amp;/g, '&')), url); } catch { continue; }
+    if (u.origin !== ORIGIN || !/\.m?js$/.test(u.pathname)) continue;
+    u.hash = ''; u.search = '';
+    if (!scriptSrcs.has(u.href)) scriptSrcs.set(u.href, p);
+  }
   const noindex = /<meta[^>]+name="robots"[^>]+noindex/i.test(html);
   if (noindex) { notes.push(`${p}: noindex のため中身の確認を省略`); return; }
 
@@ -224,9 +233,59 @@ await pool([...toolsOnTop], 4, async (t) => {
   }
 });
 
+// 6. 法令・公式の値の確認日（README「共通の確認テスト」の「確認日の期限」）
+// 値を持つツールは constants.js や lib/*-values.js に確認日を持ち、画面は確認日から STALE_MONTHS（既定 12）か月たつと
+// 「時間がたっています」の注意を出す。ここでは全ページのスクリプトから確認日を読み、画面より先に知らせる。
+//   読む形（どれを「値の確認日」とみなすか）:
+//   (a) CHECKED という名前の定数: `CHECKED: '2026-09-23'`（loan-sim・denki-dai・nittei-kouho）、
+//       `var CHECKED = '2026-09-24'`（seido-keisan の lib/*-values.js・tax2026.js、shaho-check の judge.js、gengo・filetime）。
+//       画面が注意を出す基準そのものなので、あればこれだけを見る（出典ごとの `checked: CHECKED` は同じ日）
+//   (b) CHECKED が無く、値ごとに `checked: '2026-09-24'` と日付を直書きしている（furigana・gakushu-print の constants.js）: いちばん古い日
+//   (c) SOURCES（出典の一覧）や値ごとの `checked:` を定義しているのに日付が読めない → メモ（確認日の書き方が変わった・書き忘れ）。
+//       別ファイルの確認日を読むだけの画面側（`V.CHECKED` を使う app.js など）は対象外
+//   見ないもの: 料率・一覧の「時点」（shaho-check の RATES.asOf、dattai の KYOTEI_ASOF）は確認した日ではない
+// 期限: 暦の月の差（画面と同じ数え方）が 期限−2 か月以上でメモ（そろそろ見直す）、期限以上で NG（画面がすでに注意を出している）
+const STALE_MONTHS_DEFAULT = 12;
+// 画面の注意の期限が STALE_MONTHS を持たず別に決まっているツール（理由つき）
+const STALE_MONTHS_BY_TOOL = {
+  'shaho-check': 6, // app.js が確認日から 183 日（6 か月）で注意を出す（年金制度改正の段階施行が続くため）
+};
+const DATE = String.raw`(\d{4}-\d{2}-\d{2})`;
+const TODAY = new Date();
+const monthsSince = d => { const [y, m] = d.split('-').map(Number); return (TODAY.getFullYear() - y) * 12 + (TODAY.getMonth() + 1 - m); };
+const checkDates = [];
+await pool([...scriptSrcs.keys()], 6, async (u) => {
+  const r = await get(u);
+  if (r.status !== 200) return; // 存在しないスクリプトはこの確認の対象外
+  const js = r.body;
+  const f = path(u);
+  const tool = f.split('/').filter(Boolean)[0] || '(トップ)';
+  const upper = [...js.matchAll(new RegExp(String.raw`\bCHECKED\s*[:=]\s*['"]${DATE}['"]`, 'g'))].map(m => m[1]);
+  const lower = [...js.matchAll(new RegExp(String.raw`\bchecked\s*:\s*['"]${DATE}['"]`, 'g'))].map(m => m[1]);
+  const dates = upper.length ? upper : lower;
+  if (!dates.length) {
+    // 出典を定義している（SOURCES = [ / SOURCES: { か、値ごとの checked:）のに日付が無いファイルだけ。
+    // checked: は文字列か定数（checked: CHECKED）のときだけ数える（画面の状態の checked: [] や三項演算子の el.checked : … は除く）。
+    // 別ファイルの確認日を読むだけの画面側（X.CHECKED・X.SOURCES）も除く
+    const definesSources = /\bSOURCES\s*[:=]\s*[[{]/.test(js) || /(?<![.\w$])checked\s*:\s*(?:['"]|[A-Z_]{3,}\b)/.test(js);
+    if (definesSources && !/\w\.CHECKED\b/.test(js)) notes.push(`${f}: 出典（SOURCES・checked）があるのに確認日が読めない（CHECKED: 'YYYY-MM-DD' の形で書く）`);
+    return;
+  }
+  const date = dates.sort()[0];
+  const stale = (js.match(/\bSTALE_MONTHS\s*:\s*(\d+)/) || [])[1];
+  const limit = STALE_MONTHS_BY_TOOL[tool] || (stale ? Number(stale) : STALE_MONTHS_DEFAULT);
+  checkDates.push({ tool, f, date, kind: upper.length ? 'CHECKED' : `checked ${lower.length} 件の最古`, limit, months: monthsSince(date) });
+});
+checkDates.sort((a, b) => a.f.localeCompare(b.f));
+for (const c of checkDates) {
+  if (c.months >= c.limit) fail(c.f, `確認日 ${c.date} から ${c.months} か月（期限 ${c.limit} か月）。画面はすでに「時間がたっています」を出している。出典を確かめ直して確認日を更新する`);
+  else if (c.months >= c.limit - 2) notes.push(`${c.f}: 確認日 ${c.date} から ${c.months} か月（期限 ${c.limit} か月）。そろそろ出典を確かめ直す`);
+}
+
 // 結果
 console.log(`確認先: ${BASE}`);
 console.log(`ページ ${pages.size} 件、サイト内リンク ${internalLinks.size} 件、ツール ${toolsOnTop.size} 件（${[...toolsOnTop].join(', ')}）`);
+for (const c of checkDates) console.log(`確認日 ${c.tool}  ${c.f}  ${c.date}（${c.kind}、${c.months} か月・期限 ${c.limit} か月）`);
 for (const n of notes) console.log(`メモ  ${n}`);
 if (failures.length) {
   for (const f of failures) console.log(`NG    ${f}`);
