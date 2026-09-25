@@ -64,7 +64,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
 5. ツールの**全ページの `<head>` に AdSense のタグを入れる**（審査とドメインの確認は済んでいるので、ツールごとの申請は不要）。
-   ただし、全画面で操作するツール本体（例: hoshizora-sanpo のプラネタリウム画面）は、自動広告が操作ボタンを隠さないよう `<meta name="google-adsense-account">` だけにして、広告は図鑑・使い方などの読みものページで出す。こどもが遊ぶ画面（todofuken-quiz の本体）も同じく meta だけにし、広告は保護者向けページだけに出す（決定 D18）。**高齢者・親向けのページ（otasuke の全ページ、gengo の回忌）も meta だけ**（yorozu-plans D118。要望文の最大の障壁が広告だったため）
+   ただし、全画面で操作するツール本体（例: hoshizora-sanpo のプラネタリウム画面）は、自動広告が操作ボタンを隠さないよう `<meta name="google-adsense-account">` だけにして、広告は図鑑・使い方などの読みものページで出す。こどもが遊ぶ画面（todofuken-quiz の本体）も同じく meta だけにし、広告は保護者向けページだけに出す（決定 D18）。**高齢者・親向けのページ（otasuke の全ページ、gengo の回忌、seido-keisan の年金の繰上げ・高額療養費、quiz-hiroba の昭和クイズ）も meta だけ**（yorozu-plans D118。要望文の最大の障壁が広告だったため）
 
    ```html
    <meta name="google-adsense-account" content="ca-pub-5375267956079717">

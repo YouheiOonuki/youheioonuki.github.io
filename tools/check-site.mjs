@@ -26,6 +26,9 @@ const META_ONLY_PAGES = new Set([
   '/quiz-hiroba/hyakunin/', // 百人一首の読み上げ画面（D131）
   '/quiz-hiroba/kimariji/',
   '/quiz-hiroba/shuto/',
+  '/quiz-hiroba/hayaoshi/', // 早押しボタン（D157: 広告は使い方ページだけ）
+  '/quiz-hiroba/showa/',   // 昭和クイズ・回想法カード（高齢者向け D118・D155: 使い方ページも広告なし）
+  '/quiz-hiroba/showa/guide.html',
   '/gakko-keisan/timer/',  // 子どもが使う画面（D138: 広告は使い方ページだけ）
   '/gakko-keisan/atonannichi/',
   '/web-metronome/piano/', // 全画面の鍵盤（弾く画面。広告は使い方ページだけ）
