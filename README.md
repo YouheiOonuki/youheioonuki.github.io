@@ -37,6 +37,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/otasuke/ | [otasuke](https://github.com/YouheiOonuki/otasuke)（広告なし: D118） |
 | https://yorozu-craft.com/tameshite/ | [tameshite](https://github.com/YouheiOonuki/tameshite)（老眼チェックは広告なし: D118） |
 | https://yorozu-craft.com/unplugged/ | [unplugged](https://github.com/YouheiOonuki/unplugged) |
+| https://yorozu-craft.com/henkan/ | [henkan](https://github.com/YouheiOonuki/henkan)（1 ファイル版 henkan.html あり） |
 | https://yorozu-craft.com/ADSearch/ | [ADSearch](https://github.com/YouheiOonuki/ADSearch)（PowerShell ライブラリ。紹介ページは `docs/` から公開） |
 
 ## ファイル
