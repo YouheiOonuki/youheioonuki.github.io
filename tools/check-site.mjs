@@ -31,6 +31,10 @@ const META_ONLY_PAGES = new Set([
   '/web-metronome/piano/', // 全画面の鍵盤（弾く画面。広告は使い方ページだけ）
   '/gakushu-print/kuku/',  // 子どもが遊ぶ画面（D140: 広告は使い方ページだけ）
   '/gakushu-print/romaji/',
+  '/seido-keisan/nenkin-kuriage/', // 高齢者向け（D118・D146: 広告なし）
+  '/seido-keisan/nenkin-kuriage/guide.html',
+  '/seido-keisan/kogaku-ryoyohi/',
+  '/seido-keisan/kogaku-ryoyohi/guide.html',
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 const META_ONLY_PREFIXES = ['/otasuke/'];
