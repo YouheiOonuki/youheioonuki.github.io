@@ -26,6 +26,7 @@ const META_ONLY_PAGES = new Set([
   '/quiz-hiroba/hyakunin/', // 百人一首の読み上げ画面（D131）
   '/quiz-hiroba/kimariji/',
   '/quiz-hiroba/shuto/',
+  '/quiz-hiroba/kokki/',   // 国旗クイズ（遊ぶ画面）
   '/quiz-hiroba/hayaoshi/', // 早押しボタン（D157: 広告は使い方ページだけ）
   '/quiz-hiroba/showa/',   // 昭和クイズ・回想法カード（高齢者向け D118・D155: 使い方ページも広告なし）
   '/quiz-hiroba/showa/guide.html',
