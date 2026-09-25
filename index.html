@@ -104,16 +104,7 @@
     .tool img { width: 48px; height: 48px; flex: none; }
     .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
     .tool p { font-size: 0.85rem; color: var(--muted); }
-    /* ページが複数あるツール: カードの下に各ページへの直接リンク */
-    .tool.has-sub { display: flex; flex-direction: column; gap: 0.5rem; }
-    .tool.has-sub > a { height: auto; flex: 1; }
-    .tool-sub { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
-    .tool-sub a { display: inline-block; padding: 0.35rem 0.8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); font-size: 0.85rem; text-decoration: none; }
-    .tool-sub a:hover, .tool-sub a:focus-visible { border-color: var(--accent); }
-    .tool-groups { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 0.75rem; align-items: start; }
-    .tool-groups dt { padding-top: 0.4rem; font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
-    .tool-groups dd { margin: 0; }
-    /* ツールはカテゴリごとの見出しにまとめる（くらし・お金／しごと・べんり／まなび・あそび） */
+    /* ツールはカテゴリごとの見出しにまとめる。載せるのはリポジトリ（家族）の入口だけで、子ページは各入口ページから（ROADMAP 7.9.2） */
     .cat-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
     .cat-nav a { padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); text-decoration: none; font-size: 0.9rem; }
     .cat-nav a:hover, .cat-nav a:focus-visible { background: var(--accent); color: var(--card); }
@@ -126,6 +117,25 @@
     .new-tools span { font-size: 0.85rem; color: var(--muted); }
     .cat h2 { margin-bottom: 0.2rem; }
     .cat-lead { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
+    /* スマホ: 2 列の小さなカード（1 行目にアイコンと名前、2 行目に説明）。タップ先は 44px 以上、文字は 14px 以上 */
+    @media (max-width: 599px) {
+      header { padding: 1rem 1rem 1.2rem; }
+      header h1 { font-size: 1.7rem; }
+      main { padding-top: 1rem; }
+      .cat-nav { gap: 0.4rem; }
+      .cat-nav a { min-height: 44px; display: inline-flex; align-items: center; padding: 0 0.8rem; }
+      .new-tools { margin-bottom: 1.4rem; }
+      .new-tools li { line-height: 1.5; }
+      .new-tools a { display: inline-block; padding: 0.65rem 0; }
+      .new-tools span, .cat-lead { font-size: 0.875rem; }
+      .cat + .cat { margin-top: 1.4rem; }
+      .tools { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .tool > a { display: grid; grid-template-columns: 28px 1fr; gap: 0.3rem 0.45rem; align-items: center; align-content: start; padding: 0.6rem; }
+      .tool > a > div { display: contents; }
+      .tool img { width: 28px; height: 28px; }
+      .tool h3 { font-size: 0.9rem; line-height: 1.35; margin: 0; }
+      .tool p { grid-column: 1 / -1; font-size: 0.875rem; line-height: 1.5; }
+    }
     .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
     .about p + p { margin-top: 0.4rem; }
     footer {
@@ -149,32 +159,36 @@
   <main>
     <nav class="cat-nav" aria-label="カテゴリ">
       <a href="#kurashi">くらし・お金</a>
-      <a href="#shigoto">しごと・べんり</a>
+      <a href="#atsumari">集まり・イベント</a>
+      <a href="#it">情シス・IT</a>
+      <a href="#henkan">変換・データ</a>
       <a href="#manabi">まなび・あそび</a>
       <a href="#oya">親・家族のために</a>
     </nav>
 
-    <!-- 新しいツール: 公開したら先頭に足し、4 件目を消す（GROWTH 6-2） -->
+    <!-- 新しいツール: 3 件。載せるのは公開後の再点検（iPhone・Android で 1 回ずつ操作、印刷物は 1 枚印刷）を済ませたものだけ（REVIEW C7 R11）。
+         2026-09-25 時点で正式な再点検を済ませたものはまだ無いため、オーナーが実機で確かめたもの（Fitbit・大時計・ピアノ・百人一首・早押し）のうち公開の新しい 3 件を載せる。
+         月 1 回入れ替える（ROADMAP 7.9.2） -->
     <section class="new-tools" aria-labelledby="new-heading">
       <h2 id="new-heading">新しいツール</h2>
       <ul>
-        <li><a href="./otasuke/honmono/">このメール・SMS は本物？</a> <span>— リンク先の持ち主を端末の中で読み解く、広告なし（2026-09-25）</span></li>
-        <li><a href="./unplugged/">アンプラグド・プログラミング</a> <span>— 毎回ちがう盤面と命令カード・答えを印刷（2026-09-25）</span></li>
-        <li><a href="./tameshite/">ためして（耳・反射・目）</a> <span>— 高い音・反射神経・動体視力・記憶力・老眼チェック（2026-09-25）</span></li>
+        <li><a href="./quiz-hiroba/hayaoshi/">早押しボタン</a> <span>— スマホ 1 台を 2〜4 人で囲んで早押しクイズ（2026-09-25）</span></li>
+        <li><a href="./quiz-hiroba/hyakunin/">百人一首 読み上げ</a> <span>— 100 首を端末の声で読み上げます（2026-09-25）</span></li>
+        <li><a href="./web-metronome/piano/">ブラウザピアノ</a> <span>— スマホを横にすると鍵盤、和音も鳴ります（2026-09-25）</span></li>
       </ul>
     </section>
 
     <section class="cat" id="kurashi" aria-labelledby="kurashi-heading">
       <h2 id="kurashi-heading">くらし・お金</h2>
-      <p class="cat-lead">家計や制度にかかわる計算。根拠と確認日つき。</p>
+      <p class="cat-lead">家計や制度の計算。根拠と確認日つき。</p>
+      <!-- 載せるのはリポジトリ（家族）の入口だけ。子ページは各入口ページから（ROADMAP 7.9.2） -->
       <ul class="tools">
-        <!-- ツールを増やすときは、合うカテゴリの <li> を複製してリンク先と説明を変える -->
         <li class="tool">
           <a href="./loan-sim/">
             <img src="./loan-sim/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>住宅ローン 返済シミュレーター</h3>
-              <p>変動金利の上昇と繰上返済（期間短縮・返済額軽減）を組み合わせて試算。5年ルール・125%ルールにも対応。</p>
+              <p>金利の上昇と繰上返済を組み合わせて試算します。</p>
             </div>
           </a>
         </li>
@@ -182,8 +196,8 @@
           <a href="./denki-dai/">
             <img src="./denki-dai/favicon.svg" alt="" width="48" height="48">
             <div>
-              <h3>家電の電気代・節約額シミュレーター</h3>
-              <p>家電を選ぶだけで月・年の電気代の目安。買い替えは何年で元が取れるか、使い方の見直しで年いくら浮くかも試算。</p>
+              <h3>家電の電気代・節約額</h3>
+              <p>買い替えで何年で元が取れるかを試算します。</p>
             </div>
           </a>
         </li>
@@ -192,160 +206,16 @@
             <img src="./shaho-check/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>社会保険 加入チェッカー</h3>
-              <p>パート・アルバイトの方が、社会保険の加入対象かを質問に答えるだけで確認。2026年10月の「106万円の壁」撤廃に対応。</p>
+              <p>パートの方が加入対象かを質問で確かめます。</p>
             </div>
           </a>
         </li>
-        <li class="tool has-sub">
+        <li class="tool">
           <a href="./seido-keisan/">
             <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>制度の計算機</h3>
-              <p>税・給付・教育の制度を、法令と公表資料で計算。途中の計算もすべて表示。</p>
-            </div>
-          </a>
-          <dl class="tool-groups">
-            <dt>税</dt>
-            <dd><ul class="tool-sub" aria-label="税の計算">
-              <li><a href="./seido-keisan/nenmatsu/">年末調整</a></li>
-              <li><a href="./seido-keisan/juminzei/">住民税</a></li>
-              <li><a href="./seido-keisan/iryohi/">医療費控除</a></li>
-              <li><a href="./seido-keisan/invoice/">2割特例後の消費税</a></li>
-            </ul></dd>
-            <dt>給付・年金</dt>
-            <dd><ul class="tool-sub" aria-label="給付・年金の計算">
-              <li><a href="./seido-keisan/ikukyu/">育休・産休の給付金</a></li>
-              <li><a href="./seido-keisan/dattai-ichiji/">脱退一時金</a></li>
-              <li><a href="./seido-keisan/shienkin/">子ども・子育て支援金</a></li>
-              <li><a href="./seido-keisan/nenkin-kuriage/">年金の繰上げ・繰下げ</a></li>
-              <li><a href="./seido-keisan/kogaku-ryoyohi/">高額療養費</a></li>
-            </ul></dd>
-            <dt>教育</dt>
-            <dd><ul class="tool-sub" aria-label="教育の計算">
-              <li><a href="./seido-keisan/koko-mushoka/">高校無償化</a></li>
-            </ul></dd>
-            <dt>一覧</dt>
-            <dd><ul class="tool-sub" aria-label="制度の一覧">
-              <li><a href="./seido-keisan/kaitei/">制度の改定カレンダー</a></li>
-            </ul></dd>
-          </dl>
-        </li>
-        <li class="tool">
-          <a href="./otasuke/honmono/">
-            <img src="./otasuke/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>このメール・SMS は本物？</h3>
-              <p>貼った文のリンク先の「持ち主」を端末の中で読み解く。似せた綴り・短縮 URL に気づく。送信しません・広告なし。</p>
-            </div>
-          </a>
-        </li>
-      </ul>
-    </section>
-
-    <section class="cat" id="shigoto" aria-labelledby="shigoto-heading">
-      <h2 id="shigoto-heading">しごと・べんり</h2>
-      <p class="cat-lead">集まりの準備や、ちょっとした作業をすばやく。</p>
-      <ul class="tools">
-        <li class="tool">
-          <a href="./nittei-kouho/">
-            <img src="./nittei-kouho/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>日程調整 候補日ジェネレーター</h3>
-              <p>期間と曜日を選ぶだけで、祝日を外した候補日と、フォーム・メール・LINEに貼る文面を作成。2段階調整にも対応。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./easy-split/">
-            <img src="./easy-split/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>傾斜割り勘・飲み会の清算</h3>
-              <p>上司・若手の係数、幹事0円、2次会の合算、100円単位の集金に対応。結果はそのままLINEで送れます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool has-sub">
-          <a href="./bingo/">
-            <img src="./bingo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>大人数ビンゴ抽選</h3>
-              <p>大画面・読み上げ・効果音で抽選。カードを最大 200 枚印刷し、カード番号で当たりを照合。会場の Wi-Fi が無くても動きます。</p>
-            </div>
-          </a>
-          <ul class="tool-sub" aria-label="大人数ビンゴ抽選のページ">
-            <li><a href="./bingo/">抽選する</a></li>
-            <li><a href="./bingo/cards.html">カードを作って印刷する</a></li>
-          </ul>
-        </li>
-        <li class="tool">
-          <a href="./sekigae/">
-            <img src="./sekigae/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>席替え・席順くじ</h3>
-              <p>教室の席替えと宴会の席決め。前回と同じ席・となりを避ける、固定席、前の席、隣にしない組。座席表を印刷。名前は番号だけでも。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./tabi-shiori/">
-            <img src="./tabi-shiori/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>旅のしおりメーカー</h3>
-              <p>登録不要・印刷無料。行程に移動時間、持ち物、宿、予算と立て替え精算まで。A4 と A5 冊子で印刷・PDF 保存。割り勘ツールとも連携。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./web-roulette/">
-            <img src="./web-roulette/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ルーレット・くじ引き</h3>
-              <p>候補を入れてスタートを押すだけ。複数選択・重み付け・シャッフルに対応。お題・サイコロも。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./web-roulette/amida/">
-            <img src="./web-roulette/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>あみだくじ</h3>
-              <p>偏らないあみだくじを作って、線をたどる・全員の結果・A4 印刷。共有リンクで同じくじ。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./md-viewer/">
-            <img src="./md-viewer/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Markdown＋Mermaid ビューア</h3>
-              <p>ダウンロードしてダブルクリックで使える、インストール不要・通信なしの Markdown ビューア。Mermaid の図、HTML 書き出し、Excel の表の貼り付けに対応。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./pac-tester/">
-            <img src="./pac-tester/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>PAC ファイル テスター</h3>
-              <p>PAC ファイルを URL 一覧で一括評価。構文チェック、ルールの隠れ検出、新旧の差分に対応。ダウンロードして使え、PAC の中身は外に出ません。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./ADSearch/">
-            <img src="./ADSearch/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ADSearch（PowerShell ライブラリ）</h3>
-              <p>RSAT なしで、一般のドメインユーザーのまま Active Directory・DNS・GPO・Exchange の情報を取得。Get-ADUser などと同じ書き方で、すべて読み取り専用。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./filetime/">
-            <img src="./filetime/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>FILETIME・LDAP タイムスタンプ変換</h3>
-              <p>AD の pwdLastSet・lastLogonTimestamp・accountExpires などの 18 桁の数字を日時に。Get-ADUser の出力をまとめて変換。</p>
+              <p>年末調整・住民税・育休の給付金などの計算。</p>
             </div>
           </a>
         </li>
@@ -354,29 +224,136 @@
             <img src="./gengo/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>元号・西暦・年齢の変換</h3>
-              <p>昭和・平成・令和と西暦の変換、満年齢・学年・早生まれ。年齢早見表・学年早見表を印刷、履歴書の学歴の年月。</p>
+              <p>和暦と西暦、年齢・学年・厄年・回忌の早見表。</p>
             </div>
           </a>
         </li>
-        <li class="tool has-sub">
+      </ul>
+    </section>
+
+    <section class="cat" id="atsumari" aria-labelledby="atsumari-heading">
+      <h2 id="atsumari-heading">集まり・イベント</h2>
+      <p class="cat-lead">集まりの準備と当日の進行に。</p>
+      <ul class="tools">
+        <li class="tool">
+          <a href="./nittei-kouho/">
+            <img src="./nittei-kouho/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>日程調整 候補日</h3>
+              <p>祝日を外した候補日と、送る文面を作ります。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./easy-split/">
+            <img src="./easy-split/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>傾斜割り勘・清算</h3>
+              <p>係数つきの割り勘を LINE で送れる形にします。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./bingo/">
+            <img src="./bingo/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>大人数ビンゴ抽選</h3>
+              <p>大画面の抽選と、カード 200 枚までの印刷。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./sekigae/">
+            <img src="./sekigae/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>席替え・席順くじ</h3>
+              <p>前回と同じ席を避けて決め、座席表を印刷します。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./tabi-shiori/">
+            <img src="./tabi-shiori/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>旅のしおりメーカー</h3>
+              <p>行程・持ち物・予算をまとめて A4・A5 で印刷。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./web-roulette/">
+            <img src="./web-roulette/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>ルーレット・くじ引き</h3>
+              <p>ルーレットに、あみだくじ・お題・サイコロも。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
           <a href="./toban/">
             <img src="./toban/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>当番表・グループ分け</h3>
-              <p>担当できない日と祝日を外して公平に回す当番表。男女・別の班などの条件つきのグループ分け。A4 で印刷。</p>
+              <p>条件つきで公平に回す当番表と班分け。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="当番表・グループ分けのページ">
-            <li><a href="./toban/">当番表</a></li>
-            <li><a href="./toban/group/">グループ分け</a></li>
-          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section class="cat" id="it" aria-labelledby="it-heading">
+      <h2 id="it-heading">情シス・IT</h2>
+      <p class="cat-lead">Windows と Active Directory の仕事に。</p>
+      <ul class="tools">
+        <li class="tool">
+          <a href="./pac-tester/">
+            <img src="./pac-tester/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>PAC ファイル テスター</h3>
+              <p>PAC を URL 一覧で一括評価し、新旧を比べます。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./ADSearch/">
+            <img src="./ADSearch/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>ADSearch（PowerShell）</h3>
+              <p>RSAT なしで AD・DNS・GPO を読み取ります。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./filetime/">
+            <img src="./filetime/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>FILETIME・LDAP 時刻の変換</h3>
+              <p>pwdLastSet などの 18 桁の数字を日時にします。</p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="cat" id="henkan" aria-labelledby="henkan-heading">
+      <h2 id="henkan-heading">変換・データ</h2>
+      <p class="cat-lead">ファイルを端末の中だけで変換します。</p>
+      <ul class="tools">
+        <li class="tool">
+          <a href="./md-viewer/">
+            <img src="./md-viewer/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>Markdown＋Mermaid ビューア</h3>
+              <p>ダウンロードして通信なしで読めるビューア。</p>
+            </div>
+          </a>
         </li>
         <li class="tool">
           <a href="./fitbit-export/">
             <img src="./fitbit-export/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>Fitbit データ CSV 変換</h3>
-              <p>Google Health（旧 Fitbit）の書き出し zip を、日ごとの表（CSV）と Markdown に。ファイルは端末の外に出ません。</p>
+              <p>書き出しの zip を日ごとの CSV にします。</p>
             </div>
           </a>
         </li>
@@ -392,42 +369,34 @@
             <img src="./furigana/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>ふりがなメーカー</h3>
-              <p>貼った文に、学年に合わせてふりがなを自動で振ります。自信のない読みには印、タップで直せます。A4 で印刷・Word 用にコピー。文は外に送りません。</p>
+              <p>学年に合わせてふりがなを振り、印刷します。</p>
             </div>
           </a>
         </li>
-        <li class="tool has-sub">
+        <li class="tool">
           <a href="./gakushu-print/">
             <img src="./gakushu-print/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>学習プリントメーカー</h3>
-              <p>たし算・ひき算（くり上がり）、九九、百ます、時計、ひらがな・カタカナ、学年別の漢字、ローマ字、迷路。名前入り・答えつき、毎回ちがう問題を印刷。</p>
+              <p>計算・九九・漢字・ローマ字などを毎回ちがう問題で。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="学習プリントメーカーのゲーム">
-            <li><a href="./gakushu-print/kuku/">九九ゲーム</a></li>
-            <li><a href="./gakushu-print/romaji/">ローマ字タイピング</a></li>
-            <li><a href="./gakushu-print/booklet/">おでかけ冊子</a></li>
-          </ul>
         </li>
-        <li class="tool has-sub">
+        <li class="tool">
           <a href="./hoshizora-sanpo/">
             <img src="./hoshizora-sanpo/favicon.svg" alt="" width="48" height="48">
             <div>
-              <h3>ほしぞらさんぽ（Webプラネタリウム）</h3>
-              <p>今夜の星空と月・惑星を天文計算で再現。星座をタップすると神話が読めます。ひらがなモードでこどもといっしょに。</p>
+              <h3>ほしぞらさんぽ</h3>
+              <p>今夜の星空と星座の神話、星座早見盤づくり。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="ほしぞらさんぽのページ">
-            <li><a href="./hoshizora-sanpo/hayamiban/">星座早見盤を作る</a></li>
-          </ul>
         </li>
         <li class="tool">
           <a href="./todofuken-quiz/">
             <img src="./todofuken-quiz/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>こども都道府県クイズ</h3>
-              <p>日本地図をタッチして47都道府県をおぼえよう。ひらがな・ふりがな・漢字と読み上げ。県庁所在地や名物・名所のクイズも。</p>
+              <p>日本地図をタッチして 47 都道府県をおぼえます。</p>
             </div>
           </a>
         </li>
@@ -435,80 +404,46 @@
           <a href="./web-metronome/">
             <img src="./web-metronome/favicon.svg" alt="" width="48" height="48">
             <div>
-              <h3>メトロノーム</h3>
-              <p>BPM を決めて再生を押すだけ。変則拍子・アクセント・裏拍に対応し、オフラインでも使えます。</p>
+              <h3>メトロノーム・ピアノ</h3>
+              <p>変則拍子のメトロノームと、ブラウザのピアノ。</p>
             </div>
           </a>
         </li>
         <li class="tool">
-          <a href="./web-metronome/piano/">
-            <img src="./web-metronome/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ブラウザピアノ</h3>
-              <p>スマホを横にすると画面いっぱいの鍵盤。指で和音、パソコンのキーボードでも弾けます。オフライン可。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool has-sub">
           <a href="./quiz-hiroba/">
             <img src="./quiz-hiroba/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>クイズ広場</h3>
-              <p>元素記号・歴史年号・世界の首都・百人一首の決まり字を 4 択や入力で。百人一首の読み上げも。苦手だけ出し直し、ちょうせんリンク、問題と答えを印刷。</p>
+              <p>元素記号・年号・首都・百人一首と早押しボタン。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="クイズ広場のページ">
-            <li><a href="./quiz-hiroba/genso/">元素記号</a></li>
-            <li><a href="./quiz-hiroba/nengo/">歴史年号</a></li>
-            <li><a href="./quiz-hiroba/shuto/">世界の首都</a></li>
-            <li><a href="./quiz-hiroba/hyakunin/">百人一首 読み上げ</a></li>
-            <li><a href="./quiz-hiroba/kimariji/">決まり字</a></li>
-            <li><a href="./quiz-hiroba/hayaoshi/">早押しボタン</a></li>
-          </ul>
         </li>
-        <li class="tool has-sub">
+        <li class="tool">
           <a href="./gakko-keisan/">
             <img src="./gakko-keisan/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>学校の計算機</h3>
-              <p>内申点（都府県の令和9年度の要綱）・偏差値・出席日数の計算と、宿題タイマー・あと何日。</p>
+              <p>内申点・偏差値・出席日数と宿題タイマー。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="学校の計算機のページ">
-            <li><a href="./gakko-keisan/naishin/">内申点</a></li>
-            <li><a href="./gakko-keisan/hensachi/">偏差値</a></li>
-            <li><a href="./gakko-keisan/shusseki/">出席日数</a></li>
-            <li><a href="./gakko-keisan/timer/">宿題タイマー</a></li>
-            <li><a href="./gakko-keisan/atonannichi/">あと何日</a></li>
-          </ul>
         </li>
-        <li class="tool has-sub">
+        <li class="tool">
           <a href="./unplugged/">
             <img src="./unplugged/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>アンプラグド・プログラミング</h3>
-              <p>ロボットの盤面・命令カード・答えを A4 で印刷。くりかえし・もしも。ブラウザで動かして確かめる。</p>
+              <p>ロボットの盤面と命令カードを印刷します。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="アンプラグド・プログラミングのページ">
-            <li><a href="./unplugged/try.html">ロボットを動かす</a></li>
-            <li><a href="./unplugged/jugyou.html">授業の流れ</a></li>
-          </ul>
         </li>
-        <li class="tool has-sub">
+        <li class="tool">
           <a href="./tameshite/">
             <img src="./tameshite/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>ためして（耳・反射・目）</h3>
-              <p>高い音の聞こえ・反射神経・動体視力・記憶力を試す。医療の検査ではない遊びの目安。</p>
+              <p>高い音・反射神経・動体視力・記憶力の目安。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="ためしてのページ">
-            <li><a href="./tameshite/mimi/">高い音</a></li>
-            <li><a href="./tameshite/hansha/">反射神経</a></li>
-            <li><a href="./tameshite/doutai/">動体視力</a></li>
-            <li><a href="./tameshite/kioku/">記憶力</a></li>
-          </ul>
         </li>
       </ul>
     </section>
@@ -516,27 +451,52 @@
     <section class="cat" id="oya" aria-labelledby="oya-heading">
       <h2 id="oya-heading">親・家族のために（広告なし）</h2>
       <p class="cat-lead">親に印刷してあげる・置いてあげる道具。どのページも広告を出しません。</p>
+      <!-- 入口は otasuke だけ。ほかの 4 行は別のリポジトリにある広告なしのページ（ROADMAP 7.9.2） -->
       <ul class="tools">
-        <li class="tool has-sub">
+        <li class="tool">
           <a href="./otasuke/">
             <img src="./otasuke/favicon.svg" alt="" width="48" height="48">
             <div>
               <h3>くらしのおたすけ</h3>
-              <p>写経用紙、冷蔵庫に貼る紙（救急情報・服薬・血圧）、紙のアカウント台帳、日めくり大時計、スマホ手順カード、大きな字の脳トレプリント。</p>
+              <p>写経用紙・冷蔵庫に貼る紙・大時計・本物チェックなど。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="くらしのおたすけのページ">
-            <li><a href="./otasuke/shakyo/">写経用紙</a></li>
-            <li><a href="./otasuke/reizoko/">冷蔵庫に貼る紙</a></li>
-            <li><a href="./otasuke/daicho/">アカウント台帳</a></li>
-            <li><a href="./otasuke/tokei/">日めくり大時計</a></li>
-            <li><a href="./otasuke/tejun/">スマホ手順カード</a></li>
-            <li><a href="./otasuke/notore/">脳トレプリント</a></li>
-            <li><a href="./quiz-hiroba/showa/">昭和クイズ・回想法カード</a></li>
-            <li><a href="./tameshite/roogan/">老眼チェック</a></li>
-            <li><a href="./otasuke/honmono/">このメール・SMS は本物？</a></li>
-            <li><a href="./otasuke/kigo/">季語カレンダー</a></li>
-          </ul>
+        </li>
+        <li class="tool">
+          <a href="./quiz-hiroba/showa/">
+            <img src="./quiz-hiroba/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>昭和クイズ・回想法カード</h3>
+              <p>高齢者向けの 3 択クイズと、折って使う回想法カード。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./tameshite/roogan/">
+            <img src="./tameshite/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>老眼チェック</h3>
+              <p>画面の実寸を合わせてから、見え方を確かめます。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./seido-keisan/nenkin-kuriage/">
+            <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>年金の繰上げ・繰下げ</h3>
+              <p>60〜75 歳のどこで受け取るかで年金額を比べます。</p>
+            </div>
+          </a>
+        </li>
+        <li class="tool">
+          <a href="./seido-keisan/kogaku-ryoyohi/">
+            <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
+            <div>
+              <h3>高額療養費</h3>
+              <p>医療費の自己負担の上限と、戻る額を計算します。</p>
+            </div>
+          </a>
         </li>
       </ul>
     </section>
