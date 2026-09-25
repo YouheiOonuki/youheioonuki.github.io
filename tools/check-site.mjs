@@ -143,6 +143,26 @@ if (pages.has(BASE + 'en/')) {
   for (const t of toolsOnEn) if (!toolsWithEn.has(t)) fail('/en/', `英語のトップにある ${t} の英語ページ（/${t}/en/）が ${t} の sitemap に無い`);
 } else if (toolsWithEn.size) notes.push(`英語のトップ /en/ がルートの sitemap.xml に無いため、英語ページの一覧の確認を省略（英語ページのあるツール: ${[...toolsWithEn].join(', ')}）`);
 
+// ブラウザに保存するページか（インラインと同じオリジンの <script src> に localStorage・indexedDB がある。コメントの中の語は数えない）
+// 消すボタンの部品 reset-storage.js 自身は数えない
+async function usesStorage(html, url) {
+  let code = '';
+  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    const src = (m[1].match(/\ssrc=["']([^"']+)["']/) || [])[1];
+    if (!src) { code += m[2] + '\n'; continue; }
+    let u;
+    try { u = new URL(toBase(src.replace(/&amp;/g, '&')), url); } catch { continue; }
+    if (u.origin !== ORIGIN || /reset-storage\.js$/.test(u.pathname)) continue;
+    u.hash = ''; u.search = '';
+    const r = await get(u.href);
+    if (r.status === 200) code += r.body + '\n';
+  }
+  code = code.replace(/(^|[^:\\'"])\/\/.*$/gm, '$1').replace(/\/\*[\s\S]*?\*\//g, '');   // 行のコメントが先（「topics/*.js」を /* と読まないように）
+  return /\blocalStorage\b|\bindexedDB\b/.test(code);
+}
+const attr = (tag, name) => ((tag.match(new RegExp(`\\s${name}="([^"]*)"`)) || [])[1] || '').split(/[\s,]+/).filter(Boolean);
+const resetButtons = []; // { p, prefixes, legacy }（ツールの画面の「保存した内容をすべて消す」）
+
 // 3. 各ページの中身
 const internalLinks = new Map(); // リンク先 → 出現元
 const scriptSrcs = new Map();    // 同じオリジンのスクリプト → 最初に見つけたページ
@@ -151,6 +171,14 @@ await pool([...pages], 6, async (url) => {
   const r = await get(url);
   if (r.status !== 200) { fail(p, `status ${r.status}`); return; }
   const html = r.body;
+  // ブラウザに保存するページには「保存した内容をすべて消す（初期状態に戻す）」ボタンがある（README「ツールを追加するとき」27。yorozu-plans K123）
+  // ボタンは <button data-reset-storage="<接頭辞>"> と reset-storage.js。noindex のページも対象
+  const resetTag = (html.match(/<button\b[^>]*\sdata-reset-storage="[^"]*"[^>]*>/) || [])[0];
+  if (await usesStorage(html, url)) {
+    if (!resetTag) fail(p, 'ブラウザに保存する（localStorage を使う）のに、「保存した内容をすべて消す」ボタン（data-reset-storage）が無い');
+    else if (!/reset-storage\.js["'?#]/.test(html)) fail(p, '「保存した内容をすべて消す」ボタンはあるが reset-storage.js を読み込んでいない');
+  }
+  if (resetTag && !COMMON_JA.concat(COMMON_EN).includes(p)) resetButtons.push({ p, prefixes: attr(resetTag, 'data-reset-storage'), legacy: attr(resetTag, 'data-reset-legacy') });
   // 同じオリジンの <script src> を集める（あとで確認日を読む。noindex のページも対象）
   for (const m of html.matchAll(/<script\b[^>]*\ssrc=["']([^"']+)["']/g)) {
     let u;
@@ -263,6 +291,32 @@ await pool([...toolsOnTop], 4, async (t) => {
     else if (names.some(n => n !== `${t}-` && /-$/.test(n) && !n.startsWith(t))) notes.push(`/${t}/sw.js: ほかの接頭辞らしき文字列がある（${[...new Set(names)].join(', ')}）`);
   }
 });
+
+// 5b. プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」が、各ツールの消すボタンのキーをすべて含むか（K123）
+// 全ツールが同じオリジンなので、接頭辞の一覧で全部消す。ツールを足して接頭辞が増えたら、ここで気づく
+{
+  const lists = [];
+  for (const c of ['/privacy-policy.html', '/en/privacy-policy.html']) {
+    const r = await get(BASE + c.slice(1));
+    if (r.status !== 200) continue;
+    const tag = (r.body.match(/<button\b[^>]*\sdata-reset-storage="[^"]*"[^>]*>/) || [])[0];
+    if (!tag) { fail(c, '3 章に「このサイトのすべてのツールの保存内容を消す」ボタン（data-reset-storage）が無い'); continue; }
+    if (!/reset-storage\.js["'?#]/.test(r.body)) fail(c, 'reset-storage.js を読み込んでいない');
+    lists.push({ c, prefixes: attr(tag, 'data-reset-storage'), legacy: attr(tag, 'data-reset-legacy') });
+  }
+  if (lists.length === 2 && (lists[0].prefixes.join(' ') !== lists[1].prefixes.join(' ') || lists[0].legacy.join(' ') !== lists[1].legacy.join(' '))) {
+    fail('/en/privacy-policy.html', '「すべてのツールの保存内容を消す」の接頭辞・旧キーが日本語版と違う');
+  }
+  const all = lists[0];
+  if (all) {
+    const covered = k => all.prefixes.some(x => k.startsWith(x)) || all.legacy.includes(k);
+    for (const b of resetButtons) {
+      for (const k of [...b.prefixes, ...b.legacy]) if (!covered(k)) fail(all.c, `${b.p} の消すボタンのキー ${k} が「すべてのツールの保存内容を消す」の一覧に無い`);
+    }
+    for (const t of toolsOnTop) if (!all.prefixes.includes(`${t}_`)) fail(all.c, `「すべてのツールの保存内容を消す」の一覧にツール ${t} の接頭辞 ${t}_ が無い`);
+    notes.push(`「保存した内容をすべて消す」ボタン: ${resetButtons.length} ページ（プライバシーポリシーの一括消去: 接頭辞 ${all.prefixes.length}・旧キー ${all.legacy.length}）`);
+  }
+}
 
 // 6. 法令・公式の値の確認日（README「共通の確認テスト」の「確認日の期限」）
 // 値を持つツールは constants.js や lib/*-values.js に確認日を持ち、画面は確認日から STALE_MONTHS（既定 12）か月たつと
