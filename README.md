@@ -150,6 +150,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
     - **CI（`.github/workflows/test.yml`）が通るまでマージしない**。PR の CI の結果を確かめてからマージする
     - **辞書などの大きなデータは、画面のキャッシュと分けて持つ**。`sw.js` の画面のキャッシュ名（`<リポジトリ名>-vN`）を上げても大きなデータは消さない（例: furigana の `furigana-dict-lindera-2.0.0`）。取り込む側（Worker など）と `sw.js` で同じ名前にし、テストで一致を確かめる
     - GitHub Actions は `actions/checkout@v5`・`actions/setup-node@v5` を使う（v4 は Node 20 向けで非推奨。`ubuntu-latest` は 2026-10-19 から Ubuntu 26）
+    - **コミットの作者のメールは GitHub の noreply（`136089805+YouheiOonuki@users.noreply.github.com`）**。実メールは公開リポジトリに残るので使わない（yorozu-plans REVIEW C7 R1。2026-09-25 に作業環境の git identity を修正）。GitHub の「Block command line pushes that expose my email」を有効にしておくと、誤った設定の push は止まる
 27. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
 
 ## AdSense
