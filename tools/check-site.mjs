@@ -25,6 +25,7 @@ const META_ONLY_PAGES = new Set([
   '/quiz-hiroba/nengo/',
   '/gakko-keisan/timer/',  // 子どもが使う画面（D138: 広告は使い方ページだけ）
   '/gakko-keisan/atonannichi/',
+  '/web-metronome/piano/', // 全画面の鍵盤（弾く画面。広告は使い方ページだけ）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 const META_ONLY_PREFIXES = ['/otasuke/'];
