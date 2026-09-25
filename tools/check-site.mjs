@@ -20,6 +20,11 @@ const META_ONLY_PAGES = new Set([
   '/hoshizora-sanpo/en/',  // プラネタリウムの全画面の本体（英語版）
   '/gengo/kaiki/',         // 回忌の計算（遺族が使う。広告なし: D118・D119）
   '/gengo/kaiki/guide.html',
+  '/quiz-hiroba/',         // クイズ広場の入口と遊ぶ画面（D122: 広告は使い方ページだけ）
+  '/quiz-hiroba/genso/',
+  '/quiz-hiroba/nengo/',
+  '/gakko-keisan/timer/',  // 子どもが使う画面（D138: 広告は使い方ページだけ）
+  '/gakko-keisan/atonannichi/',
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 const META_ONLY_PREFIXES = ['/otasuke/'];
