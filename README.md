@@ -30,6 +30,11 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/md-viewer/ | [md-viewer](https://github.com/YouheiOonuki/md-viewer) |
 | https://yorozu-craft.com/pac-tester/ | [pac-tester](https://github.com/YouheiOonuki/pac-tester) |
 | https://yorozu-craft.com/seido-keisan/ | [seido-keisan](https://github.com/YouheiOonuki/seido-keisan)（制度の計算機。`/nenmatsu/` 年末調整、`/juminzei/` 住民税、`/ikukyu/` 育休・産休、`/iryohi/` 医療費控除。今後ページを足す） |
+| https://yorozu-craft.com/toban/ | [toban](https://github.com/YouheiOonuki/toban)（日英。英語はグループ分け） |
+| https://yorozu-craft.com/gakko-keisan/ | [gakko-keisan](https://github.com/YouheiOonuki/gakko-keisan) |
+| https://yorozu-craft.com/quiz-hiroba/ | [quiz-hiroba](https://github.com/YouheiOonuki/quiz-hiroba) |
+| https://yorozu-craft.com/fitbit-export/ | [fitbit-export](https://github.com/YouheiOonuki/fitbit-export) |
+| https://yorozu-craft.com/otasuke/ | [otasuke](https://github.com/YouheiOonuki/otasuke)（広告なし: D118） |
 | https://yorozu-craft.com/ADSearch/ | [ADSearch](https://github.com/YouheiOonuki/ADSearch)（PowerShell ライブラリ。紹介ページは `docs/` から公開） |
 
 ## ファイル

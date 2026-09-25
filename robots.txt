@@ -23,3 +23,8 @@ Sitemap: https://yorozu-craft.com/sekigae/sitemap.xml
 Sitemap: https://yorozu-craft.com/filetime/sitemap.xml
 Sitemap: https://yorozu-craft.com/gengo/sitemap.xml
 Sitemap: https://yorozu-craft.com/furigana/sitemap.xml
+Sitemap: https://yorozu-craft.com/toban/sitemap.xml
+Sitemap: https://yorozu-craft.com/gakko-keisan/sitemap.xml
+Sitemap: https://yorozu-craft.com/quiz-hiroba/sitemap.xml
+Sitemap: https://yorozu-craft.com/fitbit-export/sitemap.xml
+Sitemap: https://yorozu-craft.com/otasuke/sitemap.xml
