@@ -29,6 +29,13 @@ const META_ONLY_PAGES = new Set([
   '/quiz-hiroba/hayaoshi/', // 早押しボタン（D157: 広告は使い方ページだけ）
   '/quiz-hiroba/showa/',   // 昭和クイズ・回想法カード（高齢者向け D118・D155: 使い方ページも広告なし）
   '/quiz-hiroba/showa/guide.html',
+  '/tameshite/mimi/',       // ためして: 測る画面（D158: 広告は使い方ページと一覧だけ）
+  '/tameshite/hansha/',
+  '/tameshite/doutai/',
+  '/tameshite/kioku/',
+  '/tameshite/roogan/',     // 老眼チェック（高齢者向け D118・D159: 使い方ページも広告なし）
+  '/tameshite/roogan/guide.html',
+  '/unplugged/try.html',    // 子どもがロボットを動かす画面（D164）
   '/gakko-keisan/timer/',  // 子どもが使う画面（D138: 広告は使い方ページだけ）
   '/gakko-keisan/atonannichi/',
   '/web-metronome/piano/', // 全画面の鍵盤（弾く画面。広告は使い方ページだけ）

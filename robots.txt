@@ -28,3 +28,5 @@ Sitemap: https://yorozu-craft.com/gakko-keisan/sitemap.xml
 Sitemap: https://yorozu-craft.com/quiz-hiroba/sitemap.xml
 Sitemap: https://yorozu-craft.com/fitbit-export/sitemap.xml
 Sitemap: https://yorozu-craft.com/otasuke/sitemap.xml
+Sitemap: https://yorozu-craft.com/tameshite/sitemap.xml
+Sitemap: https://yorozu-craft.com/unplugged/sitemap.xml
