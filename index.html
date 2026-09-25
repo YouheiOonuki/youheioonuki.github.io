@@ -110,6 +110,9 @@
     .tool-sub { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
     .tool-sub a { display: inline-block; padding: 0.35rem 0.8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); font-size: 0.85rem; text-decoration: none; }
     .tool-sub a:hover, .tool-sub a:focus-visible { border-color: var(--accent); }
+    .tool-groups { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 0.75rem; align-items: start; }
+    .tool-groups dt { padding-top: 0.4rem; font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    .tool-groups dd { margin: 0; }
     /* ツールはカテゴリごとの見出しにまとめる（くらし・お金／しごと・べんり／まなび・あそび） */
     .cat-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
     .cat-nav a { padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); text-decoration: none; font-size: 0.9rem; }
@@ -196,18 +199,28 @@
           <a href="./seido-keisan/">
             <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
             <div>
-              <h3>制度の計算機（年末調整・住民税・育休・医療費控除・消費税・高校無償化）</h3>
-              <p>年末調整でいくら戻るか、住民税はいくらか・非課税か、育休・産休でいくら受け取れるか、医療費控除でいくら戻るか、2割特例の後の消費税、高校無償化の自己負担を、法令と公表資料で計算。途中の計算もすべて表示。</p>
+              <h3>制度の計算機</h3>
+              <p>税・給付・教育の制度を、法令と公表資料で計算。途中の計算もすべて表示。</p>
             </div>
           </a>
-          <ul class="tool-sub" aria-label="制度の計算機のページ">
-            <li><a href="./seido-keisan/nenmatsu/">年末調整（令和8年分）</a></li>
-            <li><a href="./seido-keisan/juminzei/">住民税（令和9年度）</a></li>
-            <li><a href="./seido-keisan/ikukyu/">育休・産休の給付金</a></li>
-            <li><a href="./seido-keisan/iryohi/">医療費控除（令和8年分）</a></li>
-            <li><a href="./seido-keisan/invoice/">2割特例の終了後の消費税</a></li>
-            <li><a href="./seido-keisan/koko-mushoka/">高校無償化（2026年度）</a></li>
-          </ul>
+          <dl class="tool-groups">
+            <dt>税</dt>
+            <dd><ul class="tool-sub" aria-label="税の計算">
+              <li><a href="./seido-keisan/nenmatsu/">年末調整</a></li>
+              <li><a href="./seido-keisan/juminzei/">住民税</a></li>
+              <li><a href="./seido-keisan/iryohi/">医療費控除</a></li>
+              <li><a href="./seido-keisan/invoice/">2割特例後の消費税</a></li>
+            </ul></dd>
+            <dt>給付・年金</dt>
+            <dd><ul class="tool-sub" aria-label="給付・年金の計算">
+              <li><a href="./seido-keisan/ikukyu/">育休・産休の給付金</a></li>
+              <li><a href="./seido-keisan/dattai-ichiji/">脱退一時金</a></li>
+            </ul></dd>
+            <dt>教育</dt>
+            <dd><ul class="tool-sub" aria-label="教育の計算">
+              <li><a href="./seido-keisan/koko-mushoka/">高校無償化</a></li>
+            </ul></dd>
+          </dl>
         </li>
       </ul>
     </section>
