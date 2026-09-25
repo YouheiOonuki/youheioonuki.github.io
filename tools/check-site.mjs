@@ -18,7 +18,12 @@ const META_ONLY_PAGES = new Set([
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
   '/bingo/en/',            // 同上の英語版
   '/hoshizora-sanpo/en/',  // プラネタリウムの全画面の本体（英語版）
+  '/gengo/kaiki/',         // 回忌の計算（遺族が使う。広告なし: D118・D119）
+  '/gengo/kaiki/guide.html',
 ]);
+// 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
+const META_ONLY_PREFIXES = ['/otasuke/'];
+const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
 // 共通ページへの直リンクを持たなくてよいページ（全画面の本体。運営者情報へは「このアプリについて」から 1 ホップ）
 const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/', '/hoshizora-sanpo/en/']);
 
@@ -135,7 +140,7 @@ await pool([...pages], 6, async (url) => {
   const meta = count(html, new RegExp(`name="google-adsense-account"\\s+content="${ADSENSE_ID}"`, 'g'));
   const script = count(html, new RegExp(`adsbygoogle\\.js\\?client=${ADSENSE_ID}`, 'g'));
   if (meta !== 1) fail(p, `AdSense の meta が ${meta} 個（1 個のはず）`);
-  if (META_ONLY_PAGES.has(p)) { if (script !== 0) fail(p, '全画面の本体に広告スクリプトがある'); }
+  if (isMetaOnly(p)) { if (script !== 0) fail(p, '広告なしのページ（全画面の本体・高齢者向け）に広告スクリプトがある'); }
   else if (script !== 1) fail(p, `AdSense のスクリプトが ${script} 個（1 個のはず）`);
   if (/class="adsbygoogle"|広告スペース|ad-placeholder/.test(html)) fail(p, '手動の広告枠・空の広告枠がある');
 
