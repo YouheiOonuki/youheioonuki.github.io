@@ -46,6 +46,7 @@ const META_ONLY_PAGES = new Set([
   '/seido-keisan/nenkin-kuriage/guide.html',
   '/seido-keisan/kogaku-ryoyohi/',
   '/seido-keisan/kogaku-ryoyohi/guide.html',
+  '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 const META_ONLY_PREFIXES = ['/otasuke/'];
@@ -57,6 +58,7 @@ const ELDERLY_PAGES = new Set([
   '/tameshite/roogan/', '/tameshite/roogan/guide.html',
   '/seido-keisan/nenkin-kuriage/', '/seido-keisan/nenkin-kuriage/guide.html',
   '/seido-keisan/kogaku-ryoyohi/', '/seido-keisan/kogaku-ryoyohi/guide.html',
+  '/for/kaigo/',
 ]);
 const ELDERLY_PREFIXES = ['/otasuke/'];
 const isElderly = (p) => ELDERLY_PAGES.has(p) || ELDERLY_PREFIXES.some((x) => p.startsWith(x));
