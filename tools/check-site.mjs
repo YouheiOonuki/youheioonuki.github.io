@@ -50,6 +50,33 @@ const META_ONLY_PAGES = new Set([
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 const META_ONLY_PREFIXES = ['/otasuke/'];
 const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
+// 高齢者向け（D118）の広告なしページ。先頭に「広告なし」の定型文が要る（下の R12 の突き合わせ）
+const ELDERLY_PAGES = new Set([
+  '/gengo/kaiki/', '/gengo/kaiki/guide.html',
+  '/quiz-hiroba/showa/', '/quiz-hiroba/showa/guide.html',
+  '/tameshite/roogan/', '/tameshite/roogan/guide.html',
+  '/seido-keisan/nenkin-kuriage/', '/seido-keisan/nenkin-kuriage/guide.html',
+  '/seido-keisan/kogaku-ryoyohi/', '/seido-keisan/kogaku-ryoyohi/guide.html',
+]);
+const ELDERLY_PREFIXES = ['/otasuke/'];
+const isElderly = (p) => ELDERLY_PAGES.has(p) || ELDERLY_PREFIXES.some((x) => p.startsWith(x));
+// 定型文（yorozu-plans WRITING 2 章）
+const AD_FREE_SENTENCE = 'このページは広告なし・登録なし・入力は端末の外に出ません。';
+const BODY_TEST_SENTENCE = 'これは遊びの目安で、医療の検査ではありません。気になるときは眼科・耳鼻科へ。';
+// 医療・効能の NG 語（REVIEW C7 R4）。対象は体を測る道具・脳トレ・回想法のページ
+const MEDICAL_NG = /診断|改善|予防|効果|治る|若返/g;
+const MEDICAL_PREFIXES = ['/tameshite/', '/otasuke/notore/', '/quiz-hiroba/showa/'];
+// NG 語を含んでよい文（打ち消しの注意だけ。ページと文の組で、文は画面の文字そのまま）
+const MEDICAL_ALLOWED = {
+  '/tameshite/kioku/guide.html': ['効果を示す資料を確かめていないので、書いていません。'],
+  '/otasuke/notore/guide.html': ['脳トレプリントで認知症は予防できますか？', 'このプリントは楽しむための問題で、病気の予防や改善を確かめたものではありません。'],
+  '/quiz-hiroba/showa/guide.html': ['医療やリハビリの効果をうたうものではありません。'],
+};
+// 子どもが遊ぶ画面（META_ONLY_PAGES の使い方ページ以外）に置かない外部リンク（README「ツールを追加するとき」・REVIEW C7 R7）
+const CHILD_NG_LINK = /^https?:\/\/(?:[\w-]+\.)*(?:github\.com|x\.com|twitter\.com|note\.com)(?:[/:?#]|$)/i;
+// 画面に見える文字（script・style・コメント・タグを除いた <body>）
+const visibleText = html => html.replace(/^[\s\S]*?<body\b[^>]*>/i, '').replace(/<script\b[\s\S]*?<\/script>/gi, '').replace(/<style\b[\s\S]*?<\/style>/gi, '')
+  .replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ');
 // 共通ページへの直リンクを持たなくてよいページ（全画面の本体。運営者情報へは「このアプリについて」から 1 ホップ）
 const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/', '/hoshizora-sanpo/en/']);
 
@@ -198,6 +225,30 @@ await pool([...pages], 6, async (url) => {
   else if (script !== 1) fail(p, `AdSense のスクリプトが ${script} 個（1 個のはず）`);
   if (/class="adsbygoogle"|広告スペース|ad-placeholder/.test(html)) fail(p, '手動の広告枠・空の広告枠がある');
 
+  // 「広告なし」の定型文 ⇔ 広告なしのページ（REVIEW C7 R12）。広告ありのページに書けば虚偽になる
+  const text = visibleText(html);
+  const desc = ((html.match(/<title>([^<]*)<\/title>/) || [])[1] || '') + ' ' + ((html.match(/<meta\s+name="description"\s+content="([^"]*)"/) || [])[1] || '');
+  if (text.includes(AD_FREE_SENTENCE) && !isMetaOnly(p)) fail(p, `「${AD_FREE_SENTENCE}」があるのに META_ONLY_PAGES・META_ONLY_PREFIXES に無い（広告が出る）`);
+  if (/広告なし/.test(desc) && !isMetaOnly(p)) fail(p, 'title か description に「広告なし」とあるのに META_ONLY_PAGES・META_ONLY_PREFIXES に無い（広告が出る）');
+  if (isElderly(p)) {
+    if (!isMetaOnly(p)) fail(p, '高齢者向けのページ（ELDERLY_PAGES）なのに META_ONLY に無い（D118: 広告なし）');
+    if (!text.includes(AD_FREE_SENTENCE)) fail(p, `高齢者向けの広告なしページに定型文「${AD_FREE_SENTENCE}」が無い（WRITING 2 章）`);
+  }
+
+  // 医療・効能の NG 語（REVIEW C7 R4）。定型文と、ページごとに認めた打ち消しの文は除いて数える
+  if (MEDICAL_PREFIXES.some((x) => p.startsWith(x))) {
+    let t = text.split(BODY_TEST_SENTENCE).join('');
+    for (const a of MEDICAL_ALLOWED[p] || []) t = t.split(a).join('');
+    const ng = [...new Set(t.match(MEDICAL_NG) || [])];
+    if (ng.length) fail(p, `医療・効能の NG 語（${ng.join('・')}）が画面の文にある`);
+  }
+  // 体を測る道具（ためして の測る画面）: 定型文が結果の欄より前にある（WRITING 2 章）
+  if (p.startsWith('/tameshite/') && /\sid="result-card"/.test(html)) {
+    const at = html.indexOf(BODY_TEST_SENTENCE);
+    if (at < 0) fail(p, `体を測る道具の定型文「${BODY_TEST_SENTENCE}」が無い`);
+    else if (at > html.search(/\sid="result-card"/)) fail(p, '体を測る道具の定型文が結果の欄（#result-card）より後にある');
+  }
+
   // Cloudflare Web Analytics（</body> 直前に 1 個）
   const beacon = count(html, new RegExp(BEACON_TOKEN, 'g'));
   if (beacon !== 1) fail(p, `Cloudflare ビーコンが ${beacon} 個（1 個のはず）`);
@@ -239,6 +290,12 @@ await pool([...pages], 6, async (url) => {
       if (oalt[back] !== self) fail(p, `hreflang="${pairOf}" の ${path(alt[pairOf])} が hreflang="${back}" でこのページを指し返していない（${oalt[back] || '無し'}）`);
       if (langOf(other.body) !== pairOf) fail(p, `hreflang="${pairOf}" の ${path(alt[pairOf])} の <html lang> が ${langOf(other.body) || '無し'}`);
     }
+  }
+
+  // 子どもが遊ぶ画面に外部リンク（GitHub・X・note）を置かない（REVIEW C7 R7）
+  if (META_ONLY_PAGES.has(p) && !p.endsWith('guide.html')) {
+    const bad = [...new Set(links.filter(h => CHILD_NG_LINK.test(h)))];
+    if (bad.length) fail(p, `遊ぶ画面に外部リンク（${bad.join(', ')}）がある`);
   }
 
   // サイト内リンクを集める（あとでまとめて存在確認）
