@@ -64,7 +64,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 ## ツールを追加するとき
 
 1. `yorozu-template` の「Use this template」でツール用のリポジトリを作り（名前は URL になるので、短いローマ字＋種類。例: `loan-sim`、`nittei-kouho`。2026-09-23 決定 D9）、クローンして `node tools/init.mjs <リポジトリ名> "<ツール名>" "<説明文>" [--pwa]` を 1 回だけ実行する（名前・説明・日付を置き換え、`--pwa` なしならオフライン対応の部分を消す。詳しくは yorozu-template の README）。Settings → Pages で `main` / `(root)` を公開する。証明書が発行されたら **Enforce HTTPS にチェック**（2026-09-23 に 6 リポジトリすべて on にした。それまで http のまま 200 を返していた。API なら `gh api -X PUT repos/YouheiOonuki/<リポジトリ名>/pages -F https_enforced=true`）
-2. `index.html` の、合うカテゴリの `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明（短い 1 文）を書き換える。**トップに載せるのはリポジトリの入口（`./<リポジトリ名>/`）だけ**で、子ページはそのツールの入口ページからリンクする（yorozu-plans ROADMAP 7.9.2）。**例外はブラウザピアノ（`./web-metronome/piano/`）だけ**: メトロノームと同列の楽器なので「まなび・あそび」にメトロノームと並べて別のカードにする（2026-09-27、オーナー指摘「メトロノームからピアノの導線が悪すぎ。同列にするか、独立させるか」→ URL は変えずに同列。両方の画面の上端に「メトロノーム｜ピアノ」の切り替えもある）。check-site の「トップの一覧と sitemap」は入口（`./<リポジトリ名>/`）だけを数えるので、この行は影響しない。カテゴリは「くらし・お金」／「集まり・イベント」／「情シス・IT」／「変換・データ」／「まなび・あそび」／「親・家族のために（広告なし）」の 6 つ（2026-09-25。親・家族の節だけは、別リポジトリの広告なしページへの行も置く）。「新しいツール」は 3 件で、公開後の再点検（iPhone・Android で 1 回ずつ操作、印刷物は 1 枚印刷）を済ませたものだけを載せ、月 1 回入れ替える（REVIEW C7 R11）
+2. `index.html` の、合うカテゴリの `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明（短い 1 文）を書き換える。**トップの規則: 「1 カード ＝ 1 用途。同じ用途の子ページは入口に畳み、別の用途なら別カード」**（入口は `./<リポジトリ名>/`。yorozu-plans ROADMAP 7.9.2・7.10.1）。例: ブラウザピアノ（`./web-metronome/piano/`）はメトロノームと別の用途（楽器）なので別カード。check-site の「トップの一覧と sitemap」は入口（`./<リポジトリ名>/`）だけを数える。カテゴリは「くらし・お金」／「集まり・イベント」／「情シス・IT」／「変換・データ」／「まなび・あそび」／「親・家族のために（広告なし）」の 6 つ（2026-09-25。親・家族の節だけは、別リポジトリの広告なしページへの行も置く）。「新しいツール」は 3 件で、公開後の再点検（iPhone・Android で 1 回ずつ操作、印刷物は 1 枚印刷）を済ませたものだけを載せ、月 1 回入れ替える（REVIEW C7 R11）
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
 5. ツールの**全ページの `<head>` に AdSense のタグを入れる**（審査とドメインの確認は済んでいるので、ツールごとの申請は不要）。
@@ -154,7 +154,8 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
     - GitHub Actions は `actions/checkout@v5`・`actions/setup-node@v5` を使う（v4 は Node 20 向けで非推奨。`ubuntu-latest` は 2026-10-19 から Ubuntu 26）
     - **コミットの作者のメールは GitHub の noreply（`136089805+YouheiOonuki@users.noreply.github.com`）**。実メールは公開リポジトリに残るので使わない（yorozu-plans REVIEW C7 R1。2026-09-25 に作業環境の git identity を修正）。GitHub の「Block command line pushes that expose my email」を有効にしておくと、誤った設定の push は止まる
 27. **ブラウザに保存するツールは「保存した内容をすべて消す（初期状態に戻す）」ボタンを置く**（yorozu-plans ROADMAP K123。2026-09-25）。置き場は画面の「データの扱い」の定型文（WRITING.md 2 章「書き出し・読み込み・消去はこの画面のボタンから」）の直下か、「ファイルに書き出す」「ファイルから読み込む」の隣。部品はこのリポジトリの `reset-storage.js`（ツールの直下に同じものを写す）で、`<button type="button" data-reset-storage="<リポジトリ名>_">保存した内容をすべて消す（初期状態に戻す）</button>` と `<script src="./reset-storage.js"></script>` を書くだけ。押すと確認を 1 回出し、その接頭辞で始まるキーだけを消して、ページを開き直す（`#` 以降も外す）。文言は全ツールで同じ（英語ページは `Delete everything saved (reset)`）。1 つのリポジトリに別々の道具があるときは、画面ごとのキー（`gakko-keisan_naishin` など）に絞ってよい。接頭辞の無い旧キーは `data-reset-legacy` に並べる。こどもが遊ぶ画面は `data-reset-hold`（1 秒の長押しで確認を出す）。**新しい接頭辞・旧キーを使うときは、`privacy-policy.html`・`en/privacy-policy.html` 3 章の「このサイトのすべてのツールの保存内容を消す」ボタンの `data-reset-storage`・`data-reset-legacy` にも足す**（check-site が、localStorage を使うページにボタンがあることと、一括消去の一覧に漏れが無いことを確かめる）。テストは `tests/reset-storage.test.js`（bingo などと同じもの。接頭辞の一覧だけ書き換える）
-28. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
+28. **子どもが使う画面（遊ぶ画面）に外部リンク（GitHub・X・note など）を置かない**（REVIEW C7 R7。外へのリンクは保護者向けの使い方ページに）。check-site が `META_ONLY_PAGES` の使い方ページ以外で見る
+29. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
 
 ## AdSense
 
@@ -202,6 +203,9 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - 印刷物の着地ページ（`/<リポジトリ名>/print/`）があれば: `noindex`、Cloudflare ビーコン 1 個、AdSense の meta 1 個
 - ブラウザに保存するページ（インラインと同じオリジンの `<script src>` に `localStorage`・`indexedDB` がある。コメントの中は数えない。noindex のページも対象）: 「保存した内容をすべて消す」ボタン（`data-reset-storage`）と `reset-storage.js` がある（「ツールを追加するとき」27）
 - プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」: 日英で同じ接頭辞・旧キーの一覧で、トップの全ツールの `<リポジトリ名>_` と、各ページの消すボタンのキーをすべて含む
+- 「広告なし」の定型文（WRITING 2 章「このページは広告なし・登録なし・入力は端末の外に出ません。」）か、title・description の「広告なし」があるページは `META_ONLY_PAGES`・`META_ONLY_PREFIXES` に入っている。高齢者向け（`ELDERLY_PAGES`・`ELDERLY_PREFIXES`）は META_ONLY で、定型文がある（REVIEW C7 R12）
+- 医療・効能の NG 語（診断・改善・予防・効果・治る・若返）が `/tameshite/`・`/otasuke/notore/`・`/quiz-hiroba/showa/` の画面の文に無い。定型文と、ページごとに認めた打ち消しの文（`MEDICAL_ALLOWED`）は除く。ためして の測る画面は、体を測る道具の定型文が `#result-card` より前にある（REVIEW C7 R4）
+- 子どもが遊ぶ画面（`META_ONLY_PAGES` の使い方ページ以外）に github.com・x.com・twitter.com・note.com へのリンクが無い（「ツールを追加するとき」28）
 - 各ツール: 存在しない URL がツールの `404.html`（ビーコンあり）になる、`manifest.webmanifest` の `id` が `/<リポジトリ名>/`、`sw.js` のキャッシュ名が `<リポジトリ名>-` で始まる
 
 - **確認日の期限**: 全ページの同じオリジンの `<script src>`（重複は 1 回だけ取得）から、法令・公式の値の確認日を読み、ツールごとに 1 行（`確認日 <ツール> <ファイル> <日付>（形、経過月数・期限）`）を出す。経過は画面と同じ暦の月の差で数え、**期限−2 か月（既定 10 か月）以上でメモ**（そろそろ出典を確かめ直す）、**期限（既定 12 か月）以上で NG**（画面がすでに「時間がたっています」を出している）。期限はファイルの `STALE_MONTHS` があればそれ、画面が別の期限で注意を出すツールはスクリプトの `STALE_MONTHS_BY_TOOL`（shaho-check は 6 か月）
