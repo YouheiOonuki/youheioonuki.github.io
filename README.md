@@ -58,6 +58,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `reset-storage.js` / `legal.css` の `.reset-all` | 「保存した内容をすべて消す（初期状態に戻す）」ボタンの部品（2026-09-25。yorozu-plans K123）。各ツールは同じものを写して使う（「ツールを追加するとき」27）。プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」もこれで動く（全ツールの接頭辞の一覧を `data-reset-storage` に書く） |
 | `legal.css` | 上の4ページのスタイル（日英の切り替えリンク・翻訳の注記を含む。ダークモードは無い） |
 | `print-help.html` | **全ツール共通**の「スマホで印刷する」（家のプリンター・PDF・コンビニ・A5 冊子と横向き）。2026-09-24。手順は公式ページ（Apple・Google・ネットプリント・シャープ・ローソン）で確かめたものだけ書き、出典と確認日をページ内の折りたたみに置く。印刷できるツールの印刷ボタンの近くと使い方ページから `../print-help.html` で 1 行リンクする。スタイルは `legal.css` ＋ページ内のダークモード。日本語だけ（英語版を作るときは hreflang を足す） |
+| `for/teachers/` / `for/kaigo/` / `for/it/` | **用途別の入口**（2026-10-01。yorozu-plans GROWTH 10 章・ROADMAP 7.10.3 b）。先生・介護・デイサービス・情シスの方に向けて、載せる道具をこの順で 1 行ずつ並べ、印刷の手順（情シスは 1 ファイル版の持ち込み方）を置く。在日外国人向けは英語のトップ `/en/` がそれ（新しいページは作らない）。**載せる道具と順は GROWTH 10 章の表が正本**（増やすときは表を直してからページを直す）。トップからは、関係する節の末尾の 1 行（`.for-link`）で届く（カードは増やさない）。`for/kaigo/` は高齢者向けなので広告なし（D118。AdSense は meta だけ、先頭に定型文。check-site の `META_ONLY_PAGES`・`ELDERLY_PAGES`）で、載せる道具も広告なしのページだけ。コミュニティや X・note に貼るときはこの URL を使う（参照元で数える） |
 | `ads.txt` | AdSense の販売者情報。ドメイン直下に1つだけ置く（全ツール共通） |
 | `tools/check-site.mjs` / `.github/workflows/check-site.yml` | サイト横断チェックと、その週1回の自動実行（下の「共通の確認テスト」） |
 | `LICENSE` | MIT License（著作権者 Youhei Oonuki） |
@@ -69,7 +70,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
 5. ツールの**全ページの `<head>` に AdSense のタグを入れる**（審査とドメインの確認は済んでいるので、ツールごとの申請は不要）。
-   ただし、全画面で操作するツール本体（例: hoshizora-sanpo のプラネタリウム画面）は、自動広告が操作ボタンを隠さないよう `<meta name="google-adsense-account">` だけにして、広告は図鑑・使い方などの読みものページで出す。こどもが遊ぶ画面（todofuken-quiz の本体）も同じく meta だけにし、広告は保護者向けページだけに出す（決定 D18）。**高齢者・親向けのページ（otasuke の全ページ、gengo の回忌、seido-keisan の年金の繰上げ・高額療養費、quiz-hiroba の昭和クイズ、tameshite の老眼チェック）も meta だけ**（yorozu-plans D118。要望文の最大の障壁が広告だったため）
+   ただし、全画面で操作するツール本体（例: hoshizora-sanpo のプラネタリウム画面）は、自動広告が操作ボタンを隠さないよう `<meta name="google-adsense-account">` だけにして、広告は図鑑・使い方などの読みものページで出す。こどもが遊ぶ画面（todofuken-quiz の本体）も同じく meta だけにし、広告は保護者向けページだけに出す（決定 D18）。**高齢者・親向けのページ（otasuke の全ページ、gengo の回忌、seido-keisan の年金の繰上げ・高額療養費、quiz-hiroba の昭和クイズ、tameshite の老眼チェック、用途別の入口の `for/kaigo/`）も meta だけ**（yorozu-plans D118。要望文の最大の障壁が広告だったため）
 
    ```html
    <meta name="google-adsense-account" content="ca-pub-5375267956079717">

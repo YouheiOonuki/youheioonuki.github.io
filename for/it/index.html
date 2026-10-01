@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>情シス向けのブラウザだけの道具（PAC テスター・ADSearch・FILETIME 変換・テキスト差分）｜yorozu-craft</title>
+  <meta name="description" content="VDI や持ち込み禁止の環境でも使える、ブラウザだけで完結する情シス向けの道具。PAC ファイル テスター、ADSearch（PowerShell）、FILETIME・LDAP 時刻の変換、テキスト変換（差分・JSON・CSV・全角半角）。1 ファイル版の持ち込み方つき。">
+  <meta name="robots" content="index, follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://yorozu-craft.com/for/it/">
+  <meta property="og:title" content="情シス向けのブラウザだけの道具｜yorozu-craft">
+  <meta property="og:description" content="VDI や持ち込み禁止の環境でも使える、ブラウザだけで完結する道具。入力は送信しません。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/for/it/">
+  <meta property="og:image" content="https://yorozu-craft.com/og-image.png">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta property="og:locale" content="ja_JP">
+
+  <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <style>body{margin:0}</style>
+  <link rel="stylesheet" href="../../legal.css">
+  <!-- 用途別の入口（yorozu-plans GROWTH 10 章）。3 枚とも同じ追加の CSS -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1814; --bg-2: #25201a; --card: #2b251e; --text: #ece4d6;
+        --muted: #b9ab96; --accent: #e0a066; --border: #4a3f33; --shadow: rgba(0, 0, 0, 0.4);
+      }
+    }
+    .lead { font-size: 0.95rem; }
+    .uses { list-style: none; padding: 0; margin: 0.4rem 0 0; display: grid; gap: 0.5rem; }
+    .uses li { font-size: 0.9rem; }
+    .uses a.go { display: block; min-height: 44px; padding: 0.55rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); text-decoration: none; color: var(--text); }
+    .uses a.go:hover, .uses a.go:focus-visible { border-color: var(--accent); }
+    .uses a.go:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .uses strong { color: var(--accent); }
+    .uses span { display: block; font-size: 0.85rem; color: var(--muted); }
+    .steps { padding-left: 1.3rem; }
+    .steps li + li { margin-top: 0.2rem; }
+    details { margin: 0.5rem 0 0.2rem; font-size: 0.88rem; }
+    summary { cursor: pointer; color: var(--accent); font-weight: 600; padding: 0.3rem 0; }
+    details .src li { overflow-wrap: anywhere; }
+    .others { font-size: 0.88rem; }
+  </style>
+</head>
+<body>
+
+  <div class="site-bar"><a href="../../">yorozu-craft</a></div>
+
+  <main>
+    <article>
+      <h1>情シス向けの道具</h1>
+      <p class="lead">VDI や持ち込み禁止の環境でも使える、ブラウザだけで完結する道具。入力は送信しません。</p>
+
+      <h2 id="tools">道具</h2>
+      <ul class="uses">
+        <li><a class="go" href="../../pac-tester/"><strong>PAC ファイル テスター</strong><span>PAC を URL の一覧でまとめて評価し、新旧を比べる。</span></a></li>
+        <li><a class="go" href="../../ADSearch/"><strong>ADSearch（PowerShell）</strong><span>RSAT なしで AD・DNS・GPO を読み取る。読み取り専用。</span></a></li>
+        <li><a class="go" href="../../filetime/"><strong>FILETIME・LDAP 時刻の変換</strong><span>pwdLastSet などの 18 桁の数字を日時に。</span></a></li>
+        <li><a class="go" href="../../henkan/"><strong>テキスト変換</strong><span>テキスト差分・JSON 整形・CSV 整形・全角半角。</span></a></li>
+      </ul>
+
+      <h2 id="offline">1 ファイル版の持ち込み方</h2>
+      <ol class="steps">
+        <li>ネットにつながる端末で、1 ファイル版をダウンロードする。</li>
+        <li>職場で決められた方法で、使う端末へ移す。</li>
+        <li>ファイルをダブルクリックしてブラウザで開く。</li>
+      </ol>
+      <details>
+        <summary>1 ファイル版の中身</summary>
+        <ul>
+          <li><a href="../../henkan/">テキスト変換</a>の henkan.html（約 190KB）: 差分・JSON・CSV・全角半角の 4 つ。PDF の道具は入っていません。</li>
+          <li><a href="../../pac-tester/">PAC ファイル テスター</a>の pac-tester.html（約 370KB）。</li>
+          <li>どちらも広告・アクセス解析は入っておらず、外部への通信はブラウザの仕組み（Content-Security-Policy）で禁止しています。</li>
+        </ul>
+      </details>
+
+      <h2 id="voice">ご要望</h2>
+      <p>こう使った、こういうものが欲しい、は<a href="https://docs.google.com/forms/d/e/1FAIpQLSd8B90qh5lEIyr25iw1jOjdQjOyaPZ1_z2wMB4kH-EmEeJYWw/viewform" target="_blank" rel="noopener">フォーム</a>へ（お返事はしていません）。</p>
+      <p class="others">ほかの入口: <a href="../teachers/">先生</a>・<a href="../kaigo/">介護・デイサービス</a>・<a href="../../en/" hreflang="en" lang="en">English</a>・<a href="../../">すべての道具</a></p>
+    </article>
+  </main>
+
+  <footer>
+    <nav aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="../../">yorozu-craft トップ</a></li>
+        <li><a href="../../about.html">運営者情報</a></li>
+        <li><a href="../../privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+  </footer>
+
+  <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
