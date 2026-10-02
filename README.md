@@ -60,6 +60,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `print-help.html` | **全ツール共通**の「スマホで印刷する」（家のプリンター・PDF・コンビニ・A5 冊子と横向き）。2026-09-24。手順は公式ページ（Apple・Google・ネットプリント・シャープ・ローソン）で確かめたものだけ書き、出典と確認日をページ内の折りたたみに置く。印刷できるツールの印刷ボタンの近くと使い方ページから `../print-help.html` で 1 行リンクする。スタイルは `legal.css` ＋ページ内のダークモード。日本語だけ（英語版を作るときは hreflang を足す） |
 | `calendar-help.html` | **全ツール共通**の「カレンダーに登録する」（Google カレンダーの URL で追加・iPhone の照会カレンダー・Outlook の Web からサブスクライブ）。2026-10-02（ROADMAP 7.14 の 2、K129）。`print-help.html` と同じ型（intro 600 字以内、手順と出典は折りたたみ）。手順は Google・Apple・Microsoft の公式ヘルプで確かめたものだけ。購読用の .ics（`/seido-keisan/data/kaitei.ics`・`/hoshizora-sanpo/data/tenmon.ics`、CC0）の「カレンダーに登録」の欄から `../../calendar-help.html` でリンクする。.ics は sitemap に入れない。.ics を足したらこのページの「登録できるカレンダー」にも足す |
 | `for/teachers/` / `for/kaigo/` / `for/it/` | **用途別の入口**（2026-10-01。yorozu-plans GROWTH 10 章・ROADMAP 7.10.3 b）。先生・介護・デイサービス・情シスの方に向けて、載せる道具をこの順で 1 行ずつ並べ、印刷の手順（情シスは 1 ファイル版の持ち込み方）を置く。在日外国人向けは英語のトップ `/en/` がそれ（新しいページは作らない）。**載せる道具と順は GROWTH 10 章の表が正本**（増やすときは表を直してからページを直す）。トップからは、関係する節の末尾の 1 行（`.for-link`）で届く（カードは増やさない）。`for/kaigo/` は高齢者向けなので広告なし（D118。AdSense は meta だけ、先頭に定型文。check-site の `META_ONLY_PAGES`・`ELDERLY_PAGES`）で、載せる道具も広告なしのページだけ。コミュニティや X・note に貼るときはこの URL を使う（参照元で数える） |
+| `yt/<道具>/`（`yt/sekigae/`・`yt/toban/`・`yt/furigana/`） | **YouTube ショートの着地**（2026-10-03。yorozu-plans ROADMAP 7.16 D207、K128）。動画の終わりと説明欄に出す短い URL `yorozu-craft.com/yt/<道具>`。中身は `noindex` と即時の転送（`meta refresh 0` ＋ `load` で `location.replace`）だけで、**文は置かない・sitemap に載せない・AdSense は入れない**。Cloudflare ビーコンは入れる（`/yt/` の PV が YouTube から来た数。JS の転送は `load` の後なので、ビーコンの読み込みを待つ）。転送先は道具の入口（`/<リポジトリ名>/`）。道具を足すときは、同じ形のページを写し、check-site の `YT_PAGES` と yorozu-plans の `tools/video/scripts/*.json` の `end.urlText` にも足す |
 | `ads.txt` | AdSense の販売者情報。ドメイン直下に1つだけ置く（全ツール共通） |
 | `tools/check-site.mjs` / `.github/workflows/check-site.yml` | サイト横断チェックと、その週1回の自動実行（下の「共通の確認テスト」） |
 | `LICENSE` | MIT License（著作権者 Youhei Oonuki） |
@@ -204,6 +205,7 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - 英語のトップ（`/en/`）の一覧と、sitemap に `/<リポジトリ名>/en/` を載せているツールが一致している（英語版を足したのに英語のトップに載せ忘れた、またはその逆）。ルートの sitemap.xml に `/en/` が無いときは省略
 - サイト内リンクがすべて存在する（リンク切れ）
 - 印刷物の着地ページ（`/<リポジトリ名>/print/`）があれば: `noindex`、Cloudflare ビーコン 1 個、AdSense の meta 1 個
+- YouTube の着地（`/yt/<道具>/`。sitemap に載せないので `YT_PAGES` の一覧で見る）: 200、`noindex`、`meta refresh 0` と `location.replace` の行き先が道具の入口、Cloudflare ビーコン 1 個、AdSense の meta・スクリプトが無い、画面に文が無い、sitemap に無い、転送先が 200
 - ブラウザに保存するページ（インラインと同じオリジンの `<script src>` に `localStorage`・`indexedDB` がある。コメントの中は数えない。noindex のページも対象）: 「保存した内容をすべて消す」ボタン（`data-reset-storage`）と `reset-storage.js` がある（「ツールを追加するとき」27）
 - プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」: 日英で同じ接頭辞・旧キーの一覧で、トップの全ツールの `<リポジトリ名>_` と、各ページの消すボタンのキーをすべて含む
 - 「広告なし」の定型文（WRITING 2 章「このページは広告なし・登録なし・入力は端末の外に出ません。」）か、title・description の「広告なし」があるページは `META_ONLY_PAGES`・`META_ONLY_PREFIXES` に入っている。高齢者向け（`ELDERLY_PAGES`・`ELDERLY_PREFIXES`）は META_ONLY で、定型文がある（REVIEW C7 R12）
