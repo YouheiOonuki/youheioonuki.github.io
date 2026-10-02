@@ -362,6 +362,28 @@ await pool([...toolsOnTop], 4, async (t) => {
   }
 });
 
+// 5a. YouTube の着地（/yt/<道具>/。README「共通ページ」・yorozu-plans ROADMAP 7.16 D207）
+// sitemap に載せないので、ここで決まりを見る: noindex、文なし、即時の転送（meta refresh 0 と JS）、
+// Cloudflare ビーコン 1 個（/yt/ の PV が YouTube から来た数）、AdSense は meta も script も無し、転送先が 200。
+// 道具を足したら YT_PAGES と yorozu-plans の tools/video/scripts/*.json の両方に
+const YT_PAGES = { sekigae: '/sekigae/', toban: '/toban/', furigana: '/furigana/' };
+await pool(Object.entries(YT_PAGES), 3, async ([t, to]) => {
+  const p = `/yt/${t}/`;
+  const r = await get(`${BASE}yt/${t}/`);
+  if (r.status !== 200) { fail(p, `${r.status}（200 のはず）`); return; }
+  if (!/<meta[^>]+name="robots"[^>]+noindex/i.test(r.body)) fail(p, 'noindex が無い');
+  const refresh = (r.body.match(/<meta[^>]+http-equiv="refresh"[^>]+content="0;\s*url=([^"]+)"/i) || [])[1];
+  if (refresh !== to) fail(p, `meta refresh 0 の行き先が ${refresh}（${to} のはず）`);
+  if (!r.body.includes(`location.replace('${to}')`)) fail(p, `JS の location.replace('${to}') が無い`);
+  if (count(r.body, new RegExp(BEACON_TOKEN, 'g')) !== 1) fail(p, 'Cloudflare ビーコンが 1 個でない（YouTube から来た人を数えられない）');
+  if (/adsbygoogle|google-adsense-account/.test(r.body)) fail(p, 'AdSense がある（転送だけのページに広告は入れない）');
+  if (visibleText(r.body).trim()) fail(p, '画面に文がある（転送だけのページ）');
+  if (pages.has(`${BASE}yt/${t}/`)) fail(p, 'sitemap に載っている（載せない）');
+  const dest = await get(`${BASE}${to.slice(1)}`);
+  if (dest.status !== 200) fail(p, `転送先 ${to} が ${dest.status}`);
+});
+notes.push(`YouTube の着地 /yt/: ${Object.keys(YT_PAGES).length} ページ`);
+
 // 5b. プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」が、各ツールの消すボタンのキーをすべて含むか（K123）
 // 全ツールが同じオリジンなので、接頭辞の一覧で全部消す。ツールを足して接頭辞が増えたら、ここで気づく
 {
