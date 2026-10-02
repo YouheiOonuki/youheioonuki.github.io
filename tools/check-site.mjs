@@ -24,7 +24,8 @@ const META_ONLY_PAGES = new Set([
   '/quiz-hiroba/genso/',
   '/quiz-hiroba/nengo/',
   '/quiz-hiroba/hyakunin/', // 百人一首の読み上げ画面（D131）
-  '/quiz-hiroba/kimariji/',
+  '/quiz-hiroba/hyakunin/guide.html', // 介護向けの入口に載せる道具なので使い方ページも広告なし（D191）
+  '/quiz-hiroba/kimariji/', // 決まり字クイズ（遊ぶ画面。D191 で確認: 専用の使い方ページは無く、使い方は /quiz-hiroba/guide.html）
   '/quiz-hiroba/shuto/',
   '/quiz-hiroba/kokki/',   // 国旗クイズ（遊ぶ画面）
   '/quiz-hiroba/hayaoshi/', // 早押しボタン（D157: 広告は使い方ページだけ）
