@@ -66,9 +66,11 @@ const isElderly = (p) => ELDERLY_PAGES.has(p) || ELDERLY_PREFIXES.some((x) => p.
 // 定型文（yorozu-plans WRITING 2 章）
 const AD_FREE_SENTENCE = 'このページは広告なし・登録なし・入力は端末の外に出ません。';
 const BODY_TEST_SENTENCE = 'これは遊びの目安で、医療の検査ではありません。気になるときは眼科・耳鼻科へ。';
+// 健診版（D196）。/otasuke/kenshin/ の結果の欄より前
+const KENSHIN_SENTENCE = 'これは健診の結果を並べて見る道具で、医療の検査ではありません。気になるときは、健診を受けた所か、かかりつけの医師へ。';
 // 医療・効能の NG 語（REVIEW C7 R4）。対象は体を測る道具・脳トレ・回想法のページ
 const MEDICAL_NG = /診断|改善|予防|効果|治る|若返/g;
-const MEDICAL_PREFIXES = ['/tameshite/', '/otasuke/notore/', '/quiz-hiroba/showa/'];
+const MEDICAL_PREFIXES = ['/tameshite/', '/otasuke/notore/', '/otasuke/kenshin/', '/quiz-hiroba/showa/'];
 // NG 語を含んでよい文（打ち消しの注意だけ。ページと文の組で、文は画面の文字そのまま）
 const MEDICAL_ALLOWED = {
   '/tameshite/kioku/guide.html': ['効果を示す資料を確かめていないので、書いていません。'],
@@ -250,6 +252,12 @@ await pool([...pages], 6, async (url) => {
     const at = html.indexOf(BODY_TEST_SENTENCE);
     if (at < 0) fail(p, `体を測る道具の定型文「${BODY_TEST_SENTENCE}」が無い`);
     else if (at > html.search(/\sid="result-card"/)) fail(p, '体を測る道具の定型文が結果の欄（#result-card）より後にある');
+  }
+
+  if (p === '/otasuke/kenshin/') {
+    const at = html.indexOf(KENSHIN_SENTENCE);
+    if (at < 0) fail(p, `健診版の定型文「${KENSHIN_SENTENCE}」が無い`);
+    else if (at > html.search(/\sid="result-card"/)) fail(p, '健診版の定型文が結果の欄（#result-card）より後にある');
   }
 
   // Cloudflare Web Analytics（</body> 直前に 1 個）
