@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カレンダーに登録する方法（Google カレンダー・iPhone・Outlook）｜yorozu-craft</title>
+  <meta name="description" content="yorozu-craft の改定カレンダー・天文カレンダーを、Google カレンダー（URL で追加）・iPhone（照会カレンダー）・Outlook で購読する手順。登録すると予定の追加や修正が自動で入ります。">
+  <meta name="robots" content="index, follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://yorozu-craft.com/calendar-help.html">
+  <meta property="og:title" content="カレンダーに登録する方法（Google カレンダー・iPhone・Outlook）｜yorozu-craft">
+  <meta property="og:description" content="改定カレンダー・天文カレンダーを、Google カレンダー・iPhone・Outlook で購読する手順。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://yorozu-craft.com/calendar-help.html">
+  <meta property="og:image" content="https://yorozu-craft.com/og-image.png">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta property="og:locale" content="ja_JP">
+
+  <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="./favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <!-- legal.css より先に描かれてもブラウザ既定の余白（8px）で画面がずれないよう、余白の打ち消しだけ直接書く -->
+  <style>body{margin:0}</style>
+  <link rel="stylesheet" href="./legal.css">
+  <!-- このページだけの追加（print-help.html と同じ型）: ダークモードと折りたたみ、URL の欄 -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1814; --bg-2: #25201a; --card: #2b251e; --text: #ece4d6;
+        --muted: #b9ab96; --accent: #e0a066; --border: #4a3f33; --shadow: rgba(0, 0, 0, 0.4);
+      }
+    }
+    details { margin: 0.5rem 0 0.2rem; font-size: 0.9rem; }
+    summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 0.88rem; padding: 0.3rem 0; }
+    details[open] > summary { margin-bottom: 0.3rem; }
+    details ol, details ul { margin: 0.3rem 0 0.6rem; }
+    details li + li { margin-top: 0.2rem; }
+    details .src li { overflow-wrap: anywhere; }
+    .cals li + li { margin-top: 0.6rem; }
+    .cals input { display: block; width: 100%; max-width: 34em; margin-top: 0.25rem; font: inherit; font-size: 0.85rem; padding: 0.3rem 0.45rem;
+      box-sizing: border-box; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+  <div class="site-bar"><a href="./">yorozu-craft</a></div>
+
+  <main>
+    <article>
+      <h1>カレンダーに登録する</h1>
+      <p>登録（購読）すると、予定を足したり直したりしたときに、あなたのカレンダーにも入ります。登録は各カレンダーのサービスの中で行い、yorozu-craft に名前やメールアドレスは届きません。</p>
+
+      <h2 id="calendars">登録できるカレンダー</h2>
+      <ul class="cals">
+        <li><a href="./seido-keisan/kaitei/">制度の改定カレンダー</a>（税・社会保険・給付の施行日）：<a href="webcal://yorozu-craft.com/seido-keisan/data/kaitei.ics">登録する</a>
+          <input type="text" readonly aria-label="制度の改定カレンダーの URL" value="https://yorozu-craft.com/seido-keisan/data/kaitei.ics" onfocus="this.select()"></li>
+        <li><a href="./hoshizora-sanpo/calendar/">天文カレンダー</a>（月の満ち欠け・流星群・日食と月食）：<a href="webcal://yorozu-craft.com/hoshizora-sanpo/data/tenmon.ics">登録する</a>
+          <input type="text" readonly aria-label="天文カレンダーの URL" value="https://yorozu-craft.com/hoshizora-sanpo/data/tenmon.ics" onfocus="this.select()"></li>
+      </ul>
+
+      <h2 id="google">Google カレンダー</h2>
+      <p>パソコンのブラウザで「URL で追加」に上の URL を貼ります。Google カレンダーのアプリ（Android・iPhone）からは登録できません。</p>
+      <details>
+        <summary>手順</summary>
+        <ol>
+          <li>パソコンで Google カレンダーを開きます。</li>
+          <li>ページ左側の［他のカレンダー］の横にある「他のカレンダーを追加」アイコン →［URL で追加］をクリックします。</li>
+          <li>上の URL（https:// で始まるほう）を入れ、［カレンダーを追加］をクリックします。</li>
+          <li>ページ左側の［他のカレンダー］に表示されます。</li>
+        </ol>
+      </details>
+
+      <h2 id="iphone">iPhone</h2>
+      <p>上の「登録する」を押すか、カレンダーアプリの「照会カレンダーを追加」に URL を入れます。</p>
+      <details>
+        <summary>手順と、やめるとき</summary>
+        <ol>
+          <li>カレンダーアプリを開き、「カレンダー」ボタンをタップしてから「カレンダーを追加」をタップします。</li>
+          <li>「照会カレンダーを追加」をタップし、上の URL を入れて「検索」をタップします。</li>
+        </ol>
+        <p>やめるとき：カレンダーアプリの「カレンダー」ボタン → カレンダーの横の情報ボタン →「登録解除」。</p>
+      </details>
+
+      <h2 id="outlook">Outlook</h2>
+      <p>Outlook.com で「予定表の追加」→「Web からサブスクライブ」に URL を入れます。反映に 24 時間以上かかることがあります。</p>
+      <details>
+        <summary>手順</summary>
+        <ol>
+          <li>Outlook.com にサインインし、左のナビゲーションで予定表を開きます。</li>
+          <li>「予定表の追加」（英語の画面では Add calendar）を選びます。</li>
+          <li>「Web からサブスクライブ」（Subscribe from web）を選び、上の URL を入れて「インポート」を選びます。</li>
+        </ol>
+      </details>
+
+      <h2 id="source">出典と確認日</h2>
+      <p class="last-updated">Google・Apple・Microsoft の公式ヘルプ（確認日 2026-10-02）。</p>
+      <details>
+        <summary>出典の一覧</summary>
+        <ul class="src">
+          <li>Google カレンダー ヘルプ「他のユーザーのカレンダーに登録する」（パソコン）https://support.google.com/calendar/answer/37100?hl=ja（［URL で追加］の手順、アプリでは登録できないこと）</li>
+          <li>iPhone ユーザガイド「iPhoneで複数のカレンダーを設定する」（iOS 27）https://support.apple.com/ja-jp/guide/iphone/iph3d1110d4/ios（「照会カレンダーを追加」、.ics へのリンクをタップしても照会できること、登録解除）</li>
+          <li>Microsoft サポート「Outlook.com または Outlook on the web で予定表をインポートまたは購読する」https://support.microsoft.com/ja-jp/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web（「Web からサブスクライブ」、反映に 24 時間以上。英語版 https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web の Add calendar・Subscribe from web）</li>
+        </ul>
+        <p>カレンダーのデータは CC0（パブリック・ドメイン提供）です。各予定の説明に出典があります。</p>
+      </details>
+    </article>
+  </main>
+
+  <footer>
+    <nav aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="./">yorozu-craft トップ</a></li>
+        <li><a href="./about.html">運営者情報</a></li>
+        <li><a href="./privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+  </footer>
+
+  <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
