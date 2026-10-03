@@ -66,13 +66,14 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `ads.txt` | AdSense の販売者情報。ドメイン直下に1つだけ置く（全ツール共通） |
 | `tools/check-site.mjs` / `.github/workflows/check-site.yml` | サイト横断チェックと、その週1回の自動実行（下の「共通の確認テスト」） |
 | `data/pages.json` / `data/season.json` / `tools/build-top.mjs` / `top.js` / `top.css` / `all/index.html` / `tests/top.test.mjs` | トップの構成（yorozu-plans ROADMAP 7.23。2026-10-03）。`data/pages.json` は道具と子ページの一覧・公開日・別名（`aliases`、検索だけに使う）・用途の節（`sections`）・英語トップの行（`en`）。`data/season.json` は「いまの時期」（月 → 最大 3 ページと理由 1 文と出典）。`tools/build-top.mjs` がそこからトップ・英語トップ・すべての道具（`/all/`）・用途別の入口の欄（`<!-- top:<欄>:begin -->`〜`end` と `new-tools`）を作る（手で書かない。`--check` で最新か）。`top.js` は検索（端末の中だけで絞る。送信しない）と月の入れ替え、`top.css` は共有の部品。テストは `node --test tests/*.test.mjs` |
+| `tools/top/priority.mjs` / `tools/top/ledger.mjs` / `data/priority-input.json` / `tests/priority.test.mjs` | トップの行の順（`priority`。yorozu-plans ROADMAP 7.24.1。2026-10-03）。下の「トップの行の順（priority）」 |
 | `tools/common/yorozu-common.css` / `tools/sync-common.mjs` | 共通の部品とトークンの正本と、それを各ツール・このリポジトリのページに配る・確かめるスクリプト（下の「共通の部品とトークン」） |
 | `LICENSE` | MIT License（著作権者 Youhei Oonuki） |
 
 ## ツールを追加するとき
 
 1. `yorozu-template` の「Use this template」でツール用のリポジトリを作り（名前は URL になるので、短いローマ字＋種類。例: `loan-sim`、`nittei-kouho`。2026-09-23 決定 D9）、クローンして `node tools/init.mjs <リポジトリ名> "<ツール名>" "<説明文>" [--pwa]` を 1 回だけ実行する（名前・説明・日付を置き換え、`--pwa` なしならオフライン対応の部分を消す。詳しくは yorozu-template の README）。Settings → Pages で `main` / `(root)` を公開する。証明書が発行されたら **Enforce HTTPS にチェック**（2026-09-23 に 6 リポジトリすべて on にした。それまで http のまま 200 を返していた。API なら `gh api -X PUT repos/YouheiOonuki/<リポジトリ名>/pages -F https_enforced=true`）
-2. **トップには `data/pages.json` の `sections` の合う節に 1 行**（`path`・`name`・一言 `note` 15 字以内・子ページのチップ `chips` 最大 3）足して `node tools/build-top.mjs` を実行する（`index.html` を手で書かない）。**トップの規則（ROADMAP 7.23）: 1 行 ＝ 1 入口（1 用途）。各節に見せるのは 3 行まで（並びは公開日の古い順。残りは「ほかに N 件」）。主な子ページは行のチップで 1 クリック、残りは入口ページか `/all/` で 2 クリック。全ページは検索でも引ける**。スマホ（390×844）で 1 画面目 700px・全体 3 画面（2,532px）以内（`measure_fold.cjs`）。節は「くらし・お金」／「集まり・イベント」／「情シス・IT」／「変換・データ」／「子どもの学び」／「あそぶ・ためす・星空」／「親・家族のために（広告なし）」の 7 つ。check-site の「トップの一覧と sitemap」は入口（`./<リポジトリ名>/`）だけを数える
+2. **トップは `data/pages.json` から作る**（`index.html` を手で書かない）。**規則（ROADMAP 7.23・7.24.1）: 1 行 ＝ 1 用途（入口ページも子ページも同列）。節（`section`）はページごと。一言 `note`（15 字以内）のあるページが行の候補で、節ごとに `priority` の上位 3 が行（`pin: true` は節ごとに 1 件まで、priority より先。同点は入口ページ ＞ 子ページ、次に公開日の古い方: 7.24.2 の 2）、残りの候補は「ほかに N 件」（`<details>`）。チップは**節の先頭の行だけ**（7.24.2 の 3。2〜3 行目の子ページは入口ページで届く）に、その行の `related`（その節で人が次に行きやすい 3 つ。用途のつながりで手で選ぶ。同じリポジトリに限らない）を出し、3 つに満たなければ同じ節のページを priority の順で埋める。同じ節で行に出ているページとチップに出たページは重ねない（チップに出たページは「ほかに」から外す）。「ほかに」の行のチップは related だけ**。全体 3 画面の上限を優先する（`tools/build-top.mjs` の `CHIP_ROWS`＝1。上位 3 行すべてに出すと 2,800px 前後、2026-10-03 の実測）。`/all/` は一覧なので 3 画面の対象外で、1 画面目に検索欄と節の目次（7 つへのジャンプ）、各節の見出しに「トップへ」（7.24.2 の 4）。新しいページの行は `section`・`aliases`（検索の別名。全行に 1 つ以上）と、行の候補にするなら `name`（表示名）・`note`・`related`、短いチップ名が要れば `chip`。足したら `node tools/top/priority.mjs` → `node tools/build-top.mjs`。全ページは `/all/` と検索でも引ける。スマホ（390×844）で 1 画面目 700px・全体 3 画面（2,532px）以内（`measure_fold.cjs`）。節は「くらし・お金」／「集まり・イベント」／「情シス・IT」／「変換・データ」／「子どもの学び」／「あそぶ・ためす・星空」／「親・家族のために（広告なし）」の 7 つ（`sections`）。check-site の「トップの一覧と sitemap」は入口（`./<リポジトリ名>/`）だけを数える
    - **新しいページ（道具でも子ページでも）を公開したら、`data/pages.json` に 1 行（`path`・`date`＝その index.html を初めてコミットした日・`title`、欄で短くしたいときは `short`）足して `node tools/build-top.mjs`** を実行する。トップの「新しいツール」が公開日の新しい順の 6 件に入れ替わる（手で書かない）。check-site が、sitemap の道具のページが `data/pages.json` に全部あるか・欄が最新か・どのページもトップから 2 クリック以内（トップか、トップにある入口のページから）かを確かめる。新しいツールは公開後すぐ載せる（REVIEW R11 の実機の再点検を待たない。ROADMAP 7.20）
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
@@ -165,6 +166,24 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 27. **ブラウザに保存するツールは「保存した内容をすべて消す（初期状態に戻す）」ボタンを置く**（yorozu-plans ROADMAP K123。2026-09-25）。置き場は画面の「データの扱い」の定型文（WRITING.md 2 章「書き出し・読み込み・消去はこの画面のボタンから」）の直下か、「ファイルに書き出す」「ファイルから読み込む」の隣。部品はこのリポジトリの `reset-storage.js`（ツールの直下に同じものを写す）で、`<button type="button" data-reset-storage="<リポジトリ名>_">保存した内容をすべて消す（初期状態に戻す）</button>` と `<script src="./reset-storage.js"></script>` を書くだけ。押すと確認を 1 回出し、その接頭辞で始まるキーだけを消して、ページを開き直す（`#` 以降も外す）。文言は全ツールで同じ（英語ページは `Delete everything saved (reset)`）。1 つのリポジトリに別々の道具があるときは、画面ごとのキー（`gakko-keisan_naishin` など）に絞ってよい。接頭辞の無い旧キーは `data-reset-legacy` に並べる。こどもが遊ぶ画面は `data-reset-hold`（1 秒の長押しで確認を出す）。**新しい接頭辞・旧キーを使うときは、`privacy-policy.html`・`en/privacy-policy.html` 3 章の「このサイトのすべてのツールの保存内容を消す」ボタンの `data-reset-storage`・`data-reset-legacy` にも足す**（check-site が、localStorage を使うページにボタンがあることと、一括消去の一覧に漏れが無いことを確かめる）。テストは `tests/reset-storage.test.js`（bingo などと同じもの。接頭辞の一覧だけ書き換える）
 28. **子どもが使う画面（遊ぶ画面）に外部リンク（GitHub・X・note など）を置かない**（REVIEW C7 R7。外へのリンクは保護者向けの使い方ページに）。check-site が `META_ONLY_PAGES` の使い方ページ以外で見る
 29. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
+
+### トップの行の順（priority）
+
+`tools/top/priority.mjs` が `data/priority-input.json` と `data/season.json` から全ページの `priority` を計算し、`data/pages.json` の各行の `"priority"` だけを書き換える（手で直さない。`--check` で最新か、`--table` でページごとの 3 項）。yorozu-plans ROADMAP 7.24.1 の初期値の式（実測がそろうまで）:
+
+**priority ＝ 需要 ＋ 検索 ＋ 季節**（2〜8）
+
+| 項 | 入力（`data/priority-input.json`） | 点 |
+|---|---|---|
+| 需要 | `demand.pages`（ページ → yorozu-plans ROADMAP 7.2 候補台帳の K 番号。手で持つ）と `demand.grades`（K 番号 → 台帳の「根拠」列。`node tools/top/ledger.mjs <ROADMAP.md> <commit>` が機械的に写す。手で直さない）。K 行の無いページは `demand.tools`（台帳より前の道具の根拠。出典 DEMAND 7 章 / ROADMAP 7.24.2 の 1。その道具の全ページに。K 行のある子ページは K 行が先）、どちらにも無ければ「なし」 | A＝3・B＝2・C／なし＝1 |
+| 検索 | `gsc.repos`（Search Console の直近 4 週の表示回数。オーナーの PC の週次レポート `content\Notes\metrics\*_weekly.md` の「ツール別」の表を `{"<リポジトリ名>": 数}` で貼る。その道具の全ページに同じ順位（子ページ単位の値はまだ無いので代理。7.24.2 の 2）。同数は同じ順位） | サイト内 1〜10 位＝3・11〜30 位＝2・それ以下と表に無い道具＝1 |
+| 季節 | `month`（計算に使う月）と `data/season.json` のその月 | 入っていれば ＋2 |
+
+例: 年末調整 ＝ A 3 ＋ 表示 1 位 3 ＋ 季節 2 ＝ 8、住宅ローン ＝ 道具の A 3 ＋ 表示 1 ＋ 0 ＝ 4（`tests/priority.test.mjs`）。
+
+- **2026-10-03 の初期値は `gsc.repos` が空**（週次レポートはオーナーの PC にあり、この環境に無い）なので、検索の項は全ページ 1。オーナーが週次レポートの「ツール別」の表の数字を貼ったら、`gsc.repos` と `gsc.period` に入れて `node tools/top/priority.mjs && node tools/build-top.mjs` で再計算する
+- 毎月（第 1 月曜の企画サイクル）`month` を当月にして再計算する。台帳の根拠が変わったら `ledger.mjs` を流し直す
+- 4 週後からは、検索の項を Cloudflare の「トップから移った先」の PV ＋ 表示回数の順位にする予定（7.24.1「4 週後の自動化」。式の 3 項は同じ）
 
 ## AdSense
 
