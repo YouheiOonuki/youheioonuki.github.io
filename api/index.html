@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公開データの一覧（CC0・出典と確認日つき）｜yorozu-craft</title>
+  <meta name="description" content="yorozu-craft の公開データ（改定カレンダー・内申点の式・天文カレンダー・元素と首都の一言・元号表・学年早見表）の一覧。どれも CC0 で、ファイルの中に出典・確認日・生成日があります。認証なしで読めます。">
+  <meta name="robots" content="index, follow">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://yorozu-craft.com/api/">
+  <link rel="alternate" type="application/json" href="https://yorozu-craft.com/api/index.json">
+  <meta property="og:title" content="公開データの一覧（CC0・出典と確認日つき）｜yorozu-craft">
+  <meta property="og:description" content="改定カレンダー・内申点の式・天文カレンダー・元素と首都の一言・元号表・学年早見表。どれも CC0。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://yorozu-craft.com/api/">
+  <meta property="og:image" content="https://yorozu-craft.com/og-image.png">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta property="og:locale" content="ja_JP">
+
+  <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <style>body{margin:0}</style>
+  <link rel="stylesheet" href="../legal.css">
+  <!-- このページだけの追加（calendar-help.html と同じ型）: ダークモードと表 -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1814; --bg-2: #25201a; --card: #2b251e; --text: #ece4d6;
+        --muted: #b9ab96; --accent: #e0a066; --border: #4a3f33; --shadow: rgba(0, 0, 0, 0.4);
+      }
+    }
+    .wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+    th, td { border-bottom: 1px solid var(--border); padding: 0.45rem 0.4rem; text-align: left; vertical-align: top; }
+    thead th { font-size: 0.8rem; color: var(--muted); }
+    @media (min-width: 641px) { td:nth-of-type(n+2):not(:last-child), td:last-child summary { white-space: nowrap; } }
+    .fmt { font-weight: 400; font-size: 0.78rem; color: var(--muted); }
+    summary { cursor: pointer; color: var(--accent); }
+    .src { margin: 0.3rem 0 0; padding-left: 1rem; }
+    .src li { overflow-wrap: anywhere; font-size: 0.78rem; }
+    code { overflow-wrap: anywhere; }
+    @media (max-width: 640px) {
+      thead { display: none; }
+      table, tbody, tr, th, td { display: block; width: auto; }
+      tr { border-bottom: 1px solid var(--border); padding: 0.4rem 0; }
+      th, td { border: 0; padding: 0.15rem 0; }
+      td:nth-of-type(2)::before { content: "ライセンス: "; color: var(--muted); }
+      td:nth-of-type(3)::before { content: "確認日: "; color: var(--muted); }
+      td:nth-of-type(4)::before { content: "生成日: "; color: var(--muted); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="site-bar"><a href="../">yorozu-craft</a></div>
+
+  <main>
+    <article>
+      <h1>公開データの一覧</h1>
+      <p>yorozu-craft の道具が使っている値のうち、ほかの道具やプログラムでも使えるものを、ファイルのまま置いています。どれも CC0（パブリック・ドメイン提供）で、ファイルの中に出典（source）・確認日（checked）・生成日（generated）があります。登録や鍵は要らず、ブラウザやプログラムから直接読めます（<code>Access-Control-Allow-Origin: *</code>）。</p>
+
+      <h2 id="list">ファイル</h2>
+      <div class="wrap">
+      <table>
+        <thead><tr><th scope="col">データ</th><th scope="col">中身</th><th scope="col">ライセンス</th><th scope="col">確認日</th><th scope="col">生成日</th><th scope="col">出典</th></tr></thead>
+        <tbody>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/seido-keisan/data/kaitei.json">制度の改定カレンダー</a><br><span class="fmt">JSON</span></th>
+          <td>税・社会保険・給付の施行日と出典<br><a href="https://yorozu-craft.com/seido-keisan/kaitei/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-09-25</td>
+          <td>2026-10-03</td>
+          <td><details><summary>31 件</summary><ul class="src"><li><a href="https://www.nta.go.jp/publication/pamph/gensen/0025005-051.pdf" rel="noopener">https://www.nta.go.jp/publication/pamph/gensen/0025005-051.pdf</a></li><li><a href="https://www.nta.go.jp/users/gensen/2026kiso/pdf/0026005-024.pdf" rel="noopener">https://www.nta.go.jp/users/gensen/2026kiso/pdf/0026005-024.pdf</a></li><li><a href="https://www.nta.go.jp/publication/pamph/gensen/2026kaisei.pdf" rel="noopener">https://www.nta.go.jp/publication/pamph/gensen/2026kaisei.pdf</a></li><li><a href="https://www.nta.go.jp/publication/pamph/pdf/0026005-024_02.pdf" rel="noopener">https://www.nta.go.jp/publication/pamph/pdf/0026005-024_02.pdf</a></li><li><a href="https://laws.e-gov.go.jp/law/340AC0000000033/20270101_508AC0000000012" rel="noopener">https://laws.e-gov.go.jp/law/340AC0000000033/20270101_508AC0000000012</a></li><li><a href="https://laws.e-gov.go.jp/law/332AC0000000026/20270101_508AC0000000012" rel="noopener">https://laws.e-gov.go.jp/law/332AC0000000026/20270101_508AC0000000012</a></li><li><a href="https://laws.e-gov.go.jp/law/325AC0000000226/20270101_508AC0000000002" rel="noopener">https://laws.e-gov.go.jp/law/325AC0000000226/20270101_508AC0000000002</a></li><li><a href="https://laws.e-gov.go.jp/law/325AC0000000226/20280101_508AC0000000002" rel="noopener">https://laws.e-gov.go.jp/law/325AC0000000226/20280101_508AC0000000002</a></li><li><a href="https://www.soumu.go.jp/main_content/001063704.pdf" rel="noopener">https://www.soumu.go.jp/main_content/001063704.pdf</a></li><li><a href="https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/pdf/0026004-099-01-1.pdf" rel="noopener">https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/pdf/0026004-099-01-1.pdf</a></li><li><a href="https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/zeiritsuhikisage.htm" rel="noopener">https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/zeiritsuhikisage.htm</a></li><li><a href="https://www.cfa.go.jp/policies/kodomokosodateshienkinseido" rel="noopener">https://www.cfa.go.jp/policies/kodomokosodateshienkinseido</a></li><li><a href="https://laws.e-gov.go.jp/law/334AC0000000141/20261001_506AC0000000047" rel="noopener">https://laws.e-gov.go.jp/law/334AC0000000141/20261001_506AC0000000047</a></li><li><a href="https://www.mext.go.jp/a_menu/shotou/career/05010502/1408866_00004.htm" rel="noopener">https://www.mext.go.jp/a_menu/shotou/career/05010502/1408866_00004.htm</a></li><li><a href="https://www.nenkin.go.jp/tokusetsu/zairoukaisei.html" rel="noopener">https://www.nenkin.go.jp/tokusetsu/zairoukaisei.html</a></li><li><a href="https://www.mhlw.go.jp/content/001728499.pdf" rel="noopener">https://www.mhlw.go.jp/content/001728499.pdf</a></li><li><a href="https://laws.e-gov.go.jp/law/349AC0000000116" rel="noopener">https://laws.e-gov.go.jp/law/349AC0000000116</a></li><li><a href="https://laws.e-gov.go.jp/law/349AC0000000116/20281001_506AC0000000026" rel="noopener">https://laws.e-gov.go.jp/law/349AC0000000116/20281001_506AC0000000026</a></li><li><a href="https://laws.e-gov.go.jp/law/329AC0000000115/20261001_507AC0000000074" rel="noopener">https://laws.e-gov.go.jp/law/329AC0000000115/20261001_507AC0000000074</a></li><li><a href="https://laws.e-gov.go.jp/law/329AC0000000115/20270901_507AC0000000074" rel="noopener">https://laws.e-gov.go.jp/law/329AC0000000115/20270901_507AC0000000074</a></li><li><a href="https://laws.e-gov.go.jp/law/329AC0000000115/20271001_507AC0000000074" rel="noopener">https://laws.e-gov.go.jp/law/329AC0000000115/20271001_507AC0000000074</a></li><li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000147284_00017.html" rel="noopener">https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000147284_00017.html</a></li><li><a href="https://www.mhlw.go.jp/content/12400000/001713111.pdf" rel="noopener">https://www.mhlw.go.jp/content/12400000/001713111.pdf</a></li><li><a href="https://laws.e-gov.go.jp/law/215IO0000000243/20260801_508CO0000000240" rel="noopener">https://laws.e-gov.go.jp/law/215IO0000000243/20260801_508CO0000000240</a></li><li><a href="https://laws.e-gov.go.jp/law/215IO0000000243/20270801_508CO0000000240" rel="noopener">https://laws.e-gov.go.jp/law/215IO0000000243/20270801_508CO0000000240</a></li><li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryouhoken/juuyou/kougakuiryou/index.html" rel="noopener">https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryouhoken/juuyou/kougakuiryou/index.html</a></li><li><a href="https://www.mhlw.go.jp/content/12500000/001537487.pdf" rel="noopener">https://www.mhlw.go.jp/content/12500000/001537487.pdf</a></li><li><a href="https://www.moj.go.jp/MINJI/souzokutouki-gimuka/index.html" rel="noopener">https://www.moj.go.jp/MINJI/souzokutouki-gimuka/index.html</a></li><li><a href="https://www.moj.go.jp/MINJI/minji05_00693.html" rel="noopener">https://www.moj.go.jp/MINJI/minji05_00693.html</a></li><li><a href="https://www.nenkin.go.jp/service/kokunen/hokenryo/hokenryo.html" rel="noopener">https://www.nenkin.go.jp/service/kokunen/hokenryo/hokenryo.html</a></li><li><a href="https://www.kyoukaikenpo.or.jp/about/business/insurance_rate/rate_prefectures/r08/index.html" rel="noopener">https://www.kyoukaikenpo.or.jp/about/business/insurance_rate/rate_prefectures/r08/index.html</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/seido-keisan/data/kaitei.ics">制度の改定カレンダー（iCalendar）</a><br><span class="fmt">iCalendar</span></th>
+          <td>同じ施行日の購読用カレンダー<br><a href="https://yorozu-craft.com/seido-keisan/kaitei/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-09-25</td>
+          <td>2026-10-03</td>
+          <td><details><summary>26 件</summary><ul class="src"><li><a href="https://www.nta.go.jp/publication/pamph/gensen/0025005-051.pdf" rel="noopener">https://www.nta.go.jp/publication/pamph/gensen/0025005-051.pdf</a></li><li><a href="https://www.cfa.go.jp/policies/kodomokosodateshienkinseido" rel="noopener">https://www.cfa.go.jp/policies/kodomokosodateshienkinseido</a></li><li><a href="https://www.mext.go.jp/a_menu/shotou/career/05010502/1408866_00004.htm" rel="noopener">https://www.mext.go.jp/a_menu/shotou/career/05010502/1408866_00004.htm</a></li><li><a href="https://www.nenkin.go.jp/tokusetsu/zairoukaisei.html" rel="noopener">https://www.nenkin.go.jp/tokusetsu/zairoukaisei.html</a></li><li><a href="https://www.moj.go.jp/MINJI/minji05_00693.html" rel="noopener">https://www.moj.go.jp/MINJI/minji05_00693.html</a></li><li><a href="https://www.mhlw.go.jp/content/001728499.pdf" rel="noopener">https://www.mhlw.go.jp/content/001728499.pdf</a></li><li><a href="https://laws.e-gov.go.jp/law/349AC0000000116" rel="noopener">https://laws.e-gov.go.jp/law/349AC0000000116</a></li><li><a href="https://laws.e-gov.go.jp/law/215IO0000000243/20260801_508CO0000000240" rel="noopener">https://laws.e-gov.go.jp/law/215IO0000000243/20260801_508CO0000000240</a></li><li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryouhoken/juuyou/kougakuiryou/index.html" rel="noopener">https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryouhoken/juuyou/kougakuiryou/index.html</a></li><li><a href="https://laws.e-gov.go.jp/law/329AC0000000115/20261001_507AC0000000074" rel="noopener">https://laws.e-gov.go.jp/law/329AC0000000115/20261001_507AC0000000074</a></li><li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000147284_00017.html" rel="noopener">https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000147284_00017.html</a></li><li><a href="https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/pdf/0026004-099-01-1.pdf" rel="noopener">https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice-review/pdf/0026004-099-01-1.pdf</a></li><li><a href="https://laws.e-gov.go.jp/law/334AC0000000141/20261001_506AC0000000047" rel="noopener">https://laws.e-gov.go.jp/law/334AC0000000141/20261001_506AC0000000047</a></li><li><a href="https://www.nta.go.jp/users/gensen/2026kiso/pdf/0026005-024.pdf" rel="noopener">https://www.nta.go.jp/users/gensen/2026kiso/pdf/0026005-024.pdf</a></li><li><a href="https://www.nta.go.jp/publication/pamph/gensen/2026kaisei.pdf" rel="noopener">https://www.nta.go.jp/publication/pamph/gensen/2026kaisei.pdf</a></li><li><a href="https://www.nta.go.jp/publication/pamph/pdf/0026005-024_02.pdf" rel="noopener">https://www.nta.go.jp/publication/pamph/pdf/0026005-024_02.pdf</a></li><li><a href="https://laws.e-gov.go.jp/law/340AC0000000033/20270101_508AC0000000012" rel="noopener">https://laws.e-gov.go.jp/law/340AC0000000033/20270101_508AC0000000012</a></li><li><a href="https://laws.e-gov.go.jp/law/332AC0000000026/20270101_508AC0000000012" rel="noopener">https://laws.e-gov.go.jp/law/332AC0000000026/20270101_508AC0000000012</a></li><li><a href="https://laws.e-gov.go.jp/law/325AC0000000226/20270101_508AC0000000002" rel="noopener">https://laws.e-gov.go.jp/law/325AC0000000226/20270101_508AC0000000002</a></li><li><a href="https://www.soumu.go.jp/main_content/001063704.pdf" rel="noopener">https://www.soumu.go.jp/main_content/001063704.pdf</a></li><li><a href="https://www.moj.go.jp/MINJI/souzokutouki-gimuka/index.html" rel="noopener">https://www.moj.go.jp/MINJI/souzokutouki-gimuka/index.html</a></li><li><a href="https://laws.e-gov.go.jp/law/215IO0000000243/20270801_508CO0000000240" rel="noopener">https://laws.e-gov.go.jp/law/215IO0000000243/20270801_508CO0000000240</a></li><li><a href="https://laws.e-gov.go.jp/law/329AC0000000115/20270901_507AC0000000074" rel="noopener">https://laws.e-gov.go.jp/law/329AC0000000115/20270901_507AC0000000074</a></li><li><a href="https://laws.e-gov.go.jp/law/329AC0000000115/20271001_507AC0000000074" rel="noopener">https://laws.e-gov.go.jp/law/329AC0000000115/20271001_507AC0000000074</a></li><li><a href="https://laws.e-gov.go.jp/law/325AC0000000226/20280101_508AC0000000002" rel="noopener">https://laws.e-gov.go.jp/law/325AC0000000226/20280101_508AC0000000002</a></li><li><a href="https://laws.e-gov.go.jp/law/349AC0000000116/20281001_506AC0000000026" rel="noopener">https://laws.e-gov.go.jp/law/349AC0000000116/20281001_506AC0000000026</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/gakko-keisan/data/naishin.json">都道府県別の内申点の計算式</a><br><span class="fmt">JSON</span></th>
+          <td>公立高校入試の調査書点の式と値、計算例<br><a href="https://yorozu-craft.com/gakko-keisan/naishin/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-09-25</td>
+          <td>2026-10-03</td>
+          <td><details><summary>17 件</summary><ul class="src"><li><a href="https://www.kyoiku.metro.tokyo.lg.jp/information/press/2026/09/2026091703" rel="noopener">https://www.kyoiku.metro.tokyo.lg.jp/information/press/2026/09/2026091703</a></li><li><a href="https://www.kyoiku.metro.tokyo.lg.jp/documents/d/kyoiku/20260916_r9_09" rel="noopener">https://www.kyoiku.metro.tokyo.lg.jp/documents/d/kyoiku/20260916_r9_09</a></li><li><a href="https://www.kyoiku.metro.tokyo.lg.jp/documents/d/kyoiku/20260916_r9_10" rel="noopener">https://www.kyoiku.metro.tokyo.lg.jp/documents/d/kyoiku/20260916_r9_10</a></li><li><a href="https://www.pref.kanagawa.jp/docs/dc4/nyusen/nyusen/jishiyoryo.html" rel="noopener">https://www.pref.kanagawa.jp/docs/dc4/nyusen/nyusen/jishiyoryo.html</a></li><li><a href="https://www.pref.kanagawa.jp/documents/63604/14_chuui1.pdf" rel="noopener">https://www.pref.kanagawa.jp/documents/63604/14_chuui1.pdf</a></li><li><a href="https://www.pref.kanagawa.jp/docs/dc4/nyusen/nyusen/senko_kijun.html" rel="noopener">https://www.pref.kanagawa.jp/docs/dc4/nyusen/nyusen/senko_kijun.html</a></li><li><a href="https://www2.hyogo-c.ed.jp/hpe/koko/nyuushi/senbatsuyoukou_r9/" rel="noopener">https://www2.hyogo-c.ed.jp/hpe/koko/nyuushi/senbatsuyoukou_r9/</a></li><li><a href="https://www.pref.osaka.lg.jp/documents/129117/02_r9_hs_hoshin.pdf" rel="noopener">https://www.pref.osaka.lg.jp/documents/129117/02_r9_hs_hoshin.pdf</a></li><li><a href="https://www.pref.osaka.lg.jp/documents/129117/r9_senbatsuhouhou_ippan_zennichi.pdf" rel="noopener">https://www.pref.osaka.lg.jp/documents/129117/r9_senbatsuhouhou_ippan_zennichi.pdf</a></li><li><a href="https://www.pref.osaka.lg.jp/documents/129117/r09_admission_koukou.pdf" rel="noopener">https://www.pref.osaka.lg.jp/documents/129117/r09_admission_koukou.pdf</a></li><li><a href="https://www.pref.osaka.lg.jp/o180040/kotogakko/gakuji-g3/r09_senbatsu.html" rel="noopener">https://www.pref.osaka.lg.jp/o180040/kotogakko/gakuji-g3/r09_senbatsu.html</a></li><li><a href="https://www.pref.saitama.lg.jp/f2208/r9nyuushi-jisshiyoukou.html" rel="noopener">https://www.pref.saitama.lg.jp/f2208/r9nyuushi-jisshiyoukou.html</a></li><li><a href="https://www.pref.saitama.lg.jp/documents/282982/36senbatsuyouryou_r09.pdf" rel="noopener">https://www.pref.saitama.lg.jp/documents/282982/36senbatsuyouryou_r09.pdf</a></li><li><a href="https://www.pref.saitama.lg.jp/documents/282982/16dai15_r09.pdf" rel="noopener">https://www.pref.saitama.lg.jp/documents/282982/16dai15_r09.pdf</a></li><li><a href="https://www.pref.saitama.lg.jp/f2208/r9nyuushi-senbatsuzisshinaiyou.html" rel="noopener">https://www.pref.saitama.lg.jp/f2208/r9nyuushi-senbatsuzisshinaiyou.html</a></li><li><a href="https://www.pref.chiba.lg.jp/kyouiku/shidou/nyuushi/koukou/r9/r9jissiyoukou.html" rel="noopener">https://www.pref.chiba.lg.jp/kyouiku/shidou/nyuushi/koukou/r9/r9jissiyoukou.html</a></li><li><a href="https://www.pref.chiba.lg.jp/kyouiku/shidou/nyuushi/koukou/r9/documents/00r9jissiyoukou2.pdf" rel="noopener">https://www.pref.chiba.lg.jp/kyouiku/shidou/nyuushi/koukou/r9/documents/00r9jissiyoukou2.pdf</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/hoshizora-sanpo/data/tenmon.json">天文カレンダー</a><br><span class="fmt">JSON</span></th>
+          <td>新月・上弦・満月・下弦、流星群の極大、日食・月食（国立天文台の発表）<br><a href="https://yorozu-craft.com/hoshizora-sanpo/calendar/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-10-02</td>
+          <td>2026-10-03</td>
+          <td><details><summary>17 件</summary><ul class="src"><li><a href="https://eco.mtk.nao.ac.jp/koyomi/yoko/2026/rekiyou263.html" rel="noopener">https://eco.mtk.nao.ac.jp/koyomi/yoko/2026/rekiyou263.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/10.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/10.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/11.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/11.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/12-topics02.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/12-topics02.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/12.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/12.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/01-topics03.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/01-topics03.html</a></li><li><a href="https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou273.html" rel="noopener">https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou273.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/01.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/01.html</a></li><li><a href="https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou275.html" rel="noopener">https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou275.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/04.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/04.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/05.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/05.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/07.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/07.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/08.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/08.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/10.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/10.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/11.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/11.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/12.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/12.html</a></li><li><a href="https://eco.mtk.nao.ac.jp/cgi-bin/koyomi/eclipsedb.cgi" rel="noopener">https://eco.mtk.nao.ac.jp/cgi-bin/koyomi/eclipsedb.cgi</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/hoshizora-sanpo/data/tenmon.ics">天文カレンダー（iCalendar）</a><br><span class="fmt">iCalendar</span></th>
+          <td>同じ予定の購読用カレンダー<br><a href="https://yorozu-craft.com/hoshizora-sanpo/calendar/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-10-02</td>
+          <td>2026-10-03</td>
+          <td><details><summary>17 件</summary><ul class="src"><li><a href="https://eco.mtk.nao.ac.jp/koyomi/yoko/2026/rekiyou263.html" rel="noopener">https://eco.mtk.nao.ac.jp/koyomi/yoko/2026/rekiyou263.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/10.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/10.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/11.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/11.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/12-topics02.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/12-topics02.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2026/12.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2026/12.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/01-topics03.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/01-topics03.html</a></li><li><a href="https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou273.html" rel="noopener">https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou273.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/01.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/01.html</a></li><li><a href="https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou275.html" rel="noopener">https://eco.mtk.nao.ac.jp/koyomi/yoko/2027/rekiyou275.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/04.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/04.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/05.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/05.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/07.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/07.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/08.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/08.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/10.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/10.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/11.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/11.html</a></li><li><a href="https://www.nao.ac.jp/astro/sky/2027/12.html" rel="noopener">https://www.nao.ac.jp/astro/sky/2027/12.html</a></li><li><a href="https://eco.mtk.nao.ac.jp/cgi-bin/koyomi/eclipsedb.cgi" rel="noopener">https://eco.mtk.nao.ac.jp/cgi-bin/koyomi/eclipsedb.cgi</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/quiz-hiroba/data/genso.json">元素の「おお」の一言</a><br><span class="fmt">JSON</span></th>
+          <td>118 元素の名前の由来・発見・周期表の位置（1 文ずつ出典つき）<br><a href="https://yorozu-craft.com/quiz-hiroba/genso/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-09-25</td>
+          <td>2026-10-03</td>
+          <td><details><summary>8 件</summary><ul class="src"><li><a href="https://iupac.org/what-we-do/periodic-table-of-elements/" rel="noopener">https://iupac.org/what-we-do/periodic-table-of-elements/</a></li><li><a href="https://iupac.org/wp-content/uploads/2022/05/IUPAC_Periodic_Table-04May22.pdf" rel="noopener">https://iupac.org/wp-content/uploads/2022/05/IUPAC_Periodic_Table-04May22.pdf</a></li><li><a href="https://www.chemistry.or.jp/know/doc/atom_2026.pdf" rel="noopener">https://www.chemistry.or.jp/know/doc/atom_2026.pdf</a></li><li><a href="https://www.chemistry.or.jp/news/113nh.html" rel="noopener">https://www.chemistry.or.jp/news/113nh.html</a></li><li><a href="https://www.ciaaw.org/" rel="noopener">https://www.ciaaw.org/</a></li><li><a href="https://pubchem.ncbi.nlm.nih.gov/periodic-table/" rel="noopener">https://pubchem.ncbi.nlm.nih.gov/periodic-table/</a></li><li><a href="https://periodic.lanl.gov/" rel="noopener">https://periodic.lanl.gov/</a></li><li><a href="https://iupac.org/iupac-announces-the-names-of-the-elements-113-115-117-and-118/" rel="noopener">https://iupac.org/iupac-announces-the-names-of-the-elements-113-115-117-and-118/</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/quiz-hiroba/data/shuto.json">世界の首都の「おお」の一言</a><br><span class="fmt">JSON</span></th>
+          <td>首都の名前の由来・創設の年・そばの水域（Wikidata から）<br><a href="https://yorozu-craft.com/quiz-hiroba/shuto/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-10-01</td>
+          <td>2026-10-03</td>
+          <td><details><summary>2 件</summary><ul class="src"><li><a href="https://www.wikidata.org/" rel="noopener">https://www.wikidata.org/</a></li><li><a href="https://www.mofa.go.jp/mofaj/area/index.html" rel="noopener">https://www.mofa.go.jp/mofaj/area/index.html</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/gengo/data/gengo.json">元号表</a><br><span class="fmt">JSON</span></th>
+          <td>明治〜令和の始まりと終わりの日と出典<br><a href="https://yorozu-craft.com/gengo/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-09-24</td>
+          <td>2026-10-03</td>
+          <td><details><summary>7 件</summary><ul class="src"><li><a href="https://www.archives.go.jp/ayumi/kobetsu/m01_1868_04.html" rel="noopener">https://www.archives.go.jp/ayumi/kobetsu/m01_1868_04.html</a></li><li><a href="https://www.archives.go.jp/ayumi/kobetsu/m45_1912_01.html" rel="noopener">https://www.archives.go.jp/ayumi/kobetsu/m45_1912_01.html</a></li><li><a href="https://www.digital.archives.go.jp/file/2515429.html" rel="noopener">https://www.digital.archives.go.jp/file/2515429.html</a></li><li><a href="https://laws.e-gov.go.jp/law/364CO0000000001" rel="noopener">https://laws.e-gov.go.jp/law/364CO0000000001</a></li><li><a href="https://laws.e-gov.go.jp/law/431CO0000000143" rel="noopener">https://laws.e-gov.go.jp/law/431CO0000000143</a></li><li><a href="https://laws.e-gov.go.jp/law/105DF0000000337" rel="noopener">https://laws.e-gov.go.jp/law/105DF0000000337</a></li><li><a href="https://laws.e-gov.go.jp/law/354AC0000000043" rel="noopener">https://laws.e-gov.go.jp/law/354AC0000000043</a></li></ul></details></td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://yorozu-craft.com/gengo/data/gakunen.json">学年早見表</a><br><span class="fmt">JSON</span></th>
+          <td>2020〜2035 年度の生年月日と学年の対応<br><a href="https://yorozu-craft.com/gengo/gakunen/">画面で見る</a></td>
+          <td>CC0-1.0</td>
+          <td>2026-09-25</td>
+          <td>2026-10-03</td>
+          <td><details><summary>3 件</summary><ul class="src"><li><a href="https://laws.e-gov.go.jp/law/322AC0000000026" rel="noopener">https://laws.e-gov.go.jp/law/322AC0000000026</a></li><li><a href="https://laws.e-gov.go.jp/law/322M40000080011" rel="noopener">https://laws.e-gov.go.jp/law/322M40000080011</a></li><li><a href="https://laws.e-gov.go.jp/law/349M50000080028" rel="noopener">https://laws.e-gov.go.jp/law/349M50000080028</a></li></ul></details></td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h2 id="use">使うときに</h2>
+      <ul>
+        <li>確認日は出典の原文を確かめた日、生成日はファイルの中身が変わった日です。制度の値は改正で変わるので、判断には出典の原文を確かめてください。</li>
+        <li>表示の義務はありませんが、「出典: yorozu-craft（各ページの URL）」と書いてもらえると、どこで使われているかが分かって助かります。</li>
+        <li>機械で読むための一覧: <a href="./index.json">index.json</a>。道具の一覧（agent 向け）: <a href="../llms.txt">llms.txt</a>。カレンダーの登録のしかた: <a href="../calendar-help.html">カレンダーに登録する</a>。</li>
+        <li>このページと index.json は、各ファイルの中の値から機械で書き出しています（tools/build-agent.mjs）。</li>
+      </ul>
+    </article>
+  </main>
+
+  <footer>
+    <nav aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="../">yorozu-craft トップ</a></li>
+        <li><a href="../about.html">運営者情報</a></li>
+        <li><a href="../privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+  </footer>
+
+  <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
