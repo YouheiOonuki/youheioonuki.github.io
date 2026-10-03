@@ -133,52 +133,37 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
 @media print { ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; } }
 /* yorozu-common:end */
 
-    /* ここから トップだけ（日本語のトップと同じ。yorozu-plans 企画書 59） */
-    body { min-height: 100vh; display: flex; flex-direction: column; }
-    .site-head { background: var(--bg-2); border-bottom: 1px solid var(--border); padding: var(--sp-2) var(--sp-4); }
-    .site-head > div { max-width: calc(960px - 2rem); margin: 0 auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--sp-3); }
-    .site-head h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); color: var(--accent); }
-    .site-head .kana { font-size: var(--fs-s); color: var(--muted); }
-    .site-head .lang { margin-left: auto; font-size: var(--fs-s); }
-    .site-head .lead { flex-basis: 100%; font-size: var(--fs-s); color: var(--muted); }
-    main { width: 100%; max-width: 960px; margin: 0 auto; padding: var(--sp-3) var(--sp-4) var(--sp-6); flex: 1; }
-    /* 節への移動: スマホでは 1 行で横に送る（ページは横に動かない） */
-    .cat-nav { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); margin-bottom: var(--sp-3); scrollbar-width: thin; }
-    .cat-nav a { flex: none; display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--sp-3); border: 1px solid var(--input-border); border-radius: 999px; font-size: var(--fs-s); text-decoration: none; white-space: nowrap; }
-    h2 { font-size: var(--fs-l); line-height: var(--lh-tight); color: var(--text); margin: var(--sp-6) 0 var(--sp-2); }
-    .new-tools h2 { margin-top: 0; }
-    .new-tools h2 small { font-size: var(--fs-s); font-weight: 400; color: var(--muted); }
-    .new-tools p { color: var(--muted); }
-    .new-tools a { font-weight: 700; }
-    .cat-lead { font-size: var(--fs-s); color: var(--muted); margin-bottom: var(--sp-2); }
-    /* 道具の一覧: 箱と影は付けず、薄い面と余白でまとめる（1 カード ＝ 1 リポジトリの入口） */
-    .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--sp-2); }
-    .tools a { display: block; height: 100%; padding: var(--sp-2) var(--sp-3); background: var(--card); border-radius: var(--radius); color: var(--text); text-decoration: none; line-height: 1.5; }
-    .tools img { float: left; width: 24px; height: 24px; margin: 1px var(--sp-2) 0 0; }
-    .tools strong { color: var(--accent); }
-    .tools span { display: block; clear: left; margin-top: var(--sp-1); font-size: var(--fs-s); color: var(--muted); }
-    @media (hover: hover) { .tools a:hover strong { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 3px; } }
-    .for-link { margin-top: var(--sp-1); }
-    .for-link a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; }
-    footer { border-top: 1px solid var(--border); padding: var(--sp-3) var(--sp-4); font-size: var(--fs-s); color: var(--muted); }
-    footer > div { max-width: calc(960px - 2rem); margin: 0 auto; }
+    /* ここから 英語トップだけ（ROADMAP 7.23: 日本語トップと同じ骨組みを縮める。部品は ../top.css）。英語版のあるツールだけを載せる（README「ツールを追加するとき」23）。
+       行は data/pages.json の en（英語版を足したら en.pages と en.sections に 1 行足して node tools/build-top.mjs） */
+    .site-head { padding: var(--sp-3) var(--sp-4) var(--sp-2); }
+    .site-head > div, main, footer > div { max-width: 960px; margin: 0 auto; }
+    .site-head > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--sp-3); }
+    .site-head h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); color: var(--text); }
+    .site-head .lang { margin-left: auto; display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }
+    .site-head .lead { flex-basis: 100%; line-height: 1.5; max-width: 40em; }
+    footer p { max-width: 40em; }
+    main { padding: 0 var(--sp-4) var(--sp-6); }
+    h2 { font-size: var(--fs-l); line-height: var(--lh-tight); margin: var(--sp-6) 0 var(--sp-2); }
+    .yt-first h2 { margin: var(--sp-2) 0 var(--sp-1); }
+    .yt-sec { margin-top: var(--sp-2); }
+    .yt-sec .yt-head h2, .yt-sec > h2 { margin: var(--sp-2) 0 0; }
+    .yt-for { list-style: none; display: grid; grid-template-columns: 1fr; gap: var(--sp-2); }
+    .yt-for a { display: flex; align-items: center; min-height: var(--tap); padding: 0 var(--sp-3); border: 1px solid var(--input-border); border-radius: var(--radius); color: var(--text); font-weight: 700; text-decoration: none; line-height: 1.3; }
+    @media (hover: hover) { .yt-for a:hover { text-decoration: underline; } }
+    footer { border-top: 1px solid var(--border); padding: var(--sp-1) var(--sp-4) var(--sp-2); color: var(--muted); }
     footer nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-4); }
-    footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); }
-    /* スマホ: 2 列。説明は名前の下（SCREEN 5 章: 字は 14px 以上、押せる所は 44px 以上） */
-    @media (max-width: 599px) {
-      .tools { grid-template-columns: 1fr 1fr; gap: 6px; }
-      .tools a { padding: 6px var(--sp-2); }
-      .tools img { width: 20px; height: 20px; margin-right: var(--sp-1); }
-      .tools span { clear: none; line-height: 1.45; }
-      .tools strong { font-size: 0.9375rem; line-height: 1.4; }
-      .tools li:last-child:nth-child(odd) { grid-column: 1 / -1; }
-      h2 { margin: var(--sp-3) 0 var(--sp-2); }
-      main { padding-top: var(--sp-2); }
-      .cat-nav { margin-bottom: var(--sp-2); }
+    footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); }
+    footer small { font-size: var(--fs-s); }
+    @media (min-width: 720px) {
+      .yt-season { grid-template-columns: repeat(3, 1fr); }
+      .yt-for { grid-template-columns: repeat(3, 1fr); }
+      .yt-secs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 var(--sp-6); }
     }
   </style>
+  <link rel="stylesheet" href="../top.css">
 </head>
 <body>
+  <a class="yt-skip" href="#main">Skip to content</a>
 
   <header class="site-head">
     <div>
@@ -188,69 +173,98 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
     </div>
   </header>
 
-  <main>
-    <!-- 英語版のあるツールだけを載せる（README「ツールを追加するとき」23）。英語版を足したら、合う節に <li> を 1 つ足す。
-         リンクは各リポジトリの英語の入口（/<リポジトリ>/en/）だけ。例外: seido-keisan は英語の入口ページが無いので、英語ページ（D75）を直接載せる（企画書 59） -->
-    <section class="cat" id="it" aria-labelledby="it-heading">
-      <h2 id="it-heading">IT admin tools</h2>
-      <ul class="tools">
-        <li><a href="../pac-tester/en/"><img src="../pac-tester/favicon.svg" alt="" width="24" height="24"><strong>PAC File Tester</strong> <span>Test a proxy.pac against a list of URLs, with syntax checks and an old/new diff. Runs offline.</span></a></li>
-        <li><a href="../ADSearch/en/"><img src="../ADSearch/favicon.svg" alt="" width="24" height="24"><strong>ADSearch</strong> <span>Get-ADUser without RSAT: a read-only PowerShell module that queries Active Directory as an ordinary domain user.</span></a></li>
-        <li><a href="../filetime/en/"><img src="../filetime/favicon.svg" alt="" width="24" height="24"><strong>FILETIME &amp; LDAP Timestamp Converter</strong> <span>Turn 18-digit AD timestamps such as pwdLastSet and lastLogonTimestamp into dates and back.</span></a></li>
-      </ul>
-    </section>
+  <main id="main">
+    <div class="yt-first">
+      <!-- top:search:begin --><div class="yt-search" role="search" data-base="../">
+        <label for="yt-q">Find a tool</label>
+        <input id="yt-q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="yt-q-list" autocomplete="off" enterkeyhint="go" placeholder="Tax, furigana, bingo…">
+        <ul id="yt-q-list" role="listbox" aria-label="Find a toolの候補" hidden></ul>
+        <p class="yt-status visually-hidden" aria-live="polite"></p>
+        <p class="yt-empty" hidden>No match.<a href="../all/">See the Japanese tool list</a></p>
+      </div><!-- top:search:end -->
 
-    <section class="cat" id="data" aria-labelledby="data-heading">
-      <h2 id="data-heading">Data converters</h2>
-      <ul class="tools">
-        <li><a href="../fitbit-export/en/"><img src="../fitbit-export/favicon.svg" alt="" width="24" height="24"><strong>Fitbit Data to CSV Converter</strong> <span>Turn your Google Takeout zip into one row per day: sleep, steps, resting heart rate, weight. Nothing is uploaded.</span></a></li>
-        <li><a href="../ai-log/en/"><img src="../ai-log/favicon.svg" alt="" width="24" height="24"><strong>AI Chat Log to Markdown</strong> <span>One Markdown file per chat from your ChatGPT or Claude export, ready for Obsidian. Nothing is uploaded.</span></a></li>
-      </ul>
-    </section>
+      <section aria-labelledby="season-h">
+        <h2 id="season-h">This month</h2>
+        <!-- top:season:begin --><ul class="yt-season" data-season-month="10" data-base="../"><li><a href="../seido-keisan/en/take-home-pay/"><strong>Japan Take-Home Pay Calculator</strong><span>Year-end adjustment forms arrive in October.</span></a></li></ul><!-- top:season:end -->
+      </section>
 
-    <section class="cat" id="ja" aria-labelledby="ja-heading">
-      <h2 id="ja-heading">Japanese dates and text</h2>
-      <ul class="tools">
-        <li><a href="../gengo/en/"><img src="../gengo/favicon.svg" alt="" width="24" height="24"><strong>Japanese Era Converter</strong> <span>Convert Reiwa, Heisei and Shōwa years to Western years and back. Also age, school year and a printable age chart.</span></a></li>
-        <li><a href="../furigana/en/"><img src="../furigana/favicon.svg" alt="" width="24" height="24"><strong>Furigana Generator</strong> <span>Paste Japanese text and add furigana above kanji, filtered by school grade or the Jōyō list. Runs in your browser.</span></a></li>
-      </ul>
-    </section>
+      <section aria-labelledby="for-h">
+        <h2 id="for-h">Who it’s for</h2>
+        <ul class="yt-for">
+          <li><a href="#life">Living in Japan</a></li>
+          <li><a href="#learn">Learning Japanese</a></li>
+          <li><a href="#it">Sysadmin tools</a></li>
+        </ul>
+      </section>
+    </div>
 
-    <section class="cat" id="party" aria-labelledby="party-heading">
-      <h2 id="party-heading">Classroom and party tools</h2>
-      <ul class="tools">
-        <li><a href="../bingo/en/"><img src="../bingo/favicon.svg" alt="" width="24" height="24"><strong>Bingo Caller</strong> <span>Free, no sign-up. Big-screen draws with voice calls, plus printable cards you can check by number. Works offline.</span></a></li>
-        <li><a href="../toban/en/"><img src="../toban/favicon.svg" alt="" width="24" height="24"><strong>Random Group Generator</strong> <span>Split a class list into groups with rules: balance gender, keep people apart or together, avoid last time's groups. Print on A4 or Letter.</span></a></li>
-        <li><a href="../unplugged/en/"><img src="../unplugged/favicon.svg" alt="" width="24" height="24"><strong>Unplugged Coding Printables</strong> <span>Print a robot board, command cards and answers for screen-free coding lessons. A new puzzle every time. A4 or Letter.</span></a></li>
+    <div class="yt-secs">
+    <!-- top:sections:begin -->
+    <section class="yt-sec" id="life" aria-labelledby="life-h">
+      <h2 id="life-h">Living in Japan</h2>
+      <ul class="yt-rows">
+        <li><a class="yt-name" href="../seido-keisan/en/take-home-pay/">Japan Take-Home Pay Calculator</a> <span class="yt-note">Salary after tax and insurance</span></li>
+        <li><a class="yt-name" href="../seido-keisan/en/residence-tax/">Japan Residence Tax Calculator</a> <span class="yt-note">Residence tax on your salary</span></li>
+        <li><a class="yt-name" href="../seido-keisan/en/pension-refund/">Japan Pension Refund Calculator</a> <span class="yt-note">Refund after leaving Japan</span></li>
       </ul>
+      <details>
+        <summary>7 more</summary>
+        <ul class="yt-rows">
+          <li><a class="yt-name" href="../seido-keisan/en/childcare-leave/">Japan Childcare Leave Benefit Calculator</a> <span class="yt-note">Pay on maternity and childcare leave</span></li>
+          <li><a class="yt-name" href="../seido-keisan/en/high-cost-medical/">Japan High-Cost Medical Expense Benefit Calculator</a> <span class="yt-note">Monthly limit on medical costs</span></li>
+          <li><a class="yt-name" href="../seido-keisan/en/moving-checklist/">Japan Moving Checklist for Foreign Residents</a> <span class="yt-note">What to do when you move</span></li>
+          <li><a class="yt-name" href="../gengo/en/">Japanese Era Converter</a> <span class="yt-note">Reiwa, Heisei and Shōwa years</span></li>
+          <li><a class="yt-name" href="../hoshizora-sanpo/en/">Web Planetarium</a> <span class="yt-note">Tonight’s sky for your city</span></li>
+          <li><a class="yt-name" href="../hoshizora-night/en/">Night Sky Tonight, Full Version</a> <span class="yt-note">Tonight’s sky, drawn large</span></li>
+          <li><a class="yt-name" href="../tameshite/en/sleep-calculator/">Sleep Calculator</a> <span class="yt-note">When to go to bed or wake up</span></li>
+        </ul>
+      </details>
     </section>
-
-    <section class="cat" id="learn" aria-labelledby="learn-heading">
-      <h2 id="learn-heading">For learners of Japanese</h2>
-      <ul class="tools">
-        <li><a href="../gakushu-print/en/"><img src="../gakushu-print/favicon.svg" alt="" width="24" height="24"><strong>Hiragana &amp; Katakana Practice Sheets</strong> <span>Printable kana tracing sheets with romaji, and genkouyoushi grid paper. Print on A4 or US Letter, or save as PDF.</span></a></li>
+    <section class="yt-sec" id="learn" aria-labelledby="learn-h">
+      <h2 id="learn-h">Learning Japanese</h2>
+      <ul class="yt-rows">
+        <li><a class="yt-name" href="../gakushu-print/en/">Hiragana &amp; Katakana Practice Sheets</a> <span class="yt-note">Printable kana tracing sheets</span></li>
+        <li><a class="yt-name" href="../furigana/en/">Furigana Generator</a> <span class="yt-note">Readings above kanji</span></li>
+        <li><a class="yt-name" href="../bingo/en/">Bingo Caller</a> <span class="yt-note">Big-screen draws and cards</span></li>
       </ul>
+      <details>
+        <summary>2 more</summary>
+        <ul class="yt-rows">
+          <li><a class="yt-name" href="../toban/en/">Random Group Generator</a> <span class="yt-note">Split a class into groups</span></li>
+          <li><a class="yt-name" href="../unplugged/en/">Unplugged Coding Printables</a> <span class="yt-note">Screen-free coding lessons</span></li>
+        </ul>
+      </details>
     </section>
-
-    <section class="cat" id="life" aria-labelledby="life-heading">
-      <h2 id="life-heading">Living in Japan</h2>
-      <ul class="tools">
-        <li><a href="../seido-keisan/en/take-home-pay/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Take-Home Pay Calculator</strong> <span>Your salary after tax in Japan: income tax, residence tax and social insurance for employees.</span></a></li>
-        <li><a href="../seido-keisan/en/residence-tax/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Residence Tax Calculator</strong> <span>How much residence tax you pay on your salary in Japan, and when.</span></a></li>
-        <li><a href="../seido-keisan/en/childcare-leave/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Childcare Leave Benefit Calculator</strong> <span>How much you get each month on maternity and childcare leave in Japan.</span></a></li>
-        <li><a href="../seido-keisan/en/high-cost-medical/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan High-Cost Medical Expense Benefit Calculator</strong> <span>Your monthly limit on medical costs in Japan, and how much comes back.</span></a></li>
-        <li><a href="../seido-keisan/en/moving-checklist/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Moving Checklist for Foreign Residents</strong> <span>What to do, where and by when, as a printable list.</span></a></li>
-        <li><a href="../seido-keisan/en/pension-refund/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Pension Refund Calculator</strong> <span>Lump-sum Withdrawal Payment: what you get back after leaving Japan, the 20.42% tax and your deadline.</span></a></li>
+    <section class="yt-sec" id="it" aria-labelledby="it-h">
+      <h2 id="it-h">Sysadmin tools</h2>
+      <ul class="yt-rows">
+        <li><a class="yt-name" href="../pac-tester/en/">PAC File Tester</a> <span class="yt-note">Test a proxy.pac against URLs</span></li>
+        <li><a class="yt-name" href="../ADSearch/en/">ADSearch</a> <span class="yt-note">Read AD without RSAT</span></li>
+        <li><a class="yt-name" href="../filetime/en/">FILETIME &amp; LDAP Timestamp Converter</a> <span class="yt-note">18-digit AD times to dates</span></li>
       </ul>
+      <details>
+        <summary>2 more</summary>
+        <ul class="yt-rows">
+          <li><a class="yt-name" href="../fitbit-export/en/">Fitbit Data to CSV Converter</a> <span class="yt-note">Takeout zip to daily CSV</span></li>
+          <li><a class="yt-name" href="../ai-log/en/">AI Chat Log to Markdown</a> <span class="yt-note">Chat exports to Markdown</span></li>
+        </ul>
+      </details>
     </section>
+    <!-- top:sections:end -->
+    </div>
 
-    <section class="cat" id="sky" aria-labelledby="sky-heading">
-      <h2 id="sky-heading">Sky and stars</h2>
-      <ul class="tools">
-        <li><a href="../hoshizora-sanpo/en/"><img src="../hoshizora-sanpo/favicon.svg" alt="" width="24" height="24"><strong>Web Planetarium</strong> <span>See tonight’s sky for your city: stars, constellations, planets and the Moon’s phase. Plus an astronomy calendar and a printable planisphere.</span></a></li>
-        <li><a href="../hoshizora-night/en/"><img src="../hoshizora-night/favicon.svg" alt="" width="24" height="24"><strong>Night Sky Tonight, Full Version</strong> <span>Tonight’s sky for your place, drawn large: a deep blue sky, softly glowing stars and the slow turn of the night.</span></a></li>
-        <li><a href="../tameshite/en/sleep-calculator/"><img src="../tameshite/favicon.svg" alt="" width="24" height="24"><strong>Sleep Calculator</strong> <span>What time to go to bed, or wake up, between sleep cycles.</span></a></li>
+    <section class="yt-sec" aria-labelledby="new-h">
+      <h2 id="new-h">New tools</h2>
+      <!-- new-tools:begin -->
+      <ul class="yt-chips yt-new">
+        <li><a href="../seido-keisan/en/childcare-leave/">Japan Childcare Leave Benefit Calculator</a></li>
+        <li><a href="../seido-keisan/en/high-cost-medical/">Japan High-Cost Medical Expense Benefit Calculator</a></li>
+        <li><a href="../seido-keisan/en/moving-checklist/">Japan Moving Checklist for Foreign Residents</a></li>
+        <li><a href="../hoshizora-night/en/">Night Sky Tonight, Full Version</a></li>
+        <li><a href="../tameshite/en/sleep-calculator/">Sleep Calculator</a></li>
+        <li><a href="../seido-keisan/en/residence-tax/">Japan Residence Tax Calculator</a></li>
       </ul>
+      <!-- new-tools:end -->
     </section>
   </main>
 
@@ -260,10 +274,14 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
       <nav aria-label="About this site">
         <a href="./about.html">About and disclaimer</a>
         <a href="./privacy-policy.html">Privacy policy</a>
-        <span>&copy; 2026 yorozu-craft. All rights reserved.</span>
+        <small>&copy; 2026 yorozu-craft. All rights reserved.</small>
       </nav>
     </div>
   </footer>
+
+  <!-- top:data:begin --><script type="application/json" id="yt-index">{"rows":[{"p":"/seido-keisan/en/take-home-pay/","t":"Japan Take-Home Pay Calculator","g":"Living in Japan","n":"Salary after tax and insurance","a":["salary","net pay","income tax"]},{"p":"/seido-keisan/en/residence-tax/","t":"Japan Residence Tax Calculator","g":"Living in Japan","n":"Residence tax on your salary","a":["juminzei","local tax"]},{"p":"/seido-keisan/en/pension-refund/","t":"Japan Pension Refund Calculator","g":"Living in Japan","n":"Refund after leaving Japan","a":["lump-sum withdrawal","nenkin","leaving Japan"]},{"p":"/seido-keisan/en/childcare-leave/","t":"Japan Childcare Leave Benefit Calculator","g":"Living in Japan","n":"Pay on maternity and childcare leave","a":["parental leave","maternity"]},{"p":"/seido-keisan/en/high-cost-medical/","t":"Japan High-Cost Medical Expense Benefit Calculator","g":"Living in Japan","n":"Monthly limit on medical costs","a":["medical bills","hospital"]},{"p":"/seido-keisan/en/moving-checklist/","t":"Japan Moving Checklist for Foreign Residents","g":"Living in Japan","n":"What to do when you move","a":["moving","address change"]},{"p":"/gengo/en/","t":"Japanese Era Converter","g":"Living in Japan","n":"Reiwa, Heisei and Shōwa years","a":["Reiwa","wareki","age"]},{"p":"/hoshizora-sanpo/en/","t":"Web Planetarium","g":"Living in Japan","n":"Tonight’s sky for your city","a":["stars","constellations","night sky"]},{"p":"/hoshizora-night/en/","t":"Night Sky Tonight, Full Version","g":"Living in Japan","n":"Tonight’s sky, drawn large","a":["stars"]},{"p":"/tameshite/en/sleep-calculator/","t":"Sleep Calculator","g":"Living in Japan","n":"When to go to bed or wake up","a":["bedtime","sleep cycle"]},{"p":"/gakushu-print/en/","t":"Hiragana & Katakana Practice Sheets","g":"Learning Japanese","n":"Printable kana tracing sheets","a":["kana","worksheet","JLPT","genkouyoushi"]},{"p":"/furigana/en/","t":"Furigana Generator","g":"Learning Japanese","n":"Readings above kanji","a":["ruby","kanji reading"]},{"p":"/bingo/en/","t":"Bingo Caller","g":"Learning Japanese","n":"Big-screen draws and cards","a":["bingo cards"]},{"p":"/toban/en/","t":"Random Group Generator","g":"Learning Japanese","n":"Split a class into groups","a":["team generator","groups"]},{"p":"/unplugged/en/","t":"Unplugged Coding Printables","g":"Learning Japanese","n":"Screen-free coding lessons","a":["coding","robot"]},{"p":"/pac-tester/en/","t":"PAC File Tester","g":"Sysadmin tools","n":"Test a proxy.pac against URLs","a":["proxy","pac"]},{"p":"/ADSearch/en/","t":"ADSearch","g":"Sysadmin tools","n":"Read AD without RSAT","a":["Active Directory","PowerShell","Get-ADUser"]},{"p":"/filetime/en/","t":"FILETIME & LDAP Timestamp Converter","g":"Sysadmin tools","n":"18-digit AD times to dates","a":["pwdLastSet","lastLogonTimestamp"]},{"p":"/fitbit-export/en/","t":"Fitbit Data to CSV Converter","g":"Sysadmin tools","n":"Takeout zip to daily CSV","a":["csv"]},{"p":"/ai-log/en/","t":"AI Chat Log to Markdown","g":"Sysadmin tools","n":"Chat exports to Markdown","a":["ChatGPT","Claude","Obsidian"]}]}</script>
+  <script type="application/json" id="yt-season">{"months":{"1":[{"path":"/gengo/en/","name":"Japanese Era Converter","reason":"New year: convert dates to the Reiwa era."}],"2":[{"path":"/seido-keisan/en/moving-checklist/","name":"Japan Moving Checklist for Foreign Residents","reason":"Moving in spring? Plan the paperwork."}],"3":[{"path":"/seido-keisan/en/moving-checklist/","name":"Japan Moving Checklist for Foreign Residents","reason":"Moving season: what to do and by when."},{"path":"/seido-keisan/en/pension-refund/","name":"Japan Pension Refund Calculator","reason":"Leaving Japan? Check your pension refund."}],"4":[{"path":"/seido-keisan/en/take-home-pay/","name":"Japan Take-Home Pay Calculator","reason":"New job in April? See your take-home pay."}],"5":[{"path":"/seido-keisan/en/residence-tax/","name":"Japan Residence Tax Calculator","reason":"Residence tax notices arrive in late May."}],"6":[{"path":"/seido-keisan/en/residence-tax/","name":"Japan Residence Tax Calculator","reason":"Check the residence tax on your notice."},{"path":"/gakushu-print/en/","name":"Hiragana & Katakana Practice Sheets","reason":"The JLPT is in July: practice kana."}],"7":[{"path":"/seido-keisan/en/childcare-leave/","name":"Japan Childcare Leave Benefit Calculator","reason":"Benefit caps change on August 1."},{"path":"/seido-keisan/en/high-cost-medical/","name":"Japan High-Cost Medical Expense Benefit Calculator","reason":"The yearly limit counts from August to July."},{"path":"/hoshizora-sanpo/en/","name":"Web Planetarium","reason":"Summer nights: see tonight’s sky."}],"8":[{"path":"/hoshizora-sanpo/en/","name":"Web Planetarium","reason":"The Perseid meteor shower peaks in August."},{"path":"/seido-keisan/en/childcare-leave/","name":"Japan Childcare Leave Benefit Calculator","reason":"New benefit caps from August 1."}],"9":[{"path":"/seido-keisan/en/take-home-pay/","name":"Japan Take-Home Pay Calculator","reason":"Before year-end adjustment: check your pay."}],"10":[{"path":"/seido-keisan/en/take-home-pay/","name":"Japan Take-Home Pay Calculator","reason":"Year-end adjustment forms arrive in October."}],"11":[{"path":"/gakushu-print/en/","name":"Hiragana & Katakana Practice Sheets","reason":"The JLPT is in December: practice kana."},{"path":"/furigana/en/","name":"Furigana Generator","reason":"Read kanji with furigana before the JLPT."}],"12":[{"path":"/bingo/en/","name":"Bingo Caller","reason":"Year-end parties: bingo with printable cards."},{"path":"/gengo/en/","name":"Japanese Era Converter","reason":"Next year in the Reiwa era."}]}}</script><!-- top:data:end -->
+  <script src="../top.js" defer></script>
 
   <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
 </body>

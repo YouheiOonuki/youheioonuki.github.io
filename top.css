@@ -1,0 +1,52 @@
+/* トップ・すべての道具（/all/）・用途別の入口（/for/*）・英語トップ（/en/）で共有する部品（yorozu-plans ROADMAP 7.23「トップの構成」）
+   色・字・余白は yorozu-common のトークンだけ。強調色（--accent の面）を使うのは「いまの時期」の 3 枚だけ。影・枠飾りは使わない。動きは無い
+   字の階層: 屋号（--fs-xl）・節（--fs-l）・行（--fs-m）。一言・チップ・理由は補足（--fs-s = 14px） */
+
+/* 本文へ（スキップリンク）: フォーカスしたときだけ見える */
+.yt-skip { position: absolute; left: var(--sp-2); top: -100px; z-index: 10; background: var(--card); color: var(--text); padding: var(--sp-2) var(--sp-4); min-height: var(--tap); display: inline-flex; align-items: center; }
+.yt-skip:focus { top: var(--sp-2); }
+
+/* 検索（combobox ＋ listbox）。候補は入力欄の下に重ねて出す（下の段が動かない） */
+.yt-search { position: relative; }
+.yt-search label { display: block; font-weight: 700; margin-bottom: var(--sp-1); }
+.yt-search input { width: 100%; min-height: var(--tap); padding: var(--sp-1) var(--sp-3); border: 1px solid var(--input-border); border-radius: var(--radius); background: var(--card); }
+.yt-search [role="listbox"] { position: absolute; z-index: 5; left: 0; right: 0; top: 100%; margin: var(--sp-1) 0 0; padding: var(--sp-1) 0; list-style: none; background: var(--card); border: 1px solid var(--input-border); border-radius: var(--radius); max-height: 60vh; overflow-y: auto; }
+.yt-search [role="option"] { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--sp-2); min-height: var(--tap); padding: var(--sp-2) var(--sp-3); color: var(--text); text-decoration: none; }
+.yt-search [role="option"] strong { font-weight: 700; }
+.yt-search [role="option"] span { font-size: var(--fs-s); color: var(--muted); }
+.yt-search [role="option"][aria-selected="true"] { background: var(--bg-2); text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) { .yt-search [role="option"]:hover { background: var(--bg-2); } }
+.yt-empty { margin-top: var(--sp-1); }
+.yt-empty a { margin-left: var(--sp-2); display: inline-flex; align-items: center; min-height: var(--tap); }
+
+/* いまの時期: 強調色を使う唯一の場所 */
+.yt-season { list-style: none; display: grid; gap: var(--sp-2); }
+.yt-season a { display: block; min-height: var(--tap); background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 6px var(--sp-3); color: var(--accent); text-decoration: none; line-height: 1.4; }
+.yt-season strong { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+@media (hover: hover) { .yt-season a:hover strong { text-decoration-thickness: 3px; } }
+.yt-season span { display: block; font-size: var(--fs-s); color: var(--text); }
+
+/* 用途の節: 1 行 1 入口（名前・一言・子ページのチップ最大 3） */
+.yt-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.yt-head a { flex: none; display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); color: var(--text); }
+.yt-rows, .yt-all { list-style: none; }
+.yt-rows > li { border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--sp-2); }
+.yt-name { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; color: var(--text); }
+.yt-note { font-size: var(--fs-s); color: var(--muted); }
+.yt-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-3); flex-basis: 100%; }
+.yt-new { flex-basis: auto; }
+/* チップ: 見た目は小さく、当たり判定は 44px（上下の余白を含めて） */
+.yt-chips a { display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); color: var(--text); text-underline-offset: 3px; }
+.yt-chips a::before { content: "→"; margin-right: 2px; color: var(--muted); text-decoration: none; }
+.yt-sec details > summary { display: flex; align-items: center; min-height: var(--tap); cursor: pointer; font-size: var(--fs-s); font-weight: 700; color: var(--text); border-top: 1px solid var(--border); }
+/* 新しいツール: 横 1 行（はみ出す分は横に送る。自動では流れない） */
+.yt-new { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+.yt-new li { flex: none; }
+/* すべての道具（/all/） */
+.yt-all > li { border-top: 1px solid var(--border); padding: var(--sp-1) 0; }
+.yt-all ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-3); padding: 0 0 var(--sp-1) var(--sp-3); }
+.yt-all ul a { display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); color: var(--text); }
+@media print {
+  .yt-search, .yt-skip { display: none; }
+  .yt-all a { min-height: 0; }
+}
