@@ -179,6 +179,33 @@ if (pages.has(BASE + 'en/')) {
   for (const t of toolsOnEn) if (!toolsWithEn.has(t)) fail('/en/', `英語のトップにある ${t} の英語ページ（/${t}/en/）が ${t} の sitemap に無い`);
 } else if (toolsWithEn.size) notes.push(`英語のトップ /en/ がルートの sitemap.xml に無いため、英語ページの一覧の確認を省略（英語ページのあるツール: ${[...toolsWithEn].join(', ')}）`);
 
+// 2c. 道具のページの一覧（data/pages.json）と、トップからの届きやすさ（yorozu-plans 企画書 59）
+//  - sitemap にある道具のページ（/<ツール>/ と /<ツール>/<子>/。英語・印刷の着地・共有の着地・用途別の入口は除く）が data/pages.json に全部ある
+//    （無ければ新しいページ: 公開日を 1 行足して node tools/build-top.mjs）
+//  - トップの「新しいツール」の欄が data/pages.json の新しい順と同じ（tools/build-top.mjs の出力）
+//  - どのページもトップから 2 クリック以内（トップに直接か、トップにある入口のページから）。新しい順の上位はトップに直接
+{
+  const { newToolsHtml } = await import('./build-top.mjs');
+  const pj = await get(BASE + 'data/pages.json');
+  let reg = null;
+  try { reg = JSON.parse(pj.body); } catch { fail('/data/pages.json', `読めない（${pj.status}）`); }
+  if (reg) {
+    const regPaths = new Set(reg.pages.map(p => p.path));
+    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p);
+    for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
+    for (const p of regPaths) if (![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
+    const want = newToolsHtml(reg);
+    if (!top.body.includes(want)) fail('index.html', '「新しいツール」の欄が data/pages.json の新しい順と違う（node tools/build-top.mjs）');
+    const onTop = new Set(hrefs(top.body).filter(h => h.startsWith('./')).map(h => '/' + h.slice(2).replace(/[?#].*$/, '')));
+    const twoClick = new Set(onTop);
+    for (const e of [...onTop].filter(p => /^\/[^/]+\/$/.test(p) && regPaths.has(p))) {
+      const r = await get(BASE + e.slice(1));
+      for (const h of hrefs(r.body)) { try { twoClick.add(new URL(h, BASE + e.slice(1)).pathname); } catch {} }
+    }
+    for (const p of regPaths) if (!twoClick.has(p)) fail(p, 'トップから 2 クリックで届かない（トップの節か、その道具の入口ページにリンクを置く）');
+  }
+}
+
 // ブラウザに保存するページか（インラインと同じオリジンの <script src> に localStorage・indexedDB がある。コメントの中の語は数えない）
 // 消すボタンの部品 reset-storage.js 自身は数えない
 async function usesStorage(html, url) {

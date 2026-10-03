@@ -148,10 +148,13 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
     .cat-nav a { flex: none; display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--sp-3); border: 1px solid var(--input-border); border-radius: 999px; font-size: var(--fs-s); text-decoration: none; white-space: nowrap; }
     h2 { font-size: var(--fs-l); line-height: var(--lh-tight); color: var(--text); margin: var(--sp-6) 0 var(--sp-2); }
     .new-tools h2 { margin-top: 0; }
-    .new-tools h2 small { font-size: var(--fs-s); font-weight: 400; color: var(--muted); }
-    .new-tools p { color: var(--muted); }
-    .new-tools a { font-weight: 700; }
-    .cat-lead { font-size: var(--fs-s); color: var(--muted); margin-bottom: var(--sp-2); }
+    .new-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); gap: 0 var(--sp-3); }
+    .new-list a { font-weight: 700; }
+    .new-list time { font-size: var(--fs-s); color: var(--muted); }
+    /* 節の末尾の「ほかに」: 子ページ（用途が別のもの）へのリンクの列。文の中のリンクなので 44px の対象外（WCAG 2.5.8 の inline） */
+    .more, .for-row { font-size: var(--fs-s); color: var(--muted); margin-top: var(--sp-2); }
+    .more a, .for-row a { margin-right: var(--sp-2); font-weight: 700; white-space: nowrap; }
+    .for-row { margin: 0 0 var(--sp-2); }
     /* 道具の一覧: 箱と影は付けず、薄い面と余白でまとめる（1 カード ＝ 1 リポジトリの入口） */
     .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--sp-2); }
     .tools a { display: block; height: 100%; padding: var(--sp-2) var(--sp-3); background: var(--card); border-radius: var(--radius); color: var(--text); text-decoration: none; line-height: 1.5; }
@@ -159,8 +162,6 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
     .tools strong { color: var(--accent); }
     .tools span { display: block; clear: left; margin-top: var(--sp-1); font-size: var(--fs-s); color: var(--muted); }
     @media (hover: hover) { .tools a:hover strong { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 3px; } }
-    .for-link { margin-top: var(--sp-1); }
-    .for-link a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; }
     footer { border-top: 1px solid var(--border); padding: var(--sp-3) var(--sp-4); font-size: var(--fs-s); color: var(--muted); }
     footer > div { max-width: calc(960px - 2rem); margin: 0 auto; }
     footer nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-4); }
@@ -200,11 +201,23 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
       <a href="#oya">親・家族のために</a>
     </nav>
 
-    <!-- 新しいツール: 3 件。載せるのは公開後の再点検（iPhone・Android で 1 回ずつ操作、印刷物は 1 枚印刷）を済ませたものだけ（REVIEW C7 R11）。
-         リンクは各リポジトリの入口だけ（子ページへ直に張らない。yorozu-plans 企画書 59・ROADMAP 7.9.2）。月 1 回入れ替える -->
+    <!-- 用途別の入口（GROWTH 10 章）: 使う人から選ぶ 1 行 -->
+    <p class="for-row">使う人から: <a href="./for/teachers/">先生</a> <a href="./for/kaigo/">介護（広告なし）</a> <a href="./for/it/">情シス</a></p>
+
+    <!-- 新しいツール: data/pages.json の公開日の新しい順に 6 件。手で書かない（node tools/build-top.mjs が作る。check-site が最新かを確かめる。企画書 59）。
+         道具の入口のほか、用途が別の子ページ（カポ・月の出入りなど）も載る -->
     <section class="new-tools" aria-labelledby="new-heading">
-      <h2 id="new-heading">新しいツール <small>2026-09-25</small></h2>
-      <p><a href="./quiz-hiroba/">クイズ広場</a>（早押し・百人一首の読み上げ）、<a href="./web-metronome/">メトロノーム・ピアノ</a>、<a href="./fitbit-export/">Fitbit データ CSV 変換</a></p>
+      <h2 id="new-heading">新しいツール</h2>
+      <!-- new-tools:begin -->
+      <ul class="new-list">
+        <li><a href="./web-metronome/capo/">カポ・移調</a> <time datetime="2026-10-03">10/03</time></li>
+        <li><a href="./seido-keisan/yobosesshu/">子どもの予防接種</a> <time datetime="2026-10-03">10/03</time></li>
+        <li><a href="./hoshizora-sanpo/tsuki/">月の出・月の入り</a> <time datetime="2026-10-03">10/03</time></li>
+        <li><a href="./otasuke/kenshin/">健診の経年グラフ</a> <time datetime="2026-10-02">10/02</time></li>
+        <li><a href="./hoshizora-sanpo/shinwa/">ギリシャ神話</a> <time datetime="2026-10-02">10/02</time></li>
+        <li><a href="./hoshizora-night/">星空 フル版</a> <time datetime="2026-10-02">10/02</time></li>
+      </ul>
+      <!-- new-tools:end -->
     </section>
 
     <!-- 載せるのはリポジトリ（家族）の入口だけ。子ページは各入口ページから（ROADMAP 7.9.2・企画書 59） -->
@@ -217,6 +230,7 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
         <li><a href="./seido-keisan/"><img src="./seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>制度の計算機</strong> <span>年末調整・住民税・育休・年金などの計算。</span></a></li>
         <li><a href="./gengo/"><img src="./gengo/favicon.svg" alt="" width="24" height="24"><strong>元号・西暦・年齢の変換</strong> <span>和暦と西暦、年齢・学年・厄年・回忌。</span></a></li>
       </ul>
+      <p class="more">ほかに: <a href="./seido-keisan/yobosesshu/">予防接種</a> <a href="./seido-keisan/nenmatsu/">年末調整</a> <a href="./seido-keisan/juminzei/">住民税</a> <a href="./seido-keisan/ikukyu/">育休の給付金</a></p>
     </section>
 
     <section class="cat" id="atsumari" aria-labelledby="atsumari-heading">
@@ -239,7 +253,6 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
         <li><a href="./ADSearch/"><img src="./ADSearch/favicon.svg" alt="" width="24" height="24"><strong>ADSearch（PowerShell）</strong> <span>RSAT なしで AD・DNS・GPO を読み取ります。</span></a></li>
         <li><a href="./filetime/"><img src="./filetime/favicon.svg" alt="" width="24" height="24"><strong>FILETIME・LDAP 時刻の変換</strong> <span>pwdLastSet などの 18 桁を日時に。</span></a></li>
       </ul>
-      <p class="for-link"><a href="./for/it/">情シスの方へ（VDI・1 ファイル版）</a></p>
     </section>
 
     <section class="cat" id="henkan" aria-labelledby="henkan-heading">
@@ -266,22 +279,21 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
         <li><a href="./unplugged/"><img src="./unplugged/favicon.svg" alt="" width="24" height="24"><strong>アンプラグド・プログラミング</strong> <span>ロボットの盤面と命令カードを印刷します。</span></a></li>
         <li><a href="./tameshite/"><img src="./tameshite/favicon.svg" alt="" width="24" height="24"><strong>ためして（耳・反射・目）</strong> <span>高い音・反射神経・記憶力・老眼の目安。</span></a></li>
       </ul>
-      <p class="for-link"><a href="./for/teachers/">先生の方へ（教室で使う道具と印刷）</a></p>
+      <p class="more">ほかに: <a href="./hoshizora-sanpo/calendar/">天文カレンダー</a> <a href="./hoshizora-sanpo/tsuki/">月の出入り</a> <a href="./hoshizora-sanpo/shinwa/">ギリシャ神話</a> <a href="./web-metronome/capo/">カポ</a> <a href="./web-metronome/piano/">ピアノ</a></p>
     </section>
 
     <section class="cat" id="oya" aria-labelledby="oya-heading">
       <h2 id="oya-heading">親・家族のために（広告なし）</h2>
-      <p class="cat-lead">年金・高額療養費（制度の計算機）、老眼チェック（ためして）、昭和クイズ（クイズ広場）も広告なしです。</p>
       <ul class="tools">
         <li><a href="./otasuke/"><img src="./otasuke/favicon.svg" alt="" width="24" height="24"><strong>くらしのおたすけ</strong> <span>写経用紙・冷蔵庫に貼る紙・大時計・健診の経年グラフなど。</span></a></li>
       </ul>
-      <p class="for-link"><a href="./for/kaigo/">介護の方へ（レクの印刷物・広告なし）</a></p>
+      <p class="more">広告なし: <a href="./otasuke/kenshin/">健診グラフ</a> <a href="./seido-keisan/nenkin-kuriage/">年金の繰上げ</a> <a href="./seido-keisan/kogaku-ryoyohi/">高額療養費</a> <a href="./tameshite/roogan/">老眼チェック</a> <a href="./quiz-hiroba/showa/">昭和クイズ</a></p>
     </section>
   </main>
 
   <footer>
     <div>
-      <p>すべて無料・登録不要。入力したデータは外部に送信しません。</p>
+      <p>無料・登録不要。入力は外部に送信しません。</p>
       <nav aria-label="サイトの情報">
         <a href="./about.html">運営者情報・免責事項</a>
         <a href="./privacy-policy.html">プライバシーポリシー</a>
