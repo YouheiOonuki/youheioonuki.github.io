@@ -4,7 +4,7 @@
 // データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 最大 3 ページと理由）
 // 欄:
 //   search   … 検索欄（端末の中だけで絞る。top.js）       season … いまの時期（作った日の月。ページを開いた月が違えば top.js が入れ替える）
-//   sections … 用途の節（各節 3 行、残りは <details>）   all    … すべての道具（/all/。節ごとに全行）
+//   sections … 用途の節（各節 priority の上位 3 行、残りは <details>。7.24.1）   all    … すべての道具（/all/。節ごとに全行）
 //   data     … 検索の一覧と季節表の JSON（top.js が読む）  new-tools … 新しいツール（公開日の新しい順に newCount 件）
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -47,38 +47,61 @@ export function newToolsHtml(data, base = './', rows = newest(data)) {
   return `${BEGIN}\n      <ul class="yt-chips yt-new">\n${items.join('\n')}\n      </ul>\n      ${END}`;
 }
 
-// ---- 節 ----
-// 行の並び: 公開日の古い順（同じ日は data/pages.json の sections の順）。Cloudflare の遷移の実測がそろうまで（7.23）
-export function sectionsJa(data) {
-  const map = new Map(data.pages.map((p) => [p.path, p]));
-  return data.sections.map((s) => ({
-    ...s,
-    rows: s.rows.map((r, i) => {
-      const p = map.get(r.path);
-      if (!p) throw new Error(`節 ${s.name} の行 ${r.path} が pages に無い`);
-      const chips = (r.chips || []).map((c) => (typeof c === 'string' ? { path: c } : c));
-      for (const c of chips) if (!map.has(c.path)) throw new Error(`チップ ${c.path} が pages に無い`);
-      if ((r.chips || []).length > 3) throw new Error(`${r.path} のチップが 3 つより多い`);
-      if ([...r.note].length > 15) throw new Error(`${r.path} の一言が 15 字より長い: ${r.note}`);
-      return { ...r, name: r.name || label(p), date: p.date, i, chips: chips.map((c) => ({ path: c.path, name: c.name || label(map.get(c.path)) })) };
-    }).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.i - b.i)),
-  }));
-}
-// どのページがどの節か: 節の行 → その節。チップ → その行の節。ほかは入口（/<ツール>/）の節
-export function sectionOf(data) {
-  const out = new Map();
-  for (const s of data.sections) for (const r of s.rows) out.set(r.path, s.id);
-  for (const s of data.sections) for (const r of s.rows) for (const c of r.chips || []) { const cp = typeof c === 'string' ? c : c.path; if (!out.has(cp)) out.set(cp, s.id); }
+// ---- 節（ROADMAP 7.24.1「行とチップの選び方」）----
+// 1 ページ ＝ 1 用途。節（section）はページごとに持つ。note（一言）のあるページが行の候補
+// 行の並び: pin を先に、priority の降順、同点は公開日の新しい方（同じ日は pages.json の順）。上位 3 が行、残りは「ほかに N 件」
+// チップ: 上位 3 の行ごとに related（手で選ぶ最大 3）。3 つに満たなければ同じ節のページを priority の順で埋める。
+//         同じ節で行に出ているページと先のチップは出さない。チップに出たページは「ほかに」から外す（1 つの節に 1 回: 行かチップのどちらか）
+//         「ほかに」の行のチップは related のうち、その節にまだ出ていないものだけ（埋めない）
+export const VISIBLE = 3;
+// チップを出す行の数（節の先頭から）。全体 3 画面（2,532px）に収めるため 1（2 にすると 2,800px 前後になる。2026-10-03 の実測）
+export const CHIP_ROWS = 1;
+const rowName = (p) => p.name || label(p);
+const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (a.date < b.date ? 1 : a.date > b.date ? -1 : a.i - b.i);
+export function checkPages(data) {
+  const ids = new Set(data.sections.map((s) => s.id));
+  const paths = new Set(data.pages.map((p) => p.path));
   for (const p of data.pages) {
-    if (out.has(p.path)) continue;
-    const rootPath = '/' + p.path.split('/')[1] + '/';
-    if (!out.has(rootPath)) throw new Error(`${p.path} の入口 ${rootPath} がどの節にも無い（sections に 1 行足す）`);
-    out.set(p.path, out.get(rootPath));
+    if (!ids.has(p.section)) throw new Error(`${p.path} の section「${p.section}」が sections に無い`);
+    if (!Number.isInteger(p.priority)) throw new Error(`${p.path} に priority が無い（node tools/top/priority.mjs）`);
+    if (!Array.isArray(p.aliases)) throw new Error(`${p.path} に aliases が無い`);
+    if (p.note != null) {
+      if ([...p.note].length > 15) throw new Error(`${p.path} の一言が 15 字より長い: ${p.note}`);
+      if (!Array.isArray(p.related)) throw new Error(`行の候補 ${p.path} に related が無い`);
+      if (p.related.length > 3) throw new Error(`${p.path} の related が 3 つより多い`);
+      for (const r of p.related) if (!paths.has(r) || r === p.path) throw new Error(`${p.path} の related ${r} が pages に無い`);
+    } else if (p.related || p.pin) throw new Error(`${p.path} に note が無いのに related か pin がある`);
   }
-  return out;
+  for (const s of data.sections) {
+    const pins = data.pages.filter((p) => p.section === s.id && p.pin);
+    if (pins.length > 1) throw new Error(`節 ${s.name} の pin が 2 件以上: ${pins.map((p) => p.path).join(' ')}`);
+  }
+}
+export function sectionsJa(data) {
+  checkPages(data);
+  const pages = data.pages.map((p, i) => ({ ...p, i }));
+  const map = new Map(pages.map((p) => [p.path, p]));
+  return data.sections.map((s) => {
+    const inSec = pages.filter((p) => p.section === s.id).sort(order);
+    const cands = inSec.filter((p) => p.note != null);
+    const top = cands.slice(0, VISIBLE);
+    const used = new Set(top.map((p) => p.path));
+    const take = (list, chips) => { for (const r of list) { if (chips.length >= 3) break; if (!used.has(r)) { chips.push(r); used.add(r); } } };
+    const topChips = top.map((p, n) => { const c = []; if (n < CHIP_ROWS) { take(p.related, c); take(inSec.map((x) => x.path), c); } return c; });
+    const rest = cands.slice(VISIBLE).filter((p) => !used.has(p.path));
+    rest.forEach((p) => used.add(p.path));
+    const restChips = rest.map((p) => { const c = []; take(p.related, c); return c; });
+    const mk = (p, chips) => ({ path: p.path, name: rowName(p), note: p.note, date: p.date, priority: p.priority, pin: !!p.pin, i: p.i,
+      chips: chips.map((c) => ({ path: c, name: map.get(c).chip || rowName(map.get(c)) })) });
+    const rows = [...top.map((p, n) => mk(p, topChips[n])), ...rest.map((p, n) => mk(p, restChips[n]))];
+    return { id: s.id, name: s.name, rows };
+  });
+}
+// どのページがどの節か（pages.json の section）
+export function sectionOf(data) {
+  return new Map(data.pages.map((p) => [p.path, p.section]));
 }
 
-const VISIBLE = 3;
 function rowHtml(r, base, pad) {
   const chips = r.chips.length
     ? `\n${pad}  <ul class="yt-chips" aria-label="${esc(r.name)}のページ">${r.chips.map((c) => `<li><a href="${base}${c.path.slice(1)}">${esc(c.name)}</a></li>`).join('')}</ul>`
@@ -114,22 +137,16 @@ export function sectionsEnHtml(data, base = '../') {
   return sectionsEn(data).map((s) => sectionBlock(s, base, null, EN)).join('\n');
 }
 
-// ---- すべての道具（/all/）: 節ごとに、行（入口）とその子ページ。全ページが 1 回ずつ出る ----
+// ---- すべての道具（/all/）: 節ごとに、ページを行の順で。同じ節の入口（/<ツール>/）の下にその子ページ。全ページが 1 回ずつ出る ----
 export function allRows(data) {
-  const sec = sectionOf(data);
-  const secs = sectionsJa(data);
-  const used = new Set();
-  return secs.map((s) => {
-    const items = [];
-    for (const r of s.rows) {
-      const p = data.pages.find((x) => x.path === r.path);
-      const kids = data.pages.filter((x) => x.path !== r.path && x.path.startsWith(r.path) && sec.get(x.path) === s.id && !s.rows.some((y) => y.path === x.path));
-      items.push({ page: p, kids });
-      used.add(p.path); kids.forEach((k) => used.add(k.path));
-    }
-    // 入口の下に入らないページ（チップで別の節に入ったものなど）
-    const loose = data.pages.filter((x) => sec.get(x.path) === s.id && !used.has(x.path));
-    loose.forEach((x) => { items.push({ page: x, kids: [] }); used.add(x.path); });
+  checkPages(data);
+  const pages = data.pages.map((p, i) => ({ ...p, i }));
+  return data.sections.map((s) => {
+    const inSec = pages.filter((p) => p.section === s.id).sort(order);
+    const has = new Set(inSec.map((p) => p.path));
+    const rootOf = (p) => '/' + p.path.split('/')[1] + '/';
+    const isKid = (p) => rootOf(p) !== p.path && has.has(rootOf(p));
+    const items = inSec.filter((p) => !isKid(p)).map((p) => ({ page: p, kids: inSec.filter((k) => isKid(k) && rootOf(k) === p.path) }));
     return { id: s.id, name: s.name, items };
   });
 }
@@ -149,10 +166,8 @@ export function searchRows(data, lang = 'ja') {
     const g = new Map(); for (const s of data.en.sections) for (const p of s.rows) g.set(p, s.name);
     return data.en.pages.map((p) => ({ p: p.path, t: p.title, g: g.get(p.path) || '', n: p.note, ...(p.aliases ? { a: p.aliases } : {}) }));
   }
-  const sec = sectionOf(data);
   const names = new Map(data.sections.map((s) => [s.id, s.name]));
-  const notes = new Map(); for (const s of data.sections) for (const r of s.rows) notes.set(r.path, r.note);
-  return data.pages.map((p) => ({ p: p.path, t: p.title, ...(p.short ? { s: p.short } : {}), g: names.get(sec.get(p.path)), ...(notes.has(p.path) ? { n: notes.get(p.path) } : {}), ...(p.aliases ? { a: p.aliases } : {}) }));
+  return data.pages.map((p) => ({ p: p.path, t: p.title, ...(p.short ? { s: p.short } : {}), g: names.get(p.section), ...(p.note != null ? { n: p.note } : {}), ...(p.aliases && p.aliases.length ? { a: p.aliases } : {}) }));
 }
 const TEXT = {
   ja: { label: '道具を探す', ph: '年末調整、席替え、ふりがな…', empty: '見つかりません。', all: 'すべての道具を見る', allHref: 'all/' },
