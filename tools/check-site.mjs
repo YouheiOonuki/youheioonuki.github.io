@@ -72,7 +72,9 @@ const BODY_TEST_SENTENCE = 'これは遊びの目安で、医療の検査では�
 const KENSHIN_SENTENCE = 'これは健診の結果を並べて見る道具で、医療の検査ではありません。気になるときは、健診を受けた所か、かかりつけの医師へ。';
 // 医療・効能の NG 語（REVIEW C7 R4）。対象は体を測る道具・脳トレ・回想法のページ
 const MEDICAL_NG = /診断|改善|予防|効果|治る|若返/g;
-const MEDICAL_PREFIXES = ['/tameshite/', '/otasuke/notore/', '/otasuke/kenshin/', '/quiz-hiroba/showa/'];
+const MEDICAL_PREFIXES = ['/tameshite/', '/otasuke/notore/', '/otasuke/kenshin/', '/quiz-hiroba/showa/', '/seido-keisan/yobosesshu/'];
+// 法令の名前としての語（NG 語を含むが効能の主張ではない）。数える前に除く（D230）
+const MEDICAL_TERMS = ['予防接種'];
 // NG 語を含んでよい文（打ち消しの注意だけ。ページと文の組で、文は画面の文字そのまま）
 const MEDICAL_ALLOWED = {
   '/tameshite/kioku/guide.html': ['効果を示す資料を確かめていないので、書いていません。'],
@@ -245,6 +247,7 @@ await pool([...pages], 6, async (url) => {
   // 医療・効能の NG 語（REVIEW C7 R4）。定型文と、ページごとに認めた打ち消しの文は除いて数える
   if (MEDICAL_PREFIXES.some((x) => p.startsWith(x))) {
     let t = text.split(BODY_TEST_SENTENCE).join('');
+    for (const w of MEDICAL_TERMS) t = t.split(w).join('');
     for (const a of MEDICAL_ALLOWED[p] || []) t = t.split(a).join('');
     const ng = [...new Set(t.match(MEDICAL_NG) || [])];
     if (ng.length) fail(p, `医療・効能の NG 語（${ng.join('・')}）が画面の文にある`);

@@ -210,7 +210,7 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - ブラウザに保存するページ（インラインと同じオリジンの `<script src>` に `localStorage`・`indexedDB` がある。コメントの中は数えない。noindex のページも対象）: 「保存した内容をすべて消す」ボタン（`data-reset-storage`）と `reset-storage.js` がある（「ツールを追加するとき」27）
 - プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」: 日英で同じ接頭辞・旧キーの一覧で、トップの全ツールの `<リポジトリ名>_` と、各ページの消すボタンのキーをすべて含む
 - 「広告なし」の定型文（WRITING 2 章「このページは広告なし・登録なし・入力は端末の外に出ません。」）か、title・description の「広告なし」があるページは `META_ONLY_PAGES`・`META_ONLY_PREFIXES` に入っている。高齢者向け（`ELDERLY_PAGES`・`ELDERLY_PREFIXES`）は META_ONLY で、定型文がある（REVIEW C7 R12）
-- 医療・効能の NG 語（診断・改善・予防・効果・治る・若返）が `/tameshite/`・`/otasuke/notore/`・`/otasuke/kenshin/`・`/quiz-hiroba/showa/` の画面の文に無い。定型文と、ページごとに認めた打ち消しの文（`MEDICAL_ALLOWED`）は除く。ためして の測る画面は、体を測る道具の定型文が `#result-card` より前にある（REVIEW C7 R4）。`/otasuke/kenshin/` は健診版の定型文が `#result-card` より前にある（D196）
+- 医療・効能の NG 語（診断・改善・予防・効果・治る・若返）が `/tameshite/`・`/otasuke/notore/`・`/otasuke/kenshin/`・`/quiz-hiroba/showa/`・`/seido-keisan/yobosesshu/` の画面の文に無い（法令の名前「予防接種」は除いて数える。D230）。定型文と、ページごとに認めた打ち消しの文（`MEDICAL_ALLOWED`）は除く。ためして の測る画面は、体を測る道具の定型文が `#result-card` より前にある（REVIEW C7 R4）。`/otasuke/kenshin/` は健診版の定型文が `#result-card` より前にある（D196）
 - 子どもが遊ぶ画面（`META_ONLY_PAGES` の使い方ページ以外）に github.com・x.com・twitter.com・note.com へのリンクが無い（「ツールを追加するとき」28）
 - 各ツール: 存在しない URL がツールの `404.html`（ビーコンあり）になる、`manifest.webmanifest` の `id` が `/<リポジトリ名>/`、`sw.js` のキャッシュ名が `<リポジトリ名>-` で始まる
 
