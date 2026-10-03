@@ -1,5 +1,5 @@
 {
-  "about": "tools/top/priority.mjs の入力（yorozu-plans ROADMAP 7.24.1）。priority ＝ 需要（demand: 根拠 A＝3・B＝2・C／なし＝1）＋ 検索（gsc: 表示回数の順位 1〜10 位＝3・11〜30 位＝2・それ以下と表に無いページ＝1）＋ 季節（data/season.json の month 月に入っていれば ＋2）。demand.grades は tools/top/ledger.mjs が ROADMAP 7.2 の台帳から写す（手で直さない）。demand.pages はページと K 番号の対応で手で持つ。台帳に K 行の無いページは demand.tools（台帳より前の道具の根拠。その道具の全ページに。K 行のある子ページは K 行が先）、どちらにも無ければ「なし」。gsc.repos は週次レポートの「ツール別」の表の直近 4 週の表示回数を repo → 数で貼る（その道具の全ページに同じ順位）。month は計算に使う月（毎月の再計算で直す）",
+  "about": "tools/top/priority.mjs の入力（yorozu-plans ROADMAP 7.24.1）。priority ＝ 需要（demand: 根拠 A＝3・B＝2・C／なし＝1）＋ 検索（max(表示の点, 遷移の点)。入力は data/weekly-tools.json ＝ yorozu-plans の docs/data/weekly-tools.json の写し。ROADMAP 7.24.3）＋ 季節（data/season.json の month 月に入っていれば ＋2）。demand.grades は tools/top/ledger.mjs が ROADMAP 7.2 の台帳から写す（手で直さない）。demand.pages はページと K 番号の対応で手で持つ。台帳に K 行の無いページは demand.tools（台帳より前の道具の根拠。その道具の全ページに。K 行のある子ページは K 行が先）、どちらにも無ければ「なし」。month は計算に使う月（毎月の再計算で直す）",
   "month": 10,
   "demand": {
     "source": "yorozu-plans docs/ROADMAP.md 7.2 候補台帳の「根拠」列（974aaa8）。tools/top/ledger.mjs で写した",
@@ -229,26 +229,6 @@
       "K132": "なし",
       "K136": "なし",
       "K137": "なし"
-    }
-  },
-  "gsc": {
-    "about": "オーナーの PC の週次レポート（content\\Notes\\metrics\\*_weekly.md）の「ツール別」の表の Search Console 表示回数（直近 4 週）を repo → 数で貼る（例 {\"seido-keisan\": 1234}）。この環境には無いので 2026-10-03 は空（検索の項は全ページ 1）",
-    "period": "2026-09-22〜2026-09-28（週次レポート 2026-10-01_weekly.md。4 週そろうまでは手元の最新 1 週）",
-    "repos": {
-      "gengo": 51,
-      "seido-keisan": 45,
-      "gakko-keisan": 31,
-      "filetime": 26,
-      "quiz-hiroba": 18,
-      "furigana": 14,
-      "gakushu-print": 11,
-      "pac-tester": 9,
-      "web-roulette": 8,
-      "otasuke": 5,
-      "hoshizora-sanpo": 4,
-      "ADSearch": 3,
-      "tameshite": 2,
-      "easy-split": 1
     }
   }
 }
