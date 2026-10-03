@@ -176,12 +176,12 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | 項 | 入力（`data/priority-input.json`） | 点 |
 |---|---|---|
 | 需要 | `demand.pages`（ページ → yorozu-plans ROADMAP 7.2 候補台帳の K 番号。手で持つ）と `demand.grades`（K 番号 → 台帳の「根拠」列。`node tools/top/ledger.mjs <ROADMAP.md> <commit>` が機械的に写す。手で直さない）。K 行の無いページは `demand.tools`（台帳より前の道具の根拠。出典 DEMAND 7 章 / ROADMAP 7.24.2 の 1。その道具の全ページに。K 行のある子ページは K 行が先）、どちらにも無ければ「なし」 | A＝3・B＝2・C／なし＝1 |
-| 検索 | `gsc.repos`（Search Console の直近 4 週の表示回数。オーナーの PC の週次レポート `content\Notes\metrics\*_weekly.md` の「ツール別」の表を `{"<リポジトリ名>": 数}` で貼る。その道具の全ページに同じ順位（子ページ単位の値はまだ無いので代理。7.24.2 の 2）。同数は同じ順位） | サイト内 1〜10 位＝3・11〜30 位＝2・それ以下と表に無い道具＝1 |
+| 検索 | `data/weekly-tools.json`（yorozu-plans の `docs/data/weekly-tools.json` の写し。企画側のサイクルが週次レポートの「ツール別」と「トップから移った先」を毎週写す。直近 4 週を合算）。**max(表示の点, 遷移の点)**（7.24.3）。表示はリポジトリ単位でその道具の全ページに同じ順位（表示 10 回以上の道具の中で順位）、遷移はページ単位（5 PV 以上のページの中で順位）。同数は同じ順位 | 1〜10 位＝3・11〜30 位＝2・それ以下と閾値未満＝1 |
 | 季節 | `month`（計算に使う月）と `data/season.json` のその月 | 入っていれば ＋2 |
 
 例: 年末調整 ＝ A 3 ＋ 表示 1 位 3 ＋ 季節 2 ＝ 8、住宅ローン ＝ 道具の A 3 ＋ 表示 1 ＋ 0 ＝ 4（`tests/priority.test.mjs`）。
 
-- **2026-10-03 の初期値は `gsc.repos` が空**（週次レポートはオーナーの PC にあり、この環境に無い）なので、検索の項は全ページ 1。オーナーが週次レポートの「ツール別」の表の数字を貼ったら、`gsc.repos` と `gsc.period` に入れて `node tools/top/priority.mjs && node tools/build-top.mjs` で再計算する
+- **入力の流れ**（7.24.3）: `node tools/top/priority.mjs` は隣のクローン `../yorozu-plans/docs/data/weekly-tools.json`（`WEEKLY_TOOLS` で変えられる）を読んで `data/weekly-tools.json` に写し、priority を書き換える。続けて `node tools/build-top.mjs`。`--check` は写しだけを見る。初回（2026-10-03）は週次レポート 2026-10-01 の 1 週分
 - 毎月（第 1 月曜の企画サイクル）`month` を当月にして再計算する。台帳の根拠が変わったら `ledger.mjs` を流し直す
 - 4 週後からは、検索の項を Cloudflare の「トップから移った先」の PV ＋ 表示回数の順位にする予定（7.24.1「4 週後の自動化」。式の 3 項は同じ）
 

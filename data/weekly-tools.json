@@ -1,0 +1,232 @@
+{
+  "note": "yorozu-plan-cycle が毎週月曜に週次レポートの「ツール別」と「トップから移った先」を数字だけ写す（ROADMAP 7.24.3）。手で値を変えない。yorozu-build-cycle が priority.mjs の入力に使う",
+  "weeks": [
+    {
+      "source": "content\\Notes\\metrics\\2026-10-01_weekly.md（オーナーが 2026-10-03 に貼った表をそのまま。初回は実装側が写した: ROADMAP 7.24.3）",
+      "period": {
+        "gsc": "2026-09-22/2026-09-28",
+        "cf": "2026-09-24/2026-10-01"
+      },
+      "tools": {
+        "(top)": {
+          "pv": 92,
+          "visits": 52,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "seido-keisan": {
+          "pv": 39,
+          "visits": 39,
+          "clicks": 0,
+          "impressions": 45
+        },
+        "web-metronome": {
+          "pv": 30,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "gengo": {
+          "pv": 27,
+          "visits": 25,
+          "clicks": 0,
+          "impressions": 51
+        },
+        "tameshite": {
+          "pv": 24,
+          "visits": 21,
+          "clicks": 1,
+          "impressions": 2
+        },
+        "gakushu-print": {
+          "pv": 24,
+          "visits": 24,
+          "clicks": 1,
+          "impressions": 11
+        },
+        "furigana": {
+          "pv": 24,
+          "visits": 22,
+          "clicks": 0,
+          "impressions": 14
+        },
+        "bingo": {
+          "pv": 20,
+          "visits": 18,
+          "clicks": null,
+          "impressions": null
+        },
+        "quiz-hiroba": {
+          "pv": 19,
+          "visits": 18,
+          "clicks": 2,
+          "impressions": 18
+        },
+        "pac-tester": {
+          "pv": 19,
+          "visits": 17,
+          "clicks": 1,
+          "impressions": 9
+        },
+        "ADSearch": {
+          "pv": 18,
+          "visits": 18,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "unplugged": {
+          "pv": 18,
+          "visits": 18,
+          "clicks": null,
+          "impressions": null
+        },
+        "otasuke": {
+          "pv": 17,
+          "visits": 16,
+          "clicks": 0,
+          "impressions": 5
+        },
+        "tabi-shiori": {
+          "pv": 17,
+          "visits": 15,
+          "clicks": null,
+          "impressions": null
+        },
+        "gakko-keisan": {
+          "pv": 16,
+          "visits": 16,
+          "clicks": 0,
+          "impressions": 31
+        },
+        "fitbit-export": {
+          "pv": 15,
+          "visits": 15,
+          "clicks": null,
+          "impressions": null
+        },
+        "sekigae": {
+          "pv": 15,
+          "visits": 15,
+          "clicks": null,
+          "impressions": null
+        },
+        "henkan": {
+          "pv": 15,
+          "visits": 15,
+          "clicks": null,
+          "impressions": null
+        },
+        "filetime": {
+          "pv": 14,
+          "visits": 14,
+          "clicks": 0,
+          "impressions": 26
+        },
+        "toban": {
+          "pv": 12,
+          "visits": 12,
+          "clicks": null,
+          "impressions": null
+        },
+        "en": {
+          "pv": 8,
+          "visits": 3,
+          "clicks": 0,
+          "impressions": 2
+        },
+        "todofuken-quiz": {
+          "pv": 5,
+          "visits": 4,
+          "clicks": null,
+          "impressions": null
+        },
+        "nittei-kouho": {
+          "pv": 4,
+          "visits": 4,
+          "clicks": null,
+          "impressions": null
+        },
+        "about.html": {
+          "pv": 4,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "denki-dai": {
+          "pv": 4,
+          "visits": 4,
+          "clicks": null,
+          "impressions": null
+        },
+        "print-help.html": {
+          "pv": 4,
+          "visits": 3,
+          "clicks": null,
+          "impressions": null
+        },
+        "md-viewer": {
+          "pv": 4,
+          "visits": 4,
+          "clicks": null,
+          "impressions": null
+        },
+        "privacy-policy.html": {
+          "pv": 4,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "loan-sim": {
+          "pv": 4,
+          "visits": 4,
+          "clicks": null,
+          "impressions": null
+        },
+        "shaho-check": {
+          "pv": 2,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "default": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "web-roulette": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": 0,
+          "impressions": 8
+        },
+        "easy-split": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "hoshizora-sanpo": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 4
+        }
+      },
+      "from_top": {
+        "/web-metronome/piano/": 11,
+        "/web-metronome/": 5,
+        "/en/": 5,
+        "/pac-tester/": 2,
+        "/tabi-shiori/": 2,
+        "/tameshite/": 2,
+        "/gengo/": 1,
+        "/todofuken-quiz/": 1,
+        "/privacy-policy.html": 1,
+        "/about.html": 1,
+        "/furigana/": 1,
+        "/otasuke/notore/": 1
+      }
+    }
+  ]
+}
