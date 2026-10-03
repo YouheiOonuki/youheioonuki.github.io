@@ -52,7 +52,7 @@ const META_ONLY_PAGES = new Set([
   '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
-const META_ONLY_PREFIXES = ['/otasuke/'];
+const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/'] // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）;
 const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
 // 高齢者向け（D118）の広告なしページ。先頭に「広告なし」の定型文が要る（下の R12 の突き合わせ）
 const ELDERLY_PAGES = new Set([
