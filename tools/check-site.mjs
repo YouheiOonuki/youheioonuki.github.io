@@ -18,6 +18,9 @@ const META_ONLY_PAGES = new Set([
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
   '/gakushu-print/anki/',  // 暗記カード（作る・めくるが同じ画面。D201。広告は使い方ページ）
   '/gakushu-print/tokei/', // 時計の読み方（こどもが遊ぶ画面）
+  '/seido-keisan/en/high-cost-medical/', '/seido-keisan/en/high-cost-medical/guide.html', // 高額療養費の英語版（日本語版に合わせて広告なし）
+  '/web-metronome/drum/',  // ドラムマシン（ピアノと同じ扱い。D233）
+  '/quiz-hiroba/mainichi/', // 毎日 1 問（こどもも遊ぶ画面。D246）
   '/bingo/en/',            // 同上の英語版
   '/hoshizora-sanpo/en/',  // プラネタリウムの全画面の本体（英語版）
   '/gengo/kaiki/',         // 回忌の計算（遺族が使う。広告なし: D118・D119）
@@ -52,6 +55,11 @@ const META_ONLY_PAGES = new Set([
   '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
+// 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
+const EN_ONLY_PAGES = new Set([
+  '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
+  '/tameshite/en/sleep-calculator/', '/tameshite/en/sleep-calculator/guide.html',
+]);
 const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）
 const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
 // 高齢者向け（D118）の広告なしページ。先頭に「広告なし」の定型文が要る（下の R12 の突き合わせ）
@@ -179,6 +187,33 @@ if (pages.has(BASE + 'en/')) {
   for (const t of toolsOnEn) if (!toolsWithEn.has(t)) fail('/en/', `英語のトップにある ${t} の英語ページ（/${t}/en/）が ${t} の sitemap に無い`);
 } else if (toolsWithEn.size) notes.push(`英語のトップ /en/ がルートの sitemap.xml に無いため、英語ページの一覧の確認を省略（英語ページのあるツール: ${[...toolsWithEn].join(', ')}）`);
 
+// 2c. 道具のページの一覧（data/pages.json）と、トップからの届きやすさ（yorozu-plans 企画書 59）
+//  - sitemap にある道具のページ（/<ツール>/ と /<ツール>/<子>/。英語・印刷の着地・共有の着地・用途別の入口は除く）が data/pages.json に全部ある
+//    （無ければ新しいページ: 公開日を 1 行足して node tools/build-top.mjs）
+//  - トップの「新しいツール」の欄が data/pages.json の新しい順と同じ（tools/build-top.mjs の出力）
+//  - どのページもトップから 2 クリック以内（トップに直接か、トップにある入口のページから）。新しい順の上位はトップに直接
+{
+  const { newToolsHtml } = await import('./build-top.mjs');
+  const pj = await get(BASE + 'data/pages.json');
+  let reg = null;
+  try { reg = JSON.parse(pj.body); } catch { fail('/data/pages.json', `読めない（${pj.status}）`); }
+  if (reg) {
+    const regPaths = new Set(reg.pages.map(p => p.path));
+    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p);
+    for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
+    for (const p of regPaths) if (![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
+    const want = newToolsHtml(reg);
+    if (!top.body.includes(want)) fail('index.html', '「新しいツール」の欄が data/pages.json の新しい順と違う（node tools/build-top.mjs）');
+    const onTop = new Set(hrefs(top.body).filter(h => h.startsWith('./')).map(h => '/' + h.slice(2).replace(/[?#].*$/, '')));
+    const twoClick = new Set(onTop);
+    for (const e of [...onTop].filter(p => /^\/[^/]+\/$/.test(p) && regPaths.has(p))) {
+      const r = await get(BASE + e.slice(1));
+      for (const h of hrefs(r.body)) { try { twoClick.add(new URL(h, BASE + e.slice(1)).pathname); } catch {} }
+    }
+    for (const p of regPaths) if (!twoClick.has(p)) fail(p, 'トップから 2 クリックで届かない（トップの節か、その道具の入口ページにリンクを置く）');
+  }
+}
+
 // ブラウザに保存するページか（インラインと同じオリジンの <script src> に localStorage・indexedDB がある。コメントの中の語は数えない）
 // 消すボタンの部品 reset-storage.js 自身は数えない
 async function usesStorage(html, url) {
@@ -293,7 +328,7 @@ await pool([...pages], 6, async (url) => {
   const alt = alternates(html);
   const self = expect;
   const pairOf = isEn ? 'ja' : (alt.en ? 'en' : null);
-  if (isEn && !alt.ja) fail(p, '英語ページに hreflang="ja" の対が無い');
+  if (isEn && !alt.ja && !EN_ONLY_PAGES.has(p)) fail(p, '英語ページに hreflang="ja" の対が無い');
   if (pairOf && alt[pairOf]) {
     const back = isEn ? 'en' : 'ja';
     if (alt[back] !== self) fail(p, `hreflang="${back}"（自分自身）が ${alt[back] || '無い'}（${self} のはず）`);

@@ -56,20 +56,23 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `en/index.html` | 英語のトップ `https://yorozu-craft.com/en/`（2026-09-24）。**英語版のあるツールだけ**を載せ、全部の一覧は日本語のトップへ案内する。日本語のトップと `hreflang` で結んである。英語のツールページのフッターのホーム（`../../en/`）はここに向ける |
 | `en/about.html` / `en/privacy-policy.html` | 上の2ページの英語版（2026-09-24。英語のツールページのフッターはこちらに向ける。「ツールを追加するとき」の 23）。日本語版と食い違ったら日本語版が優先と明記してある。**日本語版を直したら英語版も同じ日に直す** |
 | `reset-storage.js` / `legal.css` の `.reset-all` | 「保存した内容をすべて消す（初期状態に戻す）」ボタンの部品（2026-09-25。yorozu-plans K123）。各ツールは同じものを写して使う（「ツールを追加するとき」27）。プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」もこれで動く（全ツールの接頭辞の一覧を `data-reset-storage` に書く） |
-| `legal.css` | 上の4ページのスタイル（日英の切り替えリンク・翻訳の注記を含む。ダークモードは無い） |
-| `print-help.html` | **全ツール共通**の「スマホで印刷する」（家のプリンター・PDF・コンビニ・A5 冊子と横向き）。2026-09-24。手順は公式ページ（Apple・Google・ネットプリント・シャープ・ローソン）で確かめたものだけ書き、出典と確認日をページ内の折りたたみに置く。印刷できるツールの印刷ボタンの近くと使い方ページから `../print-help.html` で 1 行リンクする。スタイルは `legal.css` ＋ページ内のダークモード。日本語だけ（英語版を作るときは hreflang を足す） |
+| `legal.css` | 上の4ページのスタイル（日英の切り替えリンク・翻訳の注記・折りたたみ・用途別の入口の一覧を含む）。先頭に共通の部品とトークン（`yorozu-common`。ダークモードもここで端末の設定に合わせる。2026-10-03 企画書 59） |
+| `print-help.html` | **全ツール共通**の「スマホで印刷する」（家のプリンター・PDF・コンビニ・A5 冊子と横向き）。2026-09-24。手順は公式ページ（Apple・Google・ネットプリント・シャープ・ローソン）で確かめたものだけ書き、出典と確認日をページ内の折りたたみに置く。印刷できるツールの印刷ボタンの近くと使い方ページから `../print-help.html` で 1 行リンクする。スタイルは `legal.css`。日本語だけ（英語版を作るときは hreflang を足す） |
 | `calendar-help.html` | **全ツール共通**の「カレンダーに登録する」（Google カレンダーの URL で追加・iPhone の照会カレンダー・Outlook の Web からサブスクライブ）。2026-10-02（ROADMAP 7.14 の 2、K129）。`print-help.html` と同じ型（intro 600 字以内、手順と出典は折りたたみ）。手順は Google・Apple・Microsoft の公式ヘルプで確かめたものだけ。購読用の .ics（`/seido-keisan/data/kaitei.ics`・`/hoshizora-sanpo/data/tenmon.ics`、CC0）の「カレンダーに登録」の欄から `../../calendar-help.html` でリンクする。.ics は sitemap に入れない。.ics を足したらこのページの「登録できるカレンダー」にも足す |
 | `llms.txt` / `api/index.html` / `api/index.json` / `tools/build-agent.mjs` | **agent 向けの読み口**（2026-10-03。yorozu-plans ROADMAP 7.17 の K133）。`llms.txt` は全ツール（本番の各 sitemap の `/` で終わるページ）を 1 行ずつ（題名・説明・使い方ページ）と、公開データの URL・ライセンス・確認日。`api/` は公開データ（各リポジトリの `data/*.json`・`*.ics`、どれも CC0）の一覧で、各ファイルの中の `license`・`checked`・`generated`・`source` を写したもの（人が読む `index.html` と機械が読む `index.json`）。**手で直さない**: `NODE_USE_ENV_PROXY=1 node tools/build-agent.mjs` で本番から書き出す（ツールを足したとき・データの中身が変わったとき）。データを足したら `build-agent.mjs` の `DATASETS` に 1 行。`--verify` で `api/index.json` と本番のデータの食い違いを確かめる。robots.txt は全部許可のまま（7.17 (d)）。データは GitHub Pages の既定で `Access-Control-Allow-Origin: *` |
-| `for/teachers/` / `for/kaigo/` / `for/it/` | **用途別の入口**（2026-10-01。yorozu-plans GROWTH 10 章・ROADMAP 7.10.3 b）。先生・介護・デイサービス・情シスの方に向けて、載せる道具をこの順で 1 行ずつ並べ、印刷の手順（情シスは 1 ファイル版の持ち込み方）を置く。在日外国人向けは英語のトップ `/en/` がそれ（新しいページは作らない）。**載せる道具と順は GROWTH 10 章の表が正本**（増やすときは表を直してからページを直す）。トップからは、関係する節の末尾の 1 行（`.for-link`）で届く（カードは増やさない）。`for/kaigo/` は高齢者向けなので広告なし（D118。AdSense は meta だけ、先頭に定型文。check-site の `META_ONLY_PAGES`・`ELDERLY_PAGES`）で、載せる道具も広告なしのページだけ。コミュニティや X・note に貼るときはこの URL を使う（参照元で数える） |
+| `for/teachers/` / `for/kaigo/` / `for/it/` | **用途別の入口**（2026-10-01。yorozu-plans GROWTH 10 章・ROADMAP 7.10.3 b）。先生・介護・デイサービス・情シスの方に向けて、載せる道具をこの順で 1 行ずつ並べ、印刷の手順（情シスは 1 ファイル版の持ち込み方）を置く。在日外国人向けは英語のトップ `/en/` がそれ（新しいページは作らない）。**載せる道具と順は GROWTH 10 章の表が正本**（増やすときは表を直してからページを直す）。トップからは、ナビの下の「使う人から」1 行（`.for-row`）で届く（カードは増やさない。2026-10-03 に節の末尾から移した）。`for/kaigo/` は高齢者向けなので広告なし（D118。AdSense は meta だけ、先頭に定型文。check-site の `META_ONLY_PAGES`・`ELDERLY_PAGES`）で、載せる道具も広告なしのページだけ。コミュニティや X・note に貼るときはこの URL を使う（参照元で数える） |
 | `yt/<道具>/`（`yt/sekigae/`・`yt/toban/`・`yt/furigana/`） | **YouTube ショートの着地**（2026-10-03。yorozu-plans ROADMAP 7.16 D207、K128）。動画の終わりと説明欄に出す短い URL `yorozu-craft.com/yt/<道具>`。中身は `noindex` と即時の転送（`meta refresh 0` ＋ `load` で `location.replace`）だけで、**文は置かない・sitemap に載せない・AdSense は入れない**。Cloudflare ビーコンは入れる（`/yt/` の PV が YouTube から来た数。JS の転送は `load` の後なので、ビーコンの読み込みを待つ）。転送先は道具の入口（`/<リポジトリ名>/`）。道具を足すときは、同じ形のページを写し、check-site の `YT_PAGES` と yorozu-plans の `tools/video/scripts/*.json` の `end.urlText` にも足す |
 | `ads.txt` | AdSense の販売者情報。ドメイン直下に1つだけ置く（全ツール共通） |
 | `tools/check-site.mjs` / `.github/workflows/check-site.yml` | サイト横断チェックと、その週1回の自動実行（下の「共通の確認テスト」） |
+| `data/pages.json` / `tools/build-top.mjs` | 道具と子ページの一覧と公開日、そこからトップの「新しいツール」（新しい順の 6 件）を作るスクリプト（「ツールを追加するとき」2。2026-10-03） |
+| `tools/common/yorozu-common.css` / `tools/sync-common.mjs` | 共通の部品とトークンの正本と、それを各ツール・このリポジトリのページに配る・確かめるスクリプト（下の「共通の部品とトークン」） |
 | `LICENSE` | MIT License（著作権者 Youhei Oonuki） |
 
 ## ツールを追加するとき
 
 1. `yorozu-template` の「Use this template」でツール用のリポジトリを作り（名前は URL になるので、短いローマ字＋種類。例: `loan-sim`、`nittei-kouho`。2026-09-23 決定 D9）、クローンして `node tools/init.mjs <リポジトリ名> "<ツール名>" "<説明文>" [--pwa]` を 1 回だけ実行する（名前・説明・日付を置き換え、`--pwa` なしならオフライン対応の部分を消す。詳しくは yorozu-template の README）。Settings → Pages で `main` / `(root)` を公開する。証明書が発行されたら **Enforce HTTPS にチェック**（2026-09-23 に 6 リポジトリすべて on にした。それまで http のまま 200 を返していた。API なら `gh api -X PUT repos/YouheiOonuki/<リポジトリ名>/pages -F https_enforced=true`）
-2. `index.html` の、合うカテゴリの `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明（短い 1 文）を書き換える。**トップの規則: 「1 カード ＝ 1 用途。同じ用途の子ページは入口に畳み、別の用途なら別カード」**（入口は `./<リポジトリ名>/`。yorozu-plans ROADMAP 7.9.2・7.10.1）。例: ブラウザピアノ（`./web-metronome/piano/`）はメトロノームと別の用途（楽器）なので別カード。check-site の「トップの一覧と sitemap」は入口（`./<リポジトリ名>/`）だけを数える。カテゴリは「くらし・お金」／「集まり・イベント」／「情シス・IT」／「変換・データ」／「まなび・あそび」／「親・家族のために（広告なし）」の 6 つ（2026-09-25。親・家族の節だけは、別リポジトリの広告なしページへの行も置く）。「新しいツール」は 3 件で、公開後の再点検（iPhone・Android で 1 回ずつ操作、印刷物は 1 枚印刷）を済ませたものだけを載せ、月 1 回入れ替える（REVIEW C7 R11）
+2. `index.html` の、合うカテゴリの `<ul class="tools">` にある `<li>` を複製し、リンク先・アイコン・説明（短い 1 文）を書き換える。**トップの規則: 「1 カード ＝ 1 リポジトリの入口」。用途が別の子ページ（カポ・月の出入り・予防接種など。1 カード ＝ 1 用途）は、その節の末尾の「ほかに」1 行（`<p class="more">`）にリンクを足す**（入口は `./<リポジトリ名>/`。スマホ（390×844）で 3 画面以内（`measure_fold.cjs`）なので、カードの説明は 1 文 20 字前後。yorozu-plans ROADMAP 7.9.2・企画書 59）。check-site の「トップの一覧と sitemap」は入口（`./<リポジトリ名>/`）だけを数える。カテゴリは「くらし・お金」／「集まり・イベント」／「情シス・IT」／「変換・データ」／「まなび・あそび」／「親・家族のために（広告なし）」の 6 つ（2026-09-25）。用途別の入口（`for/`）はナビの下の「使う人から」1 行
+   - **新しいページ（道具でも子ページでも）を公開したら、`data/pages.json` に 1 行（`path`・`date`＝その index.html を初めてコミットした日・`title`、欄で短くしたいときは `short`）足して `node tools/build-top.mjs`** を実行する。トップの「新しいツール」が公開日の新しい順の 6 件に入れ替わる（手で書かない）。check-site が、sitemap の道具のページが `data/pages.json` に全部あるか・欄が最新か・どのページもトップから 2 クリック以内（トップか、トップにある入口のページから）かを確かめる。新しいツールは公開後すぐ載せる（REVIEW R11 の実機の再点検を待たない。ROADMAP 7.20）
 3. `robots.txt` に `Sitemap: https://yorozu-craft.com/<リポジトリ名>/sitemap.xml` を追加する
 4. ツール側の canonical / OGP の URL は `https://yorozu-craft.com/<リポジトリ名>/` にする
 5. ツールの**全ページの `<head>` に AdSense のタグを入れる**（審査とドメインの確認は済んでいるので、ツールごとの申請は不要）。
@@ -181,10 +184,20 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 |---|---|
 | 新しいツールの作り方 | 非公開の雛形リポジトリ `yorozu-template`（GitHub の Template repository）から作る。`<head>` の雛形（OGP・JSON-LD・AdSense・ビーコン・アイコン）、`guide.html`、`404.html`、`LICENSE`、`.nojekyll`、`test.yml`、PWA 用の `sw.js`・manifest は雛形に入っているので、上の手順のコード片を毎回コピーしなくてよい |
 | ビルドスクリプト | 共通のビルドは持たない。素の HTML・CSS・JS をリポジトリ直下から公開する（単一 HTML へのビルドは撤回）。同梱ライブラリがあるツールだけ、必要なら `build.mjs` を持つ |
-| 共通 CSS | ドメイン直下の共通 CSS は読まない（Service Worker が他ツールのファイルを自分のキャッシュに入れてしまうのを避けるため）。配色と `font-family` は雛形の `style.css` にコピーして持つ |
+| 共通 CSS | ドメイン直下の共通 CSS は読まない（Service Worker が他ツールのファイルを自分のキャッシュに入れてしまうのを避けるため）。色・字・余白のトークンと部品は `tools/common/yorozu-common.css` を正本にし、各ツールの `style.css` の先頭に**同じ中身を写して**持つ（下の「共通の部品とトークン」。2026-10-03） |
 | OGP / JSON-LD | 雛形の `index.html`（`WebApplication`）と `guide.html`（`FAQPage`）で固定。`meta keywords`・`meta author` は入れない |
 | 共通の確認テスト | このリポジトリの `tools/check-site.mjs` を GitHub Actions で週 1 回実行し、全ツールの公開ページを機械的に確かめる（下の「共通の確認テスト」） |
 | フォント | 端末のフォント（「ツールを追加するとき」の 9。経緯は下） |
+
+## 共通の部品とトークン（2026-10-03。yorozu-plans 企画書 59・束 A）
+
+色・字の大きさ・余白のトークンと、フォーカスの輪・リンクの下線・入力欄の枠とエラー・読み上げだけの文字・印刷で広告を消す規則を `tools/common/yorozu-common.css` 1 つにまとめ、各ツールの `style.css`（このリポジトリでは `legal.css`・`index.html`・`en/index.html`）の先頭に同じ中身を写す。出どころはデジタル庁デザインシステム（コンテンツを加工して作成。トークンは `@digital-go-jp/design-tokens` 2.0.1、MIT）と GOV.UK Frontend 6.5.1（MIT）。色は和紙風のまま、Web フォントは読まない。
+
+- 写した範囲は `/* yorozu-common:begin v1 … */` 〜 `/* yorozu-common:end */`。**この間は手で直さない**。ツール固有の色・大きさは `end` の後に書く（後に書いた `:root` や規則が勝つ）
+- 正本を直したら: `node tools/sync-common.mjs --write <ファイルかリポジトリのフォルダ ...>` で置き換え、`--check` で同じかを確かめる
+- まだ入っていないツールに入れる: `node tools/sync-common.mjs --insert <リポジトリのフォルダ ...>`（`style.css` の最初のコメントの後に入れる。ツールの規則が後に来るので、入れるだけでは見た目はほぼ変わらない）。入れたら、そのツールの `measure_fold.cjs`・テスト・画面の撮影で前後を比べ、PWA は `sw.js` のキャッシュ名を上げる（stale-while-revalidate のツールは古い CSS が 1 回出るため）。`style.css` の無いリポジトリ（ADSearch の紹介ページなど）は手で入れる
+- 全体の状況: `node tools/sync-common.mjs --status <各リポジトリのフォルダ ...>`（済・古い・未を 1 行ずつ）
+- 使い方（ボタン・エラー・字の大きさ）は yorozu-template の README「画面の部品の使い方」
 
 ## 共通の確認テスト
 
@@ -205,6 +218,7 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - 英語の共通ページ（`/en/about.html`・`/en/privacy-policy.html`）と英語のトップ（`/en/`）は、ルートの sitemap.xml に載っていれば巡回する（ツールの英語ページは各ツールの sitemap に載せる）
 - 英語のトップ（`/en/`）の一覧と、sitemap に `/<リポジトリ名>/en/` を載せているツールが一致している（英語版を足したのに英語のトップに載せ忘れた、またはその逆）。ルートの sitemap.xml に `/en/` が無いときは省略
 - サイト内リンクがすべて存在する（リンク切れ）
+- 道具のページ（`/<ツール>/` と `/<ツール>/<子>/`）が `data/pages.json` に全部あり、トップの「新しいツール」が新しい順と同じで、どのページもトップから 2 クリック以内（「ツールを追加するとき」2）
 - 印刷物の着地ページ（`/<リポジトリ名>/print/`）があれば: `noindex`、Cloudflare ビーコン 1 個、AdSense の meta 1 個
 - YouTube の着地（`/yt/<道具>/`。sitemap に載せないので `YT_PAGES` の一覧で見る）: 200、`noindex`、`meta refresh 0` と `location.replace` の行き先が道具の入口、Cloudflare ビーコン 1 個、AdSense の meta・スクリプトが無い、画面に文が無い、sitemap に無い、転送先が 200
 - ブラウザに保存するページ（インラインと同じオリジンの `<script src>` に `localStorage`・`indexedDB` がある。コメントの中は数えない。noindex のページも対象）: 「保存した内容をすべて消す」ボタン（`data-reset-storage`）と `reset-storage.js` がある（「ツールを追加するとき」27）

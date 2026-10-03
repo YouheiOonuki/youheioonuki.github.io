@@ -1,5 +1,3 @@
-/* サイト共通ページ（運営者情報・プライバシーポリシー・印刷とカレンダーの手順・用途別の入口）のスタイル。
-   色・字・余白のトークンと部品は yorozu-common（下の begin〜end。tools/sync-common.mjs で配る）。ダークモードも共通の値で自動 */
 /* yorozu-common:begin v1 — サイト共通の部品とトークン。正本は youheioonuki.github.io の tools/common/yorozu-common.css。
    この begin〜end の間は手で直さない（tools/sync-common.mjs で全ツールに配る。ツール固有の上書きは end の後に書く）。
    出どころ（2026-10-03 確認。yorozu-plans 企画書 59）:
@@ -91,51 +89,3 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
 /* 印刷では広告を出さない（SCREEN 4 章。全ツール共通） */
 @media print { ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; } }
 /* yorozu-common:end */
-
-
-a { overflow-wrap: anywhere; }
-.site-bar {
-  display: flex; justify-content: space-between; align-items: center; gap: var(--sp-4);
-  background: var(--bg-2); border-bottom: 1px solid var(--border); padding: var(--sp-2) var(--sp-4);
-}
-.site-bar a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; color: var(--accent); text-decoration: none; }
-/* 日英の切り替え（右端） */
-.site-bar a.lang-switch { font-weight: 400; font-size: var(--fs-s); text-decoration: underline; }
-main { max-width: 760px; margin: 0 auto; padding: var(--sp-6) var(--sp-4) var(--sp-8); }
-/* 本文の面: 影は付けない（impeccable quieter） */
-article { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6) var(--sp-4); }
-h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); color: var(--accent); margin-bottom: var(--sp-2); }
-h2 { font-size: var(--fs-l); line-height: var(--lh-tight); color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: var(--sp-1); margin: var(--sp-8) 0 var(--sp-3); }
-h3 { font-size: var(--fs-m); margin: var(--sp-4) 0 var(--sp-1); scroll-margin-top: var(--sp-4); }
-p, li { font-size: var(--fs-m); }
-p + p { margin-top: var(--sp-2); }
-ul, ol { padding-left: 1.3rem; margin: var(--sp-1) 0; }
-li + li { margin-top: var(--sp-1); }
-.last-updated { font-size: var(--fs-s); color: var(--muted); }
-.info-list { display: grid; grid-template-columns: max-content 1fr; gap: var(--sp-2) var(--sp-4); font-size: var(--fs-m); }
-.info-list dt { font-weight: 700; }
-.info-list dd { color: var(--muted); }
-/* 英語版の「翻訳です」の注記: 横の帯ではなく薄い面（impeccable quieter・side-tab を使わない） */
-.translation-note { font-size: var(--fs-s); color: var(--muted); background: var(--bg); border-radius: var(--radius); padding: var(--sp-2) var(--sp-3); margin: var(--sp-3) 0 var(--sp-1); }
-/* 折りたたみ（手順・出典）。印刷とカレンダーの手順、用途別の入口で共通 */
-details { margin: var(--sp-2) 0 var(--sp-1); }
-summary { cursor: pointer; color: var(--accent); font-weight: 700; min-height: var(--tap); padding: var(--sp-2) 0; }
-details[open] > summary { margin-bottom: var(--sp-1); }
-details .src li { overflow-wrap: anywhere; font-size: var(--fs-s); }
-/* 用途別の入口（for/）の道具の一覧: 1 行ずつ、名前と 1 文 */
-.lead { font-size: var(--fs-m); }
-.uses { list-style: none; padding: 0; margin: var(--sp-2) 0 0; display: grid; gap: var(--sp-2); }
-.uses li + li { margin-top: 0; }
-.uses a.go { display: block; min-height: var(--tap); padding: var(--sp-2) var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); text-decoration: none; color: var(--text); }
-@media (hover: hover) { .uses a.go:hover { border-color: var(--accent); } .uses a.go:hover strong { text-decoration: underline; } }
-.uses strong { color: var(--accent); }
-.uses span { display: block; font-size: var(--fs-s); color: var(--muted); }
-.steps { padding-left: 1.3rem; }
-.others { font-size: var(--fs-s); }
-footer { text-align: center; padding: var(--sp-4); font-size: var(--fs-s); color: var(--muted); border-top: 1px solid var(--border); }
-footer nav ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0 var(--sp-4); margin-bottom: var(--sp-2); }
-footer nav li + li { margin-top: 0; }
-footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--muted); }
-footer nav a[aria-current="page"] { color: var(--accent); }
-/* プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」（../reset-storage.js。yorozu-plans K123） */
-.reset-all { margin-top: var(--sp-2); font-size: var(--fs-m); min-height: var(--tap); padding: var(--sp-2) var(--sp-4); border-radius: var(--radius); border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; }
