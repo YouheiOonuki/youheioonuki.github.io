@@ -18,6 +18,8 @@ const META_ONLY_PAGES = new Set([
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
   '/gakushu-print/anki/',  // 暗記カード（作る・めくるが同じ画面。D201。広告は使い方ページ）
   '/gakushu-print/tokei/', // 時計の読み方（こどもが遊ぶ画面）
+  '/web-metronome/drum/',  // ドラムマシン（ピアノと同じ扱い。D233）
+  '/quiz-hiroba/mainichi/', // 毎日 1 問（こどもも遊ぶ画面。D246）
   '/bingo/en/',            // 同上の英語版
   '/hoshizora-sanpo/en/',  // プラネタリウムの全画面の本体（英語版）
   '/gengo/kaiki/',         // 回忌の計算（遺族が使う。広告なし: D118・D119）

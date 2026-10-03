@@ -2,6 +2,11 @@
   "about": "トップから届く道具と子ページの一覧と公開日（その index.html を初めてコミットした日。git log --diff-filter=A）。新しいページを公開したら 1 行足して node tools/build-top.mjs を実行する（トップの「新しいツール」が新しい順の 6 件に入れ替わる）。check-site が、sitemap の道具のページがここに全部あるか・新しいツールの欄が最新か・どのページもトップから 2 クリック以内かを確かめる（企画書 59）",
   "newCount": 6,
   "pages": [
+    {"path": "/web-metronome/drum/", "date": "2026-10-03", "title": "ドラムマシン", "short": "ドラムマシン"},
+    {"path": "/quiz-hiroba/mainichi/", "date": "2026-10-03", "title": "毎日 1 問", "short": "毎日 1 問"},
+    {"path": "/easy-split/kakeibo/", "date": "2026-10-03", "title": "家計簿テンプレート", "short": "家計簿テンプレ"},
+    {"path": "/toban/kondate/", "date": "2026-10-03", "title": "献立ローテーション", "short": "献立ローテ"},
+    {"path": "/gengo/nenpyo/", "date": "2026-10-03", "title": "家族の年表", "short": "家族の年表"},
     {"path": "/web-metronome/capo/", "date": "2026-10-03", "title": "カポ・移調の計算（ギターのコード変換）", "short": "カポ・移調"},
     {"path": "/seido-keisan/yobosesshu/", "date": "2026-10-03", "title": "子どもの予防接種スケジュール", "short": "子どもの予防接種"},
     {"path": "/hoshizora-sanpo/tsuki/", "date": "2026-10-03", "title": "月の出・月の入りの時刻と方角", "short": "月の出・月の入り"},
