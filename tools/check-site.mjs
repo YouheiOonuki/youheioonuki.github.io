@@ -288,7 +288,8 @@ await pool([...pages], 6, async (url) => {
     if (ng.length) fail(p, `医療・効能の NG 語（${ng.join('・')}）が画面の文にある`);
   }
   // 体を測る道具（ためして の測る画面）: 定型文が結果の欄より前にある（WRITING 2 章）
-  if (p.startsWith('/tameshite/') && /\sid="result-card"/.test(html)) {
+  // 英語ページは英語の注意（not medical advice）を置くので、日本語の定型文の検査から外す
+  if (p.startsWith('/tameshite/') && !p.includes('/en/') && /\sid="result-card"/.test(html)) {
     const at = html.indexOf(BODY_TEST_SENTENCE);
     if (at < 0) fail(p, `体を測る道具の定型文「${BODY_TEST_SENTENCE}」が無い`);
     else if (at > html.search(/\sid="result-card"/)) fail(p, '体を測る道具の定型文が結果の欄（#result-card）より後にある');
@@ -299,6 +300,8 @@ await pool([...pages], 6, async (url) => {
     if (at < 0) fail(p, `健診版の定型文「${KENSHIN_SENTENCE}」が無い`);
     else if (at > html.search(/\sid="result-card"/)) fail(p, '健診版の定型文が結果の欄（#result-card）より後にある');
   }
+
+  if (p.startsWith('/tameshite/en/') && /\sid="result-card"/.test(html) && !/not medical advice/i.test(text)) fail(p, '英語の体の道具に「not medical advice」の注意が無い');
 
   // Cloudflare Web Analytics（</body> 直前に 1 個）
   const beacon = count(html, new RegExp(BEACON_TOKEN, 'g'));
