@@ -19,6 +19,7 @@ const META_ONLY_PAGES = new Set([
   '/gakushu-print/anki/',  // 暗記カード（作る・めくるが同じ画面。D201。広告は使い方ページ）
   '/gakushu-print/tokei/', // 時計の読み方（こどもが遊ぶ画面）
   '/seido-keisan/en/high-cost-medical/', '/seido-keisan/en/high-cost-medical/guide.html', // 高額療養費の英語版（日本語版に合わせて広告なし）
+  '/lifeplan/',             // ライフプランの画面（D258。使い方ページは広告あり）
   '/web-metronome/drum/',  // ドラムマシン（ピアノと同じ扱い。D233）
   '/quiz-hiroba/mainichi/', // 毎日 1 問（こどもも遊ぶ画面。D246）
   '/bingo/en/',            // 同上の英語版

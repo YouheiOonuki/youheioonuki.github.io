@@ -2,6 +2,7 @@
   "about": "トップから届く道具と子ページの一覧と公開日（その index.html を初めてコミットした日。git log --diff-filter=A）。新しいページを公開したら 1 行足して node tools/build-top.mjs を実行する（トップの「新しいツール」が新しい順の 6 件に入れ替わる）。check-site が、sitemap の道具のページがここに全部あるか・新しいツールの欄が最新か・どのページもトップから 2 クリック以内かを確かめる（企画書 59）",
   "newCount": 6,
   "pages": [
+    {"path": "/lifeplan/", "date": "2026-10-03", "title": "ライフプラン 簡易シミュレーション", "short": "ライフプラン"},
     {"path": "/hoshizora-night/poster/", "date": "2026-10-03", "title": "生まれた日の星空ポスター", "short": "星空ポスター"},
     {"path": "/web-metronome/drum/", "date": "2026-10-03", "title": "ドラムマシン", "short": "ドラムマシン"},
     {"path": "/quiz-hiroba/mainichi/", "date": "2026-10-03", "title": "毎日 1 問", "short": "毎日 1 問"},
