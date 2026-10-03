@@ -158,3 +158,35 @@ test('英語トップ: 同じ骨組み（検索・いまの時期・誰向け 3�
   assert.match(h, /class="yt-chips yt-new"/);
   for (const p of data.en.pages) assert.ok(h.includes(`href="..${p.path}"`), p.path);
 });
+
+test('アイコン: 節・「ほかに」・/all/ の全行と「いまの時期」に、その道具の favicon.svg（alt 空・寸法あり・1 画面目より下は lazy）', () => {
+  const fs = (u) => u.replace(/^(\.\.\/|\.\/)/, '').split('/')[0];
+  const check = (html, sel, lazy, f) => {
+    const items = [...html.matchAll(sel)];
+    assert.ok(items.length > 0, `${f} に行が無い`);
+    for (const m of items) {
+      const [, href, img] = m;
+      assert.ok(img, `${f} ${href} にアイコンが無い`);
+      assert.match(img, /alt=""/, `${f} ${href} の alt`);
+      assert.match(img, /width="(2[0-4])" height="\1"/, `${f} ${href} の寸法`);
+      const src = img.match(/src="([^"]+)"/)[1];
+      assert.match(src, /^(\.\.\/|\.\/)[^/]+\/favicon\.svg$/, `${f} ${href} の src`);
+      assert.equal(fs(src), fs(href), `${f} ${href} は親リポジトリのアイコン`);
+      assert.equal(/loading="lazy"/.test(img), lazy, `${f} ${href} の loading`);
+    }
+    return items.length;
+  };
+  const row = /<li><a class="yt-name" href="([^"]+)">(<img class="yt-ico"[^>]*>)?/g;
+  const top = read('index.html'), all = read('all/index.html');
+  assert.equal(check(top, row, true, 'index.html'), sectionsJa(data).reduce((n, s) => n + s.rows.length, 0));
+  assert.equal(check(all, row, true, 'all/index.html'), allRows(data).reduce((n, s) => n + s.items.length, 0));
+  assert.equal(check(top, /<li><a href="([^"]+)"><strong>(<img class="yt-ico"[^>]*>)?/g, false, 'いまの時期'), 3);
+  // 月が変わったときの入れ替え（top.js）も同じ形
+  const sd = seasonData(data, season, 'ja');
+  const h = YT.seasonItemsHtml(YT.seasonFor(sd, new Date(2027, 0, 1)), './', true);
+  assert.equal(check(h, /<li><a href="([^"]+)"><strong>(<img class="yt-ico"[^>]*>)?/g, false, '1 月'), YT.seasonFor(sd, new Date(2027, 0, 1)).length);
+  assert.match(top, /class="yt-season"[^>]*data-icons/);
+  // 新しい画像は作らない: 指す先はすべて既存のリポジトリ（pages.json の第 1 階層）
+  const repos = new Set(data.pages.map((p) => p.path.split('/')[1]));
+  for (const m of (top + all).matchAll(/class="yt-ico" src="(?:\.\.\/|\.\/)([^/]+)\/favicon\.svg"/g)) assert.ok(repos.has(m[1]), m[1]);
+});

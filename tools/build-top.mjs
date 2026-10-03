@@ -47,6 +47,8 @@ export function newToolsHtml(data, base = './', rows = newest(data)) {
   return `${BEGIN}\n      <ul class="yt-chips yt-new">\n${items.join('\n')}\n      </ul>\n      ${END}`;
 }
 
+// 行の名前の前に道具のアイコン（top.js の iconHtml。リポジトリの favicon.svg を 20px。節・「ほかに」・/all/ の行は lazy、いまの時期は lazy なし）。
+// 日本語のページだけ（英語トップは英語の名前を変えずに 1 行に収まらないため付けない）
 // ---- 節（ROADMAP 7.24.1「行とチップの選び方」）----
 // 1 ページ ＝ 1 用途。節（section）はページごとに持つ。note（一言）のあるページが行の候補
 // 行の並び: pin を先に、priority の降順、同点は 入口ページ（/<ツール>/）＞ 子ページ、次に公開日の古い方（同じ日は pages.json の順。7.24.2 の 2）。
@@ -105,11 +107,11 @@ export function sectionOf(data) {
   return new Map(data.pages.map((p) => [p.path, p.section]));
 }
 
-function rowHtml(r, base, pad) {
+function rowHtml(r, base, pad, icon) {
   const chips = r.chips.length
     ? `\n${pad}  <ul class="yt-chips" aria-label="${esc(r.name)}のページ">${r.chips.map((c) => `<li><a href="${base}${c.path.slice(1)}">${esc(c.name)}</a></li>`).join('')}</ul>`
     : '';
-  return `${pad}<li><a class="yt-name" href="${base}${r.path.slice(1)}">${esc(r.name)}</a> <span class="yt-note">${esc(r.note)}</span>${chips}</li>`;
+  return `${pad}<li><a class="yt-name" href="${base}${r.path.slice(1)}">${icon ? YT.iconHtml(r.path, base, true) : ''}${esc(r.name)}</a> <span class="yt-note">${esc(r.note)}</span>${chips}</li>`;
 }
 function sectionBlock(s, base, allHref, more) {
   const pad = '        ';
@@ -118,12 +120,12 @@ function sectionBlock(s, base, allHref, more) {
     ? `      <div class="yt-head"><h2 id="${s.id}-h">${esc(s.name)}</h2><a href="${allHref}#${s.id}">${more.all}</a></div>`
     : `      <h2 id="${s.id}-h">${esc(s.name)}</h2>`;
   const det = rest.length
-    ? `\n      <details>\n        <summary>${more.other(rest.length)}</summary>\n        <ul class="yt-rows">\n${rest.map((r) => rowHtml(r, base, pad + '  ')).join('\n')}\n        </ul>\n      </details>`
+    ? `\n      <details>\n        <summary>${more.other(rest.length)}</summary>\n        <ul class="yt-rows">\n${rest.map((r) => rowHtml(r, base, pad + '  ', more.icon)).join('\n')}\n        </ul>\n      </details>`
     : '';
-  return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n${head}\n      <ul class="yt-rows">\n${shown.map((r) => rowHtml(r, base, pad)).join('\n')}\n      </ul>${det}\n    </section>`;
+  return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n${head}\n      <ul class="yt-rows">\n${shown.map((r) => rowHtml(r, base, pad, more.icon)).join('\n')}\n      </ul>${det}\n    </section>`;
 }
-const JA = { all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件` };
-const EN = { all: 'See all', other: (n) => `${n} more` };
+const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件` };
+const EN = { icon: false, all: 'See all', other: (n) => `${n} more` };
 export function sectionsHtml(data, base = './') {
   return sectionsJa(data).map((s) => sectionBlock(s, base, `${base}all/`, JA)).join('\n');
 }
@@ -161,7 +163,7 @@ export function allHtml(data, base = '../') {
   return allRows(data).map((s) => {
     const li = s.items.map(({ page, kids }) => {
       const sub = kids.length ? `\n          <ul>${kids.map((k) => `<li><a href="${base}${k.path.slice(1)}">${esc(k.title)}</a></li>`).join('')}</ul>` : '';
-      return `        <li><a class="yt-name" href="${base}${page.path.slice(1)}">${esc(page.title)}</a>${sub}</li>`;
+      return `        <li><a class="yt-name" href="${base}${page.path.slice(1)}">${YT.iconHtml(page.path, base, true)}${esc(page.title)}</a>${sub}</li>`;
     }).join('\n');
     return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n      <div class="yt-head"><h2 id="${s.id}-h">${esc(s.name)}</h2><a href="#main">トップへ</a></div>\n      <ul class="yt-all">\n${li}\n      </ul>\n    </section>`;
   }).join('\n');
@@ -211,7 +213,8 @@ export function seasonData(data, season, lang = 'ja') {
 export function seasonHtml(data, season, lang = 'ja', base = './', date = new Date()) {
   const sd = seasonData(data, season, lang);
   const m = date.getMonth() + 1;
-  return `<ul class="yt-season" data-season-month="${m}" data-base="${base}">${YT.seasonItemsHtml(YT.seasonFor(sd, date), base)}</ul>`;
+  const icons = lang === 'ja';
+  return `<ul class="yt-season" data-season-month="${m}" data-base="${base}"${icons ? ' data-icons' : ''}>${YT.seasonItemsHtml(YT.seasonFor(sd, date), base, icons)}</ul>`;
 }
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 export function dataHtml(data, season, lang = 'ja') {

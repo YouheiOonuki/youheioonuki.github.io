@@ -33,6 +33,9 @@
 .yt-rows > li { border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--sp-2); }
 .yt-name { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; color: var(--text); }
 .yt-note { font-size: var(--fs-s); color: var(--muted); }
+/* 道具のアイコン（各リポジトリの favicon.svg、20px）。行の高さは変えない（名前の 44px の中に収める） */
+.yt-ico { flex: none; width: 20px; height: 20px; margin-right: var(--sp-1); }
+.yt-season .yt-ico { display: inline-block; vertical-align: -3px; margin-block: -2px; margin-right: var(--sp-1); }
 .yt-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-3); flex-basis: 100%; }
 .yt-new { flex-basis: auto; }
 /* チップ: 見た目は小さく、当たり判定は 44px（上下の余白を含めて） */
