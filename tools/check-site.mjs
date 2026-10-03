@@ -18,6 +18,7 @@ const META_ONLY_PAGES = new Set([
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
   '/gakushu-print/anki/',  // 暗記カード（作る・めくるが同じ画面。D201。広告は使い方ページ）
   '/gakushu-print/tokei/', // 時計の読み方（こどもが遊ぶ画面）
+  '/seido-keisan/en/high-cost-medical/', '/seido-keisan/en/high-cost-medical/guide.html', // 高額療養費の英語版（日本語版に合わせて広告なし）
   '/web-metronome/drum/',  // ドラムマシン（ピアノと同じ扱い。D233）
   '/quiz-hiroba/mainichi/', // 毎日 1 問（こどもも遊ぶ画面。D246）
   '/bingo/en/',            // 同上の英語版
@@ -54,6 +55,11 @@ const META_ONLY_PAGES = new Set([
   '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
+// 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
+const EN_ONLY_PAGES = new Set([
+  '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
+  '/tameshite/en/sleep-calculator/', '/tameshite/en/sleep-calculator/guide.html',
+]);
 const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）
 const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
 // 高齢者向け（D118）の広告なしページ。先頭に「広告なし」の定型文が要る（下の R12 の突き合わせ）
@@ -322,7 +328,7 @@ await pool([...pages], 6, async (url) => {
   const alt = alternates(html);
   const self = expect;
   const pairOf = isEn ? 'ja' : (alt.en ? 'en' : null);
-  if (isEn && !alt.ja) fail(p, '英語ページに hreflang="ja" の対が無い');
+  if (isEn && !alt.ja && !EN_ONLY_PAGES.has(p)) fail(p, '英語ページに hreflang="ja" の対が無い');
   if (pairOf && alt[pairOf]) {
     const back = isEn ? 'en' : 'ja';
     if (alt[back] !== self) fail(p, `hreflang="${back}"（自分自身）が ${alt[back] || '無い'}（${self} のはず）`);
