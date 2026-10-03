@@ -24,6 +24,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | https://yorozu-craft.com/hoshizora-sanpo/ | [hoshizora-sanpo](https://github.com/YouheiOonuki/hoshizora-sanpo)（日英。英語は本体と天文カレンダー。星座図鑑は日本語のみ） |
 | https://yorozu-craft.com/shaho-check/ | [shaho-check](https://github.com/YouheiOonuki/shaho-check) |
 | https://yorozu-craft.com/loan-sim/ | [loan-sim](https://github.com/YouheiOonuki/loan-sim) |
+| https://yorozu-craft.com/lifeplan/ | [lifeplan](https://github.com/YouheiOonuki/lifeplan)（画面は広告なし、使い方は広告あり: D258） |
 | https://yorozu-craft.com/nittei-kouho/ | [nittei-kouho](https://github.com/YouheiOonuki/nittei-kouho) |
 | https://yorozu-craft.com/denki-dai/ | [denki-dai](https://github.com/YouheiOonuki/denki-dai) |
 | https://yorozu-craft.com/todofuken-quiz/ | [todofuken-quiz](https://github.com/YouheiOonuki/todofuken-quiz) |
