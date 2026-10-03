@@ -41,292 +41,223 @@
   <link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <style>
-    /* 日本語のトップ（/index.html）と同じ配色・カード。ダークモードも日本語のトップに合わせて無し */
-    :root {
-      --bg: #f0ebe0;
-      --bg-2: #e6dfd0;
-      --card: #faf6ee;
-      --text: #3a3025;
-      --muted: #7a6b5a;
-      --accent: #8b4513;
-      --border: #cfc0a0;
-      --shadow: rgba(58, 48, 37, 0.12);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .lang-bar { background: var(--bg-2); text-align: right; padding: 0.5rem 1rem 0; font-size: 0.85rem; }
-    .lang-bar a { color: var(--accent); }
-    header {
-      text-align: center;
-      padding: 1.5rem 1rem 2rem;
-      background: var(--bg-2);
-      border-bottom: 2px solid var(--border);
-    }
-    header h1 { font-size: 2rem; color: var(--accent); letter-spacing: 0.02em; }
-    header .lead { margin-top: 0.6rem; font-size: 0.95rem; color: var(--muted); }
-    main { width: 100%; max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 2rem; flex: 1; }
-    h2 {
-      font-size: 1.05rem;
-      color: var(--accent);
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.4rem;
-      margin-bottom: 1rem;
-    }
-    .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-    .tool > a {
-      display: flex;
-      gap: 0.9rem;
-      align-items: flex-start;
-      height: 100%;
-      padding: 1.1rem;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px var(--shadow);
-      color: inherit;
-      text-decoration: none;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .tool > a:hover, .tool > a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 14px var(--shadow); }
-    .tool > a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .tool img { width: 48px; height: 48px; flex: none; }
-    .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
-    .tool p { font-size: 0.85rem; color: var(--muted); }
-    .cat + .cat { margin-top: 2rem; }
-    .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
-    .about p + p { margin-top: 0.4rem; }
-    .about a { color: var(--accent); }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
+/* yorozu-common:begin v1 — サイト共通の部品とトークン。正本は youheioonuki.github.io の tools/common/yorozu-common.css。
+   この begin〜end の間は手で直さない（tools/sync-common.mjs で全ツールに配る。ツール固有の上書きは end の後に書く）。
+   出どころ（2026-10-03 確認。yorozu-plans 企画書 59）:
+   - デジタル庁デザインシステム https://design.digital.go.jp/dads/ のコンテンツを加工して作成
+     （フォーカスの輪・リンクの下線・字の大きさの下限・行間・入力欄のエラー表示）。
+     トークンの値は @digital-go-jp/design-tokens 2.0.1（MIT, (c) 2023 デジタル庁）から
+   - GOV.UK Frontend 6.5.1（MIT, (c) Crown copyright）の考え方: visually-hidden、エラーの文の前に読み上げ用の語
+   - 色は和紙風のまま（値は 2026-09-23 からの共通の値）。Web フォントは読まない（ROADMAP 3.3・D2） */
+:root {
+  color-scheme: light dark;
+  --bg: #f0ebe0;
+  --bg-2: #e6dfd0;
+  --card: #faf6ee;
+  --text: #3a3025;
+  --muted: #6e604f;          /* 本文の補足。--bg の上で 5.1:1 */
+  --accent: #8b4513;
+  --accent-soft: #f3e6d8;
+  --border: #cfc0a0;         /* 飾りの線（区切り）だけ。操作できる物の枠には --input-border */
+  --input-border: #857561;   /* 入力欄の枠。WCAG 1.4.11 の 3:1（--bg で 3.7:1）。DADS の入力欄は gray-600 の 1px */
+  --shadow: rgba(58, 48, 37, 0.12);
+  --error: #ce0000;          /* DADS red-900（semantic error-2） */
+  --ok: #197a4b;             /* DADS green-800（semantic success-2） */
+  --focus: #ffd43d;          /* DADS yellow-300 */
+  --focus-ring: #000;        /* DADS: 黒 4px の輪＋黄 2px */
+  --font-ui: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  /* 字の大きさ（DADS: 本文と操作は 16px 以上、補足は 14px まで、14px 未満は使わない） */
+  --fs-s: 0.875rem;
+  --fs-m: 1rem;
+  --fs-l: 1.25rem;           /* 見出し（隣の段との比 1.25 以上: impeccable typeset） */
+  --fs-xl: 1.625rem;         /* ページの題 */
+  --lh-body: 1.7;            /* DADS の本文の行間 170% */
+  --lh-tight: 1.4;           /* 見出し */
+  /* 余白（4px を基準。DADS の spacing） */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --radius: 8px;
+  --tap: 44px;               /* 押せる物の高さの下限（DADS・SCREEN 5 章） */
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1814;
+    --bg-2: #25201a;
+    --card: #2b251e;
+    --text: #ece4d6;
+    --muted: #b9ab96;
+    --accent: #e0a066;
+    --accent-soft: #3a2e22;
+    --border: #4a3f33;
+    --input-border: #8c7d68;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --error: #ff8a7a;
+    --ok: #6fcf97;
+    --focus-ring: #ffd43d;   /* 暗い地では黄の輪＋黒の縁 */
+    --focus: #000;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--text); line-height: var(--lh-body); }
+/* リンクは色と下線の両方（DADS リンクテキスト）。ホバーで下線を太く */
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+@media (hover: hover) { a:hover { text-decoration-thickness: 3px; } }
+/* フォーカスの輪（DADS）。:where で詳しさを 0 にして、ツールの規則で上書きできるようにする */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 4px solid var(--focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus);
+}
+:where(input, select, textarea, button) { font: inherit; color: inherit; }
+/* 入力欄の例（placeholder）も 4.5:1。ブラウザ既定の灰色は和紙の地で 4.3:1 */
+:where(input, textarea)::placeholder { color: var(--muted); opacity: 1; }
+/* 入力欄の字は 16px 以上（iPhone で拡大されない・DADS） */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) { font-size: max(1rem, 16px); }
+/* エラー（DADS: 枠を赤に、文の頭に「＊」。GOV.UK: 読み上げには「エラー:」を先に）。
+   使い方: <p class="field-error" id="x-err"><span class="visually-hidden">エラー:</span>＊ 0 以上の数を入れてください</p> と aria-describedby */
+[aria-invalid="true"] { border-color: var(--error) !important; }
+.field-error { color: var(--error); font-weight: 700; margin-top: var(--sp-1); }
+/* 画面には出さず、読み上げだけ（GOV.UK govuk-visually-hidden） */
+.visually-hidden {
+  position: absolute !important; width: 1px !important; height: 1px !important; margin: 0 !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important;
+}
+@media (forced-colors: active) { :where(a, button, input, select, textarea, summary):focus-visible { outline-color: Highlight; } }
+/* 読む行の長さ: 1 行 40 字前後まで（REVIEW C9 line-length）。画面の幅いっぱいに伸びる見出し帯の説明文に */
+.app-header > p { max-width: 40em; margin-left: auto; margin-right: auto; }
+/* 印刷では広告を出さない（SCREEN 4 章。全ツール共通） */
+@media print { ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; } }
+/* yorozu-common:end */
+
+    /* ここから トップだけ（日本語のトップと同じ。yorozu-plans 企画書 59） */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .site-head { background: var(--bg-2); border-bottom: 1px solid var(--border); padding: var(--sp-2) var(--sp-4); }
+    .site-head > div { max-width: calc(960px - 2rem); margin: 0 auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--sp-3); }
+    .site-head h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); color: var(--accent); }
+    .site-head .kana { font-size: var(--fs-s); color: var(--muted); }
+    .site-head .lang { margin-left: auto; font-size: var(--fs-s); }
+    .site-head .lead { flex-basis: 100%; font-size: var(--fs-s); color: var(--muted); }
+    main { width: 100%; max-width: 960px; margin: 0 auto; padding: var(--sp-3) var(--sp-4) var(--sp-6); flex: 1; }
+    /* 節への移動: スマホでは 1 行で横に送る（ページは横に動かない） */
+    .cat-nav { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); margin-bottom: var(--sp-3); scrollbar-width: thin; }
+    .cat-nav a { flex: none; display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--sp-3); border: 1px solid var(--input-border); border-radius: 999px; font-size: var(--fs-s); text-decoration: none; white-space: nowrap; }
+    h2 { font-size: var(--fs-l); line-height: var(--lh-tight); color: var(--text); margin: var(--sp-6) 0 var(--sp-2); }
+    .new-tools h2 { margin-top: 0; }
+    .new-tools h2 small { font-size: var(--fs-s); font-weight: 400; color: var(--muted); }
+    .new-tools p { color: var(--muted); }
+    .new-tools a { font-weight: 700; }
+    .cat-lead { font-size: var(--fs-s); color: var(--muted); margin-bottom: var(--sp-2); }
+    /* 道具の一覧: 箱と影は付けず、薄い面と余白でまとめる（1 カード ＝ 1 リポジトリの入口） */
+    .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--sp-2); }
+    .tools a { display: block; height: 100%; padding: var(--sp-2) var(--sp-3); background: var(--card); border-radius: var(--radius); color: var(--text); text-decoration: none; line-height: 1.5; }
+    .tools img { float: left; width: 24px; height: 24px; margin: 1px var(--sp-2) 0 0; }
+    .tools strong { color: var(--accent); }
+    .tools span { display: block; clear: left; margin-top: var(--sp-1); font-size: var(--fs-s); color: var(--muted); }
+    @media (hover: hover) { .tools a:hover strong { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 3px; } }
+    .for-link { margin-top: var(--sp-1); }
+    .for-link a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; }
+    footer { border-top: 1px solid var(--border); padding: var(--sp-3) var(--sp-4); font-size: var(--fs-s); color: var(--muted); }
+    footer > div { max-width: calc(960px - 2rem); margin: 0 auto; }
+    footer nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-4); }
+    footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); }
+    /* スマホ: 2 列。説明は名前の下（SCREEN 5 章: 字は 14px 以上、押せる所は 44px 以上） */
+    @media (max-width: 599px) {
+      .tools { grid-template-columns: 1fr 1fr; gap: 6px; }
+      .tools a { padding: 6px var(--sp-2); }
+      .tools img { width: 20px; height: 20px; margin-right: var(--sp-1); }
+      .tools span { clear: none; line-height: 1.45; }
+      .tools strong { font-size: 0.9375rem; line-height: 1.4; }
+      .tools li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+      h2 { margin: var(--sp-3) 0 var(--sp-2); }
+      main { padding-top: var(--sp-2); }
+      .cat-nav { margin-bottom: var(--sp-2); }
     }
   </style>
 </head>
 <body>
 
-  <div class="lang-bar"><a href="../" hreflang="ja" lang="ja">日本語</a></div>
-  <header>
-    <h1>yorozu-craft</h1>
-    <p class="lead">Small, free tools. No sign-up. The browser tools keep what you enter in your browser.</p>
+  <header class="site-head">
+    <div>
+      <h1>yorozu-craft</h1>
+      <a class="lang" href="../" hreflang="ja" lang="ja">日本語</a>
+      <p class="lead">Small, free tools. No sign-up. The browser tools keep what you enter in your browser.</p>
+    </div>
   </header>
 
   <main>
-    <!-- 英語版のあるツールだけを載せる（README「ツールを追加するとき」23）。英語版を足したら、合う節に <li> を 1 つ足す -->
-    <section class="cat" aria-labelledby="it-heading">
+    <!-- 英語版のあるツールだけを載せる（README「ツールを追加するとき」23）。英語版を足したら、合う節に <li> を 1 つ足す。
+         リンクは各リポジトリの英語の入口（/<リポジトリ>/en/）だけ。例外: seido-keisan は英語の入口ページが無いので、英語ページ（D75）を直接載せる（企画書 59） -->
+    <section class="cat" id="it" aria-labelledby="it-heading">
       <h2 id="it-heading">IT admin tools</h2>
       <ul class="tools">
-        <li class="tool">
-          <a href="../pac-tester/en/">
-            <img src="../pac-tester/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>PAC File Tester</h3>
-              <p>Test a proxy.pac against a list of URLs, with syntax checks and an old/new diff. Runs offline.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../ADSearch/en/">
-            <img src="../ADSearch/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ADSearch</h3>
-              <p>Get-ADUser without RSAT: a read-only PowerShell module that queries Active Directory as an ordinary domain user.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../filetime/en/">
-            <img src="../filetime/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>FILETIME &amp; LDAP Timestamp Converter</h3>
-              <p>Turn 18-digit AD timestamps such as pwdLastSet and lastLogonTimestamp into dates and back.</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="../pac-tester/en/"><img src="../pac-tester/favicon.svg" alt="" width="24" height="24"><strong>PAC File Tester</strong> <span>Test a proxy.pac against a list of URLs, with syntax checks and an old/new diff. Runs offline.</span></a></li>
+        <li><a href="../ADSearch/en/"><img src="../ADSearch/favicon.svg" alt="" width="24" height="24"><strong>ADSearch</strong> <span>Get-ADUser without RSAT: a read-only PowerShell module that queries Active Directory as an ordinary domain user.</span></a></li>
+        <li><a href="../filetime/en/"><img src="../filetime/favicon.svg" alt="" width="24" height="24"><strong>FILETIME &amp; LDAP Timestamp Converter</strong> <span>Turn 18-digit AD timestamps such as pwdLastSet and lastLogonTimestamp into dates and back.</span></a></li>
       </ul>
     </section>
 
-    <section class="cat" aria-labelledby="data-heading">
+    <section class="cat" id="data" aria-labelledby="data-heading">
       <h2 id="data-heading">Data converters</h2>
       <ul class="tools">
-        <li class="tool">
-          <a href="../fitbit-export/en/">
-            <img src="../fitbit-export/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Fitbit Data to CSV Converter</h3>
-              <p>Turn your Google Takeout zip into one row per day: sleep, steps, resting heart rate, weight. Nothing is uploaded.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../ai-log/en/">
-            <img src="../ai-log/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>AI Chat Log to Markdown</h3>
-              <p>One Markdown file per chat from your ChatGPT or Claude export, ready for Obsidian. Nothing is uploaded.</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="../fitbit-export/en/"><img src="../fitbit-export/favicon.svg" alt="" width="24" height="24"><strong>Fitbit Data to CSV Converter</strong> <span>Turn your Google Takeout zip into one row per day: sleep, steps, resting heart rate, weight. Nothing is uploaded.</span></a></li>
+        <li><a href="../ai-log/en/"><img src="../ai-log/favicon.svg" alt="" width="24" height="24"><strong>AI Chat Log to Markdown</strong> <span>One Markdown file per chat from your ChatGPT or Claude export, ready for Obsidian. Nothing is uploaded.</span></a></li>
       </ul>
     </section>
 
-    <section class="cat" aria-labelledby="ja-heading">
+    <section class="cat" id="ja" aria-labelledby="ja-heading">
       <h2 id="ja-heading">Japanese dates and text</h2>
       <ul class="tools">
-        <li class="tool">
-          <a href="../gengo/en/">
-            <img src="../gengo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Japanese Era Converter</h3>
-              <p>Convert Reiwa, Heisei and Shōwa years to Western years and back. Also age, school year and a printable age chart.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../furigana/en/">
-            <img src="../furigana/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Furigana Generator</h3>
-              <p>Paste Japanese text and add furigana above kanji, filtered by school grade or the Jōyō list. Runs in your browser.</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="../gengo/en/"><img src="../gengo/favicon.svg" alt="" width="24" height="24"><strong>Japanese Era Converter</strong> <span>Convert Reiwa, Heisei and Shōwa years to Western years and back. Also age, school year and a printable age chart.</span></a></li>
+        <li><a href="../furigana/en/"><img src="../furigana/favicon.svg" alt="" width="24" height="24"><strong>Furigana Generator</strong> <span>Paste Japanese text and add furigana above kanji, filtered by school grade or the Jōyō list. Runs in your browser.</span></a></li>
       </ul>
     </section>
 
-    <section class="cat" aria-labelledby="party-heading">
+    <section class="cat" id="party" aria-labelledby="party-heading">
       <h2 id="party-heading">Classroom and party tools</h2>
       <ul class="tools">
-        <li class="tool">
-          <a href="../bingo/en/">
-            <img src="../bingo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Bingo Caller</h3>
-              <p>Free, no sign-up. Big-screen draws with voice calls, plus printable cards you can check by number. Works offline.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../toban/en/">
-            <img src="../toban/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Random Group Generator</h3>
-              <p>Split a class list into groups with rules: balance gender, keep people apart or together, avoid last time's groups. Print on A4 or Letter.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../unplugged/en/">
-            <img src="../unplugged/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Unplugged Coding Printables</h3>
-              <p>Print a robot board, command cards and answers for screen-free coding lessons. A new puzzle every time. A4 or Letter.</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="../bingo/en/"><img src="../bingo/favicon.svg" alt="" width="24" height="24"><strong>Bingo Caller</strong> <span>Free, no sign-up. Big-screen draws with voice calls, plus printable cards you can check by number. Works offline.</span></a></li>
+        <li><a href="../toban/en/"><img src="../toban/favicon.svg" alt="" width="24" height="24"><strong>Random Group Generator</strong> <span>Split a class list into groups with rules: balance gender, keep people apart or together, avoid last time's groups. Print on A4 or Letter.</span></a></li>
+        <li><a href="../unplugged/en/"><img src="../unplugged/favicon.svg" alt="" width="24" height="24"><strong>Unplugged Coding Printables</strong> <span>Print a robot board, command cards and answers for screen-free coding lessons. A new puzzle every time. A4 or Letter.</span></a></li>
       </ul>
     </section>
 
-    <section class="cat" aria-labelledby="learn-heading">
+    <section class="cat" id="learn" aria-labelledby="learn-heading">
       <h2 id="learn-heading">For learners of Japanese</h2>
       <ul class="tools">
-        <li class="tool">
-          <a href="../gakushu-print/en/">
-            <img src="../gakushu-print/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Hiragana &amp; Katakana Practice Sheets</h3>
-              <p>Printable kana tracing sheets with romaji, and genkouyoushi grid paper. Print on A4 or US Letter, or save as PDF.</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="../gakushu-print/en/"><img src="../gakushu-print/favicon.svg" alt="" width="24" height="24"><strong>Hiragana &amp; Katakana Practice Sheets</strong> <span>Printable kana tracing sheets with romaji, and genkouyoushi grid paper. Print on A4 or US Letter, or save as PDF.</span></a></li>
       </ul>
     </section>
 
-    <section class="cat" aria-labelledby="life-heading">
+    <section class="cat" id="life" aria-labelledby="life-heading">
       <h2 id="life-heading">Living in Japan</h2>
       <ul class="tools">
-        <li class="tool">
-          <a href="../seido-keisan/en/take-home-pay/">
-            <img src="../seido-keisan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Japan Take-Home Pay Calculator</h3>
-              <p>Your salary after tax in Japan: income tax, residence tax and social insurance for employees.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../seido-keisan/en/residence-tax/">
-            <img src="../seido-keisan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Japan Residence Tax Calculator</h3>
-              <p>How much residence tax you pay on your salary in Japan, and when.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../seido-keisan/en/pension-refund/">
-            <img src="../seido-keisan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Japan Pension Refund Calculator</h3>
-              <p>Lump-sum Withdrawal Payment: what you get back after leaving Japan, the 20.42% tax and your deadline.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../gengo/en/school-grades/">
-            <img src="../gengo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Japan School Grades by Age</h3>
-              <p>Every grade from kindergarten to university with birth dates for any school year (April 2 cutoff). Find your child's grade and print the chart.</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="../seido-keisan/en/take-home-pay/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Take-Home Pay Calculator</strong> <span>Your salary after tax in Japan: income tax, residence tax and social insurance for employees.</span></a></li>
+        <li><a href="../seido-keisan/en/residence-tax/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Residence Tax Calculator</strong> <span>How much residence tax you pay on your salary in Japan, and when.</span></a></li>
+        <li><a href="../seido-keisan/en/pension-refund/"><img src="../seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>Japan Pension Refund Calculator</strong> <span>Lump-sum Withdrawal Payment: what you get back after leaving Japan, the 20.42% tax and your deadline.</span></a></li>
       </ul>
     </section>
 
-    <section class="cat" aria-labelledby="sky-heading">
+    <section class="cat" id="sky" aria-labelledby="sky-heading">
       <h2 id="sky-heading">Sky and stars</h2>
       <ul class="tools">
-        <li class="tool">
-          <a href="../hoshizora-sanpo/en/">
-            <img src="../hoshizora-sanpo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Web Planetarium</h3>
-              <p>See tonight’s sky for your city: stars, constellations, planets and the Moon’s phase. Plus an astronomy calendar of full moons and meteor showers.</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="../hoshizora-sanpo/en/planisphere/">
-            <img src="../hoshizora-sanpo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Printable Planisphere</h3>
-              <p>Make a free star wheel for your latitude and time zone, 20–65° north or south. Print on A4 or US Letter, cut out and pin.</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="../hoshizora-sanpo/en/"><img src="../hoshizora-sanpo/favicon.svg" alt="" width="24" height="24"><strong>Web Planetarium</strong> <span>See tonight’s sky for your city: stars, constellations, planets and the Moon’s phase. Plus an astronomy calendar and a printable planisphere.</span></a></li>
       </ul>
-    </section>
-
-    <section class="about" aria-label="About this site">
-      <p>More tools, in Japanese: <a href="../" hreflang="ja">yorozu-craft (Japanese)</a>.</p>
-      <p><a href="./about.html">About and disclaimer</a> · <a href="./privacy-policy.html">Privacy policy</a> (shared by all tools)</p>
     </section>
   </main>
 
   <footer>
-    <p><a href="./about.html" style="color:inherit">About</a>　<a href="./privacy-policy.html" style="color:inherit">Privacy policy</a></p>
-    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+    <div>
+      <p>More tools, in Japanese: <a href="../" hreflang="ja">yorozu-craft (Japanese)</a>.</p>
+      <nav aria-label="About this site">
+        <a href="./about.html">About and disclaimer</a>
+        <a href="./privacy-policy.html">Privacy policy</a>
+        <span>&copy; 2026 yorozu-craft. All rights reserved.</span>
+      </nav>
+    </div>
   </footer>
 
   <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->

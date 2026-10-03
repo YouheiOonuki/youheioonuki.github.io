@@ -42,121 +42,152 @@
   <link rel="icon" href="./favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <style>
-    /* ツール側（web-roulette）の和紙風テーマと同じ配色 */
-    :root {
-      --bg: #f0ebe0;
-      --bg-2: #e6dfd0;
-      --card: #faf6ee;
-      --text: #3a3025;
-      --muted: #7a6b5a;
-      --accent: #8b4513;
-      --border: #cfc0a0;
-      --shadow: rgba(58, 48, 37, 0.12);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    /* 英語のトップ（/en/）への切り替え。英語版のあるツールだけを載せている */
-    .lang-bar { background: var(--bg-2); text-align: right; padding: 0.5rem 1rem 0; font-size: 0.85rem; }
-    .lang-bar a { color: var(--accent); }
-    header {
-      text-align: center;
-      padding: 1.5rem 1rem 2rem;
-      background: var(--bg-2);
-      border-bottom: 2px solid var(--border);
-    }
-    header h1 { font-size: 2rem; color: var(--accent); letter-spacing: 0.02em; }
-    header .kana { font-size: 0.85rem; color: var(--muted); }
-    header .lead { margin-top: 0.6rem; font-size: 0.95rem; color: var(--muted); }
-    main { width: 100%; max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 2rem; flex: 1; }
-    h2 {
-      font-size: 1.05rem;
-      color: var(--accent);
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.4rem;
-      margin-bottom: 1rem;
-    }
-    /* ツール一覧のカード */
-    .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-    .tool > a {
-      display: flex;
-      gap: 0.9rem;
-      align-items: flex-start;
-      height: 100%;
-      padding: 1.1rem;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px var(--shadow);
-      color: inherit;
-      text-decoration: none;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .tool > a:hover, .tool > a:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 14px var(--shadow); }
-    .tool > a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .tool img { width: 48px; height: 48px; flex: none; }
-    .tool h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
-    .tool p { font-size: 0.85rem; color: var(--muted); }
-    /* ツールはカテゴリごとの見出しにまとめる。載せるのはリポジトリ（家族）の入口だけで、子ページは各入口ページから（ROADMAP 7.9.2） */
-    .cat-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
-    .cat-nav a { padding: 0.35rem 0.9rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--accent); text-decoration: none; font-size: 0.9rem; }
-    .cat-nav a:hover, .cat-nav a:focus-visible { background: var(--accent); color: var(--card); }
-    .cat + .cat { margin-top: 2rem; }
-    /* 新しいツール（公開日の新しい順に 3 件。手で更新する） */
-    .new-tools { margin-bottom: 1.8rem; padding: 0.9rem 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
-    .new-tools h2 { font-size: 0.95rem; border: none; padding: 0; margin-bottom: 0.4rem; }
-    .new-tools ul { list-style: none; display: grid; gap: 0.35rem; }
-    .new-tools a { color: var(--accent); font-weight: 700; }
-    .new-tools span { font-size: 0.85rem; color: var(--muted); }
-    .cat h2 { margin-bottom: 0.2rem; }
-    .cat-lead { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
-    /* 用途別の入口（職業の軸。yorozu-plans GROWTH 10 章）: 節の末尾に 1 行。カードは増やさない */
-    .for-link { margin-top: 0.6rem; font-size: 0.9rem; }
-    .for-link a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; }
-    /* スマホ: 2 列の小さなカード（1 行目にアイコンと名前、2 行目に説明）。タップ先は 44px 以上、文字は 14px 以上 */
+/* yorozu-common:begin v1 — サイト共通の部品とトークン。正本は youheioonuki.github.io の tools/common/yorozu-common.css。
+   この begin〜end の間は手で直さない（tools/sync-common.mjs で全ツールに配る。ツール固有の上書きは end の後に書く）。
+   出どころ（2026-10-03 確認。yorozu-plans 企画書 59）:
+   - デジタル庁デザインシステム https://design.digital.go.jp/dads/ のコンテンツを加工して作成
+     （フォーカスの輪・リンクの下線・字の大きさの下限・行間・入力欄のエラー表示）。
+     トークンの値は @digital-go-jp/design-tokens 2.0.1（MIT, (c) 2023 デジタル庁）から
+   - GOV.UK Frontend 6.5.1（MIT, (c) Crown copyright）の考え方: visually-hidden、エラーの文の前に読み上げ用の語
+   - 色は和紙風のまま（値は 2026-09-23 からの共通の値）。Web フォントは読まない（ROADMAP 3.3・D2） */
+:root {
+  color-scheme: light dark;
+  --bg: #f0ebe0;
+  --bg-2: #e6dfd0;
+  --card: #faf6ee;
+  --text: #3a3025;
+  --muted: #6e604f;          /* 本文の補足。--bg の上で 5.1:1 */
+  --accent: #8b4513;
+  --accent-soft: #f3e6d8;
+  --border: #cfc0a0;         /* 飾りの線（区切り）だけ。操作できる物の枠には --input-border */
+  --input-border: #857561;   /* 入力欄の枠。WCAG 1.4.11 の 3:1（--bg で 3.7:1）。DADS の入力欄は gray-600 の 1px */
+  --shadow: rgba(58, 48, 37, 0.12);
+  --error: #ce0000;          /* DADS red-900（semantic error-2） */
+  --ok: #197a4b;             /* DADS green-800（semantic success-2） */
+  --focus: #ffd43d;          /* DADS yellow-300 */
+  --focus-ring: #000;        /* DADS: 黒 4px の輪＋黄 2px */
+  --font-ui: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  /* 字の大きさ（DADS: 本文と操作は 16px 以上、補足は 14px まで、14px 未満は使わない） */
+  --fs-s: 0.875rem;
+  --fs-m: 1rem;
+  --fs-l: 1.25rem;           /* 見出し（隣の段との比 1.25 以上: impeccable typeset） */
+  --fs-xl: 1.625rem;         /* ページの題 */
+  --lh-body: 1.7;            /* DADS の本文の行間 170% */
+  --lh-tight: 1.4;           /* 見出し */
+  /* 余白（4px を基準。DADS の spacing） */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --radius: 8px;
+  --tap: 44px;               /* 押せる物の高さの下限（DADS・SCREEN 5 章） */
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1814;
+    --bg-2: #25201a;
+    --card: #2b251e;
+    --text: #ece4d6;
+    --muted: #b9ab96;
+    --accent: #e0a066;
+    --accent-soft: #3a2e22;
+    --border: #4a3f33;
+    --input-border: #8c7d68;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --error: #ff8a7a;
+    --ok: #6fcf97;
+    --focus-ring: #ffd43d;   /* 暗い地では黄の輪＋黒の縁 */
+    --focus: #000;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--text); line-height: var(--lh-body); }
+/* リンクは色と下線の両方（DADS リンクテキスト）。ホバーで下線を太く */
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+@media (hover: hover) { a:hover { text-decoration-thickness: 3px; } }
+/* フォーカスの輪（DADS）。:where で詳しさを 0 にして、ツールの規則で上書きできるようにする */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 4px solid var(--focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus);
+}
+:where(input, select, textarea, button) { font: inherit; color: inherit; }
+/* 入力欄の例（placeholder）も 4.5:1。ブラウザ既定の灰色は和紙の地で 4.3:1 */
+:where(input, textarea)::placeholder { color: var(--muted); opacity: 1; }
+/* 入力欄の字は 16px 以上（iPhone で拡大されない・DADS） */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) { font-size: max(1rem, 16px); }
+/* エラー（DADS: 枠を赤に、文の頭に「＊」。GOV.UK: 読み上げには「エラー:」を先に）。
+   使い方: <p class="field-error" id="x-err"><span class="visually-hidden">エラー:</span>＊ 0 以上の数を入れてください</p> と aria-describedby */
+[aria-invalid="true"] { border-color: var(--error) !important; }
+.field-error { color: var(--error); font-weight: 700; margin-top: var(--sp-1); }
+/* 画面には出さず、読み上げだけ（GOV.UK govuk-visually-hidden） */
+.visually-hidden {
+  position: absolute !important; width: 1px !important; height: 1px !important; margin: 0 !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important;
+}
+@media (forced-colors: active) { :where(a, button, input, select, textarea, summary):focus-visible { outline-color: Highlight; } }
+/* 読む行の長さ: 1 行 40 字前後まで（REVIEW C9 line-length）。画面の幅いっぱいに伸びる見出し帯の説明文に */
+.app-header > p { max-width: 40em; margin-left: auto; margin-right: auto; }
+/* 印刷では広告を出さない（SCREEN 4 章。全ツール共通） */
+@media print { ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; } }
+/* yorozu-common:end */
+
+    /* ここから トップだけ（yorozu-plans 企画書 59: 入口だけ・7 節・スマホ 3 画面以内） */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .site-head { background: var(--bg-2); border-bottom: 1px solid var(--border); padding: var(--sp-2) var(--sp-4); }
+    .site-head > div { max-width: calc(960px - 2rem); margin: 0 auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--sp-3); }
+    .site-head h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); color: var(--accent); }
+    .site-head .kana { font-size: var(--fs-s); color: var(--muted); }
+    .site-head .lang { margin-left: auto; font-size: var(--fs-s); }
+    .site-head .lead { flex-basis: 100%; font-size: var(--fs-s); color: var(--muted); }
+    main { width: 100%; max-width: 960px; margin: 0 auto; padding: var(--sp-3) var(--sp-4) var(--sp-6); flex: 1; }
+    /* 節への移動: スマホでは 1 行で横に送る（ページは横に動かない） */
+    .cat-nav { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); margin-bottom: var(--sp-3); scrollbar-width: thin; }
+    .cat-nav a { flex: none; display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--sp-3); border: 1px solid var(--input-border); border-radius: 999px; font-size: var(--fs-s); text-decoration: none; white-space: nowrap; }
+    h2 { font-size: var(--fs-l); line-height: var(--lh-tight); color: var(--text); margin: var(--sp-6) 0 var(--sp-2); }
+    .new-tools h2 { margin-top: 0; }
+    .new-tools h2 small { font-size: var(--fs-s); font-weight: 400; color: var(--muted); }
+    .new-tools p { color: var(--muted); }
+    .new-tools a { font-weight: 700; }
+    .cat-lead { font-size: var(--fs-s); color: var(--muted); margin-bottom: var(--sp-2); }
+    /* 道具の一覧: 箱と影は付けず、薄い面と余白でまとめる（1 カード ＝ 1 リポジトリの入口） */
+    .tools { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--sp-2); }
+    .tools a { display: block; height: 100%; padding: var(--sp-2) var(--sp-3); background: var(--card); border-radius: var(--radius); color: var(--text); text-decoration: none; line-height: 1.5; }
+    .tools img { float: left; width: 24px; height: 24px; margin: 1px var(--sp-2) 0 0; }
+    .tools strong { color: var(--accent); }
+    .tools span { display: block; clear: left; margin-top: var(--sp-1); font-size: var(--fs-s); color: var(--muted); }
+    @media (hover: hover) { .tools a:hover strong { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 3px; } }
+    .for-link { margin-top: var(--sp-1); }
+    .for-link a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; }
+    footer { border-top: 1px solid var(--border); padding: var(--sp-3) var(--sp-4); font-size: var(--fs-s); color: var(--muted); }
+    footer > div { max-width: calc(960px - 2rem); margin: 0 auto; }
+    footer nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-4); }
+    footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); }
+    /* スマホ: 2 列。説明は名前の下（SCREEN 5 章: 字は 14px 以上、押せる所は 44px 以上） */
     @media (max-width: 599px) {
-      header { padding: 1rem 1rem 1.2rem; }
-      header h1 { font-size: 1.7rem; }
-      main { padding-top: 1rem; }
-      .cat-nav { gap: 0.4rem; }
-      .cat-nav a { min-height: 44px; display: inline-flex; align-items: center; padding: 0 0.8rem; }
-      .new-tools { margin-bottom: 1.4rem; }
-      .new-tools li { line-height: 1.5; }
-      .new-tools a { display: inline-block; padding: 0.65rem 0; }
-      .new-tools span, .cat-lead { font-size: 0.875rem; }
-      .cat + .cat { margin-top: 1.4rem; }
-      .tools { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-      .tool > a { display: grid; grid-template-columns: 28px 1fr; gap: 0.3rem 0.45rem; align-items: center; align-content: start; padding: 0.6rem; }
-      .tool > a > div { display: contents; }
-      .tool img { width: 28px; height: 28px; }
-      .tool h3 { font-size: 0.9rem; line-height: 1.35; margin: 0; }
-      .tool p { grid-column: 1 / -1; font-size: 0.875rem; line-height: 1.5; }
-    }
-    .about { margin-top: 2rem; font-size: 0.88rem; color: var(--muted); }
-    .about p + p { margin-top: 0.4rem; }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
+      .tools { grid-template-columns: 1fr 1fr; gap: 6px; }
+      .tools a { padding: 6px var(--sp-2); }
+      .tools img { width: 20px; height: 20px; margin-right: var(--sp-1); }
+      .tools span { clear: none; line-height: 1.45; }
+      .tools strong { font-size: 0.9375rem; line-height: 1.4; }
+      .tools li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+      h2 { margin: var(--sp-3) 0 var(--sp-2); }
+      main { padding-top: var(--sp-2); }
+      .cat-nav { margin-bottom: var(--sp-2); }
     }
   </style>
 </head>
 <body>
 
-  <div class="lang-bar"><a href="./en/" hreflang="en" lang="en">English</a></div>
-  <header>
-    <h1>yorozu-craft</h1>
-    <p class="kana">よろずクラフト</p>
-    <p class="lead">ブラウザですぐ使える、ちょっと便利なものを作っています。</p>
+  <header class="site-head">
+    <div>
+      <h1>yorozu-craft</h1>
+      <span class="kana">よろずクラフト</span>
+      <a class="lang" href="./en/" hreflang="en" lang="en">English</a>
+      <p class="lead">ブラウザですぐ使える、便利な道具。無料・登録なし。</p>
+    </div>
   </header>
 
   <main>
@@ -170,390 +201,92 @@
     </nav>
 
     <!-- 新しいツール: 3 件。載せるのは公開後の再点検（iPhone・Android で 1 回ずつ操作、印刷物は 1 枚印刷）を済ませたものだけ（REVIEW C7 R11）。
-         2026-09-25 時点で正式な再点検を済ませたものはまだ無いため、オーナーが実機で確かめたもの（Fitbit・大時計・ピアノ・百人一首・早押し）のうち公開の新しい 3 件を載せる。
-         月 1 回入れ替える（ROADMAP 7.9.2） -->
+         リンクは各リポジトリの入口だけ（子ページへ直に張らない。yorozu-plans 企画書 59・ROADMAP 7.9.2）。月 1 回入れ替える -->
     <section class="new-tools" aria-labelledby="new-heading">
-      <h2 id="new-heading">新しいツール</h2>
-      <ul>
-        <li><a href="./quiz-hiroba/hayaoshi/">早押しボタン</a> <span>— スマホ 1 台を 2〜4 人で囲んで早押しクイズ（2026-09-25）</span></li>
-        <li><a href="./quiz-hiroba/hyakunin/">百人一首 読み上げ</a> <span>— 100 首を端末の声で読み上げます（2026-09-25）</span></li>
-        <li><a href="./web-metronome/piano/">ブラウザピアノ</a> <span>— スマホを横にすると鍵盤、和音も鳴ります（2026-09-25）</span></li>
-      </ul>
+      <h2 id="new-heading">新しいツール <small>2026-09-25</small></h2>
+      <p><a href="./quiz-hiroba/">クイズ広場</a>（早押し・百人一首の読み上げ）、<a href="./web-metronome/">メトロノーム・ピアノ</a>、<a href="./fitbit-export/">Fitbit データ CSV 変換</a></p>
     </section>
 
+    <!-- 載せるのはリポジトリ（家族）の入口だけ。子ページは各入口ページから（ROADMAP 7.9.2・企画書 59） -->
     <section class="cat" id="kurashi" aria-labelledby="kurashi-heading">
       <h2 id="kurashi-heading">くらし・お金</h2>
-      <p class="cat-lead">家計や制度の計算。根拠と確認日つき。</p>
-      <!-- 載せるのはリポジトリ（家族）の入口だけ。子ページは各入口ページから（ROADMAP 7.9.2） -->
       <ul class="tools">
-        <li class="tool">
-          <a href="./loan-sim/">
-            <img src="./loan-sim/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>住宅ローン 返済シミュレーター</h3>
-              <p>金利の上昇と繰上返済を組み合わせて試算します。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./denki-dai/">
-            <img src="./denki-dai/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>家電の電気代・節約額</h3>
-              <p>買い替えで何年で元が取れるかを試算します。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./shaho-check/">
-            <img src="./shaho-check/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>社会保険 加入チェッカー</h3>
-              <p>パートの方が加入対象かを質問で確かめます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./seido-keisan/">
-            <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>制度の計算機</h3>
-              <p>年末調整・住民税・育休の給付金などの計算。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./gengo/">
-            <img src="./gengo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>元号・西暦・年齢の変換</h3>
-              <p>和暦と西暦、年齢・学年・厄年・回忌の早見表。</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="./loan-sim/"><img src="./loan-sim/favicon.svg" alt="" width="24" height="24"><strong>住宅ローン 返済シミュレーター</strong> <span>金利の上昇と繰上返済を合わせて試算。</span></a></li>
+        <li><a href="./denki-dai/"><img src="./denki-dai/favicon.svg" alt="" width="24" height="24"><strong>家電の電気代・節約額</strong> <span>買い替えで何年で元が取れるかを試算します。</span></a></li>
+        <li><a href="./shaho-check/"><img src="./shaho-check/favicon.svg" alt="" width="24" height="24"><strong>社会保険 加入チェッカー</strong> <span>パートの方が加入対象かを質問で確かめます。</span></a></li>
+        <li><a href="./seido-keisan/"><img src="./seido-keisan/favicon.svg" alt="" width="24" height="24"><strong>制度の計算機</strong> <span>年末調整・住民税・育休・年金などの計算。</span></a></li>
+        <li><a href="./gengo/"><img src="./gengo/favicon.svg" alt="" width="24" height="24"><strong>元号・西暦・年齢の変換</strong> <span>和暦と西暦、年齢・学年・厄年・回忌。</span></a></li>
       </ul>
     </section>
 
     <section class="cat" id="atsumari" aria-labelledby="atsumari-heading">
       <h2 id="atsumari-heading">集まり・イベント</h2>
-      <p class="cat-lead">集まりの準備と当日の進行に。</p>
       <ul class="tools">
-        <li class="tool">
-          <a href="./nittei-kouho/">
-            <img src="./nittei-kouho/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>日程調整 候補日</h3>
-              <p>祝日を外した候補日と、送る文面を作ります。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./easy-split/">
-            <img src="./easy-split/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>傾斜割り勘・清算</h3>
-              <p>係数つきの割り勘を LINE で送れる形にします。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./bingo/">
-            <img src="./bingo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>大人数ビンゴ抽選</h3>
-              <p>大画面の抽選と、カード 200 枚までの印刷。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./sekigae/">
-            <img src="./sekigae/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>席替え・席順くじ</h3>
-              <p>前回と同じ席を避けて決め、座席表を印刷します。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./tabi-shiori/">
-            <img src="./tabi-shiori/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>旅のしおりメーカー</h3>
-              <p>行程・持ち物・予算をまとめて A4・A5 で印刷。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./web-roulette/">
-            <img src="./web-roulette/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ルーレット・くじ引き</h3>
-              <p>ルーレットに、あみだくじ・お題・サイコロも。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./toban/">
-            <img src="./toban/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>当番表・グループ分け</h3>
-              <p>条件つきで公平に回す当番表と班分け。</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="./nittei-kouho/"><img src="./nittei-kouho/favicon.svg" alt="" width="24" height="24"><strong>日程調整 候補日</strong> <span>祝日を外した候補日と、送る文面を作ります。</span></a></li>
+        <li><a href="./easy-split/"><img src="./easy-split/favicon.svg" alt="" width="24" height="24"><strong>傾斜割り勘・清算</strong> <span>係数つきの割り勘を LINE で送れる形に。</span></a></li>
+        <li><a href="./bingo/"><img src="./bingo/favicon.svg" alt="" width="24" height="24"><strong>大人数ビンゴ抽選</strong> <span>大画面の抽選と、カード 200 枚までの印刷。</span></a></li>
+        <li><a href="./sekigae/"><img src="./sekigae/favicon.svg" alt="" width="24" height="24"><strong>席替え・席順くじ</strong> <span>前回と同じ席を避けて決め、座席表を印刷。</span></a></li>
+        <li><a href="./tabi-shiori/"><img src="./tabi-shiori/favicon.svg" alt="" width="24" height="24"><strong>旅のしおりメーカー</strong> <span>行程・持ち物・予算を A4・A5 で印刷。</span></a></li>
+        <li><a href="./web-roulette/"><img src="./web-roulette/favicon.svg" alt="" width="24" height="24"><strong>ルーレット・くじ引き</strong> <span>ルーレットと、あみだくじ・お題・サイコロ。</span></a></li>
+        <li><a href="./toban/"><img src="./toban/favicon.svg" alt="" width="24" height="24"><strong>当番表・グループ分け</strong> <span>条件つきで公平に回す当番表と班分け。</span></a></li>
       </ul>
-      <p class="for-link"><a href="./for/teachers/">先生の方へ — 教室で使う道具と印刷のしかた</a></p>
     </section>
 
     <section class="cat" id="it" aria-labelledby="it-heading">
       <h2 id="it-heading">情シス・IT</h2>
-      <p class="cat-lead">Windows と Active Directory の仕事に。</p>
       <ul class="tools">
-        <li class="tool">
-          <a href="./pac-tester/">
-            <img src="./pac-tester/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>PAC ファイル テスター</h3>
-              <p>PAC を URL 一覧で一括評価し、新旧を比べます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./ADSearch/">
-            <img src="./ADSearch/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ADSearch（PowerShell）</h3>
-              <p>RSAT なしで AD・DNS・GPO を読み取ります。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./filetime/">
-            <img src="./filetime/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>FILETIME・LDAP 時刻の変換</h3>
-              <p>pwdLastSet などの 18 桁の数字を日時にします。</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="./pac-tester/"><img src="./pac-tester/favicon.svg" alt="" width="24" height="24"><strong>PAC ファイル テスター</strong> <span>PAC を URL 一覧で評価し、新旧を比べます。</span></a></li>
+        <li><a href="./ADSearch/"><img src="./ADSearch/favicon.svg" alt="" width="24" height="24"><strong>ADSearch（PowerShell）</strong> <span>RSAT なしで AD・DNS・GPO を読み取ります。</span></a></li>
+        <li><a href="./filetime/"><img src="./filetime/favicon.svg" alt="" width="24" height="24"><strong>FILETIME・LDAP 時刻の変換</strong> <span>pwdLastSet などの 18 桁を日時に。</span></a></li>
       </ul>
-      <p class="for-link"><a href="./for/it/">情シスの方へ — VDI でも使える道具と 1 ファイル版</a></p>
+      <p class="for-link"><a href="./for/it/">情シスの方へ（VDI・1 ファイル版）</a></p>
     </section>
 
     <section class="cat" id="henkan" aria-labelledby="henkan-heading">
       <h2 id="henkan-heading">変換・データ</h2>
-      <p class="cat-lead">ファイルを端末の中だけで変換します。</p>
       <ul class="tools">
-        <li class="tool">
-          <a href="./md-viewer/">
-            <img src="./md-viewer/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Markdown＋Mermaid ビューア</h3>
-              <p>ダウンロードして通信なしで読めるビューア。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./fitbit-export/">
-            <img src="./fitbit-export/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>Fitbit データ CSV 変換</h3>
-              <p>書き出しの zip を日ごとの CSV にします。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./henkan/">
-            <img src="./henkan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>テキスト変換</h3>
-              <p>テキスト差分・JSON・CSV・全角半角と、PDF の結合・分割・回転。端末の中だけで処理します。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./ai-log/">
-            <img src="./ai-log/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>AI 会話ログ Markdown 変換</h3>
-              <p>ChatGPT・Claude の書き出しを会話ごとの Markdown に。Obsidian 向け。端末の外に出ません。</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="./md-viewer/"><img src="./md-viewer/favicon.svg" alt="" width="24" height="24"><strong>Markdown＋Mermaid ビューア</strong> <span>ダウンロードして通信なしで読めるビューア。</span></a></li>
+        <li><a href="./fitbit-export/"><img src="./fitbit-export/favicon.svg" alt="" width="24" height="24"><strong>Fitbit データ CSV 変換</strong> <span>書き出しの zip を日ごとの CSV にします。</span></a></li>
+        <li><a href="./henkan/"><img src="./henkan/favicon.svg" alt="" width="24" height="24"><strong>テキスト変換</strong> <span>差分・JSON・CSV・全角半角と PDF の結合。</span></a></li>
+        <li><a href="./ai-log/"><img src="./ai-log/favicon.svg" alt="" width="24" height="24"><strong>AI 会話ログ Markdown 変換</strong> <span>ChatGPT・Claude の書き出しを Markdown に。</span></a></li>
       </ul>
     </section>
 
     <section class="cat" id="manabi" aria-labelledby="manabi-heading">
       <h2 id="manabi-heading">まなび・あそび</h2>
-      <p class="cat-lead">こどもといっしょに、音や星や地図で。</p>
       <ul class="tools">
-        <li class="tool">
-          <a href="./furigana/">
-            <img src="./furigana/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ふりがなメーカー</h3>
-              <p>学年に合わせてふりがなを振り、印刷します。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./gakushu-print/">
-            <img src="./gakushu-print/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>学習プリントメーカー</h3>
-              <p>計算・九九・漢字・ローマ字などを毎回ちがう問題で。暗号づくりも。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./hoshizora-sanpo/">
-            <img src="./hoshizora-sanpo/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ほしぞらさんぽ</h3>
-              <p>今夜の星空と星座の神話、星座早見盤づくり。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./todofuken-quiz/">
-            <img src="./todofuken-quiz/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>こども都道府県クイズ</h3>
-              <p>日本地図をタッチして 47 都道府県をおぼえます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./web-metronome/">
-            <img src="./web-metronome/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>メトロノーム</h3>
-              <p>変則拍子・アクセント・裏拍。タップでテンポを測れます。</p>
-            </div>
-          </a>
-        </li>
-        <!-- 1 カード ＝ 1 用途（README「ツールを追加するとき」2）。ピアノは web-metronome の子ページだが、メトロノームとは別の用途（楽器）なので別カード -->
-        <li class="tool">
-          <a href="./web-metronome/piano/">
-            <img src="./web-metronome/piano/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ブラウザピアノ</h3>
-              <p>スマホは横向きで 2 オクターブ。和音も弾けます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./quiz-hiroba/">
-            <img src="./quiz-hiroba/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>クイズ広場</h3>
-              <p>元素記号・年号・首都・国旗・百人一首と早押しボタン。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./gakko-keisan/">
-            <img src="./gakko-keisan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>学校の計算機</h3>
-              <p>内申点・偏差値・出席日数と宿題タイマー。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./unplugged/">
-            <img src="./unplugged/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>アンプラグド・プログラミング</h3>
-              <p>ロボットの盤面と命令カードを印刷します。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./tameshite/">
-            <img src="./tameshite/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>ためして（耳・反射・目）</h3>
-              <p>高い音・反射神経・動体視力・記憶力の目安。</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="./furigana/"><img src="./furigana/favicon.svg" alt="" width="24" height="24"><strong>ふりがなメーカー</strong> <span>学年に合わせてふりがなを振り、印刷します。</span></a></li>
+        <li><a href="./gakushu-print/"><img src="./gakushu-print/favicon.svg" alt="" width="24" height="24"><strong>学習プリントメーカー</strong> <span>計算・九九・漢字などを毎回ちがう問題で。</span></a></li>
+        <li><a href="./hoshizora-sanpo/"><img src="./hoshizora-sanpo/favicon.svg" alt="" width="24" height="24"><strong>ほしぞらさんぽ</strong> <span>今夜の星空と星座の神話、星座早見盤づくり。</span></a></li>
+        <li><a href="./todofuken-quiz/"><img src="./todofuken-quiz/favicon.svg" alt="" width="24" height="24"><strong>こども都道府県クイズ</strong> <span>日本地図をタッチして都道府県をおぼえる。</span></a></li>
+        <li><a href="./web-metronome/"><img src="./web-metronome/favicon.svg" alt="" width="24" height="24"><strong>メトロノーム・ピアノ</strong> <span>変則拍子・裏拍のメトロノームとピアノ。</span></a></li>
+        <li><a href="./quiz-hiroba/"><img src="./quiz-hiroba/favicon.svg" alt="" width="24" height="24"><strong>クイズ広場</strong> <span>元素記号・首都・国旗・百人一首・早押し。</span></a></li>
+        <li><a href="./gakko-keisan/"><img src="./gakko-keisan/favicon.svg" alt="" width="24" height="24"><strong>学校の計算機</strong> <span>内申点・偏差値・出席日数と宿題タイマー。</span></a></li>
+        <li><a href="./unplugged/"><img src="./unplugged/favicon.svg" alt="" width="24" height="24"><strong>アンプラグド・プログラミング</strong> <span>ロボットの盤面と命令カードを印刷します。</span></a></li>
+        <li><a href="./tameshite/"><img src="./tameshite/favicon.svg" alt="" width="24" height="24"><strong>ためして（耳・反射・目）</strong> <span>高い音・反射神経・記憶力・老眼の目安。</span></a></li>
       </ul>
-      <p class="for-link"><a href="./for/teachers/">先生の方へ — 教室で使う道具と印刷のしかた</a></p>
+      <p class="for-link"><a href="./for/teachers/">先生の方へ（教室で使う道具と印刷）</a></p>
     </section>
 
     <section class="cat" id="oya" aria-labelledby="oya-heading">
       <h2 id="oya-heading">親・家族のために（広告なし）</h2>
-      <p class="cat-lead">親に印刷してあげる・置いてあげる道具。どのページも広告を出しません。</p>
-      <!-- 入口は otasuke だけ。ほかの 4 行は別のリポジトリにある広告なしのページ（ROADMAP 7.9.2） -->
+      <p class="cat-lead">年金・高額療養費（制度の計算機）、老眼チェック（ためして）、昭和クイズ（クイズ広場）も広告なしです。</p>
       <ul class="tools">
-        <li class="tool">
-          <a href="./otasuke/">
-            <img src="./otasuke/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>くらしのおたすけ</h3>
-              <p>写経用紙・冷蔵庫に貼る紙・大時計・本物チェックなど。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./otasuke/kenshin/">
-            <img src="./otasuke/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>健診結果の経年グラフ</h3>
-              <p>毎年の健診の値を入れて、国の判定値の線と並べて見ます。A4 1 枚で印刷。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./quiz-hiroba/showa/">
-            <img src="./quiz-hiroba/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>昭和クイズ・回想法カード</h3>
-              <p>高齢者向けの 3 択クイズと、折って使う回想法カード。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./tameshite/roogan/">
-            <img src="./tameshite/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>老眼チェック</h3>
-              <p>画面の実寸を合わせてから、見え方を確かめます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./seido-keisan/nenkin-kuriage/">
-            <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>年金の繰上げ・繰下げ</h3>
-              <p>60〜75 歳のどこで受け取るかで年金額を比べます。</p>
-            </div>
-          </a>
-        </li>
-        <li class="tool">
-          <a href="./seido-keisan/kogaku-ryoyohi/">
-            <img src="./seido-keisan/favicon.svg" alt="" width="48" height="48">
-            <div>
-              <h3>高額療養費</h3>
-              <p>医療費の自己負担の上限と、戻る額を計算します。</p>
-            </div>
-          </a>
-        </li>
+        <li><a href="./otasuke/"><img src="./otasuke/favicon.svg" alt="" width="24" height="24"><strong>くらしのおたすけ</strong> <span>写経用紙・冷蔵庫に貼る紙・大時計・健診の経年グラフなど。</span></a></li>
       </ul>
-      <p class="for-link"><a href="./for/kaigo/">介護の方へ — レクにすぐ配れる印刷物（広告なし）</a></p>
-    </section>
-
-    <section class="about" aria-label="このサイトについて">
-      <p>すべてのツールは無料・登録不要で、ブラウザだけで動きます。入力したデータはお使いのブラウザ内にだけ保存され、外部に送信されることはありません。</p>
-      <p>運営者情報・免責事項は<a href="./about.html">こちら</a>、プライバシーポリシーは<a href="./privacy-policy.html">こちら</a>です（すべてのツールで共通）。各ツールの使い方は、それぞれのツールのページにあります。</p>
+      <p class="for-link"><a href="./for/kaigo/">介護の方へ（レクの印刷物・広告なし）</a></p>
     </section>
   </main>
 
   <footer>
-    <p><a href="./about.html" style="color:inherit">運営者情報</a>　<a href="./privacy-policy.html" style="color:inherit">プライバシーポリシー</a></p>
-    <p>&copy; 2026 yorozu-craft. All rights reserved.</p>
+    <div>
+      <p>すべて無料・登録不要。入力したデータは外部に送信しません。</p>
+      <nav aria-label="サイトの情報">
+        <a href="./about.html">運営者情報・免責事項</a>
+        <a href="./privacy-policy.html">プライバシーポリシー</a>
+        <span>&copy; 2026 yorozu-craft. All rights reserved.</span>
+      </nav>
+    </div>
   </footer>
 
   <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
