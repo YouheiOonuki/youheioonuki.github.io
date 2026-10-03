@@ -172,7 +172,8 @@ for (const sm of sitemaps) {
 // 2. トップのツール一覧と robots.txt の sitemap が一致しているか
 const top = await get(BASE);
 // ./en/ は英語のトップ（ツールではない）
-const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]).filter(t => t !== 'en'));
+// ./all/ は「すべての道具」の一覧（ROADMAP 7.23。ツールではない）
+const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]).filter(t => t !== 'en' && t !== 'all'));
 // ツールの sitemap は /<ツール>/sitemap.xml。ドメイン直下の /sitemap.xml（トップ自身）は除く
 const toolsInRobots = new Set(sitemaps.map(s => path(s).split('/').filter(Boolean)).filter(seg => seg.length >= 2).map(seg => seg[0]));
 for (const t of toolsOnTop) if (!toolsInRobots.has(t)) fail('robots.txt', `トップに載っている ${t} の Sitemap が無い`);
@@ -200,7 +201,7 @@ if (pages.has(BASE + 'en/')) {
   try { reg = JSON.parse(pj.body); } catch { fail('/data/pages.json', `読めない（${pj.status}）`); }
   if (reg) {
     const regPaths = new Set(reg.pages.map(p => p.path));
-    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p);
+    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en|all)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p);
     for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
     for (const p of regPaths) if (![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
     const want = newToolsHtml(reg);
@@ -212,6 +213,20 @@ if (pages.has(BASE + 'en/')) {
       for (const h of hrefs(r.body)) { try { twoClick.add(new URL(h, BASE + e.slice(1)).pathname); } catch {} }
     }
     for (const p of regPaths) if (!twoClick.has(p)) fail(p, 'トップから 2 クリックで届かない（トップの節か、その道具の入口ページにリンクを置く）');
+    // すべての道具（/all/）に全ページがある・季節表（data/season.json）の行が実在して出典がある（ROADMAP 7.23）
+    const all = await get(BASE + 'all/');
+    if (all.status !== 200) fail('/all/', `status ${all.status}`);
+    else {
+      const onAll = new Set(hrefs(all.body).map(h => { try { return new URL(h, BASE + 'all/').pathname; } catch { return ''; } }));
+      for (const p of regPaths) if (!onAll.has(p)) fail('/all/', `${p} が「すべての道具」に無い（node tools/build-top.mjs）`);
+    }
+    const sj = await get(BASE + 'data/season.json');
+    let season = null;
+    try { season = JSON.parse(sj.body); } catch { fail('/data/season.json', `読めない（${sj.status}）`); }
+    if (season) {
+      const { seasonData } = await import('./build-top.mjs');
+      for (const lang of ['ja', 'en']) { try { seasonData(reg, season, lang); } catch (e) { fail('/data/season.json', e.message); } }
+    }
   }
 }
 
