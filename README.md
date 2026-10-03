@@ -182,6 +182,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 例: 年末調整 ＝ A 3 ＋ 表示 1 位 3 ＋ 季節 2 ＝ 8、住宅ローン ＝ 道具の A 3 ＋ 表示 1 ＋ 0 ＝ 4（`tests/priority.test.mjs`）。
 
 - **入力の流れ**（7.24.3）: `node tools/top/priority.mjs` は隣のクローン `../yorozu-plans/docs/data/weekly-tools.json`（`WEEKLY_TOOLS` で変えられる）を読んで `data/weekly-tools.json` に写し、priority を書き換える。続けて `node tools/build-top.mjs`。`--check` は写しだけを見る。初回（2026-10-03）は週次レポート 2026-10-01 の 1 週分
+- **いまの pin**: 「あそぶ・ためす・星空」の `/hoshizora-night/`（オーナー決定 2026-10-03「星空さんぽは入口は軽量版のまま、フル版を目立たせる」）。節の先頭の行がフル版になり、軽量版 `/hoshizora-sanpo/` はその行のチップ（related）で届く。英語のトップ（`en.sections` の手で並べた行）もフル版を軽量版の前に置く
 - 毎月（第 1 月曜の企画サイクル）`month` を当月にして再計算する。台帳の根拠が変わったら `ledger.mjs` を流し直す
 - 4 週後からは、検索の項を Cloudflare の「トップから移った先」の PV ＋ 表示回数の順位にする予定（7.24.1「4 週後の自動化」。式の 3 項は同じ）
 

@@ -14,7 +14,7 @@
     {"path": "/hoshizora-sanpo/tsuki/", "date": "2026-10-03", "title": "月の出・月の入りの時刻と方角", "short": "月の出・月の入り", "section": "asobu", "priority": 3, "aliases": ["月の出", "月の入り"], "chip": "月の出入り", "name": "月の出入り"},
     {"path": "/otasuke/kenshin/", "date": "2026-10-02", "title": "健診結果の経年グラフ", "short": "健診の経年グラフ", "section": "oya", "priority": 4, "aliases": ["健康診断", "検査値"], "chip": "健診グラフ", "name": "健診グラフ", "note": "健診の値をグラフに", "related": ["/seido-keisan/kogaku-ryoyohi/", "/otasuke/reizoko/", "/seido-keisan/iryohi/"]},
     {"path": "/hoshizora-sanpo/shinwa/", "date": "2026-10-02", "title": "ギリシャ神話", "short": "ギリシャ神話", "section": "asobu", "priority": 4, "aliases": ["星座の神話", "ゼウス"]},
-    {"path": "/hoshizora-night/", "date": "2026-10-02", "title": "ほしぞらさんぽ フル版", "short": "星空 フル版", "section": "asobu", "priority": 2, "aliases": ["星空 大画面"], "name": "ほしぞらさんぽ フル版", "note": "星空を大きな画面で", "related": ["/hoshizora-night/poster/", "/hoshizora-sanpo/"]},
+    {"path": "/hoshizora-night/", "date": "2026-10-02", "title": "ほしぞらさんぽ フル版", "short": "星空 フル版", "section": "asobu", "priority": 2, "pin": true, "aliases": ["星空 大画面"], "name": "ほしぞらさんぽ フル版", "note": "星空を大きな画面で", "related": ["/hoshizora-night/poster/", "/hoshizora-sanpo/"]},
     {"path": "/gakushu-print/tokei/", "date": "2026-10-02", "title": "時計の読み方 練習", "short": "時計の読み方プリント", "section": "manabi", "priority": 5, "aliases": ["とけい", "時計プリント"], "chip": "時計", "name": "時計の読み方", "note": "時計の読み方プリント", "related": ["/gakushu-print/", "/gakko-keisan/timer/"]},
     {"path": "/gakushu-print/anki/", "date": "2026-10-02", "title": "暗記カード作成", "short": "暗記カード", "section": "manabi", "priority": 5, "aliases": ["単語カード", "赤シート"], "name": "暗記カード"},
     {"path": "/henkan/pdf/", "date": "2026-10-01", "title": "PDF 結合・分割・回転", "short": "PDF 結合・分割", "section": "henkan", "priority": 4, "aliases": ["PDF 結合"], "chip": "PDF 結合", "name": "PDF 結合・分割", "note": "送らずに PDF を編集", "related": ["/henkan/", "/md-viewer/"]},
@@ -138,7 +138,7 @@
       {"path": "/ai-log/en/", "date": "2026-10-01", "title": "AI Chat Log to Markdown", "note": "Chat exports to Markdown", "aliases": ["ChatGPT", "Claude", "Obsidian"]}
     ],
     "sections": [
-      {"id": "life", "name": "Living in Japan", "rows": ["/seido-keisan/en/take-home-pay/", "/seido-keisan/en/residence-tax/", "/seido-keisan/en/pension-refund/", "/seido-keisan/en/childcare-leave/", "/seido-keisan/en/high-cost-medical/", "/seido-keisan/en/moving-checklist/", "/gengo/en/", "/hoshizora-sanpo/en/", "/hoshizora-night/en/", "/tameshite/en/sleep-calculator/"]},
+      {"id": "life", "name": "Living in Japan", "rows": ["/seido-keisan/en/take-home-pay/", "/seido-keisan/en/residence-tax/", "/seido-keisan/en/pension-refund/", "/seido-keisan/en/childcare-leave/", "/seido-keisan/en/high-cost-medical/", "/seido-keisan/en/moving-checklist/", "/gengo/en/", "/hoshizora-night/en/", "/hoshizora-sanpo/en/", "/tameshite/en/sleep-calculator/"]},
       {"id": "learn", "name": "Learning Japanese", "rows": ["/gakushu-print/en/", "/furigana/en/", "/bingo/en/", "/toban/en/", "/unplugged/en/"]},
       {"id": "it", "name": "Sysadmin tools", "rows": ["/pac-tester/en/", "/ADSearch/en/", "/filetime/en/", "/fitbit-export/en/", "/ai-log/en/"]}
     ]
