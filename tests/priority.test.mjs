@@ -54,7 +54,8 @@ test('節ごとの行が priority の上位 3（同点は入口＞子ページ�
     const want = cands.slice(0, VISIBLE).map((p) => p.priority);
     assert.deepEqual(s.rows.slice(0, VISIBLE).map((r) => r.priority), want, s.id);
     const restMax = Math.max(...cands.slice(VISIBLE).map((p) => p.priority), 0);
-    for (const r of s.rows.slice(0, VISIBLE)) assert.ok(r.priority >= restMax, `${s.id} ${r.path}`);
+    // pin（節ごとに 1 件まで。オーナーの判断で常に出す: 7.24.1）は priority より先なので、低くてよい。pin でない行は残りより低くない
+    for (const r of s.rows.slice(0, VISIBLE)) if (!r.pin) assert.ok(r.priority >= restMax, `${s.id} ${r.path}`);
     const shown = block(html, s.id).split('<details>')[0];
     const names = [...shown.matchAll(/class="yt-name" href="\.\/([^"]+)"/g)].map((m) => '/' + m[1]);
     assert.deepEqual(names, s.rows.slice(0, VISIBLE).map((r) => r.path), `${s.id} の HTML`);
