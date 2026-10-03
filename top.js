@@ -42,13 +42,19 @@
     return (season && season.months && season.months[m]) || [];
   }
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
-  // いまの時期の 3 枚（静的な HTML と、月が変わったときの入れ替えで同じ形）
-  function seasonItemsHtml(items, base) {
+  // 道具のアイコン: そのページのリポジトリ（/<ツール>/）の favicon.svg。子ページは親のもの。新しい画像は作らない
+  // 飾りなので alt は空。寸法を書いて読み込みでずれない（CLS 0）。1 画面目より下は lazy
+  var ICON = 20;
+  function iconHtml(path, base, lazy) {
+    return '<img class="yt-ico" src="' + esc(base + path.split('/')[1] + '/favicon.svg') + '" alt="" width="' + ICON + '" height="' + ICON + '"' + (lazy ? ' loading="lazy"' : '') + ' decoding="async">';
+  }
+  // いまの時期の 3 枚（静的な HTML と、月が変わったときの入れ替えで同じ形）。icons: 日本語のページだけ（data-icons）。1 画面目なので lazy にしない
+  function seasonItemsHtml(items, base, icons) {
     return items.map(function (x) {
-      return '<li><a href="' + esc(base + x.path.slice(1)) + '"><strong>' + esc(x.name) + '</strong><span>' + esc(x.reason) + '</span></a></li>';
+      return '<li><a href="' + esc(base + x.path.slice(1)) + '"><strong>' + (icons ? iconHtml(x.path, base, false) : '') + esc(x.name) + '</strong><span>' + esc(x.reason) + '</span></a></li>';
     }).join('');
   }
-  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonItemsHtml: seasonItemsHtml, esc: esc };
+  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonItemsHtml: seasonItemsHtml, iconHtml: iconHtml, esc: esc };
   root.YorozuTop = api;
   if (typeof document === 'undefined') return;
 
@@ -62,7 +68,7 @@
     if (String(m) !== list.getAttribute('data-season-month')) {
       var items = seasonFor(season, now);
       if (items.length) {
-        list.innerHTML = seasonItemsHtml(items, list.getAttribute('data-base') || './');
+        list.innerHTML = seasonItemsHtml(items, list.getAttribute('data-base') || './', list.hasAttribute('data-icons'));
         list.setAttribute('data-season-month', String(m));
         var mh = document.querySelector('[data-season-label]');
         if (mh) mh.textContent = mh.getAttribute('data-season-label').replace('{m}', String(m));
