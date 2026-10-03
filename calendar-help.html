@@ -27,23 +27,11 @@
   <!-- legal.css より先に描かれてもブラウザ既定の余白（8px）で画面がずれないよう、余白の打ち消しだけ直接書く -->
   <style>body{margin:0}</style>
   <link rel="stylesheet" href="./legal.css">
-  <!-- このページだけの追加（print-help.html と同じ型）: ダークモードと折りたたみ、URL の欄 -->
+  <!-- このページだけ: 購読用の URL を表示する欄 -->
   <style>
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1c1814; --bg-2: #25201a; --card: #2b251e; --text: #ece4d6;
-        --muted: #b9ab96; --accent: #e0a066; --border: #4a3f33; --shadow: rgba(0, 0, 0, 0.4);
-      }
-    }
-    details { margin: 0.5rem 0 0.2rem; font-size: 0.9rem; }
-    summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 0.88rem; padding: 0.3rem 0; }
-    details[open] > summary { margin-bottom: 0.3rem; }
-    details ol, details ul { margin: 0.3rem 0 0.6rem; }
-    details li + li { margin-top: 0.2rem; }
-    details .src li { overflow-wrap: anywhere; }
-    .cals li + li { margin-top: 0.6rem; }
-    .cals input { display: block; width: 100%; max-width: 34em; margin-top: 0.25rem; font: inherit; font-size: 0.85rem; padding: 0.3rem 0.45rem;
-      box-sizing: border-box; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 6px; }
+    .cals li + li { margin-top: var(--sp-3); }
+    .cals input { display: block; width: 100%; max-width: 34em; margin-top: var(--sp-1); padding: var(--sp-1) var(--sp-2); min-height: var(--tap);
+      color: var(--text); background: var(--card); border: 1px solid var(--input-border); border-radius: 6px; }
   </style>
 </head>
 <body>

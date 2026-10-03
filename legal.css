@@ -1,66 +1,141 @@
-/* 運営者情報・プライバシーポリシー（サイト共通ページ）のスタイル。配色はトップページと同じ和紙風 */
+/* サイト共通ページ（運営者情報・プライバシーポリシー・印刷とカレンダーの手順・用途別の入口）のスタイル。
+   色・字・余白のトークンと部品は yorozu-common（下の begin〜end。tools/sync-common.mjs で配る）。ダークモードも共通の値で自動 */
+/* yorozu-common:begin v1 — サイト共通の部品とトークン。正本は youheioonuki.github.io の tools/common/yorozu-common.css。
+   この begin〜end の間は手で直さない（tools/sync-common.mjs で全ツールに配る。ツール固有の上書きは end の後に書く）。
+   出どころ（2026-10-03 確認。yorozu-plans 企画書 59）:
+   - デジタル庁デザインシステム https://design.digital.go.jp/dads/ のコンテンツを加工して作成
+     （フォーカスの輪・リンクの下線・字の大きさの下限・行間・入力欄のエラー表示）。
+     トークンの値は @digital-go-jp/design-tokens 2.0.1（MIT, (c) 2023 デジタル庁）から
+   - GOV.UK Frontend 6.5.1（MIT, (c) Crown copyright）の考え方: visually-hidden、エラーの文の前に読み上げ用の語
+   - 色は和紙風のまま（値は 2026-09-23 からの共通の値）。Web フォントは読まない（ROADMAP 3.3・D2） */
 :root {
+  color-scheme: light dark;
   --bg: #f0ebe0;
   --bg-2: #e6dfd0;
   --card: #faf6ee;
   --text: #3a3025;
-  --muted: #6e604f;
+  --muted: #6e604f;          /* 本文の補足。--bg の上で 5.1:1 */
   --accent: #8b4513;
-  --border: #cfc0a0;
+  --accent-soft: #f3e6d8;
+  --border: #cfc0a0;         /* 飾りの線（区切り）だけ。操作できる物の枠には --input-border */
+  --input-border: #857561;   /* 入力欄の枠。WCAG 1.4.11 の 3:1（--bg で 3.7:1）。DADS の入力欄は gray-600 の 1px */
   --shadow: rgba(58, 48, 37, 0.12);
+  --error: #ce0000;          /* DADS red-900（semantic error-2） */
+  --ok: #197a4b;             /* DADS green-800（semantic success-2） */
+  --focus: #ffd43d;          /* DADS yellow-300 */
+  --focus-ring: #000;        /* DADS: 黒 4px の輪＋黄 2px */
+  --font-ui: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  /* 字の大きさ（DADS: 本文と操作は 16px 以上、補足は 14px まで、14px 未満は使わない） */
+  --fs-s: 0.875rem;
+  --fs-m: 1rem;
+  --fs-l: 1.25rem;           /* 見出し（隣の段との比 1.25 以上: impeccable typeset） */
+  --fs-xl: 1.625rem;         /* ページの題 */
+  --lh-body: 1.7;            /* DADS の本文の行間 170% */
+  --lh-tight: 1.4;           /* 見出し */
+  /* 余白（4px を基準。DADS の spacing） */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --radius: 8px;
+  --tap: 44px;               /* 押せる物の高さの下限（DADS・SCREEN 5 章） */
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1814;
+    --bg-2: #25201a;
+    --card: #2b251e;
+    --text: #ece4d6;
+    --muted: #b9ab96;
+    --accent: #e0a066;
+    --accent-soft: #3a2e22;
+    --border: #4a3f33;
+    --input-border: #8c7d68;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --error: #ff8a7a;
+    --ok: #6fcf97;
+    --focus-ring: #ffd43d;   /* 暗い地では黄の輪＋黒の縁 */
+    --focus: #000;
+  }
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.8;
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--text); line-height: var(--lh-body); }
+/* リンクは色と下線の両方（DADS リンクテキスト）。ホバーで下線を太く */
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+@media (hover: hover) { a:hover { text-decoration-thickness: 3px; } }
+/* フォーカスの輪（DADS）。:where で詳しさを 0 にして、ツールの規則で上書きできるようにする */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 4px solid var(--focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus);
 }
-a { color: var(--accent); }
+:where(input, select, textarea, button) { font: inherit; color: inherit; }
+/* 入力欄の例（placeholder）も 4.5:1。ブラウザ既定の灰色は和紙の地で 4.3:1 */
+:where(input, textarea)::placeholder { color: var(--muted); opacity: 1; }
+/* 入力欄の字は 16px 以上（iPhone で拡大されない・DADS） */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) { font-size: max(1rem, 16px); }
+/* エラー（DADS: 枠を赤に、文の頭に「＊」。GOV.UK: 読み上げには「エラー:」を先に）。
+   使い方: <p class="field-error" id="x-err"><span class="visually-hidden">エラー:</span>＊ 0 以上の数を入れてください</p> と aria-describedby */
+[aria-invalid="true"] { border-color: var(--error) !important; }
+.field-error { color: var(--error); font-weight: 700; margin-top: var(--sp-1); }
+/* 画面には出さず、読み上げだけ（GOV.UK govuk-visually-hidden） */
+.visually-hidden {
+  position: absolute !important; width: 1px !important; height: 1px !important; margin: 0 !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important;
+}
+@media (forced-colors: active) { :where(a, button, input, select, textarea, summary):focus-visible { outline-color: Highlight; } }
+/* 読む行の長さ: 1 行 40 字前後まで（REVIEW C9 line-length）。画面の幅いっぱいに伸びる見出し帯の説明文に */
+.app-header > p { max-width: 40em; margin-left: auto; margin-right: auto; }
+/* 印刷では広告を出さない（SCREEN 4 章。全ツール共通） */
+@media print { ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; } }
+/* yorozu-common:end */
+
+
+a { overflow-wrap: anywhere; }
 .site-bar {
-  background: var(--bg-2);
-  border-bottom: 2px solid var(--border);
-  padding: 0.7rem 1rem;
+  display: flex; justify-content: space-between; align-items: center; gap: var(--sp-4);
+  background: var(--bg-2); border-bottom: 1px solid var(--border); padding: var(--sp-2) var(--sp-4);
 }
-.site-bar a { font-weight: 700; color: var(--accent); text-decoration: none; }
-main { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 2rem; }
-article {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.4rem 1.3rem;
-  box-shadow: 0 2px 8px var(--shadow);
-}
-h1 { font-size: 1.4rem; color: var(--accent); margin-bottom: 0.3rem; }
-h2 {
-  font-size: 1.05rem;
-  color: var(--accent);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0.3rem;
-  margin: 1.6rem 0 0.6rem;
-}
-h3 { font-size: 0.95rem; margin: 1.1rem 0 0.3rem; scroll-margin-top: 1rem; }
-p, li { font-size: 0.9rem; }
-p + p { margin-top: 0.5rem; }
-ul { padding-left: 1.3rem; margin: 0.3rem 0; }
-.last-updated { font-size: 0.8rem; color: var(--muted); }
-.info-list { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1.2rem; font-size: 0.9rem; }
-.info-list dt { font-weight: 600; }
+.site-bar a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; color: var(--accent); text-decoration: none; }
+/* 日英の切り替え（右端） */
+.site-bar a.lang-switch { font-weight: 400; font-size: var(--fs-s); text-decoration: underline; }
+main { max-width: 760px; margin: 0 auto; padding: var(--sp-6) var(--sp-4) var(--sp-8); }
+/* 本文の面: 影は付けない（impeccable quieter） */
+article { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-6) var(--sp-4); }
+h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); color: var(--accent); margin-bottom: var(--sp-2); }
+h2 { font-size: var(--fs-l); line-height: var(--lh-tight); color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: var(--sp-1); margin: var(--sp-8) 0 var(--sp-3); }
+h3 { font-size: var(--fs-m); margin: var(--sp-4) 0 var(--sp-1); scroll-margin-top: var(--sp-4); }
+p, li { font-size: var(--fs-m); }
+p + p { margin-top: var(--sp-2); }
+ul, ol { padding-left: 1.3rem; margin: var(--sp-1) 0; }
+li + li { margin-top: var(--sp-1); }
+.last-updated { font-size: var(--fs-s); color: var(--muted); }
+.info-list { display: grid; grid-template-columns: max-content 1fr; gap: var(--sp-2) var(--sp-4); font-size: var(--fs-m); }
+.info-list dt { font-weight: 700; }
 .info-list dd { color: var(--muted); }
-footer {
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.78rem;
-  color: var(--muted);
-  border-top: 1px solid var(--border);
-}
-footer nav ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.4rem 1.2rem; margin-bottom: 0.5rem; }
-footer nav a { color: var(--muted); text-decoration: none; }
+/* 英語版の「翻訳です」の注記: 横の帯ではなく薄い面（impeccable quieter・side-tab を使わない） */
+.translation-note { font-size: var(--fs-s); color: var(--muted); background: var(--bg); border-radius: var(--radius); padding: var(--sp-2) var(--sp-3); margin: var(--sp-3) 0 var(--sp-1); }
+/* 折りたたみ（手順・出典）。印刷とカレンダーの手順、用途別の入口で共通 */
+details { margin: var(--sp-2) 0 var(--sp-1); }
+summary { cursor: pointer; color: var(--accent); font-weight: 700; min-height: var(--tap); padding: var(--sp-2) 0; }
+details[open] > summary { margin-bottom: var(--sp-1); }
+details .src li { overflow-wrap: anywhere; font-size: var(--fs-s); }
+/* 用途別の入口（for/）の道具の一覧: 1 行ずつ、名前と 1 文 */
+.lead { font-size: var(--fs-m); }
+.uses { list-style: none; padding: 0; margin: var(--sp-2) 0 0; display: grid; gap: var(--sp-2); }
+.uses li + li { margin-top: 0; }
+.uses a.go { display: block; min-height: var(--tap); padding: var(--sp-2) var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); text-decoration: none; color: var(--text); }
+@media (hover: hover) { .uses a.go:hover { border-color: var(--accent); } .uses a.go:hover strong { text-decoration: underline; } }
+.uses strong { color: var(--accent); }
+.uses span { display: block; font-size: var(--fs-s); color: var(--muted); }
+.steps { padding-left: 1.3rem; }
+.others { font-size: var(--fs-s); }
+footer { text-align: center; padding: var(--sp-4); font-size: var(--fs-s); color: var(--muted); border-top: 1px solid var(--border); }
+footer nav ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0 var(--sp-4); margin-bottom: var(--sp-2); }
+footer nav li + li { margin-top: 0; }
+footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--muted); }
 footer nav a[aria-current="page"] { color: var(--accent); }
-/* 日英の切り替え（右端）と、英語版の「翻訳です」の注記 */
-.site-bar { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-.site-bar a.lang-switch { font-weight: 400; font-size: 0.85rem; text-decoration: underline; }
-.translation-note { font-size: 0.82rem; color: var(--muted); background: var(--bg); border-left: 3px solid var(--border); padding: 0.4rem 0.7rem; margin: 0.6rem 0 0.2rem; }
 /* プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」（../reset-storage.js。yorozu-plans K123） */
-.reset-all { margin-top: 0.5rem; font: inherit; font-size: 0.88rem; min-height: 44px; padding: 0.4rem 1rem; border-radius: 8px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; }
-.reset-all:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.reset-all { margin-top: var(--sp-2); font-size: var(--fs-m); min-height: var(--tap); padding: var(--sp-2) var(--sp-4); border-radius: var(--radius); border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; }
