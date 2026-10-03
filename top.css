@@ -42,7 +42,9 @@
 /* 新しいツール: 横 1 行（はみ出す分は横に送る。自動では流れない） */
 .yt-new { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
 .yt-new li { flex: none; }
-/* すべての道具（/all/） */
+/* すべての道具（/all/）: 1 画面目の節の目次と、節の見出しの「トップへ」 */
+.yt-toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-3); margin-top: var(--sp-2); }
+.yt-toc a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }
 .yt-all > li { border-top: 1px solid var(--border); padding: var(--sp-1) 0; }
 .yt-all ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-3); padding: 0 0 var(--sp-1) var(--sp-3); }
 .yt-all ul a { display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); color: var(--text); }

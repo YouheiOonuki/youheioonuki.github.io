@@ -125,6 +125,9 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
     h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); margin-bottom: var(--sp-2); }
     .lead { margin-bottom: var(--sp-3); }
     h2 { font-size: var(--fs-l); line-height: var(--lh-tight); margin: var(--sp-6) 0 var(--sp-2); }
+    .yt-sec .yt-head { margin: var(--sp-6) 0 var(--sp-1); }
+    .yt-sec .yt-head h2 { margin: 0; }
+    @media print { .yt-toc, .yt-head a { display: none; } }
     footer { border-top: 1px solid var(--border); padding: var(--sp-3) var(--sp-4); color: var(--muted); }
     footer nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-4); }
     footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); }
@@ -148,40 +151,41 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
         <p class="yt-status visually-hidden" aria-live="polite"></p>
         <p class="yt-empty" hidden>見つかりません。<a href="../all/">すべての道具を見る</a></p>
       </div><!-- top:search:end -->
+    <!-- top:toc:begin --><nav class="yt-toc" aria-label="節の目次"><ul><li><a href="#kurashi">くらし・お金</a></li><li><a href="#atsumari">集まり・イベント</a></li><li><a href="#it">情シス・IT</a></li><li><a href="#henkan">変換・データ</a></li><li><a href="#manabi">子どもの学び</a></li><li><a href="#asobu">あそぶ・ためす・星空</a></li><li><a href="#oya">親・家族のために（広告なし）</a></li></ul></nav><!-- top:toc:end -->
 
     <div class="yt-cols">
     <!-- top:all:begin -->
     <section class="yt-sec" id="kurashi" aria-labelledby="kurashi-h">
-      <h2 id="kurashi-h">くらし・お金</h2>
+      <div class="yt-head"><h2 id="kurashi-h">くらし・お金</h2><a href="#main">トップへ</a></div>
       <ul class="yt-all">
-        <li><a class="yt-name" href="../lifeplan/">ライフプラン 簡易シミュレーション</a></li>
-        <li><a class="yt-name" href="../easy-split/kakeibo/">家計簿テンプレート</a></li>
+        <li><a class="yt-name" href="../loan-sim/">住宅ローン 返済シミュレーター</a></li>
+        <li><a class="yt-name" href="../shaho-check/">社会保険 加入チェッカー</a></li>
         <li><a class="yt-name" href="../gengo/">和暦・西暦 変換と年齢早見表</a>
           <ul><li><a href="../gengo/yakudoshi/">厄年・還暦 早見表（男女・生まれ年）</a></li><li><a href="../gengo/gakunen/">学年早見表（生年月日・和暦・年齢）</a></li><li><a href="../gengo/nenpyo/">家族の年表</a></li></ul></li>
+        <li><a class="yt-name" href="../lifeplan/">ライフプラン 簡易シミュレーション</a></li>
+        <li><a class="yt-name" href="../easy-split/kakeibo/">家計簿テンプレート</a></li>
         <li><a class="yt-name" href="../seido-keisan/">制度の計算機</a>
-          <ul><li><a href="../seido-keisan/nenmatsu/">年末調整の計算（令和8年分）</a></li><li><a href="../seido-keisan/koko-mushoka/">高校無償化の計算（2026年度）</a></li><li><a href="../seido-keisan/juminzei/">住民税の計算・非課税判定（令和9年度）</a></li><li><a href="../seido-keisan/iryohi/">医療費控除の計算（令和8年分）</a></li><li><a href="../seido-keisan/ikukyu/">育休・産休の給付金の計算</a></li><li><a href="../seido-keisan/yobosesshu/">子どもの予防接種スケジュール</a></li><li><a href="../seido-keisan/shienkin/">子ども・子育て支援金 いくら引かれる</a></li><li><a href="../seido-keisan/kaitei/">制度の改定カレンダー</a></li><li><a href="../seido-keisan/invoice/">2割特例の終了後の消費税</a></li><li><a href="../seido-keisan/dattai-ichiji/">脱退一時金の計算</a></li></ul></li>
+          <ul><li><a href="../seido-keisan/nenmatsu/">年末調整の計算（令和8年分）</a></li><li><a href="../seido-keisan/koko-mushoka/">高校無償化の計算（2026年度）</a></li><li><a href="../seido-keisan/juminzei/">住民税の計算・非課税判定（令和9年度）</a></li><li><a href="../seido-keisan/iryohi/">医療費控除の計算（令和8年分）</a></li><li><a href="../seido-keisan/ikukyu/">育休・産休の給付金の計算</a></li><li><a href="../seido-keisan/shienkin/">子ども・子育て支援金 いくら引かれる</a></li><li><a href="../seido-keisan/kaitei/">制度の改定カレンダー</a></li><li><a href="../seido-keisan/invoice/">2割特例の終了後の消費税</a></li><li><a href="../seido-keisan/yobosesshu/">子どもの予防接種スケジュール</a></li><li><a href="../seido-keisan/dattai-ichiji/">脱退一時金の計算</a></li></ul></li>
         <li><a class="yt-name" href="../denki-dai/">家電の電気代・節約額シミュレーター</a></li>
-        <li><a class="yt-name" href="../shaho-check/">社会保険 加入チェッカー</a></li>
-        <li><a class="yt-name" href="../loan-sim/">住宅ローン 返済シミュレーター</a></li>
       </ul>
     </section>
     <section class="yt-sec" id="atsumari" aria-labelledby="atsumari-h">
-      <h2 id="atsumari-h">集まり・イベント</h2>
+      <div class="yt-head"><h2 id="atsumari-h">集まり・イベント</h2><a href="#main">トップへ</a></div>
       <ul class="yt-all">
+        <li><a class="yt-name" href="../easy-split/">easy-split</a></li>
+        <li><a class="yt-name" href="../tabi-shiori/">旅のしおりメーカー</a></li>
         <li><a class="yt-name" href="../toban/">当番表を作る</a>
           <ul><li><a href="../toban/group/">グループ分け・班分け</a></li><li><a href="../toban/kondate/">献立ローテーション</a></li></ul></li>
         <li><a class="yt-name" href="../quiz-hiroba/hayaoshi/">早押しボタン</a></li>
-        <li><a class="yt-name" href="../tabi-shiori/">旅のしおりメーカー</a></li>
+        <li><a class="yt-name" href="../nittei-kouho/">日程調整 候補日ジェネレーター</a></li>
         <li><a class="yt-name" href="../sekigae/">座席表を作る・席替え</a></li>
         <li><a class="yt-name" href="../bingo/">大人数ビンゴ抽選</a></li>
-        <li><a class="yt-name" href="../nittei-kouho/">日程調整 候補日ジェネレーター</a></li>
         <li><a class="yt-name" href="../web-roulette/">無料ルーレット・くじ引きアプリ</a>
           <ul><li><a href="../web-roulette/odai/">お題の一覧（ルーレットで回せます）</a></li><li><a href="../web-roulette/dice/">サイコロ・コイントス・ランダムな数字</a></li><li><a href="../web-roulette/amida/">あみだくじを作る</a></li></ul></li>
-        <li><a class="yt-name" href="../easy-split/">easy-split</a></li>
       </ul>
     </section>
     <section class="yt-sec" id="it" aria-labelledby="it-h">
-      <h2 id="it-h">情シス・IT</h2>
+      <div class="yt-head"><h2 id="it-h">情シス・IT</h2><a href="#main">トップへ</a></div>
       <ul class="yt-all">
         <li><a class="yt-name" href="../filetime/">FILETIME・LDAP タイムスタンプ変換</a></li>
         <li><a class="yt-name" href="../pac-tester/">PAC ファイル テスター</a></li>
@@ -189,44 +193,44 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
       </ul>
     </section>
     <section class="yt-sec" id="henkan" aria-labelledby="henkan-h">
-      <h2 id="henkan-h">変換・データ</h2>
+      <div class="yt-head"><h2 id="henkan-h">変換・データ</h2><a href="#main">トップへ</a></div>
       <ul class="yt-all">
         <li><a class="yt-name" href="../henkan/">テキスト変換</a>
-          <ul><li><a href="../henkan/pdf/">PDF 結合・分割・回転</a></li><li><a href="../henkan/zenkaku/">全角・半角・かな変換</a></li><li><a href="../henkan/json/">JSON 整形・検証</a></li><li><a href="../henkan/diff/">テキスト差分（比較）</a></li><li><a href="../henkan/csv/">CSV 整形・変換</a></li></ul></li>
+          <ul><li><a href="../henkan/zenkaku/">全角・半角・かな変換</a></li><li><a href="../henkan/json/">JSON 整形・検証</a></li><li><a href="../henkan/diff/">テキスト差分（比較）</a></li><li><a href="../henkan/csv/">CSV 整形・変換</a></li><li><a href="../henkan/pdf/">PDF 結合・分割・回転</a></li></ul></li>
+        <li><a class="yt-name" href="../md-viewer/">Markdown＋Mermaid ビューア</a></li>
         <li><a class="yt-name" href="../fitbit-export/">Fitbit データ CSV 変換</a></li>
         <li><a class="yt-name" href="../ai-log/">AI 会話ログ Markdown 変換</a></li>
-        <li><a class="yt-name" href="../md-viewer/">Markdown＋Mermaid ビューア</a></li>
       </ul>
     </section>
     <section class="yt-sec" id="manabi" aria-labelledby="manabi-h">
-      <h2 id="manabi-h">子どもの学び</h2>
+      <div class="yt-head"><h2 id="manabi-h">子どもの学び</h2><a href="#main">トップへ</a></div>
       <ul class="yt-all">
         <li><a class="yt-name" href="../gakushu-print/">学習プリントメーカー</a>
-          <ul><li><a href="../gakushu-print/tokei/">時計の読み方 練習</a></li><li><a href="../gakushu-print/anki/">暗記カード作成</a></li><li><a href="../gakushu-print/romaji/">ローマ字タイピング</a></li><li><a href="../gakushu-print/kuku/">九九ゲーム（タイムアタック）</a></li><li><a href="../gakushu-print/booklet/">おでかけ冊子</a></li><li><a href="../gakushu-print/angou/">暗号メーカー</a></li></ul></li>
-        <li><a class="yt-name" href="../unplugged/">アンプラグド・プログラミング教材メーカー</a></li>
+          <ul><li><a href="../gakushu-print/romaji/">ローマ字タイピング</a></li><li><a href="../gakushu-print/kuku/">九九ゲーム（タイムアタック）</a></li><li><a href="../gakushu-print/booklet/">おでかけ冊子</a></li><li><a href="../gakushu-print/angou/">暗号メーカー</a></li><li><a href="../gakushu-print/tokei/">時計の読み方 練習</a></li><li><a href="../gakushu-print/anki/">暗記カード作成</a></li></ul></li>
+        <li><a class="yt-name" href="../todofuken-quiz/">こども都道府県クイズ</a></li>
         <li><a class="yt-name" href="../furigana/">ふりがなメーカー</a></li>
+        <li><a class="yt-name" href="../unplugged/">アンプラグド・プログラミング教材メーカー</a></li>
         <li><a class="yt-name" href="../quiz-hiroba/">クイズ広場</a>
-          <ul><li><a href="../quiz-hiroba/shuto/">世界の首都クイズ（191か国）</a></li><li><a href="../quiz-hiroba/kokki/">国旗クイズ（196か国）</a></li><li><a href="../quiz-hiroba/hyakunin/">百人一首 読み上げ</a></li><li><a href="../quiz-hiroba/nengo/">歴史年号クイズ（日本の歴史）</a></li><li><a href="../quiz-hiroba/genso/">元素記号クイズ（118）</a></li><li><a href="../quiz-hiroba/mainichi/">毎日 1 問</a></li><li><a href="../quiz-hiroba/kimariji/">百人一首 決まり字クイズ</a></li></ul></li>
+          <ul><li><a href="../quiz-hiroba/shuto/">世界の首都クイズ（191か国）</a></li><li><a href="../quiz-hiroba/kokki/">国旗クイズ（196か国）</a></li><li><a href="../quiz-hiroba/hyakunin/">百人一首 読み上げ</a></li><li><a href="../quiz-hiroba/nengo/">歴史年号クイズ（日本の歴史）</a></li><li><a href="../quiz-hiroba/genso/">元素記号クイズ（118）</a></li><li><a href="../quiz-hiroba/kimariji/">百人一首 決まり字クイズ</a></li><li><a href="../quiz-hiroba/mainichi/">毎日 1 問</a></li></ul></li>
         <li><a class="yt-name" href="../gakko-keisan/">学校の計算機</a>
           <ul><li><a href="../gakko-keisan/naishin/">内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）</a></li><li><a href="../gakko-keisan/hensachi/">偏差値の計算（順位の目安・5教科）</a></li><li><a href="../gakko-keisan/timer/">宿題タイマー</a></li><li><a href="../gakko-keisan/shusseki/">出席日数・欠課時数の計算（あと何回休めるか）</a></li><li><a href="../gakko-keisan/atonannichi/">○○まであと何日</a></li></ul></li>
-        <li><a class="yt-name" href="../todofuken-quiz/">こども都道府県クイズ</a></li>
       </ul>
     </section>
     <section class="yt-sec" id="asobu" aria-labelledby="asobu-h">
-      <h2 id="asobu-h">あそぶ・ためす・星空</h2>
+      <div class="yt-head"><h2 id="asobu-h">あそぶ・ためす・星空</h2><a href="#main">トップへ</a></div>
       <ul class="yt-all">
-        <li><a class="yt-name" href="../hoshizora-night/">ほしぞらさんぽ フル版</a>
-          <ul><li><a href="../hoshizora-night/poster/">生まれた日の星空ポスター</a></li></ul></li>
+        <li><a class="yt-name" href="../hoshizora-sanpo/">ほしぞらさんぽ</a>
+          <ul><li><a href="../hoshizora-sanpo/zukan/">星座図鑑</a></li><li><a href="../hoshizora-sanpo/calendar/">天文カレンダー 2026–2027</a></li><li><a href="../hoshizora-sanpo/shinwa/">ギリシャ神話</a></li><li><a href="../hoshizora-sanpo/hayamiban/">星座早見盤を印刷して作る</a></li><li><a href="../hoshizora-sanpo/tsuki/">月の出・月の入りの時刻と方角</a></li></ul></li>
+        <li><a class="yt-name" href="../web-metronome/">無料オンラインメトロノーム</a>
+          <ul><li><a href="../web-metronome/piano/">ブラウザピアノ</a></li><li><a href="../web-metronome/drum/">ドラムマシン</a></li><li><a href="../web-metronome/capo/">カポ・移調の計算（ギターのコード変換）</a></li></ul></li>
         <li><a class="yt-name" href="../tameshite/">ためして（耳・反射・目）</a>
           <ul><li><a href="../tameshite/mimi/">モスキート音テスト</a></li><li><a href="../tameshite/kioku/">記憶力テスト（数字）</a></li><li><a href="../tameshite/hansha/">反射神経テスト</a></li><li><a href="../tameshite/doutai/">動体視力テスト</a></li></ul></li>
-        <li><a class="yt-name" href="../hoshizora-sanpo/">ほしぞらさんぽ</a>
-          <ul><li><a href="../hoshizora-sanpo/shinwa/">ギリシャ神話</a></li><li><a href="../hoshizora-sanpo/tsuki/">月の出・月の入りの時刻と方角</a></li><li><a href="../hoshizora-sanpo/hayamiban/">星座早見盤を印刷して作る</a></li><li><a href="../hoshizora-sanpo/zukan/">星座図鑑</a></li><li><a href="../hoshizora-sanpo/calendar/">天文カレンダー 2026–2027</a></li></ul></li>
-        <li><a class="yt-name" href="../web-metronome/">無料オンラインメトロノーム</a>
-          <ul><li><a href="../web-metronome/drum/">ドラムマシン</a></li><li><a href="../web-metronome/capo/">カポ・移調の計算（ギターのコード変換）</a></li><li><a href="../web-metronome/piano/">ブラウザピアノ</a></li></ul></li>
+        <li><a class="yt-name" href="../hoshizora-night/">ほしぞらさんぽ フル版</a>
+          <ul><li><a href="../hoshizora-night/poster/">生まれた日の星空ポスター</a></li></ul></li>
       </ul>
     </section>
     <section class="yt-sec" id="oya" aria-labelledby="oya-h">
-      <h2 id="oya-h">親・家族のために（広告なし）</h2>
+      <div class="yt-head"><h2 id="oya-h">親・家族のために（広告なし）</h2><a href="#main">トップへ</a></div>
       <ul class="yt-all">
         <li><a class="yt-name" href="../seido-keisan/nenkin-kuriage/">年金の繰上げ・繰下げの計算</a></li>
         <li><a class="yt-name" href="../seido-keisan/kogaku-ryoyohi/">高額療養費の計算</a></li>
@@ -234,7 +238,7 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
         <li><a class="yt-name" href="../gengo/kaiki/">回忌の計算（一周忌〜五十回忌・四十九日）</a></li>
         <li><a class="yt-name" href="../tameshite/roogan/">老眼チェック</a></li>
         <li><a class="yt-name" href="../otasuke/">くらしのおたすけ（親・シニア向け）</a>
-          <ul><li><a href="../otasuke/kenshin/">健診結果の経年グラフ</a></li><li><a href="../otasuke/notore/">脳トレプリント（大人向け・大きな字）</a></li><li><a href="../otasuke/tokei/">日めくり大時計</a></li><li><a href="../otasuke/tejun/">親のスマホ手順カード</a></li><li><a href="../otasuke/shakyo/">写経用紙を印刷（般若心経）</a></li><li><a href="../otasuke/reizoko/">冷蔵庫に貼る紙 3 枚</a></li><li><a href="../otasuke/kigo/">季語カレンダー</a></li><li><a href="../otasuke/honmono/">このメール・SMS は本物？</a></li><li><a href="../otasuke/daicho/">紙のアカウント台帳</a></li></ul></li>
+          <ul><li><a href="../otasuke/notore/">脳トレプリント（大人向け・大きな字）</a></li><li><a href="../otasuke/kenshin/">健診結果の経年グラフ</a></li><li><a href="../otasuke/tokei/">日めくり大時計</a></li><li><a href="../otasuke/tejun/">親のスマホ手順カード</a></li><li><a href="../otasuke/shakyo/">写経用紙を印刷（般若心経）</a></li><li><a href="../otasuke/reizoko/">冷蔵庫に貼る紙 3 枚</a></li><li><a href="../otasuke/kigo/">季語カレンダー</a></li><li><a href="../otasuke/honmono/">このメール・SMS は本物？</a></li><li><a href="../otasuke/daicho/">紙のアカウント台帳</a></li></ul></li>
       </ul>
     </section>
     <!-- top:all:end -->

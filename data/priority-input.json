@@ -1,8 +1,22 @@
 {
-  "about": "tools/top/priority.mjs の入力（yorozu-plans ROADMAP 7.24.1）。priority ＝ 需要（demand: 根拠 A＝3・B＝2・C／なし＝1）＋ 検索（gsc: 表示回数の順位 1〜10 位＝3・11〜30 位＝2・それ以下と表に無いページ＝1）＋ 季節（data/season.json の month 月に入っていれば ＋2）。demand.grades は tools/top/ledger.mjs が ROADMAP 7.2 の台帳から写す（手で直さない）。demand.pages はページと K 番号の対応で手で持つ（台帳に行の無いページは書かない＝なし）。gsc.rows は週次レポートの「ツール別」の表の直近 4 週の表示回数を貼る（key は /<ツール>/ か /<ツール>/<子>/、ページは前方一致の最も長い key の順位）。month は計算に使う月（毎月の再計算で直す）",
+  "about": "tools/top/priority.mjs の入力（yorozu-plans ROADMAP 7.24.1）。priority ＝ 需要（demand: 根拠 A＝3・B＝2・C／なし＝1）＋ 検索（gsc: 表示回数の順位 1〜10 位＝3・11〜30 位＝2・それ以下と表に無いページ＝1）＋ 季節（data/season.json の month 月に入っていれば ＋2）。demand.grades は tools/top/ledger.mjs が ROADMAP 7.2 の台帳から写す（手で直さない）。demand.pages はページと K 番号の対応で手で持つ。台帳に K 行の無いページは demand.tools（台帳より前の道具の根拠。その道具の全ページに。K 行のある子ページは K 行が先）、どちらにも無ければ「なし」。gsc.repos は週次レポートの「ツール別」の表の直近 4 週の表示回数を repo → 数で貼る（その道具の全ページに同じ順位）。month は計算に使う月（毎月の再計算で直す）",
   "month": 10,
   "demand": {
     "source": "yorozu-plans docs/ROADMAP.md 7.2 候補台帳の「根拠」列（974aaa8）。tools/top/ledger.mjs で写した",
+    "tools_source": "DEMAND 7 章「既存ツールの裏づけ」/ ROADMAP 7.24.2 の 1（yorozu-plans 5f0746f、2026-10-03）",
+    "tools": {
+      "/loan-sim/": "A",
+      "/hoshizora-sanpo/": "A",
+      "/easy-split/": "A",
+      "/nittei-kouho/": "B",
+      "/shaho-check/": "B",
+      "/web-metronome/": "B",
+      "/todofuken-quiz/": "B",
+      "/md-viewer/": "B",
+      "/denki-dai/": "C",
+      "/pac-tester/": "C",
+      "/web-roulette/": "C"
+    },
     "pages": {
       "/seido-keisan/juminzei/": "K01",
       "/seido-keisan/nenmatsu/": "K02",
@@ -218,8 +232,8 @@
     }
   },
   "gsc": {
-    "about": "オーナーの PC の週次レポート「ツール別」の表（直近 4 週の表示回数）を貼る。この環境には無いので 2026-10-03 の初期値は空（検索の項は全ページ 1）",
+    "about": "オーナーの PC の週次レポート（content\\Notes\\metrics\\*_weekly.md）の「ツール別」の表の Search Console 表示回数（直近 4 週）を repo → 数で貼る（例 {\"seido-keisan\": 1234}）。この環境には無いので 2026-10-03 は空（検索の項は全ページ 1）",
     "period": "",
-    "rows": []
+    "repos": {}
   }
 }

@@ -14,7 +14,8 @@ const read = (f) => readFileSync(join(ROOT, f), 'utf8');
 const data = loadPages(ROOT);
 const season = loadSeason(ROOT);
 const input = JSON.parse(read('data/priority-input.json'));
-const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
+const entry = (p) => (/^\/[^/]+\/$/.test(p.path) ? 1 : 0);
+const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (entry(b) - entry(a)) || (a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
 // index.html の節の塊（<section> 〜 </section>）
 const block = (html, id) => { const i = html.indexOf(`<section class="yt-sec" id="${id}"`); return html.slice(i, html.indexOf('</section>', i)); };
 
@@ -45,7 +46,7 @@ test('pin は節ごとに 1 件以下', () => {
   assert.equal(sectionsJa(one).find((s) => s.id === 'oya').rows[0].path, low.path);
 });
 
-test('節ごとの行が priority の上位 3（同点は公開日の新しい方）。HTML の見える 3 行も同じ', () => {
+test('節ごとの行が priority の上位 3（同点は入口＞子ページ、次に公開日の古い方）。HTML の見える 3 行も同じ', () => {
   const html = read('index.html');
   for (const s of sectionsJa(data)) {
     const cands = data.pages.filter((p) => p.section === s.id && p.note != null).sort(order);
@@ -65,7 +66,6 @@ test('同じ節に同じページが 2 回出ない（行・チップ・ほか�
     const all = s.rows.flatMap((r) => [r.path, ...r.chips.map((c) => c.path)]);
     assert.equal(new Set(all).size, all.length, `${s.id}: ${all.join(' ')}`);
     for (const r of s.rows) assert.ok(r.chips.length <= 3, r.path);
-    for (const r of s.rows.slice(CHIP_ROWS, VISIBLE)) assert.equal(r.chips.length, 0, `${r.path}: チップは先頭 ${CHIP_ROWS} 行だけ（3 画面）`);
     const hrefs = [...block(html, s.id).matchAll(/href="\.\/([^"#]+)"/g)].map((m) => m[1]).filter((h) => h !== 'all/');
     assert.equal(new Set(hrefs).size, hrefs.length, `${s.id} の HTML に重複`);
   }
@@ -89,35 +89,80 @@ test('チップ: related が先、足りなければ同じ節の priority の上
 });
 
 test('priority.mjs の式: 需要＋検索＋季節（年末調整 ＝ A3＋表示3＋季節2＝8 の形）', () => {
+  const repos = { 'seido-keisan': 900, ...Object.fromEntries(Array.from({ length: 39 }, (_, i) => [`t${i}`, 800 - i])), 'loan-sim': 1 };
   const inp = {
     month: 12,
-    demand: { grades: { K02: 'A', K90: 'B', K91: 'C', K33: 'なし' }, pages: { '/seido-keisan/nenmatsu/': 'K02', '/loan-sim/': 'K02', '/b/': 'K90', '/c/': 'K91', '/n/': 'K33' } },
-    gsc: { rows: [{ key: '/seido-keisan/nenmatsu/', impressions: 900 }, ...Array.from({ length: 39 }, (_, i) => ({ key: `/t${i}/`, impressions: 800 - i })), { key: 'loan-sim', impressions: 1 }] },
+    demand: { grades: { K02: 'A', K90: 'B', K91: 'C', K33: 'なし', K95: 'B' }, tools: { '/loan-sim/': 'A', '/tameshite/': 'C' },
+      pages: { '/seido-keisan/nenmatsu/': 'K02', '/b/': 'K90', '/c/': 'K91', '/n/': 'K33', '/tameshite/hansha/': 'K95' } },
+    gsc: { repos },
   };
   const s = { months: { 12: [{ path: '/seido-keisan/nenmatsu/' }] } };
   assert.deepEqual(terms('/seido-keisan/nenmatsu/', inp, s), { k: 'K02', grade: 'A', rank: 1, demand: 3, search: 3, season: 2, priority: 8 });
-  assert.equal(terms('/loan-sim/', inp, s).priority, 4); // A3 ＋ 表示 41 位で 1 ＋ 0
-  assert.equal(terms('/t9/', inp, s).search, 2);  // 11 位
+  assert.equal(terms('/loan-sim/', inp, s).priority, 4); // 道具の根拠 A3 ＋ 表示 41 位で 1 ＋ 0（住宅ローン ＝ 4 の形）
+  assert.equal(terms('/seido-keisan/iryohi/', inp, s).search, 3); // リポジトリの順位を全ページに同じ値で
+  assert.equal(terms('/t9/x/', inp, s).search, 2);  // 11 位
   assert.equal(terms('/t8/', inp, s).search, 3);  // 10 位
   assert.equal(terms('/t29/', inp, s).search, 1); // 31 位
+  assert.equal(terms('/loan-sim/child/', inp, s).demand, 3); // 道具の根拠は子ページにも
+  assert.equal(terms('/tameshite/hansha/', inp, s).demand, 2); // 子ページに K 行があれば K 行が先（道具は C）
+  assert.equal(terms('/tameshite/', inp, s).demand, 1);
   assert.equal(terms('/b/', inp, s).demand, 2);
   assert.equal(terms('/c/', inp, s).demand, 1);
   assert.equal(terms('/n/', inp, s).demand, 1);
   assert.equal(terms('/nothing/', inp, s).priority, 1 + 1 + 0);
   assert.equal(terms('/seido-keisan/nenmatsu/', { ...inp, month: 11 }, s).priority, 6);
-  // ツール単位の行は子ページにも効く（最も長い前方一致）
-  const r = gscRanks([{ key: 'seido-keisan', impressions: 10 }, { key: '/seido-keisan/iryohi/', impressions: 5 }]);
-  assert.equal(rankOf('/seido-keisan/nenmatsu/', r), 1);
-  assert.equal(rankOf('/seido-keisan/iryohi/', r), 2);
-  assert.equal(rankOf('/loan-sim/', r), null);
+  const r = gscRanks({ a: 10, b: 10, c: 5 });
+  assert.deepEqual([rankOf('/a/', r), rankOf('/b/x/', r), rankOf('/c/', r), rankOf('/d/', r)], [1, 1, 3, null]);
   assert.deepEqual([demandPoints('A'), demandPoints('B'), demandPoints('C'), demandPoints('なし')], [3, 2, 1, 1]);
   assert.deepEqual([searchPoints(1), searchPoints(10), searchPoints(11), searchPoints(30), searchPoints(31), searchPoints(null)], [3, 3, 2, 2, 1, 1]);
 });
 
-test('priority.mjs: gsc が空なら検索の項は全ページ 1。pages.json の priority は入力から計算した値（--check と同じ）', () => {
-  assert.ok(Array.isArray(input.gsc.rows));
+test('台帳より前の道具の需要（DEMAND 7 章 / ROADMAP 7.24.2 の 1）', () => {
+  assert.deepEqual(input.demand.tools, { '/loan-sim/': 'A', '/hoshizora-sanpo/': 'A', '/easy-split/': 'A', '/nittei-kouho/': 'B', '/shaho-check/': 'B', '/web-metronome/': 'B', '/todofuken-quiz/': 'B', '/md-viewer/': 'B', '/denki-dai/': 'C', '/pac-tester/': 'C', '/web-roulette/': 'C' });
+  assert.match(input.demand.tools_source, /DEMAND 7 章.*7\.24\.2/);
   const v = computeAll(data.pages, input, season);
-  if (!input.gsc.rows.length) for (const t of v.values()) assert.equal(t.search, 1);
+  assert.equal(v.get('/hoshizora-sanpo/zukan/').grade, 'A');
+  assert.equal(v.get('/web-roulette/amida/').grade, 'B'); // K97 が先
+  assert.equal(v.get('/web-roulette/').grade, 'C');
+});
+
+test('同点の順: 入口ページ ＞ 子ページ、次に公開日の古い方', () => {
+  // 先頭の行のチップは別の節の 3 ページで埋め、x の並びだけを見る
+  const z = [1, 2, 3].map((n) => ({ path: `/z${n}/`, date: '2026-01-01', title: `Z${n}`, section: 'y', priority: 2, aliases: [] }));
+  const d = { sections: [{ id: 'x', name: 'X' }, { id: 'y', name: 'Y' }], pages: [...z,
+    { path: '/k/new/', date: '2026-10-01', title: 'N', section: 'x', priority: 4, aliases: [], note: 'n', related: [] },
+    { path: '/k/old/', date: '2026-09-01', title: 'O', section: 'x', priority: 4, aliases: [], note: 'o', related: [] },
+    { path: '/k/', date: '2026-10-02', title: 'K', section: 'x', priority: 4, aliases: [], note: 'k', related: [] },
+    { path: '/hi/x/', date: '2026-10-03', title: 'H', section: 'x', priority: 5, aliases: [], note: 'h', related: z.map((p) => p.path) },
+  ] };
+  assert.deepEqual(sectionsJa(d)[0].rows.map((r) => r.path), ['/hi/x/', '/k/', '/k/old/', '/k/new/']);
+});
+
+test('チップは節の先頭の行だけ（規則。7.24.2 の 3）', () => {
+  assert.equal(CHIP_ROWS, 1);
+  const html = read('index.html');
+  for (const s of sectionsJa(data)) {
+    for (const r of s.rows.slice(1, VISIBLE)) assert.equal(r.chips.length, 0, `${s.id} ${r.path}`);
+    const shown = block(html, s.id).split('<details>')[0];
+    const lis = shown.split('<li><a class="yt-name"').slice(1);
+    lis.slice(1).forEach((li) => assert.doesNotMatch(li, /yt-chips/, `${s.id} の 2 行目以降にチップ`));
+  }
+});
+
+test('/all/: 1 画面目に検索欄と節の目次（7 つへのジャンプ）、各節の見出しに「トップへ」', () => {
+  const h = read('all/index.html');
+  const toc = h.indexOf('<nav class="yt-toc"'), firstSec = h.indexOf('<section class="yt-sec"');
+  assert.ok(h.indexOf('role="combobox"') > 0 && h.indexOf('role="combobox"') < toc && toc < firstSec);
+  const nav = h.slice(toc, h.indexOf('</nav>', toc));
+  assert.deepEqual([...nav.matchAll(/href="#([a-z]+)"/g)].map((m) => m[1]), data.sections.map((s) => s.id));
+  for (const s of data.sections) assert.match(block(h, s.id), new RegExp(`<h2 id="${s.id}-h">[^<]+</h2><a href="#main">トップへ</a>`));
+  assert.match(h, /<main id="main">/);
+});
+
+test('priority.mjs: gsc.repos が空なら検索の項は全ページ 1。pages.json の priority は入力から計算した値（--check と同じ）', () => {
+  assert.equal(typeof input.gsc.repos, 'object');
+  const v = computeAll(data.pages, input, season);
+  if (!Object.keys(input.gsc.repos).length) for (const t of v.values()) assert.equal(t.search, 1);
   for (const p of data.pages) assert.equal(p.priority, v.get(p.path).priority, p.path);
   const text = read('data/pages.json');
   assert.equal(rewrite(text, v), text);

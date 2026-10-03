@@ -1,8 +1,10 @@
 // トップの行の順（priority）を計算して data/pages.json に書く（yorozu-plans ROADMAP 7.24.1）
 // 式: priority ＝ 需要 ＋ 検索 ＋ 季節（3 項の和。2〜8）
-//   需要: DEMAND の根拠（ROADMAP 7.2 の台帳の列）A＝3・B＝2・C／なし＝1。ページと K 番号の対応は data/priority-input.json の demand.pages
-//   検索: Search Console の直近 4 週の表示回数のサイト内の順位で 1〜10 位＝3・11〜30 位＝2・それ以下と表に無いページ＝1
-//         （週次レポートの「ツール別」の表。data/priority-input.json の gsc.rows。空なら全ページ 1）
+//   需要: DEMAND の根拠 A＝3・B＝2・C／なし＝1。ページに台帳（ROADMAP 7.2）の K 行があればその根拠（demand.pages → demand.grades）、
+//         無ければ道具（リポジトリ）の根拠（demand.tools。台帳より前の道具: DEMAND 7 章 / ROADMAP 7.24.2 の 1）をその道具の全ページに
+//   検索: Search Console の直近 4 週の表示回数のリポジトリ単位の順位で 1〜10 位＝3・11〜30 位＝2・それ以下と表に無い道具＝1。
+//         その道具の全ページに同じ値（子ページ単位の値はまだ無いので代理。7.24.2 の 2）。入力は gsc.repos（repo → 表示回数）。
+//         週次レポート（content\Notes\metrics\*_weekly.md）の「ツール別」の表から。空なら全ページ 1
 //   季節: data/season.json の当月（data/priority-input.json の month）に入っていれば ＋2
 // 使い方: node tools/top/priority.mjs           … data/pages.json の priority を書き換える（その後 node tools/build-top.mjs）
 //         node tools/top/priority.mjs --check   … 書き換えが要るか（要れば終了コード 1）
@@ -16,33 +18,27 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const demandPoints = (grade) => (grade === 'A' ? 3 : grade === 'B' ? 2 : 1);
 export const searchPoints = (rank) => (rank == null ? 1 : rank <= 10 ? 3 : rank <= 30 ? 2 : 1);
 
-// gsc.rows: [{ "key": "/seido-keisan/nenmatsu/" か "/seido-keisan/" か "seido-keisan", "impressions": 1234 }]
-// 表示回数の多い順に順位（同数は同じ順位）。ページの順位は、そのページの path に前方一致する最も長い key の順位
-const normKey = (k) => { let s = String(k).trim(); if (!s.startsWith('/')) s = '/' + s; if (!s.endsWith('/')) s += '/'; return s; };
-export function gscRanks(rows = []) {
-  const list = rows.map((r) => ({ key: normKey(r.key), n: Number(r.impressions) || 0 }));
-  const ranks = new Map();
-  for (const r of list) ranks.set(r.key, 1 + list.filter((x) => x.n > r.n).length);
-  return ranks;
+// gsc.repos: { "seido-keisan": 1234, "loan-sim": 567 }。表示回数の多い順に順位（同数は同じ順位）
+export const repoOf = (path) => path.split('/')[1];
+export function gscRanks(repos = {}) {
+  const list = Object.entries(repos).map(([k, n]) => [String(k).replace(/^\/|\/$/g, ''), Number(n) || 0]);
+  return new Map(list.map(([k, n]) => [k, 1 + list.filter(([, m]) => m > n).length]));
 }
-export function rankOf(path, ranks) {
-  let best = null, len = -1;
-  for (const [k, r] of ranks) if (path.startsWith(k) && k.length > len) { best = r; len = k.length; }
-  return best;
-}
+export const rankOf = (path, ranks) => ranks.get(repoOf(path)) ?? null;
 export function seasonPoints(path, season, month) {
   return (season.months[String(month)] || []).some((x) => x.path === path) ? 2 : 0;
 }
 // 1 ページの 3 項
-export function terms(path, input, season, ranks = gscRanks(input.gsc?.rows)) {
+export function terms(path, input, season, ranks = gscRanks(input.gsc?.repos)) {
   const k = input.demand.pages[path];
-  const grade = k ? input.demand.grades[k] : 'なし';
+  const tool = (input.demand.tools || {})['/' + repoOf(path) + '/'];
+  const grade = k ? input.demand.grades[k] : tool || 'なし';
   const rank = rankOf(path, ranks);
   const d = demandPoints(grade), s = searchPoints(rank), m = seasonPoints(path, season, input.month);
-  return { k: k || '', grade, rank, demand: d, search: s, season: m, priority: d + s + m };
+  return { k: k || (tool ? '道具' : ''), grade, rank, demand: d, search: s, season: m, priority: d + s + m };
 }
 export function computeAll(pages, input, season) {
-  const ranks = gscRanks(input.gsc?.rows);
+  const ranks = gscRanks(input.gsc?.repos);
   return new Map(pages.map((p) => [p.path, terms(p.path, input, season, ranks)]));
 }
 
@@ -62,6 +58,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const input = JSON.parse(readFileSync(join(ROOT, 'data', 'priority-input.json'), 'utf8'));
   const season = JSON.parse(readFileSync(join(ROOT, 'data', 'season.json'), 'utf8'));
   for (const k of Object.values(input.demand.pages)) if (!input.demand.grades[k]) throw new Error(`demand.grades に ${k} が無い（node tools/top/ledger.mjs）`);
+  for (const t of Object.keys(input.demand.tools || {})) if (!data.pages.some((x) => x.path === t)) throw new Error(`demand.tools の ${t} が pages.json に無い`);
   for (const p of Object.keys(input.demand.pages)) if (!data.pages.some((x) => x.path === p)) throw new Error(`demand.pages の ${p} が pages.json に無い`);
   const values = computeAll(data.pages, input, season);
   if (process.argv.includes('--table')) {
@@ -75,5 +72,5 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.log('priority は最新'); process.exit(0);
   }
   if (next !== text) { writeFileSync(file, next); console.log('書き換え: data/pages.json'); } else console.log('変更なし');
-  if (!(input.gsc?.rows || []).length) console.log('注: gsc.rows が空なので、検索の項は全ページ 1');
+  if (!Object.keys(input.gsc?.repos || {}).length) console.log('注: gsc.repos が空なので、検索の項は全ページ 1');
 }

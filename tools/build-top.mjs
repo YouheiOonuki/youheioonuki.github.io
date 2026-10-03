@@ -49,15 +49,18 @@ export function newToolsHtml(data, base = './', rows = newest(data)) {
 
 // ---- 節（ROADMAP 7.24.1「行とチップの選び方」）----
 // 1 ページ ＝ 1 用途。節（section）はページごとに持つ。note（一言）のあるページが行の候補
-// 行の並び: pin を先に、priority の降順、同点は公開日の新しい方（同じ日は pages.json の順）。上位 3 が行、残りは「ほかに N 件」
-// チップ: 上位 3 の行ごとに related（手で選ぶ最大 3）。3 つに満たなければ同じ節のページを priority の順で埋める。
+// 行の並び: pin を先に、priority の降順、同点は 入口ページ（/<ツール>/）＞ 子ページ、次に公開日の古い方（同じ日は pages.json の順。7.24.2 の 2）。
+//         上位 3 が行、残りは「ほかに N 件」
+// チップ: 節の先頭の行だけ（7.24.2 の 3。2〜3 行目の子ページは入口ページで届く）。その行の related（その節で人が次に行きやすい 3 つ）。
+//         3 つに満たなければ同じ節のページを priority の順で埋める。
 //         同じ節で行に出ているページと先のチップは出さない。チップに出たページは「ほかに」から外す（1 つの節に 1 回: 行かチップのどちらか）
 //         「ほかに」の行のチップは related のうち、その節にまだ出ていないものだけ（埋めない）
 export const VISIBLE = 3;
-// チップを出す行の数（節の先頭から）。全体 3 画面（2,532px）に収めるため 1（2 にすると 2,800px 前後になる。2026-10-03 の実測）
+// チップを出す行の数（節の先頭から）。規則で 1（7.24.2 の 3。全体 3 画面（2,532px）を優先。2 にすると 2,800px 前後: 2026-10-03 の実測）
 export const CHIP_ROWS = 1;
 const rowName = (p) => p.name || label(p);
-const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (a.date < b.date ? 1 : a.date > b.date ? -1 : a.i - b.i);
+export const isEntry = (path) => /^\/[^/]+\/$/.test(path);
+export const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (isEntry(b.path) - isEntry(a.path)) || (a.date < b.date ? -1 : a.date > b.date ? 1 : a.i - b.i);
 export function checkPages(data) {
   const ids = new Set(data.sections.map((s) => s.id));
   const paths = new Set(data.pages.map((p) => p.path));
@@ -150,13 +153,17 @@ export function allRows(data) {
     return { id: s.id, name: s.name, items };
   });
 }
+// /all/ の 1 画面目の節の目次（7 つへのジャンプ。7.24.2 の 4）
+export function tocHtml(data) {
+  return `<nav class="yt-toc" aria-label="節の目次"><ul>${data.sections.map((s) => `<li><a href="#${s.id}">${esc(s.name)}</a></li>`).join('')}</ul></nav>`;
+}
 export function allHtml(data, base = '../') {
   return allRows(data).map((s) => {
     const li = s.items.map(({ page, kids }) => {
       const sub = kids.length ? `\n          <ul>${kids.map((k) => `<li><a href="${base}${k.path.slice(1)}">${esc(k.title)}</a></li>`).join('')}</ul>` : '';
       return `        <li><a class="yt-name" href="${base}${page.path.slice(1)}">${esc(page.title)}</a>${sub}</li>`;
     }).join('\n');
-    return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n      <h2 id="${s.id}-h">${esc(s.name)}</h2>\n      <ul class="yt-all">\n${li}\n      </ul>\n    </section>`;
+    return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n      <div class="yt-head"><h2 id="${s.id}-h">${esc(s.name)}</h2><a href="#main">トップへ</a></div>\n      <ul class="yt-all">\n${li}\n      </ul>\n    </section>`;
   }).join('\n');
 }
 
@@ -246,6 +253,7 @@ export function buildAll(data, season, date = new Date()) {
     },
     'all/index.html': (h) => {
       h = replaceRegion(h, 'search', searchHtml('ja', '../'), 'all/index.html');
+      h = replaceRegion(h, 'toc', tocHtml(data), 'all/index.html');
       h = replaceRegion(h, 'all', '\n' + allHtml(data, '../') + '\n    ', 'all/index.html');
       return replaceRegion(h, 'data', dataHtml(data, null, 'ja'), 'all/index.html');
     },
