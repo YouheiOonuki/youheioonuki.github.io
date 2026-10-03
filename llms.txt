@@ -1,0 +1,236 @@
+# yorozu-craft
+
+> 登録なしで使える無料のブラウザの道具（制度の計算機・学校の計算・印刷物・クイズ・情シスの道具など）。入力は端末の中で計算し、サーバーに送りません。運営は個人（Youhei Oonuki）。
+
+- 制度・税・法令の値は一次資料（e-Gov 法令検索・国税庁・厚生労働省など）の原文で確かめ、各ページと各データに出典と確認日があります。結果は目安で、個別の判断は原文と窓口で確かめてください。
+- データ（下の「データ」）は CC0 1.0 で、ファイルの中に license・checked（確認日）・generated（生成日）・source（出典の URL）があります。認証なし・CORS は `Access-Control-Allow-Origin: *` で、ブラウザや agent から直接読めます。
+- 引用・リンクに連絡は要りません。運営者情報: https://yorozu-craft.com/about.html
+- このファイルは tools/build-agent.mjs が本番の sitemap とデータから書き出したものです（https://github.com/YouheiOonuki/youheioonuki.github.io）。
+
+## データ（CC0）
+
+- [データの一覧](https://yorozu-craft.com/api/): 各ファイルの出典・確認日・ライセンス（機械で読むなら https://yorozu-craft.com/api/index.json）
+- [制度の改定カレンダー](https://yorozu-craft.com/seido-keisan/data/kaitei.json): 税・社会保険・給付の施行日と出典。JSON、CC0-1.0、確認日 2026-09-25、生成日 2026-10-03
+- [制度の改定カレンダー（iCalendar）](https://yorozu-craft.com/seido-keisan/data/kaitei.ics): 同じ施行日の購読用カレンダー。iCalendar、CC0-1.0、確認日 2026-09-25、生成日 2026-10-03
+- [都道府県別の内申点の計算式](https://yorozu-craft.com/gakko-keisan/data/naishin.json): 公立高校入試の調査書点の式と値、計算例。JSON、CC0-1.0、確認日 2026-09-25、生成日 2026-10-03
+- [天文カレンダー](https://yorozu-craft.com/hoshizora-sanpo/data/tenmon.json): 新月・上弦・満月・下弦、流星群の極大、日食・月食（国立天文台の発表）。JSON、CC0-1.0、確認日 2026-10-02、生成日 2026-10-03
+- [天文カレンダー（iCalendar）](https://yorozu-craft.com/hoshizora-sanpo/data/tenmon.ics): 同じ予定の購読用カレンダー。iCalendar、CC0-1.0、確認日 2026-10-02、生成日 2026-10-03
+- [元素の「おお」の一言](https://yorozu-craft.com/quiz-hiroba/data/genso.json): 118 元素の名前の由来・発見・周期表の位置（1 文ずつ出典つき）。JSON、CC0-1.0、確認日 2026-09-25、生成日 2026-10-03
+- [世界の首都の「おお」の一言](https://yorozu-craft.com/quiz-hiroba/data/shuto.json): 首都の名前の由来・創設の年・そばの水域（Wikidata から）。JSON、CC0-1.0、確認日 2026-10-01、生成日 2026-10-03
+- [元号表](https://yorozu-craft.com/gengo/data/gengo.json): 明治〜令和の始まりと終わりの日と出典。JSON、CC0-1.0、確認日 2026-09-24、生成日 2026-10-03
+- [学年早見表](https://yorozu-craft.com/gengo/data/gakunen.json): 2020〜2035 年度の生年月日と学年の対応。JSON、CC0-1.0、確認日 2026-09-25、生成日 2026-10-03
+
+## 入口
+
+- [yorozu-craft トップ](https://yorozu-craft.com/): 全部の道具の一覧
+- [yorozu-craft – small free browser tools: Japanese study, bingo, IT admin](https://yorozu-craft.com/en/): Free tools from yorozu-craft: a furigana generator, hiragana and katakana practice sheets, a bingo caller with printable cards, a Japanese era converter, a web planetarium with a sky calendar, a Japan pension refund calculator, and IT admin tools (PAC file tester, ADSearch, FILETIME converter). No sign-up.
+- [先生向けの無料の道具（席替え・当番表・ビンゴ・学習プリント）登録なし｜yorozu-craft](https://yorozu-craft.com/for/teachers/): 教室でそのまま使える無料の道具の一覧。席替え、当番表・グループ分け、ビンゴカード、クイズ広場、アンプラグド・プログラミング、学習プリント、宿題タイマー、学年早見表。登録なしで、印刷の手順つき。
+- [介護・デイサービスのレクに使える印刷物（脳トレ・昭和クイズ・写経）広告なし｜yorozu-craft](https://yorozu-craft.com/for/kaigo/): 介護・デイサービスのレクにそのまま使える印刷物と道具。脳トレプリント、昭和クイズ・回想法カード、写経用紙、百人一首の読み上げ、冷蔵庫に貼る紙、大時計、季語カレンダー。広告なし・登録なし、人数分の印刷の手順つき。
+- [情シス向けのブラウザだけの道具（PAC テスター・ADSearch・FILETIME 変換・テキスト差分）｜yorozu-craft](https://yorozu-craft.com/for/it/): VDI や持ち込み禁止の環境でも使える、ブラウザだけで完結する情シス向けの道具。PAC ファイル テスター、ADSearch（PowerShell）、FILETIME・LDAP 時刻の変換、テキスト変換（差分・JSON・CSV・全角半角）。1 ファイル版の持ち込み方つき。
+
+## 道具（日本語）
+
+### web-roulette
+
+- [無料ルーレット・くじ引きアプリ｜複数選択対応・ブラウザで即使える](https://yorozu-craft.com/web-roulette/): 完全無料のオンラインルーレット・くじ引きアプリ。候補を入力してスタートを押すだけ。複数選択、重み付け、シャッフル機能付き。登録不要・インストール不要でブラウザからすぐ使えます。（使い方: https://yorozu-craft.com/web-roulette/guide.html）
+- [あみだくじ作成｜無料・印刷・共有リンク、偏りのない作り方（登録なし）｜yorozu-craft](https://yorozu-craft.com/web-roulette/amida/): 名前と結果を入れるだけで、あみだくじを作成。線をたどるアニメーション、全員の結果、A4 印刷（結果を折って隠す形・線だけも）、同じくじの共有リンク。横線の本数で結果が偏らない作り方。登録なし・無料。（使い方: https://yorozu-craft.com/web-roulette/amida/guide.html）
+- [お題ルーレット｜山手線ゲーム（小学生）・王様ゲーム（子ども向け）・川柳のお題一覧｜yorozu-craft](https://yorozu-craft.com/web-roulette/odai/): 山手線ゲームのお題（小学生向け・中学生〜大人）、子ども向けのおだやかな王様ゲームの命令、やさしい罰ゲーム、川柳・お絵かき・トークテーマのお題の一覧。ボタン 1 つでルーレットに読み込んで回せます。
+- [サイコロ（ブラウザ）・コイントス・ランダムな数字 4桁・6桁｜無料・登録なし｜yorozu-craft](https://yorozu-craft.com/web-roulette/dice/): ブラウザで振れるサイコロ（1〜10 個・合計つき）、コイントス、ランダムな数字（4 桁・6 桁・1〜100・範囲を決めて、重なりなしも）。アプリのインストールも登録もいりません。
+
+### easy-split
+
+- [easy-split｜傾斜割り勘・飲み会の清算アプリ（幹事0円・2次会合算）](https://yorozu-craft.com/easy-split/): 飲み会の割り勘を傾斜つきで計算できる無料アプリ。上司・若手の係数、幹事の持ち出しゼロ、1次会・2次会の合算、100円単位のキリのいい集金に対応。結果はそのままLINEで送れます。登録不要。（使い方: https://yorozu-craft.com/easy-split/guide.html）
+
+### web-metronome
+
+- [無料メトロノーム｜変則拍子・アクセント・裏拍対応・ブラウザで即使える](https://yorozu-craft.com/web-metronome/): 完全無料のオンラインメトロノーム。BPM を決めて再生を押すだけ。5/8・7/8 などの変則拍子、拍ごとのアクセント、裏拍・3連・16分の細分化、テンポアップ練習に対応。登録不要・インストール不要でブラウザからすぐ使え、ホーム画面に追加すればオフラインでも動きます。（使い方: https://yorozu-craft.com/web-metronome/guide.html）
+- [ブラウザピアノ｜無料・キーボードとタップで弾ける鍵盤（和音・ドレミ表示）](https://yorozu-craft.com/web-metronome/piano/): ブラウザで弾ける無料のピアノ。スマホは横向きで 2 オクターブ、複数の指で和音も鳴ります。パソコンはキーボードで演奏（JIS・US 配列どちらも同じ位置）。ドレミ／CDE の音名、サステイン、クリック、音色 6 種、MIDI キーボードにも対応。音はその場で合成するので読み込み待ちなし・登録不要。（使い方: https://yorozu-craft.com/web-metronome/piano/guide.html）
+
+### hoshizora-sanpo
+
+- [ほしぞらさんぽ｜今夜の星空がわかる無料Webプラネタリウム](https://yorozu-craft.com/hoshizora-sanpo/): 今夜の星空を天文計算で再現する無料のWebプラネタリウム。32星座の神話と見つけ方、月の満ち欠けや惑星の位置もわかります。ひらがなモードで5歳から楽しめ、星座クイズも。登録不要・スマホですぐ使え、ホーム画面に追加すればオフラインでも動きます。
+- [星座図鑑｜季節の星座の見つけ方と神話｜ほしぞらさんぽ](https://yorozu-craft.com/hoshizora-sanpo/zukan/): 黄道12星座やオリオン座・北斗七星・南十字星など32星座の見つけ方と神話を、星図・見ごろ・主な星つきで紹介。子ども向けのひらがな解説も。
+- [天文カレンダー2026-2027｜流星群・満月・日食月食・惑星の見ごろ｜ほしぞらさんぽ](https://yorozu-craft.com/hoshizora-sanpo/calendar/): 2026〜2027年の主な天文現象を日付順に。流星群の極大、満月・新月、日食・月食、惑星の見ごろを国立天文台の発表にもとづいて掲載。その日時の星空をプラネタリウムで見られます。
+- [星座の由来｜ギリシャ神話の 12 の話｜ほしぞらさんぽ](https://yorozu-craft.com/hoshizora-sanpo/shinwa/seiza/): おおぐま座・おうし座・オリオン座・ふたご座など、ギリシャ神話と結びついた星座の由来 12 本。アポロドーロス・オウィディウス・アラトスの英訳で確かめた話だけ。
+- [ギリシャ神話｜系図・神の一覧・星座の由来｜ほしぞらさんぽ](https://yorozu-craft.com/hoshizora-sanpo/shinwa/): ギリシャ神話の系図（押して親子をたどる）、神の一覧（英語名・ローマ名）、星座の由来 12 本、惑星と元素の名前の由来。アポロドーロス・ヘシオドス・オウィディウスの英訳で確かめて書いた読み物。
+- [星座早見盤の作り方｜住んでいる緯度で型紙を印刷（札幌・東京・那覇）｜ほしぞらさんぽ](https://yorozu-craft.com/hoshizora-sanpo/hayamiban/): 星座早見盤の型紙を、住んでいる場所の緯度・経度に合わせて作って A4 に印刷。切って中心を割りピンで留めるだけ。小学生の工作・自由研究に。無料・登録なし。（使い方: https://yorozu-craft.com/hoshizora-sanpo/hayamiban/guide.html）
+
+### shaho-check
+
+- [社会保険 加入チェッカー｜2026年10月の適用拡大・106万円の壁撤廃に対応](https://yorozu-craft.com/shaho-check/): パート・アルバイトの方が、自分が社会保険（厚生年金・健康保険）の加入対象かを質問に答えるだけで確認できる無料ツール。2026年10月の賃金要件（106万円の壁）撤廃と、2027年以降の企業規模要件の縮小に対応。保険料の目安も表示します。（使い方: https://yorozu-craft.com/shaho-check/guide.html）
+
+### loan-sim
+
+- [住宅ローン 返済シミュレーター｜yorozu-craft](https://yorozu-craft.com/loan-sim/): 変動金利の上昇と繰上返済を組み合わせて、毎月の返済額・総返済額・利息を試算。5年ルール・125%ルールにも対応。（使い方: https://yorozu-craft.com/loan-sim/guide.html）
+
+### nittei-kouho
+
+- [日程調整 候補日ジェネレーター｜yorozu-craft](https://yorozu-craft.com/nittei-kouho/): 期間と曜日を選ぶだけで、祝日を外した日程調整の候補日と、フォーム・メール・LINEに貼る文面を作成。登録不要。（使い方: https://yorozu-craft.com/nittei-kouho/guide.html）
+
+### denki-dai
+
+- [家電の電気代・節約額シミュレーター｜yorozu-craft](https://yorozu-craft.com/denki-dai/): 家電を選ぶだけで月・年の電気代の目安を計算。買い替えで何年で元が取れるか、使い方の見直しで年いくら浮くかも試算。登録不要。（使い方: https://yorozu-craft.com/denki-dai/guide.html）
+
+### todofuken-quiz
+
+- [こども都道府県クイズ｜yorozu-craft](https://yorozu-craft.com/todofuken-quiz/): 日本地図をタッチして都道府県をおぼえるクイズ。ひらがな・ふりがな・漢字の3段階、読み上げつき。県庁所在地や名物・名所のクイズも。登録不要・無料。（使い方: https://yorozu-craft.com/todofuken-quiz/guide.html）
+
+### md-viewer
+
+- [Markdown＋Mermaid ビューア｜yorozu-craft](https://yorozu-craft.com/md-viewer/): インストール不要のMarkdownエディタ。Mermaidの図も描ける1ファイルのHTMLをダウンロードして、ダブルクリックで開くだけ。通信しないのでオフラインや社内のPCでも使えます。（使い方: https://yorozu-craft.com/md-viewer/guide.html）
+
+### pac-tester
+
+- [PAC ファイル テスター｜yorozu-craft](https://yorozu-craft.com/pac-tester/): PAC ファイル（proxy.pac）の FindProxyForURL を、URL の一覧でまとめてテスト。戻り値の一覧表、構文チェック（全角スペース・括弧・return 漏れ・ルールの隠れ）、新旧の差分比較。通信しない 1 ファイルの HTML で、PAC の中身は外に出ません。（使い方: https://yorozu-craft.com/pac-tester/guide.html）
+
+### seido-keisan
+
+- [制度の計算機（年末調整・住民税・育休・医療費控除・脱退一時金など）｜yorozu-craft](https://yorozu-craft.com/seido-keisan/): 年末調整・住民税・育休・医療費控除・脱退一時金など、税と社会保険の制度の計算を国税庁・総務省・厚生労働省の資料や法令どおりに。出典と確認日つき。登録不要・無料で、入力はブラウザの外に送信しません。
+- [年末調整の計算（令和8年分）いくら戻るか｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/nenmatsu/): 令和8年分の年末調整で、税金がいくら戻るか・足りないかを計算。基礎控除104万円・特定親族特別控除・23歳未満の扶養親族がいる場合の生命保険料控除に対応。国税庁の表どおりに途中の計算をすべて表示。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/nenmatsu/guide.html）
+- [住民税の計算・非課税判定（令和9年度）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/juminzei/): 令和9年度（令和8年の所得）の住民税を計算。均等割・所得割がそれぞれ非課税になるかの判定と理由、所得割額（道府県民税・市町村民税の内訳、調整控除）、6月からの毎月の目安、ふるさと納税の上限の目安。地方税法どおりに途中の計算をすべて表示。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/juminzei/guide.html）
+- [育休・産休の給付金の計算（出産手当金・育児休業給付金・手取り）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/ikukyu/): 会社員の育休・産休でもらえるお金を計算。出産手当金・出産育児一時金・育児休業給付金（67%・50%）・出生後休業支援給付金（13%）・社会保険料の免除・休業中の手取りの目安と、月ごとの受け取りの目安。2026年8月1日からの上限額で、式と出典つき。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/ikukyu/guide.html）
+- [医療費控除でいくら戻るかの計算（令和8年分・セルフメディケーション税制と比較）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/iryohi/): 医療費控除でいくら戻るかを計算。支払った医療費と給与の収入（源泉徴収票）から、医療費控除額・戻る所得税・翌年度の住民税の減額の目安を出し、セルフメディケーション税制とどちらが得かも比べます。令和8年分、出典と途中の計算つき。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/iryohi/guide.html）
+- [高校無償化の計算（2026年度）私立・公立の授業料の自己負担｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/koko-mushoka/): 高校無償化（高等学校等就学支援金）の2026年度の新制度で、授業料の自己負担がいくらになるかを計算。私立45万7,200円・所得制限なし、通信制・高専・専修学校、東京都・大阪府・神奈川県・埼玉県・愛知県・兵庫県の上乗せに対応。年額と3年間の合計、出典と確認日つき。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/koko-mushoka/guide.html）
+- [脱退一時金の計算（厚生年金・国民年金、20.42%の還付の目安つき）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/dattai-ichiji/): 脱退一時金がいくらになるかを日本年金機構の表どおりに計算。厚生年金と国民年金を別々に判定し、20.42%の源泉徴収、退職所得の選択課税で戻る税金の目安、請求の期限、社会保障協定の注意を出します。出典と確認日つき。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/dattai-ichiji/guide.html）
+- [2割特例の終了後の消費税: 3割特例・簡易課税・本則の比較（令和9年分〜）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/invoice/): インボイスの2割特例が終わったあとの消費税を計算。売上・業種（みなし仕入率）・課税仕入れから、3割特例・簡易課税・本則課税の納付税額を比べ、簡易課税の届出の期限も出します。令和9年分〜令和11年分、国税庁の資料どおりの端数処理。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/invoice/guide.html）
+- [子ども・子育て支援金 いくら引かれる？ 給与からの月額・年額の計算（2026年度 0.23%）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/shienkin/): 子ども・子育て支援金が給与からいくら引かれるかを計算。月給か標準報酬月額と賞与から、本人負担の月額・1年分・2026年の年末調整に入る分を、協会けんぽの保険料額表と同じ0.23%で出します。国保・後期高齢者は国の年収別試算。登録不要。（使い方: https://yorozu-craft.com/seido-keisan/shienkin/guide.html）
+- [制度の改定カレンダー 2026〜2029｜税・社会保険・給付の施行日｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/kaitei/): 2026年10月・2027年から変わる税・社会保険・給付の制度を、施行日の順に一覧に。社会保険の賃金要件の撤廃、3割特例、防衛特別所得税、標準報酬月額の上限の引上げなど。出典は法令と省庁の原文。カレンダー（.ics）に入れられます。
+- [年金の繰上げ・繰下げ シミュレーション（損益分岐の年齢・在職老齢年金）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/nenkin-kuriage/): 生年月日と65歳からの年金額（老齢基礎年金・老齢厚生年金）から、60〜75歳で受け取り始めたときの年額と、65歳からと累計が逆転する年齢を計算。繰上げ0.4%・繰下げ0.7%、基礎と厚生を別の年齢で繰り下げる計算、働きながら繰り下げたときの増額（在職老齢年金 65万円）にも対応。広告なし・登録なし。（使い方: https://yorozu-craft.com/seido-keisan/nenkin-kuriage/guide.html）
+- [高額療養費の計算（2026年8月からの上限額・70歳以上・75歳以上・世帯合算）｜制度の計算機｜yorozu-craft](https://yorozu-craft.com/seido-keisan/kogaku-ryoyohi/): 医療費（10割）と所得区分から、高額療養費の自己負担限度額と戻る額を計算。2026年8月診療分からの新しい上限額と年間上限、7月までの額、2027年8月からの細かい所得区分に対応。70歳以上の外来（個人ごと）、75歳以上の後期高齢者医療、家族や複数の病院の世帯合算（21,000円以上）、多数回該当も。広告なし・登録なし。（使い方: https://yorozu-craft.com/seido-keisan/kogaku-ryoyohi/guide.html）
+
+### ADSearch
+
+- [ADSearch — RSAT 不要で Active Directory を調べる PowerShell ライブラリ｜yorozu-craft](https://yorozu-craft.com/ADSearch/): RSAT をインストールできない端末でも、一般のドメインユーザーで Active Directory・DNS・GPO・Exchange の情報を取得できる PowerShell モジュール。Get-ADUser などと同じ書き方で、すべて読み取り専用。無料・MIT ライセンス。
+
+### tabi-shiori
+
+- [旅のしおりメーカー（登録不要・無料で印刷）｜yorozu-craft](https://yorozu-craft.com/tabi-shiori/): 登録不要・無料で印刷できる旅のしおり作成ツール。行程に移動時間、持ち物チェックリスト、宿・連絡先、予算と割り勘まで。A4 と A5 冊子で印刷・PDF 保存。（使い方: https://yorozu-craft.com/tabi-shiori/guide.html）
+
+### gakushu-print
+
+- [学習プリントメーカー（無料・登録不要）ひらがな・漢字・計算・百ます・時計・迷路｜yorozu-craft](https://yorozu-craft.com/gakushu-print/): ひらがな・カタカナのなぞり書き、学年別の漢字練習、たし算・ひき算（くり上がりの有無・筆算）、九九、百ます計算、時計の読み方、迷路、ローマ字の学習プリントを無料で作成。登録不要、毎回ちがう問題、答えのページつき。A4 で印刷・PDF 保存。（使い方: https://yorozu-craft.com/gakushu-print/guide.html）
+- [九九ゲーム（タイムアタック）段ごと・ばらばら・逆から｜無料・登録なし｜学習プリントメーカー](https://yorozu-craft.com/gakushu-print/kuku/): 九九のタイムアタックゲーム。段ごと・ばらばら・答えから式を当てる「逆」の 3 通り。スマホの縦画面で大きなテンキー、記録はこの端末にだけ保存。まちがえた九九はそのままプリントにできます。無料・登録なし。（使い方: https://yorozu-craft.com/gakushu-print/kuku/guide.html）
+- [ローマ字タイピング 練習ゲーム（小学生・学年別の言葉）｜si も shi もOK｜無料・登録なし](https://yorozu-craft.com/gakushu-print/romaji/): 小学生のローマ字タイピング練習。1〜6年生の漢字の言葉と、ローマ字表の1字ずつ。ヘボン式（shi）でも訓令式（si）でも正解。お手本の表示・かくすを選べます。記録はこの端末にだけ保存。ローマ字の練習プリントも作れます。（使い方: https://yorozu-craft.com/gakushu-print/romaji/guide.html）
+- [おでかけ冊子（迷路・点つなぎ・ビンゴ）電車・新幹線・待ち時間の暇つぶしを印刷｜無料・登録なし｜学習プリントメーカー](https://yorozu-craft.com/gakushu-print/booklet/): 電車・新幹線・車・病院の待ち時間に、スマホ以外で遊べる冊子を印刷。迷路・点つなぎ・見つけたらビンゴ・ことばさがし・すうじパズル・まるばつ。A4 両面で A5 の冊子、A4 1 枚でミニブック。年齢で3段階、答えは巻末。無料・登録なし。（使い方: https://yorozu-craft.com/gakushu-print/booklet/guide.html）
+- [暗号メーカー（ずらし・換字・記号）暗号文と解読シート・暗号表を印刷｜子ども向け・無料・登録なし｜学習プリントメーカー](https://yorozu-craft.com/gakushu-print/angou/): ひらがな・カタカナ・英字の文を暗号にして印刷。ずらし（シーザー暗号）・いれかえ表・え・きごう・ばんごう・たぬき・さかさ。暗号文シート、解読シート（切って使う円盤・暗号表）、答えを A4 で。宝探しや誕生日の手紙、自由研究に。無料・登録なし。（使い方: https://yorozu-craft.com/gakushu-print/angou/guide.html）
+- [暗記カード作成（単語カードを印刷・赤シート対応・画面でめくる）CSV 貼り付け｜無料・登録なし｜学習プリントメーカー](https://yorozu-craft.com/gakushu-print/anki/): 表と裏を入れて暗記カード（単語カード）を作成。名刺サイズ 10 面と A4 2 面で印刷、両面印刷で表と裏がそろう並び。赤シートで答えが消える赤字モード、画面でめくって覚える。Excel・スプレッドシートの 2 列をそのまま貼れます。無料・登録なし・入力は端末の外に出ません。（使い方: https://yorozu-craft.com/gakushu-print/anki/guide.html）
+- [時計の読み方 練習（針を動かす・読みをえらぶ・針をあわせる）｜こども向け・無料・登録なし｜学習プリントメーカー](https://yorozu-craft.com/gakushu-print/tokei/): アナログ時計の読み方を画面で練習。針を指で動かして読む、時計を見て読みをえらぶ、言われた時刻に針をあわせるの 3 つ。なんじ・なんじはん・5 ふん・1 ぷん きざみ。文字盤 12 こと答えのプリントも印刷できます。無料・登録なし。（使い方: https://yorozu-craft.com/gakushu-print/tokei/guide.html）
+
+### bingo
+
+- [大人数ビンゴ抽選（無料・登録なし・カード印刷つき）｜yorozu-craft](https://yorozu-craft.com/bingo/): 登録なし・無料のビンゴ抽選アプリ。大画面・効果音・読み上げ、ビンゴカード印刷（最大200枚）とカード番号での当たり照合。忘年会・新年会の幹事に。オフラインでも使えます。（使い方: https://yorozu-craft.com/bingo/guide.html）
+
+### sekigae
+
+- [席替え・席順くじ｜条件つきの席替えアプリ（無料・登録なし）｜yorozu-craft](https://yorozu-craft.com/sekigae/): 教室の席替えと宴会の席決めを、条件つきのくじで。前回と同じ席を避ける・隣にしない組・前の席の指定、大画面で発表、座席表を印刷。登録なし・無料。（使い方: https://yorozu-craft.com/sekigae/guide.html）
+
+### filetime
+
+- [FILETIME・LDAP タイムスタンプ変換（pwdLastSet・lastLogonTimestamp を日時に）｜yorozu-craft](https://yorozu-craft.com/filetime/): pwdLastSet・lastLogonTimestamp・accountExpires などの 18 桁の数値を日時（UTC・日本時間）に、日時を数値に変換。0 や 9223372036854775807 の意味、負の値（maxPwdAge）も説明。Get-ADUser の出力を貼り付けてまとめて変換。ブラウザだけで動き、値は送信しません。（使い方: https://yorozu-craft.com/filetime/guide.html）
+
+### gengo
+
+- [和暦・西暦 変換と年齢早見表（令和・平成・昭和・大正・明治）｜yorozu-craft](https://yorozu-craft.com/gengo/): 和暦と西暦をすぐ変換（令和・平成・昭和・大正・明治）。昭和64年と平成元年など改元の境目も正確に。生年月日から満年齢・干支・学年・入学卒業年（履歴書用）を計算。印刷できる年齢早見表つき。登録不要・無料。（使い方: https://yorozu-craft.com/gengo/guide.html）
+- [学年早見表 2026年度（令和8年度）生年月日・和暦・年齢｜印刷できる｜yorozu-craft](https://yorozu-craft.com/gengo/gakunen/): 年度を選ぶと、年少から大学・大学院まで学年ごとの生年月日の範囲（西暦・和暦）と年齢が出る学年早見表。生年月日を入れると早生まれかどうかと学年が分かります。A4 1 枚で印刷。登録不要・無料。（使い方: https://yorozu-craft.com/gengo/gakunen/guide.html）
+- [厄年・還暦 早見表 2026・2027（令和8・9年）男女・生まれ年｜印刷できる｜yorozu-craft](https://yorozu-craft.com/gengo/yakudoshi/): 年を選ぶと、男女の前厄・本厄・後厄と還暦・古希・喜寿・米寿などの生まれ年（西暦・和暦・干支）が出る早見表。生年月日を入れると数え年と厄年かどうかが分かります。寺社による数え方の違いつき。A4 1 枚で印刷。登録不要・無料。（使い方: https://yorozu-craft.com/gengo/yakudoshi/guide.html）
+- [回忌の計算と早見表（命日から一周忌・三回忌〜五十回忌・四十九日）｜印刷できる｜yorozu-craft](https://yorozu-craft.com/gengo/kaiki/): 命日（和暦でも西暦でも）を入れると、一周忌・三回忌・七回忌〜五十回忌の年月日と曜日、四十九日・百か日の日付が出ます。浄土真宗の二十五回忌など宗派・地域の数え方も選べます。年ごとの回忌早見表つき。A4 1 枚で印刷。広告なし・登録なし。（使い方: https://yorozu-craft.com/gengo/kaiki/guide.html）
+
+### furigana
+
+- [ふりがなメーカー（学年別にルビを振る・印刷）｜yorozu-craft](https://yorozu-craft.com/furigana/): 貼った文に、学年に合わせてふりがな（ルビ）を自動で振ります。自信のない読みには印、タップで直せて、A4 で印刷・Word 用にコピー。文はこの端末の中で解析し、外に送りません。登録不要・無料。（使い方: https://yorozu-craft.com/furigana/guide.html）
+
+### toban
+
+- [当番表 作成ツール｜ローテーションを自動で作って印刷（無料・登録なし）｜yorozu-craft](https://yorozu-craft.com/toban/): 人と当番の種類と期間を入れると、回数がそろうローテーションの当番表を自動で作成。日ごと・週ごと、祝日を除く、担当できない日。A4 で印刷、スマホでも。登録なし・無料。（使い方: https://yorozu-craft.com/toban/guide.html）
+- [グループ分け・班分けツール｜男女均等・同じ班にしない条件つき（無料・登録なし）｜yorozu-craft](https://yorozu-craft.com/toban/group/): 名簿を貼るだけでランダムにグループ分け・班分け。男女の数をそろえる、この人たちは別の班・同じ班、前回と同じ班を避ける。A4 で印刷、共有リンク。登録なし・無料。
+
+### gakko-keisan
+
+- [学校の計算機（内申点・偏差値・出席日数）｜yorozu-craft](https://yorozu-craft.com/gakko-keisan/): 都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫の内申点、テストの偏差値と順位の目安、高校の出席日数（あと何回休めるか）の計算。入試の要綱や文部科学省の資料を確かめて作り、出典と確認日つき。登録不要・無料で、入力はブラウザの外に送信しません。
+- [内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）令和9年度入試｜学校の計算機｜yorozu-craft](https://yorozu-craft.com/gakko-keisan/naishin/): 中3の通知表の評定から、都立高校の換算内申（65点満点）と調査書点（300点）を計算。学力検査とESAT-Jを入れると総合得点（1020点）も。神奈川県（中2＋中3×2、S値）・埼玉県（共通選抜）・千葉県（×Ｋ）・大阪府（450点・タイプⅠ〜Ⅴ）・兵庫県（250点）にも対応。令和9年度（2027年春）の入試の要綱どおり、出典と確認日つき。登録不要。（使い方: https://yorozu-craft.com/gakko-keisan/naishin/guide.html）
+- [偏差値の計算（点数・平均点・標準偏差から。順位の目安・5教科）｜学校の計算機｜yorozu-craft](https://yorozu-craft.com/gakko-keisan/hensachi/): テストの点数・平均点・標準偏差から偏差値を計算。人数を入れると順位の目安、順位と人数から偏差値の目安も。標準偏差がわからないときは全員の点数を貼り付けて計算。5教科まとめて。登録不要で、入力はブラウザの外に送信しません。（使い方: https://yorozu-craft.com/gakko-keisan/hensachi/guide.html）
+- [出席日数・欠課時数の計算（高校 あと何回休めるか。3分の2・8割）｜学校の計算機｜yorozu-craft](https://yorozu-craft.com/gakko-keisan/shusseki/): 高校の授業の回数（単位数×35）と休んだ回数から、単位を落とさずにあと何回休めるかを計算。出席の割合は3分の2・4分の3・8割・自分で入れる%から学校の決まりに合わせて選べます。科目ごとの一覧、出席停止・忌引の扱いにも対応。登録不要。（使い方: https://yorozu-craft.com/gakko-keisan/shusseki/guide.html）
+- [宿題タイマー（子ども向け・残り時間が円で見える）｜学校の計算機｜yorozu-craft](https://yorozu-craft.com/gakko-keisan/timer/): 子どもの宿題・勉強用のタイマー。残り時間が円か棒で減っていき、終わったらやさしい音で知らせます（音量は小さめ、消せます）。25分＋5分のようなくり返し、画面を消さない設定つき。登録不要・無料。（使い方: https://yorozu-craft.com/gakko-keisan/timer/guide.html）
+- [○○まであと何日（夏休み・誕生日のカウントダウン、印刷できる表つき）｜学校の計算機｜yorozu-craft](https://yorozu-craft.com/gakko-keisan/atonannichi/): 夏休み・冬休み・誕生日まであと何日かを計算し、1日ずつぬりつぶすカウントダウン表をA4で印刷できます。夏休みの残り日数、誕生日は毎年の日で。日付は学校や家の予定に合わせて自分で入れます。登録不要・無料。（使い方: https://yorozu-craft.com/gakko-keisan/atonannichi/guide.html）
+
+### quiz-hiroba
+
+- [クイズ広場｜元素記号・歴史年号・百人一首・世界の首都・昭和クイズ・早押しボタン｜yorozu-craft](https://yorozu-craft.com/quiz-hiroba/): 元素記号・歴史年号・百人一首の決まり字・世界の首都を4択と入力（一問一答）で覚える無料クイズ。高齢者向けの昭和クイズ（3択・広告なし）、百人一首の読み上げ、1台で遊ぶ早押しボタンも。一覧で覚える・問題と答えを印刷・同じ問題でちょうせんリンクつき。登録不要。（使い方: https://yorozu-craft.com/quiz-hiroba/guide.html）
+- [元素記号クイズ 118｜4択・入力・一覧・印刷｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/genso/): 元素記号クイズ。1〜20番・36番まで・118すべてを、4択か入力（タイピング）の一問一答で。一覧で覚える・問題と答えを印刷もできる。登録不要・無料。
+- [歴史年号クイズ（中学生）｜4択・入力・一覧・印刷｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/nengo/): 中学の歴史で出てくる出来事の年号クイズ（101件）。出来事→年、年→出来事を4択か入力の一問一答で。時代別・基本44件で絞れる。一覧・印刷つき。登録不要・無料。
+- [百人一首 決まり字クイズ｜上の句→下の句・取り札・印刷｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/kimariji/): 百人一首の決まり字クイズ。上の句→下の句、決まり字→下の句、取り札→決まり字を4択と入力で。一字決まり（むすめふさほせ）・二字・三字…で絞れて、一覧で覚える・印刷もできる。登録不要・無料。
+- [世界の首都クイズ 191か国｜4択・入力・地域別・印刷｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/shuto/): 世界の首都クイズ。外務省の国名と首都の表記で191か国。国→首都、首都→国を4択と入力（一問一答）で。アジア・欧州・アフリカなど地域別、一覧で覚える・問題と答えを印刷もできる。登録不要・無料。
+- [国旗クイズ 196か国｜小学生〜激ムズ・4択・印刷｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/kokki/): 国旗クイズ。外務省の国名で196か国。旗→国、国→旗を4択で。小学生（30か国）・ふつう・難しい（同じ地域）・激ムズ（似ている旗）の4段階。一覧で覚える・問題と答えを印刷もできる。登録不要・無料。
+- [昭和クイズ（高齢者向け・3択・印刷）｜出来事・物の値段・レコード大賞｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/showa/): 高齢者向けの昭和クイズ（3択・75問）。昭和の出来事の年、はがき・銭湯・ラーメンなどの値段、日本レコード大賞の曲。大きな字、問題と答えの印刷、折って使う回想法カードつき。出典つき。広告なし・登録不要・無料。（使い方: https://yorozu-craft.com/quiz-hiroba/showa/guide.html）
+- [百人一首 読み上げ（無料・ランダム・順番・序歌）｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/hyakunin/): 百人一首の読み上げ。100首をランダムか番号順に、端末の声で読みます。序歌・下の句2回・間隔の秒数・競技かるた式を選べ、残り枚数と読み終わった札が見えます。登録不要・無料。（使い方: https://yorozu-craft.com/quiz-hiroba/hyakunin/guide.html）
+- [早押しボタン（1台で2〜4人・正解/不正解の音・得点）｜クイズ大会セット｜クイズ広場](https://yorozu-craft.com/quiz-hiroba/hayaoshi/): スマホ・タブレット1台を2〜4人で囲む早押しボタン。最初に押した人だけが光り、ほかはロック。正解・不正解の音とドラムロール、得点、お手つき。クイズ広場の問題を読み上げ役に出せます。登録不要・無料・ブラウザだけ。（使い方: https://yorozu-craft.com/quiz-hiroba/hayaoshi/guide.html）
+
+### fitbit-export
+
+- [Fitbit データを CSV・Excel に変換（睡眠・歩数・心拍数）｜yorozu-craft](https://yorozu-craft.com/fitbit-export/): Fitbit（Google Health）の書き出し zip から、睡眠・睡眠スコア・歩数・安静時心拍数・体重を日ごとの CSV（Excel 用）と Markdown（Obsidian 用）に。ファイルはブラウザの中で読み、送信しません。（使い方: https://yorozu-craft.com/fitbit-export/guide.html）
+
+### otasuke
+
+- [くらしのおたすけ（親・シニア向け）｜写経用紙・救急情報シート・大時計・脳トレプリント・季語｜yorozu-craft](https://yorozu-craft.com/otasuke/): 離れて暮らす親のために、子が作って印刷・設置する道具。写経用紙、冷蔵庫に貼る救急情報シート・服薬カレンダー・血圧記録表、紙のアカウント台帳、日めくり大時計、スマホ手順カード、脳トレプリント、メール・SMS のリンク確認、季語カレンダー、健診結果の経年グラフ。広告なし・登録なし。
+- [救急情報シート・服薬カレンダー・血圧記録表を印刷（冷蔵庫に貼る紙）｜くらしのおたすけ](https://yorozu-craft.com/otasuke/reizoko/): 親の冷蔵庫に置く救急情報シート、服薬カレンダー、血圧記録表を A4 で印刷。名前を入れるだけで、ほかは手書きでも使えます。広告なし・登録なし・入力は端末の外に出ません。（使い方: https://yorozu-craft.com/otasuke/reizoko/guide.html）
+- [日めくり大時計（古いタブレットを大きな置き時計に）｜くらしのおたすけ](https://yorozu-craft.com/otasuke/tokei/): 古いタブレットやスマホを、日付・曜日・午前午後・時刻を大きく出す置き時計に。画面を消さない設定つき。オフラインでも動きます。広告なし・登録なし。（使い方: https://yorozu-craft.com/otasuke/tokei/guide.html）
+- [親のスマホ手順カードを作って印刷（大きな字で 1 行 1 手順）｜くらしのおたすけ](https://yorozu-craft.com/otasuke/tejun/): 親にスマホの使い方を教えるときの手順カード。大きな字で 1 行 1 手順、画面の写真、困ったときの電話番号を入れて A4 に印刷。LINE で写真を送る・QR コードを読むのひな形つき。広告なし・登録なし・入力は端末の外に出ません。（使い方: https://yorozu-craft.com/otasuke/tejun/guide.html）
+- [紙のアカウント台帳を印刷（デジタル遺品・サブスク解約の準備）｜くらしのおたすけ](https://yorozu-craft.com/otasuke/daicho/): 親のスマホ・ネット銀行・サブスクの一覧を紙に。サービス名・ID・支払い・解約先と「パスワードの控えの場所」だけを書き、パスワードは書かない台帳を A4 で印刷。広告なし・登録なし・入力は端末の外に出ません。（使い方: https://yorozu-craft.com/otasuke/daicho/guide.html）
+- [写経用紙を印刷（般若心経・なぞり書き・大きい字）｜くらしのおたすけ](https://yorozu-craft.com/otasuke/shakyo/): 般若心経の写経用紙を無料で印刷。なぞり書きの薄い字・お手本・清書用、字の大きさ（A4 横 1 枚〜特大）と行間を選べます。広告なし・登録なし。（使い方: https://yorozu-craft.com/otasuke/shakyo/guide.html）
+- [脳トレプリント（大人向け・大きな字・無料）計算・漢字の読み・間違い探し・クロスワード｜くらしのおたすけ](https://yorozu-craft.com/otasuke/notore/): 大人・高齢の方向けの脳トレプリントを無料で印刷。計算・漢字の読み・間違い探し・かなクロスワード・塗り絵カレンダー。大きな字・白黒・答えつき、毎回ちがう問題。広告なし・登録なし。（使い方: https://yorozu-craft.com/otasuke/notore/guide.html）
+- [季語カレンダー｜今日の季語と俳句の季語一覧（春夏秋冬・新年）印刷できる表・小学生にも｜くらしのおたすけ](https://yorozu-craft.com/otasuke/kigo/): 今日の季語と、俳句の季語の一覧を季節ごとに。読みがなと短い説明つきで A4 に印刷できます。季節の区切りは二十四節気（国立天文台の暦要項）。季語の季節は国語辞典で確かめました。広告なし。（使い方: https://yorozu-craft.com/otasuke/kigo/guide.html）
+- [このメール・SMS は本物？ リンク先のドメインをその場で確認（詐欺・フィッシングの見分け方）｜くらしのおたすけ](https://yorozu-craft.com/otasuke/honmono/): 届いたメールや SMS を貼ると、リンク先の本当の持ち主（ドメイン）、似せた綴り、punycode、短縮 URL をその場で読み解きます。文は送信せず、リンクも開きません。広告なし・登録なし。（使い方: https://yorozu-craft.com/otasuke/honmono/guide.html）
+- [健診結果の経年グラフ（血圧・血糖・HbA1c・LDL・肝機能を年ごとに）印刷できる｜くらしのおたすけ](https://yorozu-craft.com/otasuke/kenshin/): 健康診断の結果を年ごとに入れると、15 項目の推移を折れ線グラフに。厚生労働省の保健指導判定値・受診勧奨判定値の線つき。家族の分も、CSV、A4 1 枚の印刷。広告なし・登録なし・入力は端末の外に出ません。（使い方: https://yorozu-craft.com/otasuke/kenshin/guide.html）
+
+### tameshite
+
+- [ためして（耳・反射・目）｜モスキート音・反射神経・動体視力・記憶力・老眼チェック｜yorozu-craft](https://yorozu-craft.com/tameshite/): ブラウザでできる体のセルフチェック 5 つ。モスキート音が何Hzまで聞こえるか、反射神経（ミリ秒）、動体視力、数字の記憶力、老眼チェック（カードで画面の実寸を合わせる）。記録は端末だけ。遊びの目安で、医療の検査ではありません。
+- [モスキート音テスト｜何Hzまで聞こえる？高い音の聞こえ（音量の上限つき）｜ためして](https://yorozu-craft.com/tameshite/mimi/): モスキート音（8,000〜20,000Hz）が何Hzまで聞こえるかをブラウザで試すテスト。音量に上限を付け、確認の音で端末の音量を小さく合わせてから始めます。年齢には換算しません。医療の検査ではありません。（使い方: https://yorozu-craft.com/tameshite/mimi/guide.html）
+- [反射神経テスト｜色が変わったらタップ・5回の中央値をミリ秒で（定規の換算つき）｜ためして](https://yorozu-craft.com/tameshite/hansha/): 画面の色が変わった瞬間にタップして、反応の時間をミリ秒で測る反射神経テスト。5回の中央値・平均・最速を出し、先読みはやり直し。定規でためす方法の換算表つき。記録はこの端末だけ。医療の検査ではありません。（使い方: https://yorozu-craft.com/tameshite/hansha/guide.html）
+- [動体視力テスト｜横切る数字を読む・14段階（ゲーム）｜ためして](https://yorozu-craft.com/tameshite/doutai/): 画面を横切る数字を読んで答える動体視力のゲーム。段が上がるほど速くなり（2.0秒→0.15秒で横切る）、2回まちがえたら終わり。記録はこの端末だけ。医療の検査ではありません。（使い方: https://yorozu-craft.com/tameshite/doutai/guide.html）
+- [記憶力テスト｜数字を覚えて答える（何けたまで？）順番・逆から｜ためして](https://yorozu-craft.com/tameshite/kioku/): 1つずつ出る数字を覚えて、同じ順番（または逆から）に答える記憶力のゲーム。3けたから始めて1けたずつ増え、同じ長さで2回まちがえたら終わり。大きなボタン、記録はこの端末だけ。医療の検査ではありません。（使い方: https://yorozu-craft.com/tameshite/kioku/guide.html）
+- [老眼チェック｜近くの見え方・字の大きさ・赤緑（画面の実寸をカードで合わせる）広告なし｜ためして](https://yorozu-craft.com/tameshite/roogan/): スマホで老眼のセルフチェック。カードで画面の実寸を合わせてから、ぼやけ始める距離（近点）、読める一番小さい字、赤と緑の見え方を試します。広告なし・登録なし。医療の検査ではありません。気になるときは眼科へ。（使い方: https://yorozu-craft.com/tameshite/roogan/guide.html）
+
+### unplugged
+
+- [アンプラグド・プログラミング教材メーカー（命令カード・盤面を印刷）｜yorozu-craft](https://yorozu-craft.com/unplugged/): アンプラグド・プログラミングの教材を無料で印刷。ロボットの盤面・命令カード・先生用の答え。じゅんばん・くりかえし・もしの3段階で、毎回ちがう盤面。登録なし。（使い方: https://yorozu-craft.com/unplugged/guide.html）
+
+### henkan
+
+- [テキスト変換ツール（差分・JSON整形・CSV整形・全角半角）｜yorozu-craft](https://yorozu-craft.com/henkan/): テキスト差分、JSON 整形・検証、CSV 整形・JSON 変換、全角・半角・かな変換と、PDF の結合・分割・回転。ブラウザの中だけで動き、入力は外部に送信しません。通信しない 1 ファイル版（henkan.html）もダウンロードできます。（使い方: https://yorozu-craft.com/henkan/guide.html）
+- [テキスト差分（比較）ツール｜行と文字の違いを色分け｜yorozu-craft](https://yorozu-craft.com/henkan/diff/): 2つの文章の違いを行と文字の単位で色分け。空白・大文字小文字・全角半角（ｶﾞとガも）を無視して比べられます。数MBでも固まらず、入力は外部に送信しません。（使い方: https://yorozu-craft.com/henkan/diff/guide.html）
+- [JSON 整形・検証ツール｜エラーの行と列を日本語で｜yorozu-craft](https://yorozu-craft.com/henkan/json/): JSON の整形（インデント）・圧縮・構文チェック。誤りの行と列と理由を日本語で出します。大きな整数や 1.10 も書いたとおりに残し、配列は CSV にできます。入力は外部に送信しません。（使い方: https://yorozu-craft.com/henkan/json/guide.html）
+- [CSV 整形・変換ツール｜区切りの自動判定・JSON 変換・Excel 用 BOM｜yorozu-craft](https://yorozu-craft.com/henkan/csv/): CSV の区切り（カンマ・タブなど）を自動で見分けて表で表示。RFC 4180 の形に整える・JSON に変換・Excel で文字化けしない BOM 付きで保存。Shift_JIS のファイルも読めます。入力は外部に送信しません。（使い方: https://yorozu-craft.com/henkan/csv/guide.html）
+- [全角・半角・かな変換ツール｜ｶﾞ→ガも正しく｜yorozu-craft](https://yorozu-craft.com/henkan/zenkaku/): 英数字・記号・空白の全角⇔半角、半角カナ⇔全角カナ（ｶﾞ→ガのように濁点も 1 文字に）、ひらがな⇔カタカナ、行末の空白や空行の整理。対応表つき。入力は外部に送信しません。（使い方: https://yorozu-craft.com/henkan/zenkaku/guide.html）
+- [PDF 結合・分割・回転｜アップロードしない無料ツール｜yorozu-craft](https://yorozu-craft.com/henkan/pdf/): PDF の結合（順番の並べ替え）、ページ範囲での分割、90° 回転、ページの削除と並べ替え。ファイルはサーバーに送らず、この端末のブラウザの中で処理します。登録不要・無料。（使い方: https://yorozu-craft.com/henkan/pdf/guide.html）
+
+### ai-log
+
+- [ChatGPT・Claude の会話を Markdown に変換（Obsidian 用）｜yorozu-craft](https://yorozu-craft.com/ai-log/): ChatGPT と Claude の書き出し（zip・conversations.json）を、会話ごとの Markdown（frontmatter つき）に分けて zip で保存。Obsidian にそのまま入れられます。ファイルはブラウザの中で読み、送信しません。（使い方: https://yorozu-craft.com/ai-log/guide.html）
+
+## English
+
+- [What’s in the Night Sky Tonight? Free Star Map and Web Planetarium](https://yorozu-craft.com/hoshizora-sanpo/en/): See tonight’s sky for your city: stars, constellations, planets and the Moon’s phase, calculated in your browser for any date and place. Free, no sign-up, works offline.（使い方: https://yorozu-craft.com/hoshizora-sanpo/en/guide.html）
+- [Printable Planisphere PDF: Free Star Wheel for Your Latitude](https://yorozu-craft.com/hoshizora-sanpo/en/planisphere/): Make a free printable planisphere (star wheel) for your latitude and time zone, 20–65° north or south. Print on A4 or US Letter, cut out and pin. No sign-up.（使い方: https://yorozu-craft.com/hoshizora-sanpo/en/planisphere/guide.html）
+- [Astronomy Calendar 2026–2027: Full Moons, Meteor Showers, Eclipses and Planets](https://yorozu-craft.com/hoshizora-sanpo/en/calendar/): Sky events for 2026–2027 in date order: full and new moons, meteor shower peaks, eclipses and planet viewing, from NAOJ. Times in UTC and your time zone.
+- [PAC File Tester – test FindProxyForURL offline | yorozu-craft](https://yorozu-craft.com/pac-tester/en/): Free, offline PAC file tester. Run FindProxyForURL against a list of URLs, see every return value in a table, catch syntax and logic mistakes, and diff an old and new proxy.pac. One HTML file; your PAC never leaves the browser.（使い方: https://yorozu-craft.com/pac-tester/en/guide.html）
+- [Japan Pension Refund Calculator (Lump-sum Withdrawal Payment) | yorozu-craft](https://yorozu-craft.com/seido-keisan/en/pension-refund/): Estimate your Japan pension refund (Lump-sum Withdrawal Payment) from the Japan Pension Service tables: Employees' Pension and National Pension separately, the 20.42% tax, a tax refund estimate and your claim deadline. Free, no sign-up.（使い方: https://yorozu-craft.com/seido-keisan/en/pension-refund/guide.html）
+- [Japan Take-Home Pay Calculator (Salary After Tax, 2026) | yorozu-craft](https://yorozu-craft.com/seido-keisan/en/take-home-pay/): Japan take-home pay calculator for employees: salary after income tax, residence tax, health insurance, pension, employment insurance and the 2026 child support levy. 2026 tax rules, sources shown. Free, no sign-up.（使い方: https://yorozu-craft.com/seido-keisan/en/take-home-pay/guide.html）
+- [Japan Residence Tax Calculator (2027 and 2026) | yorozu-craft](https://yorozu-craft.com/seido-keisan/en/residence-tax/): Japan residence tax calculator for employees: how much residence tax you pay on your salary, the monthly amount from June, and the tax-free limit. Local Tax Act rules, sources shown. Free, no sign-up.（使い方: https://yorozu-craft.com/seido-keisan/en/residence-tax/guide.html）
+- [ADSearch – Get-ADUser without RSAT, a PowerShell ADSI library | yorozu-craft](https://yorozu-craft.com/ADSearch/en/): Run Get-ADUser, Get-ADGroupMember, Get-ADComputer and 39 more commands without RSAT. A read-only PowerShell module that queries Active Directory, DNS, GPO links and Exchange configuration through ADSI/LDAP as an ordinary domain user. Free, MIT license.
+- [Hiragana & Katakana Practice Sheets, Genkouyoushi Printable (Free PDF) | yorozu-craft](https://yorozu-craft.com/gakushu-print/en/): Make printable hiragana and katakana tracing sheets with romaji, or practice your own words. Also kanji practice sheets by Japanese school grade (1–6), genkouyoushi (400 squares, vertical or horizontal) and handwriting practice grids. A4 or US Letter, save as PDF. Free, no sign-up.（使い方: https://yorozu-craft.com/gakushu-print/en/guide.html）
+- [Bingo Caller (free, no sign-up, printable cards) | yorozu-craft](https://yorozu-craft.com/bingo/en/): Free online bingo caller for a projector or TV: drum roll, voice calls ("B 12"), 1–75 board, and printable bingo cards you can check by card number. No sign-up. Works offline.（使い方: https://yorozu-craft.com/bingo/en/guide.html）
+- [FILETIME & LDAP Timestamp Converter – pwdLastSet, lastLogonTimestamp, accountExpires | yorozu-craft](https://yorozu-craft.com/filetime/en/): Convert 18-digit Windows FILETIME / LDAP timestamps (pwdLastSet, lastLogonTimestamp, accountExpires, badPasswordTime) to a date in UTC or any time zone, and back. Explains 0, 9223372036854775807 (never) and negative intervals like maxPwdAge. Paste Get-ADUser output to convert every value. Runs in your browser; nothing is uploaded.（使い方: https://yorozu-craft.com/filetime/en/guide.html）
+- [Japanese Era Converter – Reiwa, Heisei, Showa to Western Year and Back | yorozu-craft](https://yorozu-craft.com/gengo/en/): Convert Japanese era years (Reiwa 令和, Heisei 平成, Shōwa 昭和, Taishō 大正, Meiji 明治) to Western years and back, with the exact era change dates. What year is Showa 60? Reiwa 8? Also age from a birth date, school year in Japan, zodiac, and a printable age chart. Free, no sign-up.（使い方: https://yorozu-craft.com/gengo/en/guide.html）
+- [Japan School Grades by Age – Birth Date Chart (April 2 Cutoff), Printable | yorozu-craft](https://yorozu-craft.com/gengo/en/school-grades/): Japan school grades by age: pick a school year (April–March) to see every grade from kindergarten to university with birth date ranges and ages. Enter a birth date to find a child's grade. Print on one A4 or Letter page. Free, no sign-up.（使い方: https://yorozu-craft.com/gengo/en/school-grades/guide.html）
+- [Furigana Generator – Add Furigana to Japanese Text by School Grade, Print or Copy | yorozu-craft](https://yorozu-craft.com/furigana/en/): Free furigana generator: paste Japanese text and add furigana (ふりがな) above kanji, filtered by Japanese school grade or the Jōyō list. Unsure readings are underlined, tap to correct, then print on A4 or copy as ruby HTML. Runs in your browser; your text is never sent.（使い方: https://yorozu-craft.com/furigana/en/guide.html）
+- [Random Group Generator with Conditions — Gender Balance, Keep Apart | yorozu-craft](https://yorozu-craft.com/toban/en/): Paste names and split them into random groups. Balance gender, keep certain students apart or together, avoid last time's groups. Print on A4 or Letter. Free, no sign-up.
+- [Export Fitbit Data to CSV and Excel (Google Takeout Converter) | yorozu-craft](https://yorozu-craft.com/fitbit-export/en/): Convert your Fitbit export from Google Takeout into a CSV with one row per day: sleep, sleep score, steps, resting heart rate, weight and exercise. Opens in Excel. Runs in your browser; nothing is uploaded.（使い方: https://yorozu-craft.com/fitbit-export/en/guide.html）
+- [Unplugged Coding Printables – Robot Board, Command Cards and Answers | yorozu-craft](https://yorozu-craft.com/unplugged/en/): Free unplugged coding printables: a robot board, cut-out command cards (forward, turn, repeat, if blocked) and an answer sheet. A new puzzle every time, three steps: sequence, repeat, if. A4 or Letter. No sign-up.（使い方: https://yorozu-craft.com/unplugged/en/guide.html）
+- [Export ChatGPT and Claude Chats to Markdown (for Obsidian) | yorozu-craft](https://yorozu-craft.com/ai-log/en/): Convert your ChatGPT or Claude data export (zip or conversations.json) into one Markdown file per chat, with YAML frontmatter, ready for Obsidian. Runs in your browser; nothing is uploaded.（使い方: https://yorozu-craft.com/ai-log/en/guide.html）
+
+## Optional
+
+- [プライバシーポリシー](https://yorozu-craft.com/privacy-policy.html)
+- [スマホで印刷する](https://yorozu-craft.com/print-help.html)
+- [カレンダーに登録する](https://yorozu-craft.com/calendar-help.html)
