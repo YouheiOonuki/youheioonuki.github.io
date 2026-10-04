@@ -63,6 +63,35 @@ const EN_ONLY_PAGES = new Set([
 ]);
 const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）
 const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
+// AdSense 審査が通るまで本文の薄いページは広告 script を外す（2026-10-04）。通ったら本文を足したページから戻す
+// 広告 script の数（下の「script が 0 か 1 か」）だけでこの集合を「script 0」とみなす。「広告なし」の定型文・高齢者・子どもの外部リンクの判定には混ぜない
+const REVIEW_NO_AD_PAGES = new Set([
+  '/for/teachers/', '/for/it/',
+  '/web-roulette/', '/web-roulette/amida/', '/web-roulette/dice/',
+  '/easy-split/', '/easy-split/kakeibo/',
+  '/web-metronome/', '/web-metronome/capo/',
+  '/hoshizora-sanpo/zukan/', '/hoshizora-sanpo/zukan/leo.html', '/hoshizora-sanpo/zukan/vir.html', '/hoshizora-sanpo/zukan/uma.html', '/hoshizora-sanpo/zukan/boo.html', '/hoshizora-sanpo/zukan/lib.html', '/hoshizora-sanpo/zukan/sco.html', '/hoshizora-sanpo/zukan/sgr.html', '/hoshizora-sanpo/zukan/cyg.html', '/hoshizora-sanpo/zukan/lyr.html', '/hoshizora-sanpo/zukan/aql.html', '/hoshizora-sanpo/zukan/oph.html', '/hoshizora-sanpo/zukan/crb.html', '/hoshizora-sanpo/zukan/her.html', '/hoshizora-sanpo/zukan/dra.html', '/hoshizora-sanpo/zukan/cap.html', '/hoshizora-sanpo/zukan/aqr.html', '/hoshizora-sanpo/zukan/psc.html', '/hoshizora-sanpo/zukan/ari.html', '/hoshizora-sanpo/zukan/peg.html', '/hoshizora-sanpo/zukan/and.html', '/hoshizora-sanpo/zukan/per.html', '/hoshizora-sanpo/zukan/ori.html', '/hoshizora-sanpo/zukan/tau.html', '/hoshizora-sanpo/zukan/gem.html', '/hoshizora-sanpo/zukan/cnc.html', '/hoshizora-sanpo/zukan/cma.html', '/hoshizora-sanpo/zukan/cmi.html', '/hoshizora-sanpo/zukan/aur.html', '/hoshizora-sanpo/zukan/umi.html', '/hoshizora-sanpo/zukan/cas.html', '/hoshizora-sanpo/zukan/cru.html', '/hoshizora-sanpo/zukan/cen.html', '/hoshizora-sanpo/shinwa/seiza/', '/hoshizora-sanpo/hayamiban/', '/hoshizora-sanpo/tsuki/', '/hoshizora-sanpo/en/planisphere/',
+  '/loan-sim/',
+  '/nittei-kouho/',
+  '/denki-dai/',
+  '/seido-keisan/nenmatsu/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/iryohi/', '/seido-keisan/koko-mushoka/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/',
+  '/tabi-shiori/',
+  '/gakushu-print/en/', '/gakushu-print/booklet/', '/gakushu-print/angou/',
+  '/bingo/cards.html', '/bingo/en/cards.html',
+  '/filetime/', '/filetime/en/',
+  '/gengo/', '/gengo/en/', '/gengo/gakunen/', '/gengo/gakunen/rireki.html', '/gengo/yakudoshi/', '/gengo/en/school-grades/', '/gengo/nenpyo/',
+  '/furigana/', '/furigana/en/',
+  '/toban/', '/toban/group/', '/toban/kondate/',
+  '/gakko-keisan/', '/gakko-keisan/naishin/', '/gakko-keisan/hensachi/', '/gakko-keisan/shusseki/',
+  '/quiz-hiroba/mainichi/guide.html',
+  '/fitbit-export/', '/fitbit-export/en/',
+  '/tameshite/', '/tameshite/en/sleep-calculator/',
+  '/unplugged/', '/unplugged/en/',
+  '/henkan/', '/henkan/diff/', '/henkan/json/', '/henkan/csv/', '/henkan/zenkaku/', '/henkan/pdf/',
+  '/ai-log/', '/ai-log/en/',
+  // ナビゲーション・運営情報の画面（Google のポリシー「ナビゲーション・アラート目的の画面には広告を置かない」に合わせる。2026-10-04）
+  '/', '/all/', '/en/', '/about.html', '/privacy-policy.html', '/en/about.html', '/en/privacy-policy.html',
+]);
 // 高齢者向け（D118）の広告なしページ。先頭に「広告なし」の定型文が要る（下の R12 の突き合わせ）
 const ELDERLY_PAGES = new Set([
   '/gengo/kaiki/', '/gengo/kaiki/guide.html',
@@ -282,6 +311,7 @@ await pool([...pages], 6, async (url) => {
   const script = count(html, new RegExp(`adsbygoogle\\.js\\?client=${ADSENSE_ID}`, 'g'));
   if (meta !== 1) fail(p, `AdSense の meta が ${meta} 個（1 個のはず）`);
   if (isMetaOnly(p)) { if (script !== 0) fail(p, '広告なしのページ（全画面の本体・高齢者向け）に広告スクリプトがある'); }
+  else if (REVIEW_NO_AD_PAGES.has(p)) { if (script !== 0) fail(p, 'AdSense 審査中は広告 script を外すページ（REVIEW_NO_AD_PAGES）に広告スクリプトがある'); }
   else if (script !== 1) fail(p, `AdSense のスクリプトが ${script} 個（1 個のはず）`);
   if (/class="adsbygoogle"|広告スペース|ad-placeholder/.test(html)) fail(p, '手動の広告枠・空の広告枠がある');
 
