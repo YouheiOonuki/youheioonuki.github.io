@@ -29,6 +29,7 @@
     .line-table { width: 100%; border-collapse: collapse; margin: var(--sp-2) 0; font-size: var(--fs-s); }
     .line-table th, .line-table td { border: 1px solid currentColor; padding: 0.4rem 0.5rem; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
     .line-table th { font-weight: 600; }
+    .line-add { display: inline-block; padding: 0.6rem 1.2rem; border: 2px solid currentColor; border-radius: 0.5rem; font-weight: 600; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -41,9 +42,10 @@
       <p class="lead">LINE で文を送ると、サイトの計算で答えを返します。こちらからは送りません。返信だけです。</p>
 
       <h2 id="friend">友だち追加</h2>
-      <!-- K138: オーナーから QR と ID を受け取ったら差し替える -->
+      <p><a class="line-add" href="https://line.me/R/ti/p/@762ovaqd">LINE で友だち追加する</a></p>
+      <p>ID: @762ovaqd（LINE の「友だち追加」→「検索」で ID を入れても追加できます）</p>
+      <!-- K138: オーナーから QR の画像を受け取ったら、ここに置く（パソコンで見ている人がスマホで読む用） -->
       <p>［QR］</p>
-      <p>ID: ［ID: @xxxx］</p>
 
       <h2 id="can">できること</h2>
       <table class="line-table">
