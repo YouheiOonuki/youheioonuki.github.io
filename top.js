@@ -42,11 +42,16 @@
     return (season && season.months && season.months[m]) || [];
   }
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
-  // 道具のアイコン: そのページのリポジトリ（/<ツール>/）の favicon.svg。子ページは親のもの。新しい画像は作らない
+  // 最上位のフォルダのうち、道具のリポジトリではなくサイト本体（このリポジトリ）の中にあるもの。
+  // check-site も道具の一覧からこれを除く（sitemap・404・保存内容の一覧を道具と同じには求めない）
+  var ROOT_DIRS = ['en', 'all', 'line'];
+  // 道具のアイコン: そのページのリポジトリ（/<ツール>/）の favicon.svg。子ページは親のもの。サイト本体のページは本体の favicon.svg。新しい画像は作らない
   // 飾りなので alt は空。寸法を書いて読み込みでずれない（CLS 0）。1 画面目より下は lazy
   var ICON = 20;
   function iconHtml(path, base, lazy) {
-    return '<img class="yt-ico" src="' + esc(base + path.split('/')[1] + '/favicon.svg') + '" alt="" width="' + ICON + '" height="' + ICON + '"' + (lazy ? ' loading="lazy"' : '') + ' decoding="async">';
+    var seg = path.split('/')[1];
+    var src = base + (ROOT_DIRS.indexOf(seg) >= 0 ? '' : seg + '/') + 'favicon.svg';
+    return '<img class="yt-ico" src="' + esc(src) + '" alt="" width="' + ICON + '" height="' + ICON + '"' + (lazy ? ' loading="lazy"' : '') + ' decoding="async">';
   }
   // いまの時期の 3 枚（静的な HTML と、月が変わったときの入れ替えで同じ形）。icons: 日本語のページだけ（data-icons）。1 画面目なので lazy にしない
   function seasonItemsHtml(items, base, icons) {
@@ -54,7 +59,7 @@
       return '<li><a href="' + esc(base + x.path.slice(1)) + '"><strong>' + (icons ? iconHtml(x.path, base, false) : '') + esc(x.name) + '</strong><span>' + esc(x.reason) + '</span></a></li>';
     }).join('');
   }
-  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonItemsHtml: seasonItemsHtml, iconHtml: iconHtml, esc: esc };
+  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonItemsHtml: seasonItemsHtml, iconHtml: iconHtml, esc: esc, ROOT_DIRS: ROOT_DIRS };
   root.YorozuTop = api;
   if (typeof document === 'undefined') return;
 

@@ -54,6 +54,7 @@ const META_ONLY_PAGES = new Set([
   '/seido-keisan/kogaku-ryoyohi/',
   '/seido-keisan/kogaku-ryoyohi/guide.html',
   '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
+  '/line/',                // LINE 版の案内（節「親・家族のために」。/for/kaigo/ と同じ扱い: yorozu-plans 企画書 76）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
@@ -200,9 +201,10 @@ for (const sm of sitemaps) {
 
 // 2. トップのツール一覧と robots.txt の sitemap が一致しているか
 const top = await get(BASE);
-// ./en/ は英語のトップ（ツールではない）
-// ./all/ は「すべての道具」の一覧（ROADMAP 7.23。ツールではない）
-const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]).filter(t => t !== 'en' && t !== 'all'));
+// サイト本体の中のページ（英語のトップ ./en/・すべての道具 ./all/・LINE 版の案内 ./line/）はツールではない。一覧は top.js の ROOT_DIRS
+const { loadTop } = await import('./build-top.mjs');
+const ROOT_DIRS = new Set(loadTop().ROOT_DIRS);
+const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]).filter(t => !ROOT_DIRS.has(t)));
 // ツールの sitemap は /<ツール>/sitemap.xml。ドメイン直下の /sitemap.xml（トップ自身）は除く
 const toolsInRobots = new Set(sitemaps.map(s => path(s).split('/').filter(Boolean)).filter(seg => seg.length >= 2).map(seg => seg[0]));
 for (const t of toolsOnTop) if (!toolsInRobots.has(t)) fail('robots.txt', `トップに載っている ${t} の Sitemap が無い`);
