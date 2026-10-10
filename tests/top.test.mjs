@@ -170,6 +170,12 @@ test('アイコン: 節・「ほかに」・/all/ の全行と「いまの時期
       assert.match(img, /alt=""/, `${f} ${href} の alt`);
       assert.match(img, /width="(2[0-4])" height="\1"/, `${f} ${href} の寸法`);
       const src = img.match(/src="([^"]+)"/)[1];
+      if (YT.ROOT_DIRS.includes(fs(href))) {
+        // サイト本体の中のページ（/line/ など）は本体の favicon.svg
+        assert.match(src, /^(\.\.\/|\.\/)favicon\.svg$/, `${f} ${href} の src（サイト本体）`);
+        assert.equal(/loading="lazy"/.test(img), lazy, `${f} ${href} の loading`);
+        continue;
+      }
       assert.match(src, /^(\.\.\/|\.\/)[^/]+\/favicon\.svg$/, `${f} ${href} の src`);
       assert.equal(fs(src), fs(href), `${f} ${href} は親リポジトリのアイコン`);
       assert.equal(/loading="lazy"/.test(img), lazy, `${f} ${href} の loading`);
