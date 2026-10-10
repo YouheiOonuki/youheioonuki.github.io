@@ -63,7 +63,7 @@ const EN_ONLY_PAGES = new Set([
   '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
   '/tameshite/en/sleep-calculator/', '/tameshite/en/sleep-calculator/guide.html',
 ]);
-const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）
+const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/', '/hade/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）。hade はド派手版で、偽の警告の演出は AdSense の規約に触れるので全ページ広告なし（D303）
 const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
 // AdSense 審査が通るまで本文の薄いページは広告 script を外す（2026-10-04）。通ったら本文を足したページから戻す
 // 広告 script の数（下の「script が 0 か 1 か」）だけでこの集合を「script 0」とみなす。「広告なし」の定型文・高齢者・子どもの外部リンクの判定には混ぜない
