@@ -31,6 +31,9 @@
     .post-form textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 0.6rem; border: 1px solid var(--input-border); border-radius: var(--radius); }
     .post-form button { justify-self: start; min-height: var(--tap); padding: 0 1.4rem; font: inherit; font-weight: 600; border: 2px solid currentColor; border-radius: 0.5rem; background: transparent; color: inherit; cursor: pointer; }
     .post-form button:disabled { opacity: 0.5; cursor: default; }
+    .post-kind { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-4); }
+    .post-kind legend { font-weight: 600; padding: 0; margin-bottom: var(--sp-1); }
+    .post-kind label { font-weight: 400; display: inline-flex; align-items: center; gap: 0.3rem; min-height: var(--tap); }
     #post-result { min-height: 1.5em; }
   </style>
 </head>
@@ -43,11 +46,17 @@
       <h1>作ってほしい道具を投書</h1>
       <p class="lead">「こんな道具がほしい」「ここが使いにくい」を、1 つの欄に書いて送ってください（200 字まで）。</p>
 
-      <p class="note">名前や連絡先は書かないでください。書かれていても返事はしません。</p>
+      <p class="note">名前や連絡先は書かないでください。書かれていても返事はしません。不具合のときは、道具の名前と、何をしたらどうなったかを書いてください。</p>
 
       <form id="post-form" class="post-form">
         <label for="post-body">送る文</label>
         <textarea id="post-body" name="body" maxlength="200" rows="5" required></textarea>
+        <fieldset class="post-kind">
+          <legend>種類（選ばなくても送れます）</legend>
+          <label><input type="radio" name="kind" value="要望"> 要望</label>
+          <label><input type="radio" name="kind" value="不具合"> 不具合</label>
+          <label><input type="radio" name="kind" value="その他"> その他</label>
+        </fieldset>
         <!-- Turnstile のサイトキー（公開してよい値。オーナーから 2026-10-11。ウィジェット yorozu-post） -->
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAFS2Hb_fUz5Ogkvf"></div>
         <input type="hidden" name="lang" value="ja">
@@ -104,6 +113,7 @@
               result.appendChild(link);
               result.appendChild(document.createTextNode(' に載ります。'));
               body.value = '';
+              form.querySelectorAll('input[name="kind"]').forEach(function (r) { r.checked = false; });
             } else {
               result.textContent = '送れませんでした。時間をおいてもう一度お試しください。';
             }
