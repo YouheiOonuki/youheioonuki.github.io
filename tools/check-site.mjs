@@ -109,8 +109,8 @@ const isElderly = (p) => ELDERLY_PAGES.has(p) || ELDERLY_PREFIXES.some((x) => p.
 const AD_FREE_SENTENCE = 'このページは広告なし・登録なし・入力は端末の外に出ません。';
 // 入力をサーバーで処理する高齢者向けページは、定型文の代わりに例外の文（yorozu-plans 7.27・7.33.1 (a)。otasuke の tests/pages.test.js と同じ文）
 const AD_FREE_EXCEPT = {
-  '/otasuke/yasashii/': 'このページは広告なし・登録なし。この道具は入力をサーバー（Cloudflare の AI）で処理します。保存はしません。名前や住所など個人が分かる部分は消してから貼ってください。',
-  '/otasuke/yasashii/guide.html': 'このページは広告なし・登録なし。この道具は入力をサーバー（Cloudflare の AI）で処理します。保存はしません。名前や住所など個人が分かる部分は消してから貼ってください。',
+  '/otasuke/yasashii/': 'このページは広告なし・登録なし。この道具は入力をサーバー（Cloudflare の AI）で処理します。保存はしません（写真も保存しません）。名前や住所など個人が分かる部分は消してから貼ってください。',
+  '/otasuke/yasashii/guide.html': 'このページは広告なし・登録なし。この道具は入力をサーバー（Cloudflare の AI）で処理します。保存はしません（写真も保存しません）。名前や住所など個人が分かる部分は消してから貼ってください。',
 };
 const BODY_TEST_SENTENCE = 'これは遊びの目安で、医療の検査ではありません。気になるときは眼科・耳鼻科へ。';
 // 健診版（D196）。/otasuke/kenshin/ の結果の欄より前
