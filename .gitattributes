@@ -1,0 +1,3 @@
+# 改行は LF に固定する（PC の core.autocrlf が true でも、作業ツリーを CRLF にしない）。
+# tools/build-top.mjs などが差し込む欄は LF で作るので、作業ツリーが CRLF だと --check とテストが「古い」と誤判定する（2026-10-09）
+* text=auto eol=lf
