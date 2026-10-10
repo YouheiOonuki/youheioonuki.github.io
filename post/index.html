@@ -48,8 +48,8 @@
       <form id="post-form" class="post-form">
         <label for="post-body">送る文</label>
         <textarea id="post-body" name="body" maxlength="200" rows="5" required></textarea>
-        <!-- K144: オーナーから Turnstile のサイトキーを受け取ったら差し替える -->
-        <div class="cf-turnstile" data-sitekey="REPLACE_WITH_TURNSTILE_SITEKEY"></div>
+        <!-- Turnstile のサイトキー（公開してよい値。オーナーから 2026-10-11。ウィジェット yorozu-post） -->
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAFS2Hb_fUz5Ogkvf"></div>
         <input type="hidden" name="lang" value="ja">
         <input type="hidden" name="from" id="post-from" value="">
         <button type="submit">送る</button>
