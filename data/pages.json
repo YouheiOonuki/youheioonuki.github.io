@@ -3,6 +3,7 @@
   "newCount": 6,
   "pages": [
     {"path": "/line/", "date": "2026-10-09", "title": "LINE で計算する（返信版）", "section": "oya", "priority": 2, "aliases": ["LINE", "ライン", "LINEで計算"], "name": "LINE で計算", "note": "送ると計算して返信", "related": ["/seido-keisan/kogaku-ryoyohi/", "/seido-keisan/nenkin-kuriage/", "/gengo/"]},
+    {"path": "/post/", "date": "2026-10-10", "title": "作ってほしい道具を投書", "section": "kurashi", "priority": 2, "aliases": ["要望", "投書", "リクエスト", "作ってほしい"], "name": "作ってほしい道具を投書", "note": "1 行で要望を送る", "related": ["/line/", "/otasuke/"]},
     {"path": "/lifeplan/", "date": "2026-10-03", "title": "ライフプラン 簡易シミュレーション", "short": "ライフプラン", "section": "kurashi", "priority": 3, "aliases": ["家計", "老後資金", "教育費"], "chip": "ライフプラン", "name": "ライフプラン", "note": "家計の先行きを試算", "related": ["/loan-sim/", "/easy-split/kakeibo/", "/seido-keisan/nenkin-kuriage/"]},
     {"path": "/hoshizora-night/poster/", "date": "2026-10-03", "title": "生まれた日の星空ポスター", "short": "星空ポスター", "section": "asobu", "priority": 2, "aliases": ["誕生日"], "chip": "星空ポスター", "name": "星空ポスター"},
     {"path": "/web-metronome/drum/", "date": "2026-10-03", "title": "ドラムマシン", "short": "ドラムマシン", "section": "asobu", "priority": 3, "aliases": ["リズムマシン", "打ち込み"], "name": "ドラムマシン", "note": "打ち込みのリズム", "related": ["/web-metronome/", "/web-metronome/piano/"]},
