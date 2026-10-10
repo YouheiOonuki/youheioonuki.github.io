@@ -107,6 +107,10 @@ const ELDERLY_PREFIXES = ['/otasuke/'];
 const isElderly = (p) => ELDERLY_PAGES.has(p) || ELDERLY_PREFIXES.some((x) => p.startsWith(x));
 // 定型文（yorozu-plans WRITING 2 章）
 const AD_FREE_SENTENCE = 'このページは広告なし・登録なし・入力は端末の外に出ません。';
+// 入力をサーバーで処理する高齢者向けページは、定型文の代わりに例外の文（yorozu-plans 7.27・7.33.1 (a)。otasuke の tests/pages.test.js と同じ文）
+const AD_FREE_EXCEPT = {
+  '/otasuke/yasashii/': 'このページは広告なし・登録なし。この道具は入力をサーバー（Cloudflare の AI）で処理します。保存はしません。名前や住所など個人が分かる部分は消してから貼ってください。',
+};
 const BODY_TEST_SENTENCE = 'これは遊びの目安で、医療の検査ではありません。気になるときは眼科・耳鼻科へ。';
 // 健診版（D196）。/otasuke/kenshin/ の結果の欄より前
 const KENSHIN_SENTENCE = 'これは健診の結果を並べて見る道具で、医療の検査ではありません。気になるときは、健診を受けた所か、かかりつけの医師へ。';
@@ -325,7 +329,8 @@ await pool([...pages], 6, async (url) => {
   if (/広告なし/.test(desc) && !isMetaOnly(p)) fail(p, 'title か description に「広告なし」とあるのに META_ONLY_PAGES・META_ONLY_PREFIXES に無い（広告が出る）');
   if (isElderly(p)) {
     if (!isMetaOnly(p)) fail(p, '高齢者向けのページ（ELDERLY_PAGES）なのに META_ONLY に無い（D118: 広告なし）');
-    if (!text.includes(AD_FREE_SENTENCE)) fail(p, `高齢者向けの広告なしページに定型文「${AD_FREE_SENTENCE}」が無い（WRITING 2 章）`);
+    const want = AD_FREE_EXCEPT[p] ?? AD_FREE_SENTENCE;
+    if (!text.includes(want)) fail(p, `高齢者向けの広告なしページに定型文「${want}」が無い（WRITING 2 章）`);
   }
 
   // 医療・効能の NG 語（REVIEW C7 R4）。定型文と、ページごとに認めた打ち消しの文は除いて数える
