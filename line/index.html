@@ -63,19 +63,22 @@
           <tr><td>子育て支援金</td><td>子育て支援金 月給30万</td><td><a href="../seido-keisan/shienkin/">子育て支援金</a></td></tr>
         </tbody>
       </table>
+      <p>声でも聞けます。LINE のマイクのボタンを押したまま話して、30秒までで送ってください。聞き取った文を返信の先頭に出します（返信に「聞き取りました」と出ます）。</p>
 
       <h2 id="data">送った文の扱い</h2>
       <ul>
         <li>ユーザー ID・送った文・返信は保存しません。</li>
-        <li>保存するのは、今日の返信の件数だけです。</li>
+        <li>保存するのは、今日の件数（返信・AI・声の回数）だけです。</li>
         <li>メッセージは LINE 社（LY Corporation）のサーバーを通ります。<a href="https://www.lycorp.co.jp/ja/company/privacypolicy/" target="_blank" rel="noopener noreferrer">LY株式会社のプライバシーポリシー</a></li>
         <li>読めない文は、質問を読み取るためだけに AI（Cloudflare の Workers AI）に渡すことがあります（返信に「AI が読み取りました」と出ます）。</li>
+        <li>声は、文字に直すためだけに AI（Cloudflare の Workers AI）に渡します。声は保存しません。</li>
       </ul>
 
       <h2 id="note">注意</h2>
       <ul>
         <li>答えは目安です。実際の額は、加入している健康保険・日本年金機構・申告の内容などが決めます。</li>
-        <li>1日の返信が2,000件を超えると、「混んでいます」と返します。</li>
+        <li>1日の返信が2,000件を超えると、「混んでいます」と返します。声は1日30回までです。</li>
+        <li>声の聞き取りは間違えることがあります。返信の先頭の「聞き取りました」の文を確かめてください。</li>
       </ul>
     </article>
   </main>
