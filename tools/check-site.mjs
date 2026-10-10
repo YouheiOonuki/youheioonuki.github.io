@@ -55,6 +55,7 @@ const META_ONLY_PAGES = new Set([
   '/seido-keisan/kogaku-ryoyohi/guide.html',
   '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
   '/line/',                // LINE 版の案内（節「親・家族のために」。/for/kaigo/ と同じ扱い: yorozu-plans 企画書 76）
+  '/post/',                // 要望の投書箱（yorozu-plans 企画書 77）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
