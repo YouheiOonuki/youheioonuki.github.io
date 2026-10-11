@@ -1,6 +1,6 @@
 // 無料の印刷物のセット（yorozu-plans ROADMAP 7.46 の K173 と 7.47 の 2、企画書 91）を 1 冊の PDF にする。
 // 既存の生成器（脳トレ・ビンゴカード・季語・冷蔵庫の紙）を Playwright で開いて画面の操作どおりに設定し、印刷の形のまま PDF にして、pdf-lib でつなぐ。
-// 1 枚目は冷蔵庫に貼る QR の紙（qr-sheet.html）。脳トレの答えは末尾にまとめる。問題は毎回ちがうので、出来た PDF をそのままコミットする。
+// 1 枚目はスマホでかざす QR の紙（冷蔵庫に貼る紙の生成器 /otasuke/reizoko/ の「QR の紙」）。脳トレの答えは末尾にまとめる。問題は毎回ちがうので、出来た PDF をそのままコミットする。
 //
 //   node tools/print-set/build.mjs [--out print/noutore-reku-2026-11.pdf]
 //
@@ -22,11 +22,11 @@ const { PDFDocument } = require(path.join(PROJECTS, 'henkan/vendor/pdf-lib/pdf-l
 const out = path.join(ROOT, (process.argv.includes('--out') ? process.argv[process.argv.indexOf('--out') + 1] : 'print/noutore-reku-2026-11.pdf'));
 const PORT = 8790;
 
-// /<リポジトリ>/… を Claude\Projects\<リポジトリ>\… に、/print-set/… をこのフォルダに
+// /<リポジトリ>/… を Claude\Projects\<リポジトリ>\… に
 const types = { '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
 const server = http.createServer((q, r) => {
   const p = decodeURIComponent(q.url.split(/[?#]/)[0]);
-  let f = p.startsWith('/print-set/') ? path.join(HERE, p.slice('/print-set/'.length)) : path.join(PROJECTS, p);
+  let f = path.join(PROJECTS, p);
   if (f.endsWith(path.sep) || p.endsWith('/')) f = path.join(f, 'index.html');
   fs.readFile(f, (e, d) => { if (e) { r.writeHead(404); r.end(); return; } r.writeHead(200, { 'content-type': types[path.extname(f)] || 'text/html; charset=utf-8' }); r.end(d); });
 }).listen(PORT);
@@ -61,7 +61,7 @@ const NOTORE = [
   ['calc', null], ['kanji', null], ['machigai', null], ['cross', null], ['nurie', '2026-11'],
 ];
 const parts = { qr: null, notore: [], answers: [], bingo: null, season: [], reizoko: [] };
-parts.qr = await pdfOf('/print-set/qr-sheet.html', (p) => p.waitForSelector('html[data-ready]'));
+parts.qr = await pdfOf('/otasuke/reizoko/', async (p) => { await radio(p, 'kind', 'qr'); await p.waitForSelector('.qr-code svg'); });
 for (const [kind, month] of NOTORE) {
   const doc = await pdfOf('/otasuke/notore/', async (p) => {
     await radio(p, 'kind', kind);
