@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>冷蔵庫に貼る QR の紙（K173 の束の 1 枚目。build.mjs が印刷する原稿で、配信はしない）</title>
+  <style>
+    @page { size: A4 portrait; margin: 12mm; }
+    body { font-family: "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif; color: #000; margin: 0; }
+    h1 { font-size: 30pt; text-align: center; margin: 0 0 4mm; }
+    .lead { font-size: 15pt; text-align: center; margin: 0 0 8mm; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
+    .box { border: 1.2mm solid #000; border-radius: 4mm; padding: 5mm; text-align: center; }
+    .box svg { width: 52mm; height: 52mm; display: block; margin: 0 auto 3mm; }
+    .name { font-size: 20pt; font-weight: 700; margin: 0 0 2mm; }
+    .say { font-size: 14pt; margin: 0; }
+    .foot { font-size: 12pt; text-align: center; margin-top: 8mm; }
+  </style>
+</head>
+<body>
+  <h1>スマホをかざして使う 4 つの道具</h1>
+  <p class="lead">スマホのカメラを四角に向けると、ページが開きます。無料・登録なし。</p>
+  <div class="grid">
+    <div class="box"><div data-qr="https://line.me/R/ti/p/@762ovaqd"></div><p class="name">LINE で計算</p><p class="say">友だちに追加して、文を送ると<br>計算して返事が来ます</p></div>
+    <div class="box"><div data-qr="https://yorozu-craft.com/otasuke/yasashii/?from=print-qr"></div><p class="name">やさしい日本語</p><p class="say">役所のお知らせを<br>短く、ふりがなつきに</p></div>
+    <div class="box"><div data-qr="https://yorozu-craft.com/seido-keisan/kogaku-ryoyohi/?from=print-qr"></div><p class="name">入院したときの医療費</p><p class="say">1 か月に払う上限<br>（高額療養費）の目安</p></div>
+    <div class="box"><div data-qr="https://yorozu-craft.com/otasuke/kenshin/?from=print-qr"></div><p class="name">健診の結果をグラフに</p><p class="say">毎年の値を並べて<br>変わり方を見る</p></div>
+  </div>
+  <p class="foot">yorozu-craft.com　冷蔵庫や電話のそばに貼っておくと便利です</p>
+  <script src="/bingo/vendor/qrcode.js"></script>
+  <script>
+    document.querySelectorAll('[data-qr]').forEach(function (el) {
+      var q = qrcode(0, 'M'); q.addData(el.dataset.qr); q.make();
+      el.innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+    });
+    document.documentElement.dataset.ready = '1';
+  </script>
+</body>
+</html>

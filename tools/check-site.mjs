@@ -92,6 +92,7 @@ const REVIEW_NO_AD_PAGES = new Set([
   '/unplugged/', '/unplugged/en/',
   '/henkan/', '/henkan/diff/', '/henkan/json/', '/henkan/csv/', '/henkan/zenkaku/', '/henkan/pdf/',
   '/ai-log/', '/ai-log/en/',
+  '/print/',               // 無料の印刷物のセット（K173）。介護施設に配る案内のページで、広告を置かない
   // ナビゲーション・運営情報の画面（Google のポリシー「ナビゲーション・アラート目的の画面には広告を置かない」に合わせる。2026-10-04）
   '/', '/all/', '/en/', '/about.html', '/privacy-policy.html', '/en/about.html', '/en/privacy-policy.html',
 ]);
