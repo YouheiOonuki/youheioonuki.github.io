@@ -1,0 +1,4 @@
+# Workers の静的配信が読む転送（配信フォルダの直下だけが効くので root に置く）。ROADMAP 7.46 D313
+# 年末調整のド派手版をやめた。X には出していないので流入は無いが、URL を知っている人のために別館の入口へ
+/hade/nenmatsu/ /hade/ 301
+/hade/nenmatsu /hade/ 301
