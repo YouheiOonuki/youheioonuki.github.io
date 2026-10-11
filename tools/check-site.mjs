@@ -138,6 +138,19 @@ const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/', '/hoshizora-sanpo/en/
 const failures = [];
 const notes = [];
 const fail = (where, what) => failures.push(`${where}: ${what}`);
+// 広告を出してよいかの条件（yorozu-plans QUEUE Q-019。REVIEW_NO_AD_PAGES を手で持つ表から条件の計算に置き換える準備）。
+// 不可: 本文 600 字未満（details を含む）・読み物で 800 字未満・案内と法的ページ・高齢者向け（D118 の ELDERLY）・/for/kaigo/ に載る道具・全画面などの META_ONLY。
+// **いまは AdSense の審査中なので、計算の結果にかかわらず全部「不可」として扱う**（広告の script は戻さない）。結果はメモに内訳だけ出す
+const AD_MIN_CHARS = 600, AD_MIN_CHARS_READ = 800;
+const READ_PREFIXES = ['/hoshizora-sanpo/shinwa/', '/hoshizora-sanpo/calendar/']; // 読み物（measure.py --type read で測っているもの）
+const GUIDE_LEGAL_PREFIXES = ['/all/', '/for/', '/en/for/', '/post/', '/line/', '/api/', '/yt/'];
+const adFacts = []; // { p, chars, reasons: [...] }
+/** <main> の表示の字数（details の中を含む。空白・タグ・script・style を除く） */
+function mainChars(html) {
+  const m = html.match(/<main\b[\s\S]*?<\/main>/i);
+  const body = (m ? m[0] : html).replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '').replace(/<[^>]+>/g, '').replace(/&[a-z#0-9]+;/gi, 'x');
+  return [...body.replace(/\s+/g, '')].length;
+}
 
 // 同じ URL は 1 回だけ取得する
 const cache = new Map();
@@ -322,6 +335,16 @@ await pool([...pages], 6, async (url) => {
   // ホーム画面に置ける形（yorozu-plans ROADMAP 7.41.2 K179、D309 の (a)）: どのページも manifest の link を 1 つ（道具の manifest か root の /manifest.webmanifest）
   const manifests = (html.match(/<link rel="manifest" href="[^"]+">/g) || []).length;
   if (manifests !== 1) fail(p, `manifest の link が ${manifests} 個（1 個のはず。K179）`);
+  // Q-019: 広告の条件の材料を集める（判定は最後。/for/kaigo/ の一覧を読んでから）
+  {
+    const chars = mainChars(html), reasons = [];
+    const read = READ_PREFIXES.some((x) => p.startsWith(x));
+    if (read ? chars < AD_MIN_CHARS_READ : chars < AD_MIN_CHARS) reasons.push(read ? '読み物 800 字未満' : '本文 600 字未満');
+    if (p === '/' || COMMON_JA.concat(COMMON_EN).includes(p) || GUIDE_LEGAL_PREFIXES.some((x) => p.startsWith(x)) || /\/(print-help|calendar-help)\.html$/.test(p)) reasons.push('案内・法的ページ');
+    if (isElderly(p)) reasons.push('高齢者向け（D118）');
+    if (isMetaOnly(p)) reasons.push('広告なしの画面（META_ONLY）');
+    adFacts.push({ p, chars, reasons });
+  }
   if (isMetaOnly(p)) { if (script !== 0) fail(p, '広告なしのページ（全画面の本体・高齢者向け）に広告スクリプトがある'); }
   else if (REVIEW_NO_AD_PAGES.has(p)) { if (script !== 0) fail(p, 'AdSense 審査中は広告 script を外すページ（REVIEW_NO_AD_PAGES）に広告スクリプトがある'); }
   else if (script !== 1) fail(p, `AdSense のスクリプトが ${script} 個（1 個のはず）`);
@@ -508,6 +531,20 @@ notes.push(`YouTube の着地 /yt/: ${Object.keys(YT_PAGES).length} ページ`);
     for (const t of toolsOnTop) if (!all.prefixes.includes(`${t}_`)) fail(all.c, `「すべてのツールの保存内容を消す」の一覧にツール ${t} の接頭辞 ${t}_ が無い`);
     notes.push(`「保存した内容をすべて消す」ボタン: ${resetButtons.length} ページ（プライバシーポリシーの一括消去: 接頭辞 ${all.prefixes.length}・旧キー ${all.legacy.length}）`);
   }
+}
+
+// Q-019: 広告の条件の判定（/for/kaigo/ に載る道具も不可）。審査中なので結果は全部「不可」として扱い、内訳だけメモに出す
+{
+  const kaigo = await get(`${BASE}for/kaigo/`);
+  const kaigoLinks = new Set();
+  for (const m of String(kaigo.body || '').matchAll(/href="([^"#?]+)"/g)) {
+    try { kaigoLinks.add(new URL(m[1], `${BASE}for/kaigo/`).pathname); } catch { /* 読めない href は飛ばす */ }
+  }
+  for (const f of adFacts) if (kaigoLinks.has(f.p) && f.p !== '/for/kaigo/') f.reasons.push('/for/kaigo/ に載る道具');
+  const ok = adFacts.filter((f) => f.reasons.length === 0);
+  const by = {};
+  for (const f of adFacts) for (const r of f.reasons) by[r] = (by[r] || 0) + 1;
+  notes.push(`広告の条件（Q-019 の準備）: 計算では可 ${ok.length}・不可 ${adFacts.length - ok.length}（${Object.entries(by).map(([k, v]) => `${k} ${v}`).join('・')}）。審査中なので全部「不可」として扱う（広告の script は戻さない）`);
 }
 
 // 6. 法令・公式の値の確認日（README「共通の確認テスト」の「確認日の期限」）
