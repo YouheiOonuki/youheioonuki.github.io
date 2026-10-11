@@ -3,8 +3,6 @@
   "newCount": 6,
   "pages": [
     {"path": "/easy-split/quick/", "date": "2026-10-11", "title": "割り勘（スマホ版）", "section": "atsumari", "priority": 4, "aliases": ["割り勘 スマホ", "1人いくら"], "name": "割り勘（スマホ版）", "note": "合計と人数だけで 1 人いくら", "related": ["/easy-split/", "/easy-split/kakeibo/"]},
-    {"path": "/hade/", "date": "2026-10-11", "title": "ド派手版", "section": "asobu", "priority": 2, "aliases": ["派手", "ネタ", "演出"], "name": "ド派手版", "note": "計算はまじめ、演出だけ派手", "related": ["/hade/nenmatsu/", "/seido-keisan/nenmatsu/"]},
-    {"path": "/hade/nenmatsu/", "date": "2026-10-11", "title": "年末調整（ド派手版）", "section": "asobu", "priority": 2, "aliases": ["年末調整 ネタ", "還付 演出"], "name": "年末調整（ド派手版）", "note": "還付額がスロットで止まる", "related": ["/seido-keisan/nenmatsu/", "/hade/"]},
     {"path": "/line/", "date": "2026-10-09", "title": "LINE で計算する（返信版）", "section": "oya", "priority": 2, "aliases": ["LINE", "ライン", "LINEで計算"], "name": "LINE で計算", "note": "送ると計算して返信", "related": ["/seido-keisan/kogaku-ryoyohi/", "/seido-keisan/nenkin-kuriage/", "/gengo/"]},
     {"path": "/post/", "date": "2026-10-10", "title": "作ってほしい道具を投書", "section": "kurashi", "priority": 2, "aliases": ["要望", "投書", "リクエスト", "作ってほしい"], "name": "作ってほしい道具を投書", "note": "1 行で要望を送る", "related": ["/line/", "/otasuke/"]},
     {"path": "/lifeplan/", "date": "2026-10-03", "title": "ライフプラン 簡易シミュレーション", "short": "ライフプラン", "section": "kurashi", "priority": 3, "aliases": ["家計", "老後資金", "教育費"], "chip": "ライフプラン", "name": "ライフプラン", "note": "家計の先行きを試算", "related": ["/loan-sim/", "/easy-split/kakeibo/", "/seido-keisan/nenkin-kuriage/"]},

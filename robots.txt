@@ -34,4 +34,3 @@ Sitemap: https://yorozu-craft.com/tameshite/sitemap.xml
 Sitemap: https://yorozu-craft.com/unplugged/sitemap.xml
 Sitemap: https://yorozu-craft.com/henkan/sitemap.xml
 Sitemap: https://yorozu-craft.com/ai-log/sitemap.xml
-Sitemap: https://yorozu-craft.com/hade/sitemap.xml
