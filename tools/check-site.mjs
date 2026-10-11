@@ -92,6 +92,7 @@ const REVIEW_NO_AD_PAGES = new Set([
   '/unplugged/', '/unplugged/en/',
   '/henkan/', '/henkan/diff/', '/henkan/json/', '/henkan/csv/', '/henkan/zenkaku/', '/henkan/pdf/',
   '/ai-log/', '/ai-log/en/',
+  '/print/',               // 無料の印刷物のセット（K173）。介護施設に配る案内のページで、広告を置かない
   // ナビゲーション・運営情報の画面（Google のポリシー「ナビゲーション・アラート目的の画面には広告を置かない」に合わせる。2026-10-04）
   '/', '/all/', '/en/', '/about.html', '/privacy-policy.html', '/en/about.html', '/en/privacy-policy.html',
 ]);
@@ -228,7 +229,7 @@ const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).
 // ツールの sitemap は /<ツール>/sitemap.xml。ドメイン直下の /sitemap.xml（トップ自身）は除く
 const toolsInRobots = new Set(sitemaps.map(s => path(s).split('/').filter(Boolean)).filter(seg => seg.length >= 2).map(seg => seg[0]));
 for (const t of toolsOnTop) if (!toolsInRobots.has(t)) fail('robots.txt', `トップに載っている ${t} の Sitemap が無い`);
-// トップに載せないツール（sitemap には載る）。あほらし館は AdSense の結果が出るまでトップの外（ROADMAP 7.46.1）。結果が出たら消して pages.json に足す
+// トップに載せないツール（sitemap には載る）。5000兆円欲しい館は AdSense の結果が出るまでトップの外（ROADMAP 7.46.1）。結果が出たら消して pages.json に足す
 const NOT_ON_TOP = new Set(['hade']);
 for (const t of toolsOnTop) if (NOT_ON_TOP.has(t)) fail('index.html', `${t} は AdSense の結果が出るまでトップに載せない（NOT_ON_TOP）`);
 for (const t of toolsInRobots) if (!toolsOnTop.has(t) && !NOT_ON_TOP.has(t)) fail('index.html', `robots.txt にある ${t} がトップのツール一覧に無い`);
