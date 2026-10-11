@@ -16,6 +16,7 @@ const META_ONLY_PAGES = new Set([
   '/hoshizora-sanpo/',     // プラネタリウムの全画面の本体
   '/todofuken-quiz/',      // こどもが遊ぶ画面（決定 D18: 広告は保護者向けの guide.html だけ）
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
+  '/easy-split/quick/',    // 割り勘のスマホ版（K176）。縦 1 画面（390×844）に収める画面なので広告を置かない。広告はいつもの版・使い方のページ
   '/gakushu-print/anki/',  // 暗記カード（作る・めくるが同じ画面。D201。広告は使い方ページ）
   '/gakushu-print/tokei/', // 時計の読み方（こどもが遊ぶ画面）
   '/seido-keisan/en/high-cost-medical/', '/seido-keisan/en/high-cost-medical/guide.html', // 高額療養費の英語版（日本語版に合わせて広告なし）
