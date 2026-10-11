@@ -21,6 +21,7 @@
 
 /* いまの時期: 強調色を使う唯一の場所 */
 .yt-season { list-style: none; display: grid; gap: var(--sp-2); }
+.yt-next { margin: var(--sp-2) 0 0; font-size: 0.95rem; }
 .yt-season a { display: block; min-height: var(--tap); background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 6px var(--sp-3); color: var(--accent); text-decoration: none; line-height: 1.4; }
 .yt-season strong { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 @media (hover: hover) { .yt-season a:hover strong { text-decoration-thickness: 3px; } }
