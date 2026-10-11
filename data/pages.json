@@ -52,7 +52,7 @@
     {"path": "/otasuke/tokei/", "date": "2026-09-25", "title": "日めくり大時計", "section": "oya", "priority": 5, "aliases": ["置き時計", "デジタル時計"], "name": "大時計", "note": "タブレットを置き時計に", "related": ["/otasuke/tejun/", "/otasuke/kigo/"]},
     {"path": "/otasuke/tejun/", "date": "2026-09-25", "title": "親のスマホ手順カード", "section": "oya", "priority": 5, "aliases": ["スマホ 使い方", "LINE"], "chip": "手順カード", "name": "手順カード"},
     {"path": "/otasuke/shakyo/", "date": "2026-09-25", "title": "写経用紙を印刷（般若心経）", "section": "oya", "priority": 5, "aliases": ["般若心経"], "chip": "写経"},
-    {"path": "/otasuke/reizoko/", "date": "2026-09-25", "title": "冷蔵庫に貼る紙 3 枚", "section": "oya", "priority": 5, "aliases": ["救急情報", "服薬カレンダー", "血圧記録"], "chip": "冷蔵庫の紙"},
+    {"path": "/otasuke/reizoko/", "date": "2026-09-25", "title": "冷蔵庫に貼る紙 4 枚", "section": "oya", "priority": 5, "aliases": ["救急情報", "服薬カレンダー", "血圧記録", "QR"], "chip": "冷蔵庫の紙"},
     {"path": "/otasuke/notore/", "date": "2026-09-25", "title": "脳トレプリント（大人向け・大きな字）", "section": "oya", "priority": 6, "aliases": ["脳トレ", "大人の脳トレ"], "chip": "脳トレ", "name": "脳トレプリント", "note": "大きな字の脳トレ", "related": ["/quiz-hiroba/showa/", "/otasuke/shakyo/", "/otasuke/kigo/"]},
     {"path": "/otasuke/kigo/", "date": "2026-09-25", "title": "季語カレンダー", "section": "oya", "priority": 5, "aliases": ["季語", "俳句"], "chip": "季語"},
     {"path": "/otasuke/honmono/", "date": "2026-09-25", "title": "このメール・SMS は本物？", "section": "oya", "priority": 5, "aliases": ["詐欺", "フィッシング"], "name": "本物のメールか", "note": "メールの送信元を読む", "related": ["/otasuke/tejun/", "/otasuke/daicho/"]},
