@@ -318,6 +318,9 @@ await pool([...pages], 6, async (url) => {
   const meta = count(html, new RegExp(`name="google-adsense-account"\\s+content="${ADSENSE_ID}"`, 'g'));
   const script = count(html, new RegExp(`adsbygoogle\\.js\\?client=${ADSENSE_ID}`, 'g'));
   if (meta !== 1) fail(p, `AdSense の meta が ${meta} 個（1 個のはず）`);
+  // ホーム画面に置ける形（yorozu-plans ROADMAP 7.41.2 K179、D309 の (a)）: どのページも manifest の link を 1 つ（道具の manifest か root の /manifest.webmanifest）
+  const manifests = (html.match(/<link rel="manifest" href="[^"]+">/g) || []).length;
+  if (manifests !== 1) fail(p, `manifest の link が ${manifests} 個（1 個のはず。K179）`);
   if (isMetaOnly(p)) { if (script !== 0) fail(p, '広告なしのページ（全画面の本体・高齢者向け）に広告スクリプトがある'); }
   else if (REVIEW_NO_AD_PAGES.has(p)) { if (script !== 0) fail(p, 'AdSense 審査中は広告 script を外すページ（REVIEW_NO_AD_PAGES）に広告スクリプトがある'); }
   else if (script !== 1) fail(p, `AdSense のスクリプトが ${script} 個（1 個のはず）`);
