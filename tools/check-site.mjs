@@ -208,10 +208,12 @@ if (!sitemaps.length) fail('robots.txt', 'Sitemap の行が無い');
 
 const pages = new Set([BASE, BASE + 'about.html', BASE + 'privacy-policy.html']);
 const toolsWithEn = new Set(); // sitemap に /<ツール>/en/ を載せているツール
+const unindexed = new Set(); // sitemap に URL が 0 件のツール = 配るが索引しない（D310 の hade）。robots の行は配信の一覧（tools/deploy）なので残る
 for (const sm of sitemaps) {
   const r = await get(sm);
   if (r.status !== 200) { fail(path(sm), `sitemap が ${r.status}`); continue; }
   const tool = path(sm).split('/').filter(Boolean).length >= 2 ? path(sm).split('/')[1] : null;
+  if (tool && !/<loc>/.test(r.body)) unindexed.add(tool);
   for (const m of r.body.matchAll(/<loc>([^<]+)<\/loc>/g)) {
     const loc = toBase(m[1].trim());
     pages.add(loc);
@@ -228,7 +230,7 @@ const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).
 // ツールの sitemap は /<ツール>/sitemap.xml。ドメイン直下の /sitemap.xml（トップ自身）は除く
 const toolsInRobots = new Set(sitemaps.map(s => path(s).split('/').filter(Boolean)).filter(seg => seg.length >= 2).map(seg => seg[0]));
 for (const t of toolsOnTop) if (!toolsInRobots.has(t)) fail('robots.txt', `トップに載っている ${t} の Sitemap が無い`);
-for (const t of toolsInRobots) if (!toolsOnTop.has(t)) fail('index.html', `robots.txt にある ${t} がトップのツール一覧に無い`);
+for (const t of toolsInRobots) if (!toolsOnTop.has(t) && !unindexed.has(t)) fail('index.html', `robots.txt にある ${t} がトップのツール一覧に無い`);
 
 // 2b. 英語のトップ（/en/）の一覧と、sitemap に英語ページ（/<ツール>/en/）を載せているツールが一致しているか（README「ツールを追加するとき」23）
 // ルートの sitemap.xml に /en/ が載っているときだけ確かめる（英語のトップを公開する前の本番でも通るように）
