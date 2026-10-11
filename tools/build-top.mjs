@@ -4,7 +4,7 @@
 // データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 最大 3 ページと理由）
 // 欄:
 //   search   … 検索欄（端末の中だけで絞る。top.js）       season … いまの時期（作った日の月。ページを開いた月が違えば top.js が入れ替える）
-//   sections … 用途の節（各節 priority の上位 3 行、残りは <details>。7.24.1）   all    … すべての道具（/all/。節ごとに全行）
+//   sections … 用途の節（各節 priority の上位 VISIBLE 行、残りは <details>。新しいツールの節を NEW_TOOLS_BEFORE の前に。7.24.1・D323）   all … すべての道具（/all/）
 //   data     … 検索の一覧と季節表の JSON（top.js が読む）  new-tools … 新しいツール（公開日の新しい順に newCount 件）
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -52,14 +52,14 @@ export function newToolsHtml(data, base = './', rows = newest(data)) {
 // ---- 節（ROADMAP 7.24.1「行とチップの選び方」）----
 // 1 ページ ＝ 1 用途。節（section）はページごとに持つ。note（一言）のあるページが行の候補
 // 行の並び: pin を先に、priority の降順、同点は 入口ページ（/<ツール>/）＞ 子ページ、次に公開日の古い方（同じ日は pages.json の順。7.24.2 の 2）。
-//         上位 3 が行、残りは「ほかに N 件」
-// チップ: 節の先頭の行だけ（7.24.2 の 3。2〜3 行目の子ページは入口ページで届く）。その行の related（その節で人が次に行きやすい 3 つ）。
+//         上位 VISIBLE（第 2 版で 5）が行、残りは「ほかに N 件」
+// チップ: 節の先頭から CHIP_ROWS 行（第 2 版 D323 で 0。7.24.2 の 3 では 1）。その行の related（その節で人が次に行きやすい 3 つ）。
 //         3 つに満たなければ同じ節のページを priority の順で埋める。
 //         同じ節で行に出ているページと先のチップは出さない。チップに出たページは「ほかに」から外す（1 つの節に 1 回: 行かチップのどちらか）
 //         「ほかに」の行のチップは related のうち、その節にまだ出ていないものだけ（埋めない）
-export const VISIBLE = 3;
+export const VISIBLE = 5;   // 節ごとに見せる行（第 2 版 D323。残りは「ほかに」と /all/）
 // チップを出す行の数（節の先頭から）。規則で 1（7.24.2 の 3。全体 3 画面（2,532px）を優先。2 にすると 2,800px 前後: 2026-10-03 の実測）
-export const CHIP_ROWS = 1;
+export const CHIP_ROWS = 0;   // 第 2 版は節の行を 5 にしたのでチップの行を出さない（スマホの高さ。D323）
 const rowName = (p) => p.name || label(p);
 export const isEntry = (path) => /^\/[^/]+\/$/.test(path);
 export const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (isEntry(b.path) - isEntry(a.path)) || (a.date < b.date ? -1 : a.date > b.date ? 1 : a.i - b.i);
@@ -117,17 +117,27 @@ function sectionBlock(s, base, allHref, more) {
   const pad = '        ';
   const shown = s.rows.slice(0, VISIBLE), rest = s.rows.slice(VISIBLE);
   const head = allHref
-    ? `      <div class="yt-head"><h2 id="${s.id}-h">${esc(s.name)}</h2><a href="${allHref}#${s.id}">${more.all}</a></div>`
+    ? `      <div class="yt-head"><h2 id="${s.id}-h">${esc(s.name)}</h2><a href="${allHref}#${s.id}">${rest.length && more.restLink ? `<span class="yt-wide">${more.all}</span><span class="yt-narrow">${more.restLink(rest.length)}</span>` : more.all}</a></div>`
     : `      <h2 id="${s.id}-h">${esc(s.name)}</h2>`;
   const det = rest.length
     ? `\n      <details>\n        <summary>${more.other(rest.length)}</summary>\n        <ul class="yt-rows">\n${rest.map((r) => rowHtml(r, base, pad + '  ', more.icon)).join('\n')}\n        </ul>\n      </details>`
     : '';
   return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n${head}\n      <ul class="yt-rows">\n${shown.map((r) => rowHtml(r, base, pad, more.icon)).join('\n')}\n      </ul>${det}\n    </section>`;
 }
-const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件` };
+// restLink: スマホでは「ほかに」の折りたたみを出さず、見出しのリンク（/all/ のその節）を「ほかに N 件 →」と読ませる（第 2 版 D323。2.5 画面に収める）
+const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件`, restLink: (n) => `ほかに ${n} 件 →` };
 const EN = { icon: false, all: 'See all', other: (n) => `${n} more` };
+// 新しいツールの節は「親・家族」の前に置く（第 2 版 D323: 戻ってきた人が増えたものをすぐ見る）。中に new-tools の印を持つので apply が中身を入れ直せる
+export const NEW_TOOLS_BEFORE = 'oya';
+export function newToolsSection(data, base = './') {
+  return `    <section class="yt-sec" id="new" aria-labelledby="new-h">
+      <div class="yt-head"><h2 id="new-h">新しいツール</h2><a href="${base}all/">すべての道具（一覧・印刷）</a></div>
+      <!-- 公開日の新しい順に 6 件（data/pages.json から。check-site が最新かを確かめる） -->
+      ${newToolsHtml(data, base)}
+    </section>`;
+}
 export function sectionsHtml(data, base = './') {
-  return sectionsJa(data).map((s) => sectionBlock(s, base, `${base}all/`, JA)).join('\n');
+  return sectionsJa(data).map((s) => (s.id === NEW_TOOLS_BEFORE ? newToolsSection(data, base) + '\n' : '') + sectionBlock(s, base, `${base}all/`, JA)).join('\n');
 }
 
 // 英語トップの節（行は英語ページ。チップなし）

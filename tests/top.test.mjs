@@ -101,20 +101,30 @@ test('作った欄が data と同じ（node tools/build-top.mjs 済み）', () =
   }
 });
 
-test('トップの構造: 節 7・各節の表示 3 行まで・残りは details・チップ 3 つまで', () => {
+test('トップの構造（第 2 版 D323）: 節 7 の順・各節の表示 5 行まで・残りは details と見出しの「ほかに N 件 →」・新しいツールは「親・家族」の前・行にチップなし', () => {
   const secs = sectionsJa(data);
-  assert.equal(secs.length, 7);
+  assert.deepEqual(secs.map((s) => s.id), ['kurashi', 'manabi', 'oya', 'atsumari', 'asobu', 'henkan', 'it']);
   const html = read('index.html');
+  const at = (id) => html.indexOf(`<section class="yt-sec" id="${id}"`);
+  assert.ok(at('new') > at('manabi') && at('new') < at('oya'), '新しいツールは「親・家族」の前');
   for (const s of secs) {
-    const block = html.slice(html.indexOf(`<section class="yt-sec" id="${s.id}"`), html.indexOf('</section>', html.indexOf(`id="${s.id}"`)));
+    const block = html.slice(at(s.id), html.indexOf('</section>', at(s.id)));
     const shown = block.split('<details>')[0];
-    assert.ok((shown.match(/class="yt-name"/g) || []).length <= 3, s.id);
+    assert.ok((shown.match(/class="yt-name"/g) || []).length <= 5, s.id);
+    assert.doesNotMatch(shown, /yt-chips/, s.id + ': 見える行にチップを出さない');
     assert.equal((block.match(/class="yt-name"/g) || []).length, s.rows.length, s.id);
-    if (s.rows.length > 3) assert.match(block, /<details>\s*<summary>ほかに \d+ 件<\/summary>/);
+    if (s.rows.length > 5) {
+      assert.match(block, /<details>\s*<summary>ほかに \d+ 件<\/summary>/);
+      assert.match(block, new RegExp(`<span class="yt-narrow">ほかに ${s.rows.length - 5} 件 →</span>`), s.id + ': スマホの見出しのリンク');
+    }
     assert.match(block, new RegExp(`<h2 id="${s.id}-h">`));
-    for (const r of s.rows) assert.ok(r.chips.length <= 3);
     for (const r of s.rows) assert.ok([...r.note].length <= 15, r.note);
   }
+  // 1 画面目: 使う人から 4・LINE で聞く・ホーム画面に追加
+  const first = html.slice(html.indexOf('<div class="yt-first">'), html.indexOf('<div class="yt-secs">'));
+  assert.equal((first.match(/<li><a href="\.\/(for\/[a-z]+|en)\/"/g) || []).length, 4);
+  assert.match(first, /<p class="yt-quick"><a href="\.\/line\/">LINE で聞く<\/a>/);
+  assert.match(first, /<details class="yt-home">/);
 });
 
 test('アクセシビリティ: スキップリンク・combobox/listbox・aria-live・lang と hreflang', () => {
