@@ -255,7 +255,7 @@ if (pages.has(BASE + 'en/')) {
   try { reg = JSON.parse(pj.body); } catch { fail('/data/pages.json', `読めない（${pj.status}）`); }
   if (reg) {
     const regPaths = new Set(reg.pages.map(p => p.path));
-    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en|all)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p);
+    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en|all)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p) && !NOT_ON_TOP.has(p.split('/')[1]); // NOT_ON_TOP のツールは pages.json にも載せない
     for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
     for (const p of regPaths) if (![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
     const want = newToolsHtml(reg);
