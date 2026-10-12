@@ -219,6 +219,7 @@ export function buildApiHtml(ds) {
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
   <style>body{margin:0}</style>
   <link rel="stylesheet" href="../legal.css">
   <!-- このページだけの追加（calendar-help.html と同じ型）: ダークモードと表 -->
