@@ -269,6 +269,9 @@ ${rows}
       </table>
       </div>
 
+      <h2 id="calc-api">計算の API（HTTP・MCP）</h2>
+      <p>サイトの計算機と同じ計算を、プログラムや AI の道具から呼べます。登録や鍵は要らず、入力は保存しません。計算の一覧（名前・入力・出典・計算に使ったファイルの commit）は <a href="https://yorozu-api.oonuki-youhei.workers.dev/v1">/v1</a> にあり、各計算は <code>/v1/&lt;名前&gt;</code> で呼びます。MCP は <code>https://yorozu-api.oonuki-youhei.workers.dev/mcp</code> です。結果は目安で、どの結果にも出典と確認日が付きます。</p>
+
       <h2 id="use">使うときに</h2>
       <ul>
         <li>確認日は出典の原文を確かめた日、生成日はファイルの中身が変わった日です。制度の値は改正で変わるので、判断には出典の原文を確かめてください。</li>
