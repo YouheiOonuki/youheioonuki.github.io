@@ -1,6 +1,7 @@
 // agent 向けの読み口（yorozu-plans ROADMAP 7.17 の K133）: /llms.txt と /api/index.html・/api/index.json を書き出す
-//   node tools/build-agent.mjs            書き出す（本番の sitemap・ページ・データを読む）
-//   node tools/build-agent.mjs --verify   書き出したファイルと本番のデータが食い違っていないかだけを確かめる（終了コード 1 で知らせる）
+// サイトのビルド（yorozu-plans tools/deploy/build.ps1）が、組み立てた配信フォルダから毎回作る（yorozu-plans 7.70 D342。手で作り直す人を置かない）:
+//   AGENT_SITE_DIR=<dist> AGENT_OUT=<dist> node tools/build-agent.mjs   配信フォルダの robots.txt・sitemap・ページ・データを読んで、配信フォルダに書く
+//   node tools/build-agent.mjs            本番を読んで、このリポジトリの直下に書く（手で試すとき。生成物は git に入れない）
 // 手で直さない。ツールの一覧は本番の robots.txt → 各 sitemap.xml → 各ページの <title> と meta description から、
 // データの一覧は下の DATASETS の各ファイルの中の license・checked・generated・source から作る。
 // データを足したら DATASETS に 1 行足して、走らせ直す。robots.txt は変えない（7.17: 全部許可のまま）。
@@ -29,7 +30,15 @@ export const DATASETS = [
 ];
 
 const local = process.env.AGENT_LOCAL || '';
+const siteDir = process.env.AGENT_SITE_DIR || '';   // 配信フォルダ（ビルドの dist）。あれば本番の代わりにここを読む
 async function get(url) {
+  if (siteDir && url.startsWith(SITE)) {
+    let p = url.slice(SITE.length).split('?')[0];
+    if (!p || p.endsWith('/')) p += 'index.html';
+    const f = join(siteDir, ...p.split('/'));
+    if (existsSync(f)) return readFileSync(f, 'utf8');
+    throw new Error(url + ' → 配信フォルダに無い');
+  }
   const r = await fetch(url, { headers: { 'user-agent': 'yorozu-craft build-agent (+https://yorozu-craft.com/llms.txt)' } });
   if (!r.ok) throw new Error(url + ' → ' + r.status);
   return r.text();
@@ -127,6 +136,7 @@ export function buildLlms(groups, ds) {
   L.push('- データ（下の「データ」）は CC0 1.0 で、ファイルの中に license・checked（確認日）・generated（生成日）・source（出典の URL）があります。認証なし・CORS は `Access-Control-Allow-Origin: *` で、ブラウザや agent から直接読めます。');
   L.push('- 引用・リンクに連絡は要りません。運営者情報: ' + SITE + 'about.html');
   L.push('- このファイルは tools/build-agent.mjs が本番の sitemap とデータから書き出したものです（https://github.com/YouheiOonuki/youheioonuki.github.io）。');
+  L.push('- 作成日: ' + new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10) + '（サイトのビルドのたびに作り直す）');
   L.push('');
   L.push('## データ（CC0）');
   L.push('');
@@ -303,20 +313,14 @@ ${rows}
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const ds = await readDatasets();
   const bad = problems(ds);
-  if (process.argv.includes('--verify')) {
-    // 書き出したファイルが今のデータと同じか（データの checked・generated が変わったら書き出し直す）
-    const now = existsSync(join(root, 'api/index.json')) ? readFileSync(join(root, 'api/index.json'), 'utf8') : '';
-    if (now !== buildApiJson(ds)) bad.push('api/index.json が今のデータと違う。node tools/build-agent.mjs を実行する');
-    for (const b of bad) console.error(b);
-    if (bad.length) process.exit(1);
-    console.log('OK: データ ' + ds.length + ' 件');
-  } else {
+  {
     if (bad.length) { for (const b of bad) console.error(b); process.exit(1); }
     const groups = await readTools();
-    mkdirSync(join(root, 'api'), { recursive: true });
-    writeFileSync(join(root, 'llms.txt'), buildLlms(groups, ds));
-    writeFileSync(join(root, 'api/index.json'), buildApiJson(ds));
-    writeFileSync(join(root, 'api/index.html'), buildApiHtml(ds));
+    const out = process.env.AGENT_OUT || root;
+    mkdirSync(join(out, 'api'), { recursive: true });
+    writeFileSync(join(out, 'llms.txt'), buildLlms(groups, ds));
+    writeFileSync(join(out, 'api/index.json'), buildApiJson(ds));
+    writeFileSync(join(out, 'api/index.html'), buildApiHtml(ds));
     console.log('llms.txt・api/index.json・api/index.html を書き出した（データ ' + ds.length + ' 件、ページ ' + groups.reduce((a, g) => a + g.pages.length, 0) + ' 件）');
   }
 }
