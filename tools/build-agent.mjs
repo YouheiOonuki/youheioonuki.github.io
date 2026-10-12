@@ -106,7 +106,8 @@ export function problems(ds) {
 }
 
 // ツールの一覧: 本番の sitemap にある「/ で終わるページ」（入口・道具・読みもの）。トップ・英語のトップ・用途別の入口は別に並べる
-export async function readTools() {
+// own: この script 自身が書き出すページ（/api/）の HTML。配信フォルダにはまだ無いので、読む代わりに渡す
+export async function readTools(own = {}) {
   const robots = await get(SITE + 'robots.txt');
   const maps = [...robots.matchAll(/^Sitemap:\s*(\S+)/gm)].map((m) => m[1]);
   const groups = [];
@@ -116,7 +117,7 @@ export async function readTools() {
     const set = new Set(urls);
     const pages = [];
     for (const u of urls.filter((x) => x.endsWith('/'))) {
-      const html = await get(u);
+      const html = own[u] ?? await get(u);
       const title = decode((html.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || '');
       const desc = decode((html.match(/<meta name="description" content="([^"]*)"/) || [])[1] || '');
       pages.push({ url: u, title, desc, guide: set.has(u + 'guide.html') ? u + 'guide.html' : null, en: /\/en\//.test(u.slice(SITE.length - 1)) });
@@ -315,7 +316,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const bad = problems(ds);
   {
     if (bad.length) { for (const b of bad) console.error(b); process.exit(1); }
-    const groups = await readTools();
+    const groups = await readTools({ [SITE + 'api/']: buildApiHtml(ds) });
     const out = process.env.AGENT_OUT || root;
     mkdirSync(join(out, 'api'), { recursive: true });
     writeFileSync(join(out, 'llms.txt'), buildLlms(groups, ds));
