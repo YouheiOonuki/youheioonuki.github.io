@@ -45,12 +45,12 @@
   <main>
     <article>
       <h1>作ってほしい道具を投書</h1>
-      <p class="lead">「こんな道具がほしい」「ここが使いにくい」を、1 つの欄に書いて送ってください（200 字まで）。</p>
 
-      <p class="note">名前や連絡先は書かないでください。書かれていても返事はしません。不具合のときは、道具の名前と、何をしたらどうなったかを書いてください。</p>
+      <!-- data-keep: 個人情報を書かせない注意（返事をしない旨も）。送る欄の手前に置くと決めた文 -->
+      <p class="note" data-keep>名前や連絡先は書かないでください。書かれていても返事はしません。不具合のときは、道具の名前と、何をしたらどうなったかを書いてください。</p>
 
       <form id="post-form" class="post-form">
-        <label for="post-body">送る文</label>
+        <label for="post-body">送る文（「こんな道具がほしい」「ここが使いにくい」など。200 字まで）</label>
         <textarea id="post-body" name="body" maxlength="200" rows="5" required></textarea>
         <fieldset class="post-kind">
           <legend>種類（選ばなくても送れます）</legend>
@@ -67,7 +67,8 @@
       </form>
 
       <h2 id="data">送った文の扱い</h2>
-      <ul>
+      <!-- data-keep: 集める情報の開示（何を保存し、いつ消し、何に使うか）。送る画面に置く -->
+      <ul data-keep>
         <li>送った文は、運営者が道具を作る・直すためにだけ読みます。</li>
         <li>保存するのは、送った文・日時・どのページから来たか・ページの言語だけです。名前・連絡先・IP アドレスは保存しません。</li>
         <li>保存した文は 1 年たつと自動で消します。</li>
