@@ -11,6 +11,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { servePath } from './serve-path.mjs';
 
 const require = createRequire(import.meta.url);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -22,15 +23,17 @@ const { PDFDocument } = require(path.join(PROJECTS, 'henkan/vendor/pdf-lib/pdf-l
 const out = path.join(ROOT, (process.argv.includes('--out') ? process.argv[process.argv.indexOf('--out') + 1] : 'print/noutore-reku-2026-11.pdf'));
 const PORT = 8790;
 
-// /<リポジトリ>/… を Claude\Projects\<リポジトリ>\… に
+// /<リポジトリ>/… を Claude\Projects\<リポジトリ>\… に。配るのは使う 3 つのリポジトリの中だけで、待つのは 127.0.0.1 だけ
+// （K191 段 2: 全部の口で待ち、Projects の全体と ../ の先まで配っていたので、組み立ての間は LAN から鍵や私的な repo が読めた）
+const HOSTS = [`127.0.0.1:${PORT}`, `localhost:${PORT}`];
 const types = { '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
+const refused = [];
 const server = http.createServer((q, r) => {
-  const p = decodeURIComponent(q.url.split(/[?#]/)[0]);
-  let f = path.join(PROJECTS, p);
-  if (f.endsWith(path.sep) || p.endsWith('/')) f = path.join(f, 'index.html');
+  const f = HOSTS.includes(q.headers.host) ? servePath(PROJECTS, q.url) : null;
+  if (!f) { refused.push(q.url); r.writeHead(403); r.end(); return; }
   fs.readFile(f, (e, d) => { if (e) { r.writeHead(404); r.end(); return; } r.writeHead(200, { 'content-type': types[path.extname(f)] || 'text/html; charset=utf-8' }); r.end(d); });
-}).listen(PORT);
-const BASE = `http://localhost:${PORT}`;
+}).listen(PORT, '127.0.0.1');
+const BASE = `http://127.0.0.1:${PORT}`;
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 
@@ -105,4 +108,5 @@ fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, await book.save());
 await browser.close();
 server.close();
+if (refused.length) console.log('配らなかった要求', refused.length, '件:', [...new Set(refused)].slice(0, 10).join(' '));
 console.log(JSON.stringify(counts), '計', book.getPageCount(), 'ページ', '→', path.relative(ROOT, out), Math.round(fs.statSync(out).size / 1024) + ' KB');
