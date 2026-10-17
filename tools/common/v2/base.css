@@ -1,6 +1,9 @@
 /* yorozu-common v2 土台の層（yorozu-plans ROADMAP 7.98 D369、DESIGN.md）。すべてのページ（見せる・遊ぶ・世界を持つページも）に当てる。
    見た目（色・字・面）は持たない: リセット、押せる高さ、フォーカスの輪、入力の字の大きさ、読み上げの隠し字、動きを減らす設定、印刷で広告を出さない。
-   色の値は各ページか共通の皮（skin.css）が --focus-ring・--focus・--muted・--error を決める。無ければ下の既定 */
+   色の値は各ページか共通の皮（skin.css）が --focus-ring・--focus・--muted・--error を決める。無ければ下の既定
+   出どころ（v1 から引き継ぎ。2026-10-03 確認、yorozu-plans 企画書 59）: デジタル庁デザインシステム https://design.digital.go.jp/dads/ のコンテンツを加工して作成
+   （フォーカスの輪・字の大きさの下限・入力欄のエラー表示。値は @digital-go-jp/design-tokens 2.0.1、MIT, (c) 2023 デジタル庁）。
+   GOV.UK Frontend 6.5.1（MIT, (c) Crown copyright）の考え方: visually-hidden、エラーの文の前に読み上げ用の語 */
 :root { --tap: 44px; --sp-1: 0.25rem; --sp-2: 0.5rem; --sp-3: 0.75rem; --sp-4: 1rem; --sp-6: 1.5rem; --sp-8: 2rem; --fs-s: 0.875rem; --fs-m: 1rem; --fs-l: 1.25rem; --fs-xl: 1.625rem; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 [hidden] { display: none !important; }
