@@ -98,11 +98,15 @@
       else input.removeAttribute('aria-activedescendant');
     }
     function close() { lb.hidden = true; input.setAttribute('aria-expanded', 'false'); setActive(-1); }
+    // 一覧を描く。近い道具（near）は語で当たった行の後に「近い道具」の区切りを置いて出す（2 段。D365）
     function paint() {
-      lb.innerHTML = results.map(function (r, k) {
-        return '<li role="none"><a role="option" aria-selected="false" tabindex="-1" id="' + lb.id + '-' + k + '" href="' + esc(base + r.p.slice(1)) + '">' +
+      var html = '', sep = false;
+      results.forEach(function (r, k) {
+        if (r.near && !sep) { sep = true; html += '<li role="presentation" class="yt-near-h">' + (en ? 'Closest tools' : '近い道具') + '</li>'; }
+        html += '<li role="none"><a role="option" aria-selected="false" tabindex="-1" id="' + lb.id + '-' + k + '"' + (r.near ? ' data-near=""' : '') + ' href="' + esc(base + r.p.slice(1)) + '">' +
           '<strong>' + esc(r.s || r.t) + '</strong><span>' + esc(r.g) + '</span></a></li>';
-      }).join('');
+      });
+      lb.innerHTML = html;
     }
     function render() {
       var q = input.value;
@@ -114,19 +118,30 @@
       if (empty) empty.hidden = !(norm(q) && !has);
       active = -1; input.removeAttribute('aria-activedescendant');
       if (status) status.textContent = !norm(q) ? '' : has ? (en ? results.length + (results.length === 1 ? ' result' : ' results') : results.length + ' 件') : (en ? 'No results' : '見つかりません');
-      // 語が 1 件も当たらないことだけを箱に知らせる（K166）。文を送るかどうかと通信は top-find.js（トップだけが読む）が持つ。
-      // show は近い道具をこの一覧の形で出す。入力が変わっていたら何もしない
-      if (!has && norm(q) && typeof CustomEvent === 'function') {
-        box.dispatchEvent(new CustomEvent('yt-nohit', { detail: { q: q, show: function (found) {
+      // 打った語と、語で当たった件数・名前とぴったり一致したかを箱に知らせる（K166・D365）。文を送るかどうかと通信は top-find.js（トップだけが読む）が持つ。
+      // show は近い道具を語の結果の下に足す（同じ道具は重ねない）。入力が変わっていたら何もしない
+      if (norm(q) && typeof CustomEvent === 'function') {
+        var nq = norm(q);
+        var exact = results.some(function (r) { return norm(r.t) === nq || norm(r.s || '') === nq; });
+        box.dispatchEvent(new CustomEvent('yt-query', { detail: { q: q, hits: results.length, exact: exact, show: function (found) {
           if (input.value !== q || !found.length) return;
-          results = found;
+          var seen = {};
+          results.forEach(function (r) { seen[r.p] = 1; });
+          var add = found.filter(function (r) { return !seen[r.p]; }).map(function (r) { r.near = true; return r; });
+          if (!add.length) return;
+          results = results.concat(add);
           paint();
           lb.hidden = false; input.setAttribute('aria-expanded', 'true');
           if (empty) empty.hidden = true;
-          if (status) status.textContent = en ? 'Closest tools: ' + found.length : '近い道具 ' + found.length + ' 件';
+          if (status) status.textContent = en ? results.length + ' results, including closest tools' : results.length + ' 件（近い道具を含む）';
         } } }));
       }
     }
+    // 選んだ行を箱に知らせる（近い道具から進んだ数を top-find.js が数える。D367 find_click）
+    function picked(a) {
+      if (a && typeof CustomEvent === 'function') box.dispatchEvent(new CustomEvent('yt-pick', { detail: { near: a.hasAttribute('data-near'), href: a.getAttribute('href') } }));
+    }
+    lb.addEventListener('click', function (e) { picked(e.target.closest('[role="option"]')); });
     input.addEventListener('input', render);
     input.addEventListener('keydown', function (e) {
       var n = results.length;
@@ -135,7 +150,7 @@
       else if (e.key === 'Enter') {
         e.preventDefault(); // 送信しない（form は無いが、念のため）
         var i = active >= 0 ? active : (n ? 0 : -1);
-        if (i >= 0) location.href = lb.querySelectorAll('[role="option"]')[i].href;
+        if (i >= 0) { var opt = lb.querySelectorAll('[role="option"]')[i]; picked(opt); location.href = opt.href; }
       } else if (e.key === 'Escape') { if (!lb.hidden) close(); else { input.value = ''; render(); } }
     });
     input.addEventListener('blur', function () { setTimeout(function () { if (!box.contains(document.activeElement)) close(); }, 150); });

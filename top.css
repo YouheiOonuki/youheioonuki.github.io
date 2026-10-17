@@ -56,3 +56,5 @@
   .yt-search, .yt-skip { display: none; }
   .yt-all a { min-height: 0; }
 }
+/* 検索の 2 段目「近い道具」の区切り（K166・D365）。押せない見出し */
+.yt-search .yt-near-h { padding: var(--sp-2) var(--sp-3) var(--sp-1); font-size: var(--fs-s); font-weight: 700; color: var(--muted); border-top: 1px solid var(--border); }
