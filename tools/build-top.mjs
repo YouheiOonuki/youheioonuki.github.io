@@ -45,10 +45,11 @@ export function newest(data) {
   return data.pages.map((p, i) => ({ ...p, i })).sort(byDate).slice(0, n);
 }
 
-// 新しいツール: 横 1 行のチップ（自動で流れない）。base はページから見たサイトの根（トップは ./）
-export function newToolsHtml(data, base = './', rows = newest(data)) {
-  const items = rows.map((p) => `        <li><a href="${base}${p.path.slice(1)}">${esc(p.short || shortTitle(p.title))}</a></li>`);
-  return `${BEGIN}\n      <ul class="yt-chips yt-new">\n${items.join('\n')}\n      </ul>\n      ${END}`;
+// 新しいツール: 他の節と同じ行の形（アイコン・名前・一言。D360、7.100）。base はページから見たサイトの根（トップは ./）。
+// アイコンは日本語のページだけ（節の行と同じ。英語の名前は長く、アイコンを足すと 1 行に収まらない）
+export function newToolsHtml(data, base = './', rows = newest(data), icon = true) {
+  const items = rows.map((p) => `        <li><a class="yt-name" href="${base}${p.path.slice(1)}">${icon ? YT.iconHtml(p.path, base, true) : ''}${esc(p.short || shortTitle(p.title))}</a>${p.note ? ` <span class="yt-note">${esc(p.note)}</span>` : ''}</li>`);
+  return `${BEGIN}\n      <ul class="yt-rows yt-new">\n${items.join('\n')}\n      </ul>\n      ${END}`;
 }
 
 // 行の名前の前に道具のアイコン（top.js の iconHtml。リポジトリの favicon.svg を 20px。節・「ほかに」・/all/ の行は lazy、いまの時期は lazy なし）。
@@ -135,7 +136,7 @@ export const NEW_TOOLS_BEFORE = 'oya';
 export function newToolsSection(data, base = './') {
   return `    <section class="yt-sec" id="new" aria-labelledby="new-h">
       <div class="yt-head"><h2 id="new-h">新しいツール</h2><a href="${base}all/">すべての道具（一覧・印刷）</a></div>
-      <!-- 公開日の新しい順に 6 件（data/pages.json から。check-site が最新かを確かめる） -->
+      <!-- 公開日の新しい順に newCount 件（data/pages.json から。check-site が最新かを確かめる） -->
       ${newToolsHtml(data, base)}
     </section>`;
 }
@@ -270,7 +271,7 @@ export function buildAll(data, season, date = new Date()) {
       h = replaceRegion(h, 'sections', '\n' + sectionsEnHtml(data, '../') + '\n    ', 'en/index.html');
       h = replaceRegion(h, 'data', dataHtml(data, season, 'en'), 'en/index.html');
       const b = h.indexOf(BEGIN), e = h.indexOf(END);
-      return h.slice(0, b) + newToolsHtml(data, '../', enNewest(data)) + h.slice(e + END.length);
+      return h.slice(0, b) + newToolsHtml(data, '../', enNewest(data), false) + h.slice(e + END.length);
     },
     'all/index.html': (h) => {
       h = replaceRegion(h, 'search', searchHtml('ja', '../'), 'all/index.html');
