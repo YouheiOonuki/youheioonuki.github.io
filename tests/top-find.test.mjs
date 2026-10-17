@@ -75,6 +75,6 @@ test('top.js は通信しないまま、語が 0 件のときだけ合図を出�
   assert.match(read('index.html'), /<script src="\.\/top-find\.js" defer><\/script>/);
   assert.match(read('en/index.html'), /<script src="\.\.\/top-find\.js" defer><\/script>/);
   for (const f of ['all/index.html', 'for/it/index.html', 'for/kaigo/index.html', 'for/teachers/index.html']) assert.doesNotMatch(read(f), /top-find\.js/, f);
-  assert.match(read('privacy-policy.html'), /7\.11 トップの検索で近い道具を探す/);
-  assert.match(read('en/privacy-policy.html'), /7\.11 Finding similar tools from the top-page search/);
+  assert.match(read('privacy-policy.html'), /7\.11 近い道具を探す（トップの検索・LINE 版・メール）/);
+  assert.match(read('en/privacy-policy.html'), /7\.11 Finding similar tools \(top-page search, LINE version, email\)/);
 });
