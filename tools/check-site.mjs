@@ -455,6 +455,10 @@ await pool([...internalLinks.keys()], 6, async (u) => {
   const r = await get(u);
   if (r.status >= 300 && r.status < 400) return; // GitHub Pages の末尾スラッシュ補完など
   if (r.status !== 200) fail(internalLinks.get(u), `リンク切れ ${path(u)}（${r.status}）`);
+  // sitemap に無い HTML は noindex（yorozu-plans D372。全数検査の母集団は sitemap なので、外にあって検索に出るページを作らない）
+  else if (/<html\b/i.test(r.body) && !pages.has(u) && !pages.has(u.replace(/index\.html$/, '')) && !/<meta\b[^>]*name="robots"[^>]*noindex/i.test(r.body)) {
+    fail(path(u), `sitemap に無いのに noindex でない（sitemap に載せるか、<meta name="robots" content="noindex"> を付ける。D372）`);
+  }
 });
 
 // 5. ツールごとの決まり（404.html・manifest の id・sw.js のキャッシュ名）
