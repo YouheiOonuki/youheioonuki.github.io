@@ -104,7 +104,8 @@
       results.forEach(function (r, k) {
         if (r.near && !sep) { sep = true; html += '<li role="presentation" class="yt-near-h">' + (en ? 'Closest tools' : '近い道具') + '</li>'; }
         html += '<li role="none"><a role="option" aria-selected="false" tabindex="-1" id="' + lb.id + '-' + k + '"' + (r.near ? ' data-near=""' : '') + ' href="' + esc(base + r.p.slice(1)) + '">' +
-          '<strong>' + esc(r.s || r.t) + '</strong><span>' + esc(r.g) + '</span></a></li>';
+          '<strong>' + esc(r.s || r.t) + '</strong><span>' + esc(r.g) + '</span>' +
+          (r.near ? '<span class="visually-hidden">' + (en ? '(closest tool)' : '（近い道具）') + '</span>' : '') + '</a></li>';
       });
       lb.innerHTML = html;
     }
@@ -132,6 +133,7 @@
           if (!add.length) return;
           results = results.concat(add);
           paint();
+          if (active >= 0) setActive(active);   // 描き直しても、↓↑ で選んでいた行の印を残す（近い道具は後ろに足すだけなので番号はずれない）
           lb.hidden = false; input.setAttribute('aria-expanded', 'true');
           if (empty) empty.hidden = true;
           if (status) status.textContent = en ? results.length + ' results, including closest tools' : results.length + ' 件（近い道具を含む）';

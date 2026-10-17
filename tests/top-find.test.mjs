@@ -100,3 +100,10 @@ test('top.js は通信しないまま、打った語と件数・ぴったりか�
   assert.match(read('privacy-policy.html'), /道具の名前と同じ語（名前の頭が同じものを含む）のときは送りません/);
   assert.match(read('en/privacy-policy.html'), /When your words are a tool's name \(or the start of one\), nothing is sent/);
 });
+
+test('accessibility-review の 3 点: 近い道具に読み上げの印、描き直しても選んだ行を残す、選んだ行に本文の色の線', () => {
+  const top = read('top.js');
+  assert.match(top, /r\.near \? '<span class="visually-hidden">' \+ \(en \? '\(closest tool\)' : '（近い道具）'\)/);
+  assert.match(top, /paint\(\);\s*if \(active >= 0\) setActive\(active\);/);
+  assert.match(read('top.css'), /\[role="option"\]\[aria-selected="true"\] \{ border-left: 4px solid var\(--text\); padding-left: calc\(var\(--sp-3\) - 4px\); \}/);
+});
