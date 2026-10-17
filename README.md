@@ -67,7 +67,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `tools/check-site.mjs` / `.github/workflows/check-site.yml` | サイト横断チェックと、その週1回の自動実行（下の「共通の確認テスト」） |
 | `data/pages.json` / `data/season.json` / `tools/build-top.mjs` / `top.js` / `top.css` / `all/index.html` / `tests/top.test.mjs` | トップの構成（yorozu-plans ROADMAP 7.23。2026-10-03）。`data/pages.json` は道具と子ページの一覧・公開日・別名（`aliases`、検索だけに使う）・用途の節（`sections`）・英語トップの行（`en`）。`data/season.json` は「いまの時期」（月 → 最大 3 ページと理由 1 文と出典）。`tools/build-top.mjs` がそこからトップ・英語トップ・すべての道具（`/all/`）・用途別の入口の欄（`<!-- top:<欄>:begin -->`〜`end` と `new-tools`）を作る（手で書かない。`--check` で最新か）。`top.js` は検索（端末の中だけで絞る。送信しない）と月の入れ替え、`top.css` は共有の部品。`top.js` の `ROOT_DIRS`（`en`・`all`・`line`）は、道具のリポジトリではなくこのリポジトリの中にある最上位のフォルダ: トップの行のアイコンは本体の `favicon.svg` を指し、check-site は道具として数えない（sitemap・404・保存内容の一覧を求めない）。本体に最上位のページを足すときはここに足す（`/line/` は yorozu-plans 企画書 76）。テストは `node --test tests/*.test.mjs` |
 | `tools/top/priority.mjs` / `tools/top/ledger.mjs` / `data/priority-input.json` / `tests/priority.test.mjs` | トップの行の順（`priority`。yorozu-plans ROADMAP 7.24.1。2026-10-03）。下の「トップの行の順（priority）」 |
-| `tools/common/yorozu-common.css` / `tools/sync-common.mjs` | 共通の部品とトークンの正本と、それを各ツール・このリポジトリのページに配る・確かめるスクリプト（下の「共通の部品とトークン」） |
+| `tools/common/v2/base.css`・`skin.css` / `tools/sync-common.mjs` | 共通の土台と皮の正本と、それを各ツール・このリポジトリのページに配る・確かめるスクリプト（下の「共通の部品とトークン」） |
 | `LICENSE` | MIT License（著作権者 Youhei Oonuki） |
 
 ## ツールを追加するとき
@@ -205,16 +205,19 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 |---|---|
 | 新しいツールの作り方 | 非公開の雛形リポジトリ `yorozu-template`（GitHub の Template repository）から作る。`<head>` の雛形（OGP・JSON-LD・AdSense・ビーコン・アイコン）、`guide.html`、`404.html`、`LICENSE`、`.nojekyll`、`test.yml`、PWA 用の `sw.js`・manifest は雛形に入っているので、上の手順のコード片を毎回コピーしなくてよい |
 | ビルドスクリプト | 共通のビルドは持たない。素の HTML・CSS・JS をリポジトリ直下から公開する（単一 HTML へのビルドは撤回）。同梱ライブラリがあるツールだけ、必要なら `build.mjs` を持つ |
-| 共通 CSS | ドメイン直下の共通 CSS は読まない（Service Worker が他ツールのファイルを自分のキャッシュに入れてしまうのを避けるため）。色・字・余白のトークンと部品は `tools/common/yorozu-common.css` を正本にし、各ツールの `style.css` の先頭に**同じ中身を写して**持つ（下の「共通の部品とトークン」。2026-10-03） |
+| 共通 CSS | ドメイン直下の共通 CSS は読まない（Service Worker が他ツールのファイルを自分のキャッシュに入れてしまうのを避けるため）。色・字・余白のトークンと部品は `tools/common/v2/` を正本にし、各ツールの `style.css` の先頭に**同じ中身を写して**持つ（下の「共通の部品とトークン」。v1 2026-10-03、v2 2026-10-18） |
 | OGP / JSON-LD | 雛形の `index.html`（`WebApplication`）と `guide.html`（`FAQPage`）で固定。`meta keywords`・`meta author` は入れない |
 | 共通の確認テスト | このリポジトリの `tools/check-site.mjs` を GitHub Actions で週 1 回実行し、全ツールの公開ページを機械的に確かめる（下の「共通の確認テスト」） |
 | フォント | 端末のフォント（「ツールを追加するとき」の 9。経緯は下） |
 
-## 共通の部品とトークン（2026-10-03。yorozu-plans 企画書 59・束 A）
+## 共通の部品とトークン（v1 2026-10-03 企画書 59・束 A、v2 2026-10-18 企画書 98・K192 段 3）
 
-色・字の大きさ・余白のトークンと、フォーカスの輪・リンクの下線・入力欄の枠とエラー・読み上げだけの文字・印刷で広告を消す規則を `tools/common/yorozu-common.css` 1 つにまとめ、各ツールの `style.css`（このリポジトリでは `legal.css`・`index.html`・`en/index.html`）の先頭に同じ中身を写す。出どころはデジタル庁デザインシステム（コンテンツを加工して作成。トークンは `@digital-go-jp/design-tokens` 2.0.1、MIT）と GOV.UK Frontend 6.5.1（MIT）。色は和紙風のまま、Web フォントは読まない。
+見た目の正典は yorozu-plans の `docs/DESIGN.md`。正本は `tools/common/v2/` の 2 つ —— **土台** `base.css`（リセット・押せる高さ・フォーカスの輪・入力の字の大きさ・エラー・読み上げだけの文字・動きを減らす・印刷で広告を消す。色を持たない）と **皮** `skin.css`（B「静かな道具」のトークンと部品）。`sync-common.mjs` が 2 つを土台 → 皮の順に包んで、各ツールの `style.css`（このリポジトリでは `legal.css`・`index.html`・`en/index.html`）の先頭に同じ中身を写す。出どころはデジタル庁デザインシステム（コンテンツを加工して作成。トークンは `@digital-go-jp/design-tokens` 2.0.1、MIT）と GOV.UK Frontend 6.5.1（MIT）。Web フォントは読まない。
 
-- 写した範囲は `/* yorozu-common:begin v1 … */` 〜 `/* yorozu-common:end */`。**この間は手で直さない**。ツール固有の色・大きさは `end` の後に書く（後に書いた `:root` や規則が勝つ）
+- **皮を外すページ**（見せる・遊ぶと「世界」を持つページ、D369）は `<html data-skin="base">`。どのページかは yorozu-plans の `docs/content-classes.csv` の「皮」の列が決め、`tools/content/skin-attr.mjs` が付ける・確かめる。皮の規則はすべて `:where(html:not([data-skin="base"]))` で始まる（テストが見る）
+- v1 から替えたとき、v1 の見た目（和紙の色・body・リンク）を各ファイルの `end` の直後に `/* yorozu-v1-carry … */` で持ち込んだ。段 3 の 2〜4 で各ページを載せ替えるときに消す（残りは `--status` が数える）
+
+- 写した範囲は `/* yorozu-common:begin v2 … */` 〜 `/* yorozu-common:end */`。**この間は手で直さない**。ツール固有の色・大きさは `end` の後に書く（後に書いた `:root` や規則が勝つ）
 - 正本を直したら: `node tools/sync-common.mjs --write <ファイルかリポジトリのフォルダ ...>` で置き換え、`--check` で同じかを確かめる
 - まだ入っていないツールに入れる: `node tools/sync-common.mjs --insert <リポジトリのフォルダ ...>`（`style.css` の最初のコメントの後に入れる。ツールの規則が後に来るので、入れるだけでは見た目はほぼ変わらない）。入れたら、そのツールの `measure_fold.cjs`・テスト・画面の撮影で前後を比べ、PWA は `sw.js` のキャッシュ名を上げる（stale-while-revalidate のツールは古い CSS が 1 回出るため）。`style.css` の無いリポジトリ（ADSearch の紹介ページなど）は手で入れる
 - 全体の状況: `node tools/sync-common.mjs --status <各リポジトリのフォルダ ...>`（済・古い・未を 1 行ずつ）

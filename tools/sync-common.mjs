@@ -1,4 +1,4 @@
-// 共通の部品とトークン（tools/common/yorozu-common.css）を各ツールに配る・確かめる（yorozu-plans 企画書 59、束 A）
+// 共通の土台と皮（tools/common/v2/base.css・skin.css、yorozu-plans DESIGN.md）を各ツールに配る・確かめる（企画書 59 の束 A で v1、企画書 98 の K192 段 3 で v2）
 // 使い方:
 //   node tools/sync-common.mjs --check <ファイルかフォルダ ...>   … 配った版と同じかを確かめる（違えば終了コード 1）
 //   node tools/sync-common.mjs --write <ファイルかフォルダ ...>   … begin〜end を正本で置き換える
@@ -7,14 +7,24 @@
 // フォルダを渡すと、その下の .css と .html（node_modules・.git を除く）のうち印のあるものを対象にする。
 // 印: /* yorozu-common:begin … */ 〜 /* yorozu-common:end */。この間は手で直さない。ツール固有の上書きは end の後に書く
 // （後に書いた :root や規則が勝つので、入れるだけでは見た目は変わらない。トークンの重複は配ったあとに消してよい）
+// v1 から v2 に替えたとき、v1 の見た目（和紙の色・body・リンク）は各ファイルの end の直後に /* yorozu-v1-carry … */〜/* yorozu-v1-carry:end */ で持ち込んだ。
+// 段 3 の 2〜4 で各ページを v2 のトークンに載せ替えるときに消す。--status が残りの数を出す
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const MASTER = join(dirname(fileURLToPath(import.meta.url)), 'common', 'yorozu-common.css');
+const V2 = join(dirname(fileURLToPath(import.meta.url)), 'common', 'v2');
 const BEGIN = '/* yorozu-common:begin';
 const END = '/* yorozu-common:end */';
-export const master = () => readFileSync(MASTER, 'utf8').trim();
+const CARRY = '/* yorozu-v1-carry';
+// 正本: 土台 → 皮 の順に begin〜end で包む（値は v2 の 2 つのファイルだけが持つ）
+export const master = () => [
+  '/* yorozu-common:begin v2 — サイト共通の土台と皮。正本は youheioonuki.github.io の tools/common/v2/base.css と skin.css（yorozu-plans DESIGN.md）。',
+  '   この begin〜end の間は手で直さない（tools/sync-common.mjs で全ツールに配る。ツール固有の上書きは end の後に書く） */',
+  readFileSync(join(V2, 'base.css'), 'utf8').trim(),
+  readFileSync(join(V2, 'skin.css'), 'utf8').trim(),
+  END,
+].join('\n');
 export const version = (text) => (text.match(/yorozu-common:begin (v\d+)/) || [])[1] || null;
 
 // begin から end までを取り出す（無ければ null）
@@ -58,7 +68,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       const stale = marked.filter(f => extract(readFileSync(f, 'utf8')).body !== block);
       const st = !marked.length ? '未' : stale.length ? '古い' : '済';
       n[st]++;
-      console.log(`${st}  ${t}${marked.length ? `（印のあるファイル ${marked.length}、古い ${stale.length}）` : existsSync(join(t, 'style.css')) ? '（style.css あり。--insert で入れる）' : '（style.css なし。手で入れる）'}`);
+      const carry = marked.filter(f => readFileSync(f, 'utf8').includes(CARRY)).length;
+      console.log(`${st}  ${t}${marked.length ? `（印のあるファイル ${marked.length}、古い ${stale.length}${carry ? `、v1 の持ち込み ${carry}` : ''}）` : existsSync(join(t, 'style.css')) ? '（style.css あり。--insert で入れる）' : '（style.css なし。手で入れる）'}`);
     }
     console.log(`済 ${n.済}・古い ${n.古い}・未 ${n.未}`);
     process.exit(n.古い || n.未 ? 1 : 0);
