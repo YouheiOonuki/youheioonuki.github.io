@@ -6,7 +6,7 @@
 //   search   … 検索欄（端末の中だけで絞る。top.js）       season … いまの時期（作った日の月。ページを開いた月が違えば top.js が入れ替える）
 //   sections … 用途の節（各節 priority の上位 VISIBLE 行、残りは <details>。新しいツールの節を NEW_TOOLS_BEFORE の前に。7.24.1・D323）   all … すべての道具（/all/）
 //   data     … 検索の一覧と季節表の JSON（top.js が読む）  new-tools … 新しいツール（公開日の新しい順に newCount 件）
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
@@ -28,8 +28,12 @@ const esc = YT.esc;
 export const shortTitle = (t) => t.replace(/（[^）]*）/g, '').trim();
 const label = (p) => p.short || shortTitle(p.title);
 
+// 近い道具（data/near.json。yorozu-ai near-tools.mjs が索引から作る。D368）も読み、チップの元にする（related は 7.98 で消した）
 export function loadPages(root = ROOT) {
-  return JSON.parse(readFileSync(join(root, 'data', 'pages.json'), 'utf8'));
+  const data = JSON.parse(readFileSync(join(root, 'data', 'pages.json'), 'utf8'));
+  const nf = join(root, 'data', 'near.json');
+  if (existsSync(nf)) data.near = JSON.parse(readFileSync(nf, 'utf8')).near;
+  return data;
 }
 export function loadSeason(root = ROOT) {
   return JSON.parse(readFileSync(join(root, 'data', 'season.json'), 'utf8'));
@@ -56,7 +60,7 @@ export function newToolsHtml(data, base = './', rows = newest(data)) {
 // チップ: 節の先頭から CHIP_ROWS 行（第 2 版 D323 で 0。7.24.2 の 3 では 1）。その行の related（その節で人が次に行きやすい 3 つ）。
 //         3 つに満たなければ同じ節のページを priority の順で埋める。
 //         同じ節で行に出ているページと先のチップは出さない。チップに出たページは「ほかに」から外す（1 つの節に 1 回: 行かチップのどちらか）
-//         「ほかに」の行のチップは related のうち、その節にまだ出ていないものだけ（埋めない）
+//         「ほかに」の行のチップは近い道具（data/near.json、D368）のうち、その節にまだ出ていないものだけ（埋めない）。related は 7.98 で消した
 export const VISIBLE = 5;   // 節ごとに見せる行（第 2 版 D323。残りは「ほかに」と /all/）
 // チップを出す行の数（節の先頭から）。規則で 1（7.24.2 の 3。全体 3 画面（2,532px）を優先。2 にすると 2,800px 前後: 2026-10-03 の実測）
 export const CHIP_ROWS = 0;   // 第 2 版は節の行を 5 にしたのでチップの行を出さない（スマホの高さ。D323）
@@ -72,9 +76,7 @@ export function checkPages(data) {
     if (!Array.isArray(p.aliases)) throw new Error(`${p.path} に aliases が無い`);
     if (p.note != null) {
       if ([...p.note].length > 15) throw new Error(`${p.path} の一言が 15 字より長い: ${p.note}`);
-      if (!Array.isArray(p.related)) throw new Error(`行の候補 ${p.path} に related が無い`);
-      if (p.related.length > 3) throw new Error(`${p.path} の related が 3 つより多い`);
-      for (const r of p.related) if (!paths.has(r) || r === p.path) throw new Error(`${p.path} の related ${r} が pages に無い`);
+      if (p.related) throw new Error(`${p.path} に related がある（7.98 で消した。近い道具は data/near.json）`);
     } else if (p.related || p.pin) throw new Error(`${p.path} に note が無いのに related か pin がある`);
   }
   for (const s of data.sections) {
@@ -91,11 +93,12 @@ export function sectionsJa(data) {
     const cands = inSec.filter((p) => p.note != null);
     const top = cands.slice(0, VISIBLE);
     const used = new Set(top.map((p) => p.path));
+    const nearOf = (p) => ((data.near && data.near[p.path]) || []).map((n) => n.url).filter((u) => map.has(u) && u !== p.path);
     const take = (list, chips) => { for (const r of list) { if (chips.length >= 3) break; if (!used.has(r)) { chips.push(r); used.add(r); } } };
-    const topChips = top.map((p, n) => { const c = []; if (n < CHIP_ROWS) { take(p.related, c); take(inSec.map((x) => x.path), c); } return c; });
+    const topChips = top.map((p, n) => { const c = []; if (n < CHIP_ROWS) { take(nearOf(p), c); take(inSec.map((x) => x.path), c); } return c; });
     const rest = cands.slice(VISIBLE).filter((p) => !used.has(p.path));
     rest.forEach((p) => used.add(p.path));
-    const restChips = rest.map((p) => { const c = []; take(p.related, c); return c; });
+    const restChips = rest.map((p) => { const c = []; take(nearOf(p), c); return c; });
     const mk = (p, chips) => ({ path: p.path, name: rowName(p), note: p.note, date: p.date, priority: p.priority, pin: !!p.pin, i: p.i,
       chips: chips.map((c) => ({ path: c, name: map.get(c).chip || rowName(map.get(c)) })) });
     const rows = [...top.map((p, n) => mk(p, topChips[n])), ...rest.map((p, n) => mk(p, restChips[n]))];

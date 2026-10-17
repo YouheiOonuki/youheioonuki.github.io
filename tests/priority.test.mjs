@@ -20,14 +20,14 @@ const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (ent
 // index.html の節の塊（<section> 〜 </section>）
 const block = (html, id) => { const i = html.indexOf(`<section class="yt-sec" id="${id}"`); return html.slice(i, html.indexOf('</section>', i)); };
 
-test('pages.json: 全行に section・priority・aliases、行の候補（note あり）に related（3 つまで）', () => {
+test('pages.json: 全行に section・priority・aliases、related は無い（7.98 D368。近い道具は data/near.json）', () => {
   const ids = new Set(data.sections.map((s) => s.id));
   for (const p of data.pages) {
     assert.ok(ids.has(p.section), `${p.path} section`);
     assert.ok(Number.isInteger(p.priority) && p.priority >= 3 && p.priority <= 11, `${p.path} priority ${p.priority}`);   // 4 項の和（D323）
     assert.ok(Array.isArray(p.aliases) && p.aliases.length >= 1, `${p.path} aliases`);
     if (p.note != null) {
-      assert.ok(Array.isArray(p.related) && p.related.length >= 1 && p.related.length <= 3, `${p.path} related`);
+      assert.equal(p.related, undefined, `${p.path} related`);
       assert.ok([...p.note].length <= 15, p.note);
     }
   }
@@ -73,12 +73,12 @@ test('同じ節に同じページが 2 回出ない（行・チップ・ほか�
   }
 });
 
-test('チップ（第 2 版 D323）: 見える行には出さない。「ほかに」の行は related のうち、その節にまだ出ていないものだけ', () => {
+test('チップ（第 2 版 D323）: 見える行には出さない。「ほかに」の行は近い道具（near）のうち、その節にまだ出ていないものだけ', () => {
   const d = { sections: [{ id: 'x', name: 'X' }, { id: 'y', name: 'Y' }], pages: [
-    ...['a', 'b', 'c', 'd', 'e'].map((k, i) => ({ path: `/${k}/`, date: '2026-01-01', title: k, section: 'x', priority: 9 - i, aliases: [], note: k, related: ['/z/'] })),
-    { path: '/f/', date: '2026-01-01', title: 'F', section: 'x', priority: 4, aliases: [], note: 'f', related: ['/a/', '/z/'] },
+    ...['a', 'b', 'c', 'd', 'e'].map((k, i) => ({ path: `/${k}/`, date: '2026-01-01', title: k, section: 'x', priority: 9 - i, aliases: [], note: k })),
+    { path: '/f/', date: '2026-01-01', title: 'F', section: 'x', priority: 4, aliases: [], note: 'f' },
     { path: '/z/', date: '2026-01-01', title: 'Z', section: 'y', priority: 3, aliases: [] },
-  ] };
+  ], near: { '/f/': [{ url: '/a/' }, { url: '/z/' }] } };
   const [x] = sectionsJa(d);
   assert.deepEqual(x.rows.map((r) => r.path), ['/a/', '/b/', '/c/', '/d/', '/e/', '/f/']);
   for (const r of x.rows.slice(0, VISIBLE)) assert.deepEqual(r.chips, []);
@@ -157,10 +157,10 @@ test('同点の順: 入口ページ ＞ 子ページ、次に公開日の古い�
   // 先頭の行のチップは別の節の 3 ページで埋め、x の並びだけを見る
   const z = [1, 2, 3].map((n) => ({ path: `/z${n}/`, date: '2026-01-01', title: `Z${n}`, section: 'y', priority: 2, aliases: [] }));
   const d = { sections: [{ id: 'x', name: 'X' }, { id: 'y', name: 'Y' }], pages: [...z,
-    { path: '/k/new/', date: '2026-10-01', title: 'N', section: 'x', priority: 4, aliases: [], note: 'n', related: [] },
-    { path: '/k/old/', date: '2026-09-01', title: 'O', section: 'x', priority: 4, aliases: [], note: 'o', related: [] },
-    { path: '/k/', date: '2026-10-02', title: 'K', section: 'x', priority: 4, aliases: [], note: 'k', related: [] },
-    { path: '/hi/x/', date: '2026-10-03', title: 'H', section: 'x', priority: 5, aliases: [], note: 'h', related: z.map((p) => p.path) },
+    { path: '/k/new/', date: '2026-10-01', title: 'N', section: 'x', priority: 4, aliases: [], note: 'n' },
+    { path: '/k/old/', date: '2026-09-01', title: 'O', section: 'x', priority: 4, aliases: [], note: 'o' },
+    { path: '/k/', date: '2026-10-02', title: 'K', section: 'x', priority: 4, aliases: [], note: 'k' },
+    { path: '/hi/x/', date: '2026-10-03', title: 'H', section: 'x', priority: 5, aliases: [], note: 'h' },
   ] };
   assert.deepEqual(sectionsJa(d)[0].rows.map((r) => r.path), ['/hi/x/', '/k/', '/k/old/', '/k/new/']);
 });
