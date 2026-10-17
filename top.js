@@ -122,7 +122,8 @@
       // show は近い道具を語の結果の下に足す（同じ道具は重ねない）。入力が変わっていたら何もしない
       if (norm(q) && typeof CustomEvent === 'function') {
         var nq = norm(q);
-        var exact = results.some(function (r) { return norm(r.t) === nq || norm(r.s || '') === nq; });
+        // 名前（題名か短い名前）が打った語と同じか、その語で始まる（点 0・1）なら名前で探している（送らない）
+        var exact = results.some(function (r) { var sc = scoreTerm(r, nq); return sc !== null && sc <= 1; });
         box.dispatchEvent(new CustomEvent('yt-query', { detail: { q: q, hits: results.length, exact: exact, show: function (found) {
           if (input.value !== q || !found.length) return;
           var seen = {};

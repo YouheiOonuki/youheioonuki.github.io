@@ -97,6 +97,6 @@ test('top.js は通信しないまま、打った語と件数・ぴったりか�
   assert.match(read('en/index.html'), /<script src="\.\.\/top-find\.js" defer><\/script>/);
   for (const f of ['all/index.html', 'for/it/index.html', 'for/kaigo/index.html', 'for/teachers/index.html']) assert.doesNotMatch(read(f), /top-find\.js/, f);
   assert.match(read('privacy-policy.html'), /7\.11 近い道具を探す（トップの検索・LINE 版・メール）/);
-  assert.match(read('privacy-policy.html'), /道具の名前とぴったり同じ語のときは送りません/);
-  assert.match(read('en/privacy-policy.html'), /When your words are exactly a tool's name, nothing is sent/);
+  assert.match(read('privacy-policy.html'), /道具の名前と同じ語（名前の頭が同じものを含む）のときは送りません/);
+  assert.match(read('en/privacy-policy.html'), /When your words are a tool's name \(or the start of one\), nothing is sent/);
 });
