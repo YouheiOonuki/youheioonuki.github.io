@@ -308,12 +308,12 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     </section>
     <section class="yt-sec" id="new" aria-labelledby="new-h">
       <div class="yt-head"><h2 id="new-h">新しいツール</h2><a href="./all/">すべての道具（一覧・印刷）</a></div>
-      <!-- 公開日の新しい順に 6 件（data/pages.json から。check-site が最新かを確かめる） -->
+      <!-- 公開日の新しい順に newCount 件（data/pages.json から。check-site が最新かを確かめる） -->
       <!-- new-tools:begin -->
-      <ul class="yt-chips yt-new">
-        <li><a href="./easy-split/quick/">割り勘</a></li>
-        <li><a href="./otasuke/yasashii/">やさしい日本語に言い換え</a></li>
-        <li><a href="./post/">作ってほしい道具を投書</a></li>
+      <ul class="yt-rows yt-new">
+        <li><a class="yt-name" href="./easy-split/quick/"><img class="yt-ico" src="./easy-split/favicon.svg" alt="" width="20" height="20" loading="lazy" decoding="async">割り勘</a> <span class="yt-note">合計と人数だけで 1 人いくら</span></li>
+        <li><a class="yt-name" href="./otasuke/yasashii/"><img class="yt-ico" src="./otasuke/favicon.svg" alt="" width="20" height="20" loading="lazy" decoding="async">やさしい日本語に言い換え</a> <span class="yt-note">役所の文を短くふりがなつきに</span></li>
+        <li><a class="yt-name" href="./post/"><img class="yt-ico" src="./favicon.svg" alt="" width="20" height="20" loading="lazy" decoding="async">作ってほしい道具を投書</a> <span class="yt-note">1 行で要望を送る</span></li>
       </ul>
       <!-- new-tools:end -->
     </section>

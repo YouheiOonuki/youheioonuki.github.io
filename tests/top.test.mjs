@@ -92,6 +92,8 @@ test('新しいツール: pages.json の公開日から自動（newCount 件＝3
   const html = read('index.html');
   for (const p of newest(data)) assert.ok(html.includes(`href="./${p.path.slice(1)}"`), p.path);
   assert.equal(newest(data).length, 3);
+  // 他の節と同じ行の形: 名前（yt-name）と一言（pages.json の note）。D360・7.100
+  for (const p of newest(data)) assert.ok(html.includes(`<a class="yt-name" href="./${p.path.slice(1)}">`) && html.includes(`<span class="yt-note">${p.note}</span>`), p.path);
 });
 
 test('トップの窓（D366）: 問いの見出し・例の一行を aria-describedby で結ぶ。/all/ は「道具を探す」のまま', () => {
@@ -173,7 +175,7 @@ test('英語トップ: 同じ骨組み（検索・いまの時期・誰向け 3�
   assert.equal((h.match(/<section class="yt-sec" id="(life|learn|it)"/g) || []).length, 3);
   assert.equal((h.match(/<li><a href="#(life|learn|it)">/g) || []).length, 3);
   assert.match(h, /class="yt-season"/);
-  assert.match(h, /class="yt-chips yt-new"/);
+  assert.match(h, /class="yt-rows yt-new"/);
   for (const p of data.en.pages) assert.ok(h.includes(`href="..${p.path}"`), p.path);
 });
 
@@ -202,7 +204,8 @@ test('アイコン: 節・「ほかに」・/all/ の全行と「いまの時期
   };
   const row = /<li><a class="yt-name" href="([^"]+)">(<img class="yt-ico"[^>]*>)?/g;
   const top = read('index.html'), all = read('all/index.html');
-  assert.equal(check(top, row, true, 'index.html'), sectionsJa(data).reduce((n, s) => n + s.rows.length, 0));
+  // 節の行に、新しいツールの行（7.100 で同じ形に）を足した数
+  assert.equal(check(top, row, true, 'index.html'), sectionsJa(data).reduce((n, s) => n + s.rows.length, 0) + newest(data).length);
   assert.equal(check(all, row, true, 'all/index.html'), allRows(data).reduce((n, s) => n + s.items.length, 0));
   assert.equal(check(top, /<li><a href="([^"]+)"><strong>(<img class="yt-ico"[^>]*>)?/g, false, 'いまの時期'), 3);
   // 月が変わったときの入れ替え（top.js）も同じ形

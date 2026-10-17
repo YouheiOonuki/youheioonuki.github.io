@@ -48,11 +48,6 @@
 .yt-chips a::before { content: "→"; margin-right: 2px; color: var(--muted); text-decoration: none; }
 /* 「ほかに N 件」: 開閉の印 ▶ が見える折りたたみ（flex にすると印が消えて、ただの太字に見える。design-critique） */
 .yt-sec details > summary { min-height: var(--tap); padding-block: var(--sp-2); cursor: pointer; font-size: var(--fs-s); font-weight: 700; color: var(--text); border-top: 1px solid var(--border); }
-/* 新しいツール: 他の節と同じ縦の行（D360。横 1 行に詰めると PC で切れる） */
-.yt-new { display: block; flex-basis: 100%; }
-.yt-new li { border-top: 1px solid var(--border); }
-.yt-new a { display: flex; align-items: center; min-height: var(--tap); font-size: var(--fs-m); font-weight: 700; }
-.yt-new a::before { content: none; }
 /* すべての道具（/all/）: 1 画面目の節の目次と、節の見出しの「トップへ」 */
 .yt-toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-3); margin-top: var(--sp-2); }
 .yt-toc a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }
