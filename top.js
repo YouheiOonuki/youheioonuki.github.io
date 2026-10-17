@@ -98,19 +98,34 @@
       else input.removeAttribute('aria-activedescendant');
     }
     function close() { lb.hidden = true; input.setAttribute('aria-expanded', 'false'); setActive(-1); }
-    function render() {
-      var q = input.value;
-      results = search(index.rows, q, 8);
+    function paint() {
       lb.innerHTML = results.map(function (r, k) {
         return '<li role="none"><a role="option" aria-selected="false" tabindex="-1" id="' + lb.id + '-' + k + '" href="' + esc(base + r.p.slice(1)) + '">' +
           '<strong>' + esc(r.s || r.t) + '</strong><span>' + esc(r.g) + '</span></a></li>';
       }).join('');
+    }
+    function render() {
+      var q = input.value;
+      results = search(index.rows, q, 8);
+      paint();
       var has = results.length > 0;
       lb.hidden = !has;
       input.setAttribute('aria-expanded', has ? 'true' : 'false');
       if (empty) empty.hidden = !(norm(q) && !has);
       active = -1; input.removeAttribute('aria-activedescendant');
       if (status) status.textContent = !norm(q) ? '' : has ? (en ? results.length + (results.length === 1 ? ' result' : ' results') : results.length + ' 件') : (en ? 'No results' : '見つかりません');
+      // 語が 1 件も当たらないことだけを箱に知らせる（K166）。文を送るかどうかと通信は top-find.js（トップだけが読む）が持つ。
+      // show は近い道具をこの一覧の形で出す。入力が変わっていたら何もしない
+      if (!has && norm(q) && typeof CustomEvent === 'function') {
+        box.dispatchEvent(new CustomEvent('yt-nohit', { detail: { q: q, show: function (found) {
+          if (input.value !== q || !found.length) return;
+          results = found;
+          paint();
+          lb.hidden = false; input.setAttribute('aria-expanded', 'true');
+          if (empty) empty.hidden = true;
+          if (status) status.textContent = en ? 'Closest tools: ' + found.length : '近い道具 ' + found.length + ' 件';
+        } } }));
+      }
     }
     input.addEventListener('input', render);
     input.addEventListener('keydown', function (e) {
