@@ -73,7 +73,7 @@
     {"path": "/gakushu-print/booklet/", "date": "2026-09-25", "title": "おでかけ冊子", "section": "manabi", "priority": 8, "aliases": ["迷路", "点つなぎ"], "chip": "おでかけ冊子"},
     {"path": "/gakushu-print/angou/", "date": "2026-09-25", "title": "暗号メーカー", "section": "manabi", "priority": 8, "aliases": ["暗号"], "chip": "暗号"},
     {"path": "/gakko-keisan/timer/", "date": "2026-09-25", "title": "宿題タイマー", "section": "manabi", "priority": 7, "aliases": ["タイマー"], "chip": "タイマー", "name": "タイマー"},
-    {"path": "/gakko-keisan/shusseki/", "date": "2026-09-25", "title": "出席日数・欠課時数の計算（あと何回休めるか）", "section": "manabi", "priority": 7, "aliases": ["欠席", "単位"], "chip": "出席日数"},
+    {"path": "/gakko-keisan/shusseki/", "date": "2026-09-25", "title": "出席日数・欠課時数の計算（あと何回休めるか）", "section": "manabi", "priority": 7, "aliases": ["欠席", "単位", "留年"], "chip": "出席日数"},
     {"path": "/gakko-keisan/naishin/", "date": "2026-09-25", "title": "内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）", "section": "manabi", "priority": 10, "aliases": ["内申", "換算内申", "高校受験"], "chip": "内申点", "name": "内申点", "note": "都立の換算内申など", "related": ["/gakko-keisan/hensachi/", "/gakko-keisan/shusseki/", "/seido-keisan/koko-mushoka/"]},
     {"path": "/gakko-keisan/hensachi/", "date": "2026-09-25", "title": "偏差値の計算（順位の目安・5教科）", "section": "manabi", "priority": 8, "aliases": ["偏差値"], "chip": "偏差値", "name": "偏差値", "note": "点数から偏差値と順位", "related": ["/gakko-keisan/naishin/", "/seido-keisan/koko-mushoka/"]},
     {"path": "/gakko-keisan/atonannichi/", "date": "2026-09-25", "title": "○○まであと何日", "section": "manabi", "priority": 7, "aliases": ["カウントダウン"]},
