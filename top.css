@@ -16,6 +16,8 @@
 .yt-search [role="option"] span { font-size: var(--fs-s); color: var(--muted); }
 .yt-search [role="option"][aria-selected="true"] { background: var(--bg-2); text-decoration: underline; text-underline-offset: 3px; }
 @media (hover: hover) { .yt-search [role="option"]:hover { background: var(--bg-2); } }
+/* 選んだ行の印: 背景の差（1.2:1）だけでは見えないので、左に本文の色の線（検収役の accessibility-review、K166。強調色は「いまの時期」だけの決まり） */
+.yt-search [role="option"][aria-selected="true"] { border-left: 4px solid var(--text); padding-left: calc(var(--sp-3) - 4px); }
 .yt-empty { margin-top: var(--sp-1); }
 .yt-empty a { margin-left: var(--sp-2); display: inline-flex; align-items: center; min-height: var(--tap); }
 
@@ -56,3 +58,5 @@
   .yt-search, .yt-skip { display: none; }
   .yt-all a { min-height: 0; }
 }
+/* 検索の 2 段目「近い道具」の区切り（K166・D365）。押せない見出し */
+.yt-search .yt-near-h { padding: var(--sp-2) var(--sp-3) var(--sp-1); font-size: var(--fs-s); font-weight: 700; color: var(--muted); border-top: 1px solid var(--border); }
