@@ -109,74 +109,82 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 :where(html:not([data-skin="base"])) :where(.notice, [data-keep]) { border-left: 4px solid var(--text); background: var(--bg-2); padding: var(--sp-2) var(--sp-3); }
 :where(html:not([data-skin="base"])) :where(.fixed-bar) { position: sticky; bottom: 0; background: var(--card); border-top: 1px solid var(--border); padding: var(--sp-2) var(--sp-4); }
 /* yorozu-common:end */
-/* yorozu-v1-carry — v1 の共通（和紙の色、2026-09-23〜10-17）から、このファイルのページが使っていた見た目をそのまま持ち込んだ（yorozu-plans ROADMAP 7.99、K192 段 3 の 0）。
-   段 3 の 2〜4 でこのページを v2 のトークンに載せ替えるときに、yorozu-v1-carry:end まで消す */
-:root {
-  color-scheme: light dark;
-  --bg: #f0ebe0; --bg-2: #e6dfd0; --card: #faf6ee; --text: #3a3025; --muted: #6e604f;
-  --accent: #8b4513; --accent-soft: #f3e6d8; --border: #cfc0a0; --input-border: #857561; --shadow: rgba(58, 48, 37, 0.12);
-  --error: #ce0000; --ok: #197a4b; --focus: #ffd43d; --focus-ring: #000;
-  --font-ui: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-  --lh-body: 1.7; --lh-tight: 1.4; --radius: 8px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1c1814; --bg-2: #25201a; --card: #2b251e; --text: #ece4d6; --muted: #b9ab96;
-    --accent: #e0a066; --accent-soft: #3a2e22; --border: #4a3f33; --input-border: #8c7d68; --shadow: rgba(0, 0, 0, 0.4);
-    --error: #ff8a7a; --ok: #6fcf97; --focus-ring: #ffd43d; --focus: #000;
-  }
-}
-body { font-family: var(--font-ui); background: var(--bg); color: var(--text); line-height: var(--lh-body); }
-a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-@media (hover: hover) { a:hover { text-decoration-thickness: 3px; } }
-:where(input, textarea)::placeholder { color: var(--muted); opacity: 1; }
-.app-header > p { max-width: 40em; margin-left: auto; margin-right: auto; }
-/* yorozu-v1-carry:end */
 
-    /* ここから トップだけ（yorozu-plans ROADMAP 7.23「トップの構成」: 1 画面目に 屋号・検索・いまの時期・誰向け、2〜3 画面目に用途の節。部品は ./top.css） */
-    .site-head { padding: var(--sp-2) var(--sp-4) var(--sp-2); }
-    .site-head .lead { line-height: 1.5; }
+    /* ここから トップだけ（yorozu-plans ROADMAP 7.23「トップの構成」、K192 段 3 の 1: B「静かな道具」＋窓 D366・D360、DESIGN.md）。
+       色・字・角は yorozu-common v2 の皮のトークンだけ。部品（検索・時期・節の行）は ./top.css */
+    .site-head { background: var(--card); border-bottom: 1px solid var(--border); padding: var(--sp-2) var(--sp-4); }
     .site-head > div, main, footer > div { max-width: 960px; margin: 0 auto; }
     .site-head > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--sp-3); }
-    .site-head h1 { font-size: var(--fs-xl); line-height: var(--lh-tight); color: var(--text); }
+    .site-head h1 { font-size: 1.375rem; line-height: var(--lh-tight); color: var(--text); }
     .site-head .kana { font-size: var(--fs-s); color: var(--muted); }
-    .site-head .lang { margin-left: auto; display: inline-flex; align-items: center; min-height: var(--tap); color: var(--text); }
-    .site-head .lead { flex-basis: 100%; line-height: 1.5; max-width: 40em; }
+    .site-head .lang { margin-left: auto; display: inline-flex; align-items: center; min-height: var(--tap); }
+    /* 説明は屋号の下の行に（max-width で狭めると PC で屋号の行に並んでしまうので、右の余白で 1 行 40 字に） */
+    .site-head .lead { flex-basis: 100%; font-size: var(--fs-s); color: var(--muted); line-height: 1.5; padding-right: max(0px, calc(100% - 40em)); }
     footer p { max-width: 40em; }
     main { padding: 0 var(--sp-4) var(--sp-6); }
-    h2 { font-size: var(--fs-l); line-height: var(--lh-tight); margin: var(--sp-6) 0 var(--sp-2); }
-    .yt-first h2 { margin: var(--sp-2) 0 var(--sp-1); }
-    .yt-for { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); }   /* 使う人から 4 つを 1 行（第 2 版 D323） */
-    .yt-for a { display: flex; align-items: center; min-height: var(--tap); padding: 0 var(--sp-3); border: 1px solid var(--input-border); border-radius: var(--radius); color: var(--text); font-weight: 700; text-decoration: none; line-height: 1.3; }
+    h2 { margin: var(--sp-6) 0 var(--sp-2); }
+
+    /* 1 画面目: 窓（検索）の面と、いまの時期の面を分ける（design-critique: 1 枚に詰めると重い）。その下に使う人から 4・LINE・ホーム画面 */
+    .yt-first { margin-top: var(--sp-3); }
+    .yt-search, .yt-first > section:first-of-type { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-3) var(--sp-4); }
+    .yt-first > section:first-of-type { margin-top: var(--sp-2); }
+    .yt-search .yt-ask { display: block; font-size: 1.375rem; font-weight: 800; line-height: var(--lh-tight); color: var(--text); margin: 0; }
+    .yt-search .yt-hint { color: var(--muted); font-size: var(--fs-s); margin: 0 0 var(--sp-2); }
+    .yt-first h2 { font-size: var(--fs-m); color: var(--muted); margin: 0 0 var(--sp-1); }
+    /* 使う人から 4: チップ（間を空ける。つなげるとタブに見える。DESIGN 4 章） */
+    .yt-for { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); margin-top: var(--sp-3); }
+    .yt-for a { display: flex; justify-content: center; align-items: center; text-align: center; min-height: var(--tap); padding: 0 var(--sp-1); border: 1px solid var(--input-border); border-radius: var(--radius); background: var(--card); color: var(--text); font-weight: 700; text-decoration: none; line-height: 1.3; }
     @media (hover: hover) { .yt-for a:hover { text-decoration: underline; } }
-    .yt-sec { margin-top: var(--sp-1); }
-    .yt-sec .yt-head h2 { margin: 0; }
-    .yt-for { margin-top: var(--sp-3); }
-    .yt-for a { justify-content: center; text-align: center; padding: 0 var(--sp-1); }
-    /* 1 画面目の LINE とホーム画面（第 2 版 D323） */
-    .yt-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-2); margin-top: var(--sp-2); }
-    .yt-quick a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; }
-    .yt-quick span { font-size: var(--fs-s); color: var(--muted); }
-    .yt-home > summary { display: flex; align-items: center; min-height: var(--tap); cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    /* LINE とホーム画面: 副ボタン 2 つを同じ行に（D360。入口の画面に主ボタンは置かない、DESIGN 4 章） */
+    .yt-first { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--sp-2); }
+    .yt-first > .yt-search, .yt-first > section { grid-column: 1 / -1; }
+    .yt-quick { grid-column: 1; margin-top: var(--sp-2); }
+    .yt-quick span { display: none; }
+    .yt-home { grid-column: 2; margin-top: var(--sp-2); }
+    .yt-home[open] { grid-column: 1 / -1; }
+    .yt-quick a, .yt-home > summary { display: flex; justify-content: center; align-items: center; min-height: var(--tap); padding: 0 var(--sp-2); border: 1px solid var(--input-border); border-radius: var(--radius); background: var(--card); color: var(--text); font-weight: 700; text-decoration: none; text-align: center; line-height: 1.3; cursor: pointer; }
+    .yt-home > summary::-webkit-details-marker { display: none; }
     .yt-home p { font-size: var(--fs-s); margin: var(--sp-1) 0; }
-    /* スマホの節: 行を 2 列に、一言は出さない（2.5 画面に収める。第 2 版 D323）。PC は 1 列で一言つき */
-    @media (max-width: 719px) {
-      .yt-secs .yt-rows { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--sp-3); }
-      .yt-secs .yt-rows .yt-note { display: none; }
-      .yt-secs .yt-name { line-height: 1.3; }
-      .yt-secs .yt-sec h2 { font-size: var(--fs-m); }
-      .yt-secs .yt-sec { margin-top: var(--sp-1); }
-      .yt-secs .yt-sec > details, .yt-secs .yt-wide { display: none; }   /* 「ほかに」は見出しのリンク（/all/）で */
-    }
-    @media (min-width: 720px) { .yt-secs .yt-narrow { display: none; } }
-    footer { border-top: 1px solid var(--border); padding: var(--sp-1) var(--sp-4) var(--sp-2); color: var(--muted); }
+
+    /* 用途の節: 面（見出しは帯、行は 1px の線）。スマホは 1 列＋一言（D360） */
+    .yt-sec { margin-top: var(--sp-3); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 0 var(--sp-4) var(--sp-1); }
+    .yt-sec .yt-head h2 { margin: 0; font-size: var(--fs-m); }
+    .yt-head { min-height: var(--tap); }
+    footer { border-top: 1px solid var(--border); padding: var(--sp-1) var(--sp-4) var(--sp-2); color: var(--muted); margin-top: var(--sp-4); }
     footer nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-4); }
     footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); }
     footer small { font-size: var(--fs-s); }
+    @media (max-width: 719px) {
+      main { padding: 0 var(--sp-3) var(--sp-4); }
+      .yt-search, .yt-first > section:first-of-type { padding: var(--sp-2) var(--sp-3); }
+      .yt-sec { margin-top: var(--sp-2); padding: 0 var(--sp-3); }
+      .yt-secs .yt-sec > details, .yt-secs .yt-wide { display: none; }   /* 「ほかに」は見出しのリンク（/all/）で */
+      .yt-secs .yt-rows > li:has(.yt-chips) .yt-note { display: none; }   /* 子ページのチップがある行は、チップが行き先の説明を兼ねる */
+      footer nav { display: grid; grid-template-columns: 1fr 1fr; }
+    }
     @media (min-width: 720px) {
-      .yt-season { grid-template-columns: repeat(3, 1fr); }
-      .yt-for { grid-template-columns: repeat(4, 1fr); }
-      .yt-secs { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--sp-8); }
+      .yt-secs .yt-narrow { display: none; }
+      .yt-season { grid-template-columns: repeat(3, 1fr); gap: 0 var(--sp-4); }
+      .yt-season li + li { border-top: 0; border-left: 1px solid var(--border); padding-left: var(--sp-4); }
+      .yt-secs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3) var(--sp-4); align-items: start; }
+      .yt-sec { margin-top: 0; }
+      .yt-secs { margin-top: var(--sp-4); }
+    }
+    @media (min-width: 1000px) {
+      .site-head > div, main, footer > div { max-width: 1200px; }
+      /* 見出しの帯を 1 段に: 説明を屋号の横へ（ロゴから遠く右端に寄せない。design-critique）。帯が低くなり、節の行が 1 画面目に多く入る（PC の入口 40 以上、ACCEPTANCE K168） */
+      .site-head > div { flex-wrap: nowrap; align-items: center; gap: 0 var(--sp-4); }
+      .site-head .lead { order: 1; flex: 0 1 40em; padding-right: 0; }
+      .site-head .lang { order: 2; }
+      .yt-first { grid-template-columns: 1fr 1fr 1.2fr; column-gap: var(--sp-4); align-items: start; }
+      .yt-first > .yt-search { grid-column: 1 / 3; grid-row: 1; }
+      .yt-first > section:first-of-type { grid-column: 3; grid-row: 1 / 4; margin-top: 0; }
+      .yt-first > section:nth-of-type(2) { grid-column: 1 / 3; grid-row: 2; }
+      .yt-quick { grid-column: 1; grid-row: 3; }
+      .yt-home { grid-column: 2; grid-row: 3; }
+      .yt-first .yt-season { grid-template-columns: 1fr; }
+      .yt-first .yt-season li + li { border-left: 0; padding-left: 0; border-top: 1px solid var(--border); }
+      .yt-secs { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
   <link rel="stylesheet" href="./top.css">
@@ -197,9 +205,10 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
     <!-- 1 画面目（390×844 で 700px 以内）: 検索・いまの時期・誰向け。データから作る欄は node tools/build-top.mjs（手で書かない） -->
     <div class="yt-first">
       <!-- top:search:begin --><div class="yt-search" role="search" data-base="./">
-        <label for="yt-q">道具を探す</label>
-        <input id="yt-q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="yt-q-list" autocomplete="off" enterkeyhint="go" placeholder="年末調整、席替え、ふりがな…">
-        <ul id="yt-q-list" role="listbox" aria-label="道具を探すの候補" hidden></ul>
+        <label for="yt-q" class="yt-ask">何に困っていますか</label>
+        <p class="yt-hint" id="yt-q-hint">例: 親の医療費が高い、年末調整</p>
+        <input id="yt-q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="yt-q-list" aria-describedby="yt-q-hint" autocomplete="off" enterkeyhint="go" placeholder="ここに書く">
+        <ul id="yt-q-list" role="listbox" aria-label="道具の候補" hidden></ul>
         <p class="yt-status visually-hidden" aria-live="polite"></p>
         <p class="yt-empty" hidden>見つかりません。<a href="./all/">すべての道具を見る</a></p>
       </div><!-- top:search:end -->
@@ -223,7 +232,8 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
       <!-- LINE とホーム画面（第 2 版 D323: 1 画面目に。ホーム画面は yorozu-plans ROADMAP 7.41.2 K179、D306・D309。Service Worker は入れない。画像なし） -->
       <p class="yt-quick"><a href="./line/">LINE で聞く</a><span>送ると計算して返信（友だち追加）</span></p>
       <details class="yt-home">
-        <summary>ホーム画面に追加する（アプリのように開ける）</summary>
+        <summary>ホーム画面に追加</summary>
+        <p>ホーム画面に置くと、アプリのように開けます。</p>
         <p>iPhone: Safari で開いて、下の共有ボタン（□ に ↑）→「ホーム画面に追加」。</p>
         <p>Android: Chrome で開いて、右上の︙→「ホーム画面に追加」（「アプリをインストール」と出ることもあります）。</p>
         <p>よく使う道具は、その道具のページで同じようにすると、道具だけをホーム画面に置けます。</p>
@@ -304,9 +314,6 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
         <li><a href="./easy-split/quick/">割り勘</a></li>
         <li><a href="./otasuke/yasashii/">やさしい日本語に言い換え</a></li>
         <li><a href="./post/">作ってほしい道具を投書</a></li>
-        <li><a href="./line/">LINE で計算する</a></li>
-        <li><a href="./lifeplan/">ライフプラン</a></li>
-        <li><a href="./hoshizora-night/poster/">星空ポスター</a></li>
       </ul>
       <!-- new-tools:end -->
     </section>

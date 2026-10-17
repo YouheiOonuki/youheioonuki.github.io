@@ -195,13 +195,18 @@ const TEXT = {
   ja: { label: '道具を探す', ph: '年末調整、席替え、ふりがな…', empty: '見つかりません。', all: 'すべての道具を見る', allHref: 'all/' },
   en: { label: 'Find a tool', ph: 'Tax, furigana, bingo…', empty: 'No match.', all: 'See the Japanese tool list', allHref: 'all/' },
 };
-// 検索欄。送信しない: <form> を使わず、Enter は top.js が候補を開くだけ
-export function searchHtml(lang = 'ja', base = './', id = 'yt-q') {
+// トップの窓（7.96 D366・K192 段 3 の 1）: 日本語のトップだけ、問いの形の見出しと例の一行。/all/・/for/・英語は「道具を探す」のまま
+const ASK = { label: '何に困っていますか', hint: '例: 親の医療費が高い、年末調整', ph: 'ここに書く', list: '道具の候補' };
+// 検索欄。送信しない: <form> を使わず、Enter は top.js が候補を開くだけ。ask: トップの窓の形
+export function searchHtml(lang = 'ja', base = './', id = 'yt-q', ask = false) {
   const t = TEXT[lang];
+  const w = ask && lang === 'ja' ? ASK : null;
+  const label = w ? `<label for="${id}" class="yt-ask">${w.label}</label>
+        <p class="yt-hint" id="${id}-hint">${w.hint}</p>` : `<label for="${id}">${t.label}</label>`;
   return `<div class="yt-search" role="search" data-base="${base}">
-        <label for="${id}">${t.label}</label>
-        <input id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list" autocomplete="off" enterkeyhint="go" placeholder="${t.ph}">
-        <ul id="${id}-list" role="listbox" aria-label="${t.label}の候補" hidden></ul>
+        ${label}
+        <input id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list"${w ? ` aria-describedby="${id}-hint"` : ''} autocomplete="off" enterkeyhint="go" placeholder="${w ? w.ph : t.ph}">
+        <ul id="${id}-list" role="listbox" aria-label="${w ? w.list : t.label + 'の候補'}" hidden></ul>
         <p class="yt-status visually-hidden" aria-live="polite"></p>
         <p class="yt-empty" hidden>${t.empty}<a href="${base}${t.allHref}">${t.all}</a></p>
       </div>`;
@@ -253,7 +258,7 @@ const enNewest = (data) => data.en.pages.map((p, i) => ({ ...p, i, short: p.titl
 export function buildAll(data, season, date = new Date()) {
   return {
     'index.html': (h) => {
-      h = replaceRegion(h, 'search', searchHtml('ja', './'), 'index.html');
+      h = replaceRegion(h, 'search', searchHtml('ja', './', 'yt-q', true), 'index.html');
       h = replaceRegion(h, 'season', `<h2 id="season-h" data-season-label="いまの時期（{m} 月）">いまの時期（${date.getMonth() + 1} 月）</h2>\n        ` + seasonHtml(data, season, 'ja', './', date), 'index.html');
       h = replaceRegion(h, 'sections', '\n' + sectionsHtml(data, './') + '\n    ', 'index.html');
       h = replaceRegion(h, 'data', dataHtml(data, season, 'ja'), 'index.html');

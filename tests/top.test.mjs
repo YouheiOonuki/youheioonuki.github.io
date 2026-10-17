@@ -88,10 +88,18 @@ test('season.json: 各行のページが pages.json にあり、出典があり�
   }
 });
 
-test('新しいツール: pages.json の公開日から自動（6 件、新しい順）', () => {
+test('新しいツール: pages.json の公開日から自動（newCount 件＝3、新しい順。7.96 の高さ 3.6）', () => {
   const html = read('index.html');
   for (const p of newest(data)) assert.ok(html.includes(`href="./${p.path.slice(1)}"`), p.path);
-  assert.equal(newest(data).length, 6);
+  assert.equal(newest(data).length, 3);
+});
+
+test('トップの窓（D366）: 問いの見出し・例の一行を aria-describedby で結ぶ。/all/ は「道具を探す」のまま', () => {
+  const top = read('index.html');
+  assert.match(top, /<label for="yt-q" class="yt-ask">何に困っていますか<\/label>/);
+  assert.match(top, /<p class="yt-hint" id="yt-q-hint">例: /);
+  assert.match(top, /aria-describedby="yt-q-hint"/);
+  assert.match(read('all/index.html'), /<label for="yt-q">道具を探す<\/label>/);
 });
 
 test('作った欄が data と同じ（node tools/build-top.mjs 済み）', () => {
@@ -136,7 +144,7 @@ test('アクセシビリティ: スキップリンク・combobox/listbox・aria-
     assert.match(h, /role="combobox"[^>]*aria-autocomplete="list"[^>]*aria-expanded="false"[^>]*aria-controls="yt-q-list"/, f);
     assert.match(h, /<ul id="yt-q-list" role="listbox"/, f);
     assert.match(h, /aria-live="polite"/, f);
-    assert.match(h, /<label for="yt-q">/, f);
+    assert.match(h, /<label for="yt-q"( class="yt-ask")?>/, f);
   }
   assert.match(read('index.html'), /hreflang="en" href="https:\/\/yorozu-craft.com\/en\/"/);
   assert.match(read('en/index.html'), /hreflang="ja" href="https:\/\/yorozu-craft.com\/"/);
