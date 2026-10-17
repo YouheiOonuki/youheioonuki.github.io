@@ -1,0 +1,1507 @@
+{
+ "about": "道具のページの近い道具（yorozu-ai scripts/near-tools.mjs が困りごと検索の索引から作る。手で直さない。D368）",
+ "near": {
+  "/easy-split/quick/": [
+   {
+    "url": "/easy-split/",
+    "title": "easy-split",
+    "note": "係数つきの割り勘"
+   }
+  ],
+  "/line/": [
+   {
+    "url": "/otasuke/tejun/",
+    "title": "親のスマホ手順カード",
+    "note": ""
+   },
+   {
+    "url": "/seido-keisan/",
+    "title": "制度の計算機",
+    "note": "税・保険・給付の計算"
+   },
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
+   }
+  ],
+  "/post/": [],
+  "/lifeplan/": [
+   {
+    "url": "/loan-sim/",
+    "title": "住宅ローン 返済シミュレーター",
+    "note": "金利の上昇と繰上返済"
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   },
+   {
+    "url": "/otasuke/kenshin/",
+    "title": "健診結果の経年グラフ",
+    "note": "健診の値をグラフに"
+   }
+  ],
+  "/hoshizora-night/poster/": [
+   {
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
+   },
+   {
+    "url": "/hoshizora-sanpo/",
+    "title": "ほしぞらさんぽ",
+    "note": "今夜の星空と星座"
+   }
+  ],
+  "/web-metronome/drum/": [
+   {
+    "url": "/web-metronome/piano/",
+    "title": "ブラウザピアノ",
+    "note": "キーボードで弾く"
+   },
+   {
+    "url": "/web-metronome/",
+    "title": "無料オンラインメトロノーム",
+    "note": "変則拍子と裏拍"
+   }
+  ],
+  "/quiz-hiroba/mainichi/": [
+   {
+    "url": "/quiz-hiroba/",
+    "title": "クイズ広場",
+    "note": "国旗・元素・百人一首"
+   },
+   {
+    "url": "/quiz-hiroba/shuto/",
+    "title": "世界の首都クイズ（191か国）",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/kioku/",
+    "title": "記憶力テスト（数字）",
+    "note": ""
+   }
+  ],
+  "/easy-split/kakeibo/": [
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   },
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
+   },
+   {
+    "url": "/toban/",
+    "title": "当番表を作る",
+    "note": "公平に回す当番表"
+   }
+  ],
+  "/toban/kondate/": [
+   {
+    "url": "/toban/",
+    "title": "当番表を作る",
+    "note": "公平に回す当番表"
+   },
+   {
+    "url": "/sekigae/",
+    "title": "座席表を作る・席替え",
+    "note": "前回と同じ席を避ける"
+   },
+   {
+    "url": "/easy-split/kakeibo/",
+    "title": "家計簿テンプレート",
+    "note": "夫婦の按分つき家計簿"
+   }
+  ],
+  "/gengo/nenpyo/": [
+   {
+    "url": "/gengo/gakunen/",
+    "title": "学年早見表（生年月日・和暦・年齢）",
+    "note": "生年月日から学年"
+   },
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   },
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
+   }
+  ],
+  "/web-metronome/capo/": [
+   {
+    "url": "/henkan/zenkaku/",
+    "title": "全角・半角・かな変換",
+    "note": ""
+   }
+  ],
+  "/seido-keisan/yobosesshu/": [
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   },
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   },
+   {
+    "url": "/gengo/gakunen/",
+    "title": "学年早見表（生年月日・和暦・年齢）",
+    "note": "生年月日から学年"
+   }
+  ],
+  "/hoshizora-sanpo/tsuki/": [
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   }
+  ],
+  "/otasuke/kenshin/": [
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   },
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   }
+  ],
+  "/hoshizora-sanpo/shinwa/": [
+   {
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
+   },
+   {
+    "url": "/hoshizora-sanpo/",
+    "title": "ほしぞらさんぽ",
+    "note": "今夜の星空と星座"
+   }
+  ],
+  "/hoshizora-night/": [
+   {
+    "url": "/hoshizora-sanpo/",
+    "title": "ほしぞらさんぽ",
+    "note": "今夜の星空と星座"
+   },
+   {
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
+   }
+  ],
+  "/gakushu-print/tokei/": [
+   {
+    "url": "/gakko-keisan/timer/",
+    "title": "宿題タイマー",
+    "note": ""
+   },
+   {
+    "url": "/quiz-hiroba/hyakunin/",
+    "title": "百人一首 読み上げ",
+    "note": ""
+   },
+   {
+    "url": "/quiz-hiroba/hayaoshi/",
+    "title": "早押しボタン",
+    "note": "1 台で 2〜4 人の早押し"
+   }
+  ],
+  "/gakushu-print/anki/": [
+   {
+    "url": "/gakushu-print/angou/",
+    "title": "暗号メーカー",
+    "note": ""
+   },
+   {
+    "url": "/otasuke/notore/",
+    "title": "脳トレプリント（大人向け・大きな字）",
+    "note": "大きな字の脳トレ"
+   },
+   {
+    "url": "/quiz-hiroba/showa/",
+    "title": "昭和クイズ（回想法カード）",
+    "note": "回想法のカード"
+   }
+  ],
+  "/henkan/pdf/": [
+   {
+    "url": "/henkan/",
+    "title": "テキスト変換",
+    "note": "差分・JSON・CSV"
+   },
+   {
+    "url": "/henkan/csv/",
+    "title": "CSV 整形・変換",
+    "note": ""
+   }
+  ],
+  "/web-roulette/odai/": [],
+  "/web-roulette/dice/": [],
+  "/web-roulette/amida/": [
+   {
+    "url": "/sekigae/",
+    "title": "座席表を作る・席替え",
+    "note": "前回と同じ席を避ける"
+   },
+   {
+    "url": "/gakushu-print/angou/",
+    "title": "暗号メーカー",
+    "note": ""
+   },
+   {
+    "url": "/web-roulette/",
+    "title": "無料ルーレット・くじ引きアプリ",
+    "note": "回して決める"
+   }
+  ],
+  "/web-metronome/piano/": [
+   {
+    "url": "/web-metronome/drum/",
+    "title": "ドラムマシン",
+    "note": "打ち込みのリズム"
+   }
+  ],
+  "/unplugged/": [
+   {
+    "url": "/otasuke/tejun/",
+    "title": "親のスマホ手順カード",
+    "note": ""
+   },
+   {
+    "url": "/hoshizora-sanpo/hayamiban/",
+    "title": "星座早見盤を印刷して作る",
+    "note": "印刷して組み立てる"
+   },
+   {
+    "url": "/otasuke/notore/",
+    "title": "脳トレプリント（大人向け・大きな字）",
+    "note": "大きな字の脳トレ"
+   }
+  ],
+  "/toban/group/": [
+   {
+    "url": "/toban/",
+    "title": "当番表を作る",
+    "note": "公平に回す当番表"
+   }
+  ],
+  "/toban/": [
+   {
+    "url": "/toban/kondate/",
+    "title": "献立ローテーション",
+    "note": ""
+   },
+   {
+    "url": "/sekigae/",
+    "title": "座席表を作る・席替え",
+    "note": "前回と同じ席を避ける"
+   },
+   {
+    "url": "/easy-split/kakeibo/",
+    "title": "家計簿テンプレート",
+    "note": "夫婦の按分つき家計簿"
+   }
+  ],
+  "/tameshite/roogan/": [
+   {
+    "url": "/otasuke/tejun/",
+    "title": "親のスマホ手順カード",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/doutai/",
+    "title": "動体視力テスト",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/hansha/",
+    "title": "反射神経テスト",
+    "note": ""
+   }
+  ],
+  "/tameshite/mimi/": [],
+  "/tameshite/kioku/": [
+   {
+    "url": "/tameshite/doutai/",
+    "title": "動体視力テスト",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/",
+    "title": "ためして（耳・反射・目）",
+    "note": "音・反射・記憶の目安"
+   },
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   }
+  ],
+  "/tameshite/hansha/": [
+   {
+    "url": "/tameshite/doutai/",
+    "title": "動体視力テスト",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/kioku/",
+    "title": "記憶力テスト（数字）",
+    "note": ""
+   },
+   {
+    "url": "/gakko-keisan/hensachi/",
+    "title": "偏差値の計算（順位の目安・5教科）",
+    "note": "点数から偏差値と順位"
+   }
+  ],
+  "/tameshite/doutai/": [
+   {
+    "url": "/tameshite/kioku/",
+    "title": "記憶力テスト（数字）",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/hansha/",
+    "title": "反射神経テスト",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/kuku/",
+    "title": "九九ゲーム（タイムアタック）",
+    "note": "段ごとのタイムアタック"
+   }
+  ],
+  "/tameshite/": [
+   {
+    "url": "/tameshite/kioku/",
+    "title": "記憶力テスト（数字）",
+    "note": ""
+   },
+   {
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   }
+  ],
+  "/seido-keisan/shienkin/": [
+   {
+    "url": "/seido-keisan/ikukyu/",
+    "title": "育休・産休の給付金の計算",
+    "note": "給付金の額と時短の比較"
+   },
+   {
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
+   },
+   {
+    "url": "/seido-keisan/kogaku-ryoyohi/",
+    "title": "高額療養費の計算",
+    "note": "医療費の月の上限"
+   }
+  ],
+  "/seido-keisan/nenkin-kuriage/": [
+   {
+    "url": "/seido-keisan/dattai-ichiji/",
+    "title": "脱退一時金の計算",
+    "note": "帰国後の年金の払い戻し"
+   },
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/gengo/kaiki/",
+    "title": "回忌の計算（一周忌〜五十回忌・四十九日）",
+    "note": "一周忌〜五十回忌の年"
+   }
+  ],
+  "/seido-keisan/koko-mushoka/": [
+   {
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
+   },
+   {
+    "url": "/gengo/gakunen/",
+    "title": "学年早見表（生年月日・和暦・年齢）",
+    "note": "生年月日から学年"
+   },
+   {
+    "url": "/gakko-keisan/naishin/",
+    "title": "内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）",
+    "note": "都立の換算内申など"
+   }
+  ],
+  "/seido-keisan/kogaku-ryoyohi/": [
+   {
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
+   },
+   {
+    "url": "/seido-keisan/ikukyu/",
+    "title": "育休・産休の給付金の計算",
+    "note": "給付金の額と時短の比較"
+   },
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   }
+  ],
+  "/seido-keisan/kaitei/": [
+   {
+    "url": "/seido-keisan/",
+    "title": "制度の計算機",
+    "note": "税・保険・給付の計算"
+   }
+  ],
+  "/seido-keisan/invoice/": [
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/seido-keisan/juminzei/",
+    "title": "住民税の計算・非課税判定（令和9年度）",
+    "note": "税額と非課税の判定"
+   }
+  ],
+  "/quiz-hiroba/shuto/": [
+   {
+    "url": "/quiz-hiroba/kokki/",
+    "title": "国旗クイズ（196か国）",
+    "note": "196 か国の旗"
+   },
+   {
+    "url": "/quiz-hiroba/mainichi/",
+    "title": "毎日 1 問",
+    "note": ""
+   }
+  ],
+  "/quiz-hiroba/showa/": [
+   {
+    "url": "/gakushu-print/anki/",
+    "title": "暗記カード作成",
+    "note": ""
+   },
+   {
+    "url": "/otasuke/notore/",
+    "title": "脳トレプリント（大人向け・大きな字）",
+    "note": "大きな字の脳トレ"
+   },
+   {
+    "url": "/gakushu-print/booklet/",
+    "title": "おでかけ冊子",
+    "note": ""
+   }
+  ],
+  "/quiz-hiroba/nengo/": [
+   {
+    "url": "/quiz-hiroba/kokki/",
+    "title": "国旗クイズ（196か国）",
+    "note": "196 か国の旗"
+   },
+   {
+    "url": "/quiz-hiroba/kimariji/",
+    "title": "百人一首 決まり字クイズ",
+    "note": ""
+   }
+  ],
+  "/quiz-hiroba/kokki/": [
+   {
+    "url": "/quiz-hiroba/shuto/",
+    "title": "世界の首都クイズ（191か国）",
+    "note": ""
+   },
+   {
+    "url": "/quiz-hiroba/nengo/",
+    "title": "歴史年号クイズ（日本の歴史）",
+    "note": ""
+   }
+  ],
+  "/quiz-hiroba/kimariji/": [
+   {
+    "url": "/quiz-hiroba/hyakunin/",
+    "title": "百人一首 読み上げ",
+    "note": ""
+   },
+   {
+    "url": "/quiz-hiroba/nengo/",
+    "title": "歴史年号クイズ（日本の歴史）",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/",
+    "title": "ためして（耳・反射・目）",
+    "note": "音・反射・記憶の目安"
+   }
+  ],
+  "/quiz-hiroba/hyakunin/": [
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   },
+   {
+    "url": "/quiz-hiroba/kimariji/",
+    "title": "百人一首 決まり字クイズ",
+    "note": ""
+   },
+   {
+    "url": "/quiz-hiroba/hayaoshi/",
+    "title": "早押しボタン",
+    "note": "1 台で 2〜4 人の早押し"
+   }
+  ],
+  "/quiz-hiroba/hayaoshi/": [
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   },
+   {
+    "url": "/sekigae/",
+    "title": "座席表を作る・席替え",
+    "note": "前回と同じ席を避ける"
+   },
+   {
+    "url": "/tameshite/kioku/",
+    "title": "記憶力テスト（数字）",
+    "note": ""
+   }
+  ],
+  "/quiz-hiroba/genso/": [
+   {
+    "url": "/quiz-hiroba/",
+    "title": "クイズ広場",
+    "note": "国旗・元素・百人一首"
+   }
+  ],
+  "/quiz-hiroba/": [
+   {
+    "url": "/quiz-hiroba/mainichi/",
+    "title": "毎日 1 問",
+    "note": ""
+   },
+   {
+    "url": "/quiz-hiroba/kokki/",
+    "title": "国旗クイズ（196か国）",
+    "note": "196 か国の旗"
+   },
+   {
+    "url": "/otasuke/notore/",
+    "title": "脳トレプリント（大人向け・大きな字）",
+    "note": "大きな字の脳トレ"
+   }
+  ],
+  "/otasuke/tokei/": [
+   {
+    "url": "/gakko-keisan/timer/",
+    "title": "宿題タイマー",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   },
+   {
+    "url": "/otasuke/",
+    "title": "くらしのおたすけ（親・シニア向け）",
+    "note": "大きな字の紙と時計"
+   }
+  ],
+  "/otasuke/tejun/": [
+   {
+    "url": "/tameshite/roogan/",
+    "title": "老眼チェック",
+    "note": "近くの見え方の目安"
+   },
+   {
+    "url": "/line/",
+    "title": "LINE で計算する（返信版）",
+    "note": "送ると計算して返信"
+   },
+   {
+    "url": "/gakushu-print/anki/",
+    "title": "暗記カード作成",
+    "note": ""
+   }
+  ],
+  "/otasuke/shakyo/": [
+   {
+    "url": "/otasuke/notore/",
+    "title": "脳トレプリント（大人向け・大きな字）",
+    "note": "大きな字の脳トレ"
+   }
+  ],
+  "/otasuke/reizoko/": [
+   {
+    "url": "/otasuke/daicho/",
+    "title": "紙のアカウント台帳",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/anki/",
+    "title": "暗記カード作成",
+    "note": ""
+   }
+  ],
+  "/otasuke/notore/": [
+   {
+    "url": "/gakushu-print/",
+    "title": "学習プリントメーカー",
+    "note": "計算・漢字・時計"
+   },
+   {
+    "url": "/gakushu-print/anki/",
+    "title": "暗記カード作成",
+    "note": ""
+   },
+   {
+    "url": "/quiz-hiroba/showa/",
+    "title": "昭和クイズ（回想法カード）",
+    "note": "回想法のカード"
+   }
+  ],
+  "/otasuke/kigo/": [
+   {
+    "url": "/easy-split/kakeibo/",
+    "title": "家計簿テンプレート",
+    "note": "夫婦の按分つき家計簿"
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   }
+  ],
+  "/otasuke/honmono/": [
+   {
+    "url": "/otasuke/tejun/",
+    "title": "親のスマホ手順カード",
+    "note": ""
+   }
+  ],
+  "/otasuke/yasashii/": [
+   {
+    "url": "/otasuke/daicho/",
+    "title": "紙のアカウント台帳",
+    "note": ""
+   }
+  ],
+  "/otasuke/daicho/": [
+   {
+    "url": "/otasuke/reizoko/",
+    "title": "冷蔵庫に貼る紙 4 枚",
+    "note": ""
+   },
+   {
+    "url": "/otasuke/tejun/",
+    "title": "親のスマホ手順カード",
+    "note": ""
+   },
+   {
+    "url": "/easy-split/kakeibo/",
+    "title": "家計簿テンプレート",
+    "note": "夫婦の按分つき家計簿"
+   }
+  ],
+  "/otasuke/": [],
+  "/hoshizora-sanpo/hayamiban/": [
+   {
+    "url": "/bingo/",
+    "title": "大人数ビンゴ抽選",
+    "note": "大画面とカード印刷"
+   },
+   {
+    "url": "/gakushu-print/angou/",
+    "title": "暗号メーカー",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/anki/",
+    "title": "暗記カード作成",
+    "note": ""
+   }
+  ],
+  "/henkan/zenkaku/": [
+   {
+    "url": "/web-metronome/capo/",
+    "title": "カポ・移調の計算（ギターのコード変換）",
+    "note": ""
+   }
+  ],
+  "/henkan/json/": [
+   {
+    "url": "/henkan/csv/",
+    "title": "CSV 整形・変換",
+    "note": ""
+   }
+  ],
+  "/henkan/diff/": [
+   {
+    "url": "/henkan/",
+    "title": "テキスト変換",
+    "note": "差分・JSON・CSV"
+   },
+   {
+    "url": "/gakko-keisan/hensachi/",
+    "title": "偏差値の計算（順位の目安・5教科）",
+    "note": "点数から偏差値と順位"
+   }
+  ],
+  "/henkan/csv/": [
+   {
+    "url": "/henkan/json/",
+    "title": "JSON 整形・検証",
+    "note": ""
+   },
+   {
+    "url": "/henkan/",
+    "title": "テキスト変換",
+    "note": "差分・JSON・CSV"
+   }
+  ],
+  "/henkan/": [
+   {
+    "url": "/henkan/pdf/",
+    "title": "PDF 結合・分割・回転",
+    "note": "送らずに PDF を編集"
+   },
+   {
+    "url": "/henkan/diff/",
+    "title": "テキスト差分（比較）",
+    "note": ""
+   }
+  ],
+  "/gengo/yakudoshi/": [
+   {
+    "url": "/gengo/gakunen/",
+    "title": "学年早見表（生年月日・和暦・年齢）",
+    "note": "生年月日から学年"
+   },
+   {
+    "url": "/gengo/",
+    "title": "和暦・西暦 変換と年齢早見表",
+    "note": "和暦と西暦、学年"
+   },
+   {
+    "url": "/gengo/kaiki/",
+    "title": "回忌の計算（一周忌〜五十回忌・四十九日）",
+    "note": "一周忌〜五十回忌の年"
+   }
+  ],
+  "/gengo/kaiki/": [
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   },
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/gengo/yakudoshi/",
+    "title": "厄年・還暦 早見表（男女・生まれ年）",
+    "note": "生まれ年から早見"
+   }
+  ],
+  "/gengo/gakunen/": [
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   },
+   {
+    "url": "/gengo/",
+    "title": "和暦・西暦 変換と年齢早見表",
+    "note": "和暦と西暦、学年"
+   },
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   }
+  ],
+  "/gakushu-print/romaji/": [
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   },
+   {
+    "url": "/gakushu-print/kuku/",
+    "title": "九九ゲーム（タイムアタック）",
+    "note": "段ごとのタイムアタック"
+   }
+  ],
+  "/gakushu-print/kuku/": [
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   },
+   {
+    "url": "/gakushu-print/romaji/",
+    "title": "ローマ字タイピング",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/doutai/",
+    "title": "動体視力テスト",
+    "note": ""
+   }
+  ],
+  "/gakushu-print/booklet/": [
+   {
+    "url": "/tabi-shiori/",
+    "title": "旅のしおりメーカー",
+    "note": "行程と持ち物を印刷"
+   },
+   {
+    "url": "/quiz-hiroba/showa/",
+    "title": "昭和クイズ（回想法カード）",
+    "note": "回想法のカード"
+   },
+   {
+    "url": "/gakushu-print/anki/",
+    "title": "暗記カード作成",
+    "note": ""
+   }
+  ],
+  "/gakushu-print/angou/": [
+   {
+    "url": "/gakushu-print/anki/",
+    "title": "暗記カード作成",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/",
+    "title": "学習プリントメーカー",
+    "note": "計算・漢字・時計"
+   },
+   {
+    "url": "/hoshizora-sanpo/hayamiban/",
+    "title": "星座早見盤を印刷して作る",
+    "note": "印刷して組み立てる"
+   }
+  ],
+  "/gakko-keisan/timer/": [
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   },
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   },
+   {
+    "url": "/tameshite/kioku/",
+    "title": "記憶力テスト（数字）",
+    "note": ""
+   }
+  ],
+  "/gakko-keisan/shusseki/": [
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   },
+   {
+    "url": "/seido-keisan/dattai-ichiji/",
+    "title": "脱退一時金の計算",
+    "note": "帰国後の年金の払い戻し"
+   },
+   {
+    "url": "/seido-keisan/ikukyu/",
+    "title": "育休・産休の給付金の計算",
+    "note": "給付金の額と時短の比較"
+   }
+  ],
+  "/gakko-keisan/naishin/": [
+   {
+    "url": "/gakko-keisan/",
+    "title": "学校の計算機",
+    "note": "内申点・偏差値・出席"
+   },
+   {
+    "url": "/gakko-keisan/hensachi/",
+    "title": "偏差値の計算（順位の目安・5教科）",
+    "note": "点数から偏差値と順位"
+   },
+   {
+    "url": "/seido-keisan/koko-mushoka/",
+    "title": "高校無償化の計算（2026年度）",
+    "note": "授業料の自己負担"
+   }
+  ],
+  "/gakko-keisan/hensachi/": [
+   {
+    "url": "/tameshite/hansha/",
+    "title": "反射神経テスト",
+    "note": ""
+   },
+   {
+    "url": "/henkan/diff/",
+    "title": "テキスト差分（比較）",
+    "note": ""
+   },
+   {
+    "url": "/easy-split/",
+    "title": "easy-split",
+    "note": "係数つきの割り勘"
+   }
+  ],
+  "/gakko-keisan/atonannichi/": [
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   },
+   {
+    "url": "/gakko-keisan/timer/",
+    "title": "宿題タイマー",
+    "note": ""
+   },
+   {
+    "url": "/gakko-keisan/shusseki/",
+    "title": "出席日数・欠課時数の計算（あと何回休めるか）",
+    "note": ""
+   }
+  ],
+  "/gakko-keisan/": [
+   {
+    "url": "/seido-keisan/",
+    "title": "制度の計算機",
+    "note": "税・保険・給付の計算"
+   },
+   {
+    "url": "/gakko-keisan/naishin/",
+    "title": "内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）",
+    "note": "都立の換算内申など"
+   }
+  ],
+  "/fitbit-export/": [
+   {
+    "url": "/henkan/csv/",
+    "title": "CSV 整形・変換",
+    "note": ""
+   },
+   {
+    "url": "/henkan/",
+    "title": "テキスト変換",
+    "note": "差分・JSON・CSV"
+   }
+  ],
+  "/ai-log/": [
+   {
+    "url": "/md-viewer/",
+    "title": "Markdown＋Mermaid ビューア",
+    "note": "通信なしで読む"
+   }
+  ],
+  "/todofuken-quiz/": [],
+  "/tabi-shiori/": [
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/booklet/",
+    "title": "おでかけ冊子",
+    "note": ""
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   }
+  ],
+  "/sekigae/": [
+   {
+    "url": "/toban/",
+    "title": "当番表を作る",
+    "note": "公平に回す当番表"
+   },
+   {
+    "url": "/toban/kondate/",
+    "title": "献立ローテーション",
+    "note": ""
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   }
+  ],
+  "/seido-keisan/nenmatsu/": [
+   {
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
+   },
+   {
+    "url": "/seido-keisan/juminzei/",
+    "title": "住民税の計算・非課税判定（令和9年度）",
+    "note": "税額と非課税の判定"
+   },
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   }
+  ],
+  "/seido-keisan/juminzei/": [
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
+   },
+   {
+    "url": "/seido-keisan/kogaku-ryoyohi/",
+    "title": "高額療養費の計算",
+    "note": "医療費の月の上限"
+   }
+  ],
+  "/seido-keisan/iryohi/": [
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/seido-keisan/kogaku-ryoyohi/",
+    "title": "高額療養費の計算",
+    "note": "医療費の月の上限"
+   },
+   {
+    "url": "/seido-keisan/juminzei/",
+    "title": "住民税の計算・非課税判定（令和9年度）",
+    "note": "税額と非課税の判定"
+   }
+  ],
+  "/seido-keisan/ikukyu/": [
+   {
+    "url": "/seido-keisan/shienkin/",
+    "title": "子ども・子育て支援金 いくら引かれる",
+    "note": "保険料への上乗せ額"
+   },
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/seido-keisan/kogaku-ryoyohi/",
+    "title": "高額療養費の計算",
+    "note": "医療費の月の上限"
+   }
+  ],
+  "/seido-keisan/dattai-ichiji/": [
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   },
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/seido-keisan/ikukyu/",
+    "title": "育休・産休の給付金の計算",
+    "note": "給付金の額と時短の比較"
+   }
+  ],
+  "/seido-keisan/": [
+   {
+    "url": "/seido-keisan/kaitei/",
+    "title": "制度の改定カレンダー",
+    "note": "税・社保の施行日の一覧"
+   },
+   {
+    "url": "/seido-keisan/ikukyu/",
+    "title": "育休・産休の給付金の計算",
+    "note": "給付金の額と時短の比較"
+   },
+   {
+    "url": "/line/",
+    "title": "LINE で計算する（返信版）",
+    "note": "送ると計算して返信"
+   }
+  ],
+  "/pac-tester/": [],
+  "/md-viewer/": [
+   {
+    "url": "/ai-log/",
+    "title": "AI 会話ログ Markdown 変換",
+    "note": "会話ごとの Markdown"
+   }
+  ],
+  "/gengo/": [
+   {
+    "url": "/gengo/gakunen/",
+    "title": "学年早見表（生年月日・和暦・年齢）",
+    "note": "生年月日から学年"
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   },
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   }
+  ],
+  "/gakushu-print/": [
+   {
+    "url": "/otasuke/notore/",
+    "title": "脳トレプリント（大人向け・大きな字）",
+    "note": "大きな字の脳トレ"
+   },
+   {
+    "url": "/gakushu-print/angou/",
+    "title": "暗号メーカー",
+    "note": ""
+   },
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   }
+  ],
+  "/furigana/": [
+   {
+    "url": "/gakushu-print/",
+    "title": "学習プリントメーカー",
+    "note": "計算・漢字・時計"
+   },
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   }
+  ],
+  "/filetime/": [],
+  "/denki-dai/": [
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
+   },
+   {
+    "url": "/loan-sim/",
+    "title": "住宅ローン 返済シミュレーター",
+    "note": "金利の上昇と繰上返済"
+   }
+  ],
+  "/bingo/": [
+   {
+    "url": "/hoshizora-sanpo/hayamiban/",
+    "title": "星座早見盤を印刷して作る",
+    "note": "印刷して組み立てる"
+   },
+   {
+    "url": "/web-roulette/",
+    "title": "無料ルーレット・くじ引きアプリ",
+    "note": "回して決める"
+   },
+   {
+    "url": "/otasuke/notore/",
+    "title": "脳トレプリント（大人向け・大きな字）",
+    "note": "大きな字の脳トレ"
+   }
+  ],
+  "/ADSearch/": [],
+  "/shaho-check/": [],
+  "/nittei-kouho/": [
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   },
+   {
+    "url": "/toban/kondate/",
+    "title": "献立ローテーション",
+    "note": ""
+   }
+  ],
+  "/loan-sim/": [
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
+   },
+   {
+    "url": "/denki-dai/",
+    "title": "家電の電気代・節約額シミュレーター",
+    "note": "買い替えの元が取れる年"
+   }
+  ],
+  "/hoshizora-sanpo/zukan/": [
+   {
+    "url": "/hoshizora-sanpo/",
+    "title": "ほしぞらさんぽ",
+    "note": "今夜の星空と星座"
+   },
+   {
+    "url": "/hoshizora-sanpo/shinwa/",
+    "title": "ギリシャ神話",
+    "note": ""
+   }
+  ],
+  "/hoshizora-sanpo/calendar/": [
+   {
+    "url": "/hoshizora-sanpo/",
+    "title": "ほしぞらさんぽ",
+    "note": "今夜の星空と星座"
+   },
+   {
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
+   }
+  ],
+  "/hoshizora-sanpo/": [
+   {
+    "url": "/hoshizora-night/",
+    "title": "ほしぞらさんぽ フル版",
+    "note": "星空を大きな画面で"
+   },
+   {
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
+   }
+  ],
+  "/web-roulette/": [
+   {
+    "url": "/bingo/",
+    "title": "大人数ビンゴ抽選",
+    "note": "大画面とカード印刷"
+   },
+   {
+    "url": "/web-roulette/amida/",
+    "title": "あみだくじを作る",
+    "note": "作って印刷・共有"
+   },
+   {
+    "url": "/gakushu-print/tokei/",
+    "title": "時計の読み方 練習",
+    "note": "時計の読み方プリント"
+   }
+  ],
+  "/web-metronome/": [
+   {
+    "url": "/web-metronome/drum/",
+    "title": "ドラムマシン",
+    "note": "打ち込みのリズム"
+   }
+  ],
+  "/easy-split/": [
+   {
+    "url": "/easy-split/quick/",
+    "title": "割り勘（スマホ版）",
+    "note": "合計と人数だけで 1 人いくら"
+   },
+   {
+    "url": "/gakko-keisan/hensachi/",
+    "title": "偏差値の計算（順位の目安・5教科）",
+    "note": "点数から偏差値と順位"
+   },
+   {
+    "url": "/easy-split/kakeibo/",
+    "title": "家計簿テンプレート",
+    "note": "夫婦の按分つき家計簿"
+   }
+  ],
+  "/seido-keisan/en/take-home-pay/": [
+   {
+    "url": "/seido-keisan/en/residence-tax/",
+    "title": "Japan Residence Tax Calculator",
+    "note": "Residence tax on your salary"
+   },
+   {
+    "url": "/seido-keisan/en/childcare-leave/",
+    "title": "Japan Childcare Leave Benefit Calculator",
+    "note": "Pay on maternity and childcare leave"
+   }
+  ],
+  "/seido-keisan/en/residence-tax/": [
+   {
+    "url": "/seido-keisan/en/take-home-pay/",
+    "title": "Japan Take-Home Pay Calculator",
+    "note": "Salary after tax and insurance"
+   },
+   {
+    "url": "/seido-keisan/en/childcare-leave/",
+    "title": "Japan Childcare Leave Benefit Calculator",
+    "note": "Pay on maternity and childcare leave"
+   }
+  ],
+  "/seido-keisan/en/pension-refund/": [
+   {
+    "url": "/seido-keisan/en/take-home-pay/",
+    "title": "Japan Take-Home Pay Calculator",
+    "note": "Salary after tax and insurance"
+   },
+   {
+    "url": "/seido-keisan/en/childcare-leave/",
+    "title": "Japan Childcare Leave Benefit Calculator",
+    "note": "Pay on maternity and childcare leave"
+   }
+  ],
+  "/seido-keisan/en/childcare-leave/": [
+   {
+    "url": "/seido-keisan/en/take-home-pay/",
+    "title": "Japan Take-Home Pay Calculator",
+    "note": "Salary after tax and insurance"
+   },
+   {
+    "url": "/seido-keisan/en/pension-refund/",
+    "title": "Japan Pension Refund Calculator",
+    "note": "Refund after leaving Japan"
+   }
+  ],
+  "/seido-keisan/en/high-cost-medical/": [
+   {
+    "url": "/seido-keisan/en/childcare-leave/",
+    "title": "Japan Childcare Leave Benefit Calculator",
+    "note": "Pay on maternity and childcare leave"
+   },
+   {
+    "url": "/seido-keisan/en/take-home-pay/",
+    "title": "Japan Take-Home Pay Calculator",
+    "note": "Salary after tax and insurance"
+   }
+  ],
+  "/seido-keisan/en/moving-checklist/": [
+   {
+    "url": "/seido-keisan/en/residence-tax/",
+    "title": "Japan Residence Tax Calculator",
+    "note": "Residence tax on your salary"
+   },
+   {
+    "url": "/seido-keisan/en/take-home-pay/",
+    "title": "Japan Take-Home Pay Calculator",
+    "note": "Salary after tax and insurance"
+   }
+  ],
+  "/gengo/en/": [],
+  "/hoshizora-sanpo/en/": [
+   {
+    "url": "/hoshizora-night/en/",
+    "title": "Night Sky Tonight, Full Version",
+    "note": "Tonight’s sky, drawn large"
+   }
+  ],
+  "/hoshizora-night/en/": [
+   {
+    "url": "/hoshizora-sanpo/en/",
+    "title": "Web Planetarium",
+    "note": "Tonight’s sky for your city"
+   }
+  ],
+  "/tameshite/en/sleep-calculator/": [],
+  "/gakushu-print/en/": [
+   {
+    "url": "/unplugged/en/",
+    "title": "Unplugged Coding Printables",
+    "note": "Screen-free coding lessons"
+   },
+   {
+    "url": "/furigana/en/",
+    "title": "Furigana Generator",
+    "note": "Readings above kanji"
+   },
+   {
+    "url": "/bingo/en/",
+    "title": "Bingo Caller",
+    "note": "Big-screen draws and cards"
+   }
+  ],
+  "/furigana/en/": [
+   {
+    "url": "/gakushu-print/en/",
+    "title": "Hiragana & Katakana Practice Sheets",
+    "note": "Printable kana tracing sheets"
+   }
+  ],
+  "/bingo/en/": [
+   {
+    "url": "/unplugged/en/",
+    "title": "Unplugged Coding Printables",
+    "note": "Screen-free coding lessons"
+   },
+   {
+    "url": "/gakushu-print/en/",
+    "title": "Hiragana & Katakana Practice Sheets",
+    "note": "Printable kana tracing sheets"
+   }
+  ],
+  "/toban/en/": [],
+  "/unplugged/en/": [
+   {
+    "url": "/bingo/en/",
+    "title": "Bingo Caller",
+    "note": "Big-screen draws and cards"
+   },
+   {
+    "url": "/gakushu-print/en/",
+    "title": "Hiragana & Katakana Practice Sheets",
+    "note": "Printable kana tracing sheets"
+   }
+  ],
+  "/pac-tester/en/": [],
+  "/ADSearch/en/": [],
+  "/filetime/en/": [],
+  "/fitbit-export/en/": [],
+  "/ai-log/en/": []
+ }
+}
