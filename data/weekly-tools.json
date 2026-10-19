@@ -451,6 +451,508 @@
         "/web-metronome/": 5,
         "/tameshite/": 2
       }
+    },
+    {
+      "source": "content\\Notes\\metrics\\2026-10-11_weekly.md（yorozu-plan-cycle 2026-10-12 が表を機械で写した。スマホの割合の列は無し）",
+      "period": {
+        "gsc": "2026-10-02/2026-10-08",
+        "cf": "2026-10-03/2026-10-10"
+      },
+      "tools": {
+        "(top)": {
+          "pv": 34,
+          "visits": 28,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "hoshizora-night": {
+          "pv": 21,
+          "visits": 15,
+          "clicks": null,
+          "impressions": null
+        },
+        "lifeplan": {
+          "pv": 15,
+          "visits": 15,
+          "clicks": null,
+          "impressions": null
+        },
+        "hoshizora-sanpo": {
+          "pv": 15,
+          "visits": 8,
+          "clicks": 0,
+          "impressions": 2
+        },
+        "seido-keisan": {
+          "pv": 12,
+          "visits": 12,
+          "clicks": 0,
+          "impressions": 29
+        },
+        "about.html": {
+          "pv": 7,
+          "visits": 3,
+          "clicks": 0,
+          "impressions": 2
+        },
+        "web-metronome": {
+          "pv": 7,
+          "visits": 3,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "ADSearch": {
+          "pv": 6,
+          "visits": 6,
+          "clicks": 2,
+          "impressions": 9
+        },
+        "gakko-keisan": {
+          "pv": 6,
+          "visits": 6,
+          "clicks": 0,
+          "impressions": 16
+        },
+        "all": {
+          "pv": 5,
+          "visits": 0,
+          "clicks": null,
+          "impressions": null
+        },
+        "web-roulette": {
+          "pv": 4,
+          "visits": 1,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "pac-tester": {
+          "pv": 3,
+          "visits": 3,
+          "clicks": 0,
+          "impressions": 5
+        },
+        "easy-split": {
+          "pv": 2,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "ai-log": {
+          "pv": 2,
+          "visits": 2,
+          "clicks": null,
+          "impressions": null
+        },
+        "henkan": {
+          "pv": 2,
+          "visits": 2,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "otasuke": {
+          "pv": 2,
+          "visits": 2,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "en": {
+          "pv": 2,
+          "visits": 2,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "quiz-hiroba": {
+          "pv": 2,
+          "visits": 2,
+          "clicks": 0,
+          "impressions": 113
+        },
+        "bingo": {
+          "pv": 2,
+          "visits": 1,
+          "clicks": 0,
+          "impressions": 2
+        },
+        "gakushu-print": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": 1,
+          "impressions": 8
+        },
+        "gengo": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": 1,
+          "impressions": 42
+        },
+        "fitbit-export": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "loan-sim": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "for": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "furigana": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": 0,
+          "impressions": 17
+        },
+        "tameshite": {
+          "pv": 1,
+          "visits": 1,
+          "clicks": null,
+          "impressions": null
+        },
+        "todofuken-quiz": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "unplugged": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "filetime": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 10
+        },
+        "sekigae": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 4
+        },
+        "denki-dai": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 3
+        }
+      },
+      "from_top": {
+        "/all/": 5,
+        "/about.html": 4,
+        "/web-metronome/piano/": 1,
+        "/web-metronome/drum/": 1,
+        "/hoshizora-sanpo/": 1
+      }
+    },
+    {
+      "source": "content\\Notes\\metrics\\2026-10-18_weekly.md（yorozu-plan-cycle 2026-10-19 が写した。スマホの割合は mobile_share、D305）",
+      "period": {
+        "gsc": "2026-10-09/2026-10-15",
+        "cf": "2026-10-10/2026-10-17"
+      },
+      "tools": {
+        "(top)": {
+          "pv": 40,
+          "visits": 33,
+          "mobile_share": 0.42,
+          "clicks": 1,
+          "impressions": 3
+        },
+        "hoshizora-sanpo": {
+          "pv": 40,
+          "visits": 20,
+          "mobile_share": 0.55,
+          "clicks": 0,
+          "impressions": 8
+        },
+        "quiz-hiroba": {
+          "pv": 27,
+          "visits": 18,
+          "mobile_share": 0.37,
+          "clicks": 0,
+          "impressions": 16
+        },
+        "hoshizora-night": {
+          "pv": 26,
+          "visits": 18,
+          "mobile_share": 0.08,
+          "clicks": null,
+          "impressions": null
+        },
+        "seido-keisan": {
+          "pv": 24,
+          "visits": 20,
+          "mobile_share": 0.46,
+          "clicks": 3,
+          "impressions": 51
+        },
+        "hade": {
+          "pv": 16,
+          "visits": 11,
+          "mobile_share": 1.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "gakushu-print": {
+          "pv": 14,
+          "visits": 13,
+          "mobile_share": 0.43,
+          "clicks": 0,
+          "impressions": 9
+        },
+        "otasuke": {
+          "pv": 13,
+          "visits": 13,
+          "mobile_share": 0.54,
+          "clicks": 1,
+          "impressions": 9
+        },
+        "web-metronome": {
+          "pv": 12,
+          "visits": 12,
+          "mobile_share": 0.17,
+          "clicks": null,
+          "impressions": null
+        },
+        "gengo": {
+          "pv": 12,
+          "visits": 9,
+          "mobile_share": 0.25,
+          "clicks": 0,
+          "impressions": 58
+        },
+        "all": {
+          "pv": 10,
+          "visits": 0,
+          "mobile_share": 1.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "toban": {
+          "pv": 9,
+          "visits": 8,
+          "mobile_share": 0.56,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "sekigae": {
+          "pv": 7,
+          "visits": 7,
+          "mobile_share": 0.43,
+          "clicks": 1,
+          "impressions": 2
+        },
+        "ADSearch": {
+          "pv": 7,
+          "visits": 6,
+          "mobile_share": 0.14,
+          "clicks": 0,
+          "impressions": 7
+        },
+        "bingo": {
+          "pv": 7,
+          "visits": 7,
+          "mobile_share": 0.14,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "tameshite": {
+          "pv": 6,
+          "visits": 6,
+          "mobile_share": 0.17,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "pac-tester": {
+          "pv": 6,
+          "visits": 6,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 5
+        },
+        "gakko-keisan": {
+          "pv": 5,
+          "visits": 5,
+          "mobile_share": 0.2,
+          "clicks": 1,
+          "impressions": 27
+        },
+        "web-roulette": {
+          "pv": 5,
+          "visits": 3,
+          "mobile_share": 0.4,
+          "clicks": 0,
+          "impressions": 2
+        },
+        "fitbit-export": {
+          "pv": 4,
+          "visits": 4,
+          "mobile_share": 0.25,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "post": {
+          "pv": 3,
+          "visits": 2,
+          "mobile_share": 1.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "nittei-kouho": {
+          "pv": 3,
+          "visits": 3,
+          "mobile_share": 0.33,
+          "clicks": null,
+          "impressions": null
+        },
+        "md-viewer": {
+          "pv": 3,
+          "visits": 2,
+          "mobile_share": 0.33,
+          "clicks": null,
+          "impressions": null
+        },
+        "print": {
+          "pv": 3,
+          "visits": 3,
+          "mobile_share": 0.33,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "lifeplan": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "loan-sim": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "unplugged": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.5,
+          "clicks": null,
+          "impressions": null
+        },
+        "furigana": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.5,
+          "clicks": 0,
+          "impressions": 28
+        },
+        "filetime": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.5,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "easy-split": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 1.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "tabi-shiori": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.5,
+          "clicks": null,
+          "impressions": null
+        },
+        "admin": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 1.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "todofuken-quiz": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "en": {
+          "pv": 1,
+          "visits": 0,
+          "mobile_share": 1.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "denki-dai": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "about.html": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "ai-log": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 1.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "shaho-check": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "print-help.html": {
+          "pv": 1,
+          "visits": 0,
+          "mobile_share": 1.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "privacy-policy.html": {
+          "pv": 1,
+          "visits": 0,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        }
+      },
+      "from_top": {
+        "/all/": 8,
+        "/hoshizora-night/": 3,
+        "/ADSearch/": 1,
+        "/md-viewer/": 1,
+        "/web-roulette/": 1,
+        "/web-roulette/amida/": 1,
+        "/post/": 1,
+        "/seido-keisan/nenmatsu/": 1,
+        "/en/": 1
+      }
     }
   ]
 }
