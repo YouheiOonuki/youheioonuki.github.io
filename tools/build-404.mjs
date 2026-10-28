@@ -21,8 +21,9 @@ export function tokens(skin = readFileSync(join(V2, 'skin.css'), 'utf8'), base =
   const light = skin.match(/:where\(html:not\(\[data-skin="base"\]\)\)\s*\{([^}]*)\}/);
   const dark = skin.match(/@media \(prefers-color-scheme: dark\)\s*\{\s*:where\(html:not\(\[data-skin="base"\]\)\)\s*\{([^}]*)\}/);
   const root = base.match(/:root\s*\{([^}]*)\}/);
-  if (!light || !dark || !root) throw new Error('skin.css か base.css の形が変わった（トークンの塊が見つからない）');
-  return { light: vars(light[1]), dark: vars(dark[1]), base: vars(root[1]) };
+  const focus = base.match(/\[tabindex\]\):focus-visible\s*\{([^}]*)\}/);
+  if (!light || !dark || !root || !focus) throw new Error('skin.css か base.css の形が変わった（トークンの塊が見つからない）');
+  return { light: vars(light[1]), dark: vars(dark[1]), base: vars(root[1]), focus: focus[1].trim().replace(/\s+/g, ' ') };
 }
 
 const COLORS = ['--bg', '--text', '--accent', '--on-accent', '--focus', '--focus-ring'];
@@ -55,7 +56,7 @@ export function render({ manifest = '/manifest.webmanifest', t = tokens() } = {}
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: ${font};
-      background: var(--bg); color: var(--text); line-height: 1.4;
+      background: var(--bg); color: var(--text); line-height: ${t.light['--lh-tight']};
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       text-align: center; padding: ${sp4};
     }
@@ -64,7 +65,7 @@ export function render({ manifest = '/manifest.webmanifest', t = tokens() } = {}
       display: inline-flex; align-items: center; min-height: ${tap}; padding: 0 ${sp4}; border-radius: ${radius};
       background: var(--accent); color: var(--on-accent); text-decoration: none; font-weight: 700;
     }
-    a:focus-visible { outline: 4px solid var(--focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus); }
+    a:focus-visible { ${t.focus} }
   </style>
 </head>
 <body>

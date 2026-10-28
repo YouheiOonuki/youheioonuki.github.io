@@ -47,7 +47,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | ファイル | 役割 |
 |---------|------|
 | `index.html` | ツール一覧のトップページ |
-| `404.html` / `tools/build-404.mjs` / `tests/build-404.test.mjs` | 存在しない URL を開いたときのページ。ドメイン直下のみ有効。ツール配下は各ツールの 404.html（「ツールを追加するとき」の 10）。どれも `tools/build-404.mjs` の生成物で手で書かない（色と字は `tools/common/v2/` の皮から写す。yorozu-plans ROADMAP 7.134 (2)） |
+| `404.html` / `tools/build-404.mjs` / `tests/build-404.test.mjs` | 存在しない URL を開いたときのページ。ドメイン直下のみ有効。ツール配下は各ツールの 404.html（「ツールを追加するとき」の 10）。`404.html`（本体と各ツール）は `tools/build-404.mjs` の生成物で手で書かない（色と字は `tools/common/v2/` の皮から写す。yorozu-plans ROADMAP 7.134 (2)） |
 | `CNAME` | 独自ドメインの設定。消すとドメインが外れるので注意 |
 | `robots.txt` | 検索エンジン向けの指示。**ドメイン直下のものしか読まれない**ので、全ツールのサイトマップをここに並べる |
 | `sitemap.xml` | トップページのサイトマップ |
