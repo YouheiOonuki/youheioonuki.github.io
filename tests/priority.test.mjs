@@ -189,7 +189,8 @@ test('priority.mjs: 入力は weekly-tools.json の写し（yorozu-plans の doc
   assert.ok(Array.isArray(weekly.weeks) && weekly.weeks.length >= 1);
   assert.equal(input.gsc, undefined); // 7.24.3 で gsc.repos から weekly-tools.json に切り替えた
   const v = computeAll(data.pages, input, season, weekly);
-  assert.equal(v.get('/seido-keisan/nenmatsu/').pvRank, 1); // 停止前の 2 週の PV で seido-keisan が 1 位
+  const a = aggregate(weekly), top = Object.keys(a.pv).sort((x, y) => a.pv[y] - a.pv[x])[0];
+  assert.equal(v.get(data.pages.find((p) => p.path.split('/')[1] === top).path).pvRank, 1); // 使う週の PV の平均がいちばん多い道具が 1 位（道具を名指しすると週の入れ替わりで落ちる）
   for (const p of data.pages) assert.equal(p.priority, v.get(p.path).priority, p.path);
   const text = read('data/pages.json');
   assert.equal(rewrite(text, v), text);

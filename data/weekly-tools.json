@@ -953,6 +953,247 @@
         "/seido-keisan/nenmatsu/": 1,
         "/en/": 1
       }
+    },
+    {
+      "source": "content\\Notes\\metrics\\2026-10-25_weekly.md（yorozu-plan-cycle 2026-10-26 が写した。スマホの割合は mobile_share、D305）",
+      "period": {
+        "gsc": "2026-10-16/2026-10-22",
+        "cf": "2026-10-17/2026-10-24"
+      },
+      "tools": {
+        "hoshizora-night": {
+          "pv": 23,
+          "visits": 19,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "(top)": {
+          "pv": 22,
+          "visits": 22,
+          "mobile_share": 0.41,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "hoshizora-sanpo": {
+          "pv": 21,
+          "visits": 14,
+          "mobile_share": 0.24,
+          "clicks": 2,
+          "impressions": 29
+        },
+        "quiz-hiroba": {
+          "pv": 21,
+          "visits": 21,
+          "mobile_share": 0.05,
+          "clicks": 0,
+          "impressions": 12
+        },
+        "furigana": {
+          "pv": 12,
+          "visits": 9,
+          "mobile_share": 0.0,
+          "clicks": 1,
+          "impressions": 28
+        },
+        "seido-keisan": {
+          "pv": 11,
+          "visits": 8,
+          "mobile_share": 0.18,
+          "clicks": 0,
+          "impressions": 87
+        },
+        "post": {
+          "pv": 7,
+          "visits": 7,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "gakko-keisan": {
+          "pv": 6,
+          "visits": 5,
+          "mobile_share": 0.5,
+          "clicks": 1,
+          "impressions": 49
+        },
+        "web-metronome": {
+          "pv": 5,
+          "visits": 3,
+          "mobile_share": 0.0,
+          "clicks": 1,
+          "impressions": 12
+        },
+        "gengo": {
+          "pv": 5,
+          "visits": 5,
+          "mobile_share": 0.2,
+          "clicks": 1,
+          "impressions": 164
+        },
+        "web-roulette": {
+          "pv": 5,
+          "visits": 4,
+          "mobile_share": 0.8,
+          "clicks": 0,
+          "impressions": 8
+        },
+        "gakushu-print": {
+          "pv": 4,
+          "visits": 4,
+          "mobile_share": 0.5,
+          "clicks": 0,
+          "impressions": 9
+        },
+        "bingo": {
+          "pv": 4,
+          "visits": 4,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "fitbit-export": {
+          "pv": 3,
+          "visits": 2,
+          "mobile_share": 0.0,
+          "clicks": 1,
+          "impressions": 176
+        },
+        "henkan": {
+          "pv": 3,
+          "visits": 2,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 4
+        },
+        "ADSearch": {
+          "pv": 3,
+          "visits": 2,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 9
+        },
+        "unplugged": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "md-viewer": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "sekigae": {
+          "pv": 2,
+          "visits": 2,
+          "mobile_share": 0.5,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "tameshite": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 1.0,
+          "clicks": 1,
+          "impressions": 4
+        },
+        "pac-tester": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": 1,
+          "impressions": 9
+        },
+        "privacy-policy.html": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "denki-dai": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "lifeplan": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "shaho-check": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 1.0,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "tabi-shiori": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 1.0,
+          "clicks": 0,
+          "impressions": 9
+        },
+        "toban": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 7
+        },
+        "easy-split": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": null,
+          "impressions": null
+        },
+        "en": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 1
+        },
+        "otasuke": {
+          "pv": 1,
+          "visits": 1,
+          "mobile_share": 0.0,
+          "clicks": 0,
+          "impressions": 12
+        },
+        "api": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 3
+        },
+        "filetime": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 4
+        },
+        "ai-log": {
+          "pv": null,
+          "visits": null,
+          "clicks": 0,
+          "impressions": 3
+        }
+      },
+      "from_top": {
+        "/ADSearch/": 1,
+        "/seido-keisan/nenmatsu/": 1
+      }
     }
   ]
 }
