@@ -59,3 +59,12 @@ test('本体の manifest の色は皮の背景（--bg の明るい側）と同�
   assert.equal(m.background_color.toLowerCase(), bg);
   assert.equal(m.theme_color.toLowerCase(), bg);
 });
+
+test('本体のトップ・すべての道具・英語トップの theme-color は皮の --bg（明暗の 2 行）', () => {
+  const skin = readFileSync(new URL('../tools/common/v2/skin.css', import.meta.url), 'utf8');
+  const [light, dark] = [...skin.matchAll(/--bg:\s*(#[0-9a-f]{6})/gi)].map((m) => m[1].toLowerCase());
+  for (const f of ['index.html', 'all/index.html', 'en/index.html']) {
+    const metas = [...readFileSync(new URL('../' + f, import.meta.url), 'utf8').matchAll(/<meta name="theme-color" content="([^"]+)"( media="[^"]+")?>/g)];
+    assert.deepEqual(metas.map((m) => [m[1].toLowerCase(), m[2] || '']), [[light, ' media="(prefers-color-scheme: light)"'], [dark, ' media="(prefers-color-scheme: dark)"']], f);
+  }
+});
