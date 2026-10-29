@@ -51,3 +51,20 @@ test('配る正本は v2 の土台＋皮をそのまま begin〜end で包んだ
   assert.ok(m.indexOf(base.trim()) < m.indexOf(skin.trim()), '土台が先');
   assert.ok(m.trim().endsWith('/* yorozu-common:end */'));
 });
+
+test('本体の manifest の色は皮の背景（--bg の明るい側）と同じ（yorozu-plans 7.138。v1 の #f0ebe0・#8b4513 を残さない）', () => {
+  const skin = readFileSync(new URL('../tools/common/v2/skin.css', import.meta.url), 'utf8');
+  const bg = skin.match(/--bg:\s*(#[0-9a-f]{6})/i)[1].toLowerCase();
+  const m = JSON.parse(readFileSync(new URL('../manifest.webmanifest', import.meta.url), 'utf8'));
+  assert.equal(m.background_color.toLowerCase(), bg);
+  assert.equal(m.theme_color.toLowerCase(), bg);
+});
+
+test('本体のトップ・すべての道具・英語トップの theme-color は皮の --bg（明暗の 2 行）', () => {
+  const skin = readFileSync(new URL('../tools/common/v2/skin.css', import.meta.url), 'utf8');
+  const [light, dark] = [...skin.matchAll(/--bg:\s*(#[0-9a-f]{6})/gi)].map((m) => m[1].toLowerCase());
+  for (const f of ['index.html', 'all/index.html', 'en/index.html']) {
+    const metas = [...readFileSync(new URL('../' + f, import.meta.url), 'utf8').matchAll(/<meta name="theme-color" content="([^"]+)"( media="[^"]+")?>/g)];
+    assert.deepEqual(metas.map((m) => [m[1].toLowerCase(), m[2] || '']), [[light, ' media="(prefers-color-scheme: light)"'], [dark, ' media="(prefers-color-scheme: dark)"']], f);
+  }
+});
