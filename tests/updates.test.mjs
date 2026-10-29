@@ -31,3 +31,12 @@ test('fill: 印の間だけを書き換える。ひな形に印があり、行�
   assert.equal(out.replace(/<!-- updates:begin -->[\s\S]*<!-- updates:end -->/, ''), tpl.replace(/<!-- updates:begin -->[\s\S]*<!-- updates:end -->/, ''));
   assert.ok(LIMIT <= 12);
 });
+
+test('D411: /updates/ は案内のページ。トップの脚と sitemap に載り、サイト本体のフォルダ（ROOT_DIRS）なので道具として数えない', () => {
+  const top = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const footer = top.slice(top.lastIndexOf('<footer'));
+  assert.match(footer, /<a href="\.\/updates\/">更新情報<\/a>/);
+  assert.match(footer, /<a href="https:\/\/lab\.yorozu-craft\.com\/">/); // D412
+  assert.match(readFileSync(new URL('../sitemap.xml', import.meta.url), 'utf8'), /<loc>https:\/\/yorozu-craft\.com\/updates\/<\/loc>/);
+  assert.match(readFileSync(new URL('../top.js', import.meta.url), 'utf8'), /var ROOT_DIRS = \[[^\]]*'updates'/);
+});

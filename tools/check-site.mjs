@@ -57,6 +57,7 @@ const META_ONLY_PAGES = new Set([
   '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
   '/line/',                // LINE 版の案内（節「親・家族のために」。/for/kaigo/ と同じ扱い: yorozu-plans 企画書 76）
   '/post/',                // 要望の投書箱（yorozu-plans 企画書 77）
+  '/updates/',             // 更新情報（案内のページ。about と同じ扱いで道具の 4 つは求めない: yorozu-plans D411）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
@@ -144,7 +145,7 @@ const fail = (where, what) => failures.push(`${where}: ${what}`);
 // **いまは AdSense の審査中なので、計算の結果にかかわらず全部「不可」として扱う**（広告の script は戻さない）。結果はメモに内訳だけ出す
 const AD_MIN_CHARS = 600, AD_MIN_CHARS_READ = 800;
 const READ_PREFIXES = ['/hoshizora-sanpo/shinwa/', '/hoshizora-sanpo/calendar/']; // 読み物（measure.py --type read で測っているもの）
-const GUIDE_LEGAL_PREFIXES = ['/all/', '/for/', '/en/for/', '/post/', '/line/', '/api/', '/yt/'];
+const GUIDE_LEGAL_PREFIXES = ['/all/', '/for/', '/en/for/', '/post/', '/line/', '/api/', '/yt/', '/updates/'];
 const adFacts = []; // { p, chars, reasons: [...] }
 /** <main> の表示の字数（details の中を含む。空白・タグ・script・style を除く） */
 function mainChars(html) {
@@ -256,7 +257,7 @@ if (pages.has(BASE + 'en/')) {
   try { reg = JSON.parse(pj.body); } catch { fail('/data/pages.json', `読めない（${pj.status}）`); }
   if (reg) {
     const regPaths = new Set(reg.pages.map(p => p.path));
-    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en|all)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p) && !NOT_ON_TOP.has(p.split('/')[1]); // NOT_ON_TOP のツールは pages.json にも載せない
+    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en|all|updates)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p) && !NOT_ON_TOP.has(p.split('/')[1]); // NOT_ON_TOP のツールは pages.json にも載せない
     for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
     for (const p of regPaths) if (![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
     const want = newToolsHtml(reg);
