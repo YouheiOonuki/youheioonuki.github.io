@@ -44,7 +44,7 @@
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
   // 最上位のフォルダのうち、道具のリポジトリではなくサイト本体（このリポジトリ）の中にあるもの。
   // check-site も道具の一覧からこれを除く（sitemap・404・保存内容の一覧を道具と同じには求めない）
-  var ROOT_DIRS = ['en', 'all', 'line', 'post'];
+  var ROOT_DIRS = ['en', 'all', 'line', 'post', 'updates'];
   // 道具のアイコン: そのページのリポジトリ（/<ツール>/）の favicon.svg。子ページは親のもの。サイト本体のページは本体の favicon.svg。新しい画像は作らない
   // 飾りなので alt は空。寸法を書いて読み込みでずれない（CLS 0）。1 画面目より下は lazy
   var ICON = 20;
