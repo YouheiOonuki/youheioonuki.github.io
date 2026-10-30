@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <!-- yorozu-craft のマーク「万」（和紙風の配色）。小さく表示しても潰れないよう線を太めにしている -->
-  <circle cx="32" cy="32" r="30" fill="#faf6ee" stroke="#8b4513" stroke-width="3.5"/>
+  <circle cx="32" cy="32" r="30" fill="#eef0f2" stroke="#0e5a6b" stroke-width="3.5"/>
   <g fill="none" stroke-linecap="square" stroke-linejoin="miter" stroke-width="7.5">
-    <line x1="16.5" y1="19" x2="47.5" y2="19" stroke="#8b4513"/>
-    <polyline points="28.5,22.5 24.5,34 18,47" stroke="#8b4513"/>
+    <line x1="16.5" y1="19" x2="47.5" y2="19" stroke="#0e5a6b"/>
+    <polyline points="28.5,22.5 24.5,34 18,47" stroke="#0e5a6b"/>
     <polyline points="26.5,32 44.5,32 44.5,45 38,45" stroke="#3f6b2a"/>
   </g>
 </svg>
