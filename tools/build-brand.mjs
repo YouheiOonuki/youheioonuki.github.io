@@ -7,7 +7,8 @@
 // 値の正本は tools/common/v2/skin.css で、ここは読んで写すだけ（tokens() は build-404.mjs と同じ）。
 // 対象: 世界を持つリポジトリ（入口のページが data-skin="base"。D369）は丸ごと外す。本体（youheioonuki.github.io）は入口が土台でも対象。
 //   theme-color … 皮のページ（data-skin="base" でない）の既存の行だけ。v1 の色か皮の --bg 以外のトークンなら --bg の明暗 2 行に置き換える。自前の色は残して報告する
-//   manifest    … 直下の manifest.webmanifest の background_color・theme_color を明るい --bg に（自前の色なら残して報告する）
+//   manifest    … 直下の manifest.webmanifest の background_color・theme_color を明るい --bg に（自前の色なら残して報告する）。
+//                 name は start_url のページの title（D419。世界を持つリポジトリにも。本体は除く）
 //   favicon.svg … 絵は道具ごとのまま、v1 のトークンの色だけ同じ名前の皮の色（明るい表示の値）に。道具の自前の色は残す
 //   PNG         … apple-touch-icon.png・favicon-32.png・icon-192.png・icon-512.png のうち、あるものを favicon.svg から同じ大きさで
 //   og-image.png … 1200×630。皮の --bg に --text で題名の字だけ（絵・飾りなし）。題名は data/pages.json の入口の title（本体は manifest の name）
@@ -93,14 +94,22 @@ export function favicon(svg, t = tokens()) {
 }
 
 // og の題名: 入口の title（data/pages.json）。本体は manifest の name
-export function ogTitle(repoDir, root = resolve(HERE, '..')) {
+export function ogTitle(repoDir, root = resolve(HERE, '..'), sub = '') {
   const name = repoName(repoDir);
   if (name === ROOT_REPO) return JSON.parse(readFileSync(join(root, 'manifest.webmanifest'), 'utf8')).name;
   const data = JSON.parse(readFileSync(join(root, 'data', 'pages.json'), 'utf8'));
-  const page = data.pages.find(p => p.path === `/${name}/`);
-  if (!page) throw new Error(`data/pages.json に /${name}/ が無い`);
+  const path = `/${name}/${sub}`;
+  const page = data.pages.find(p => p.path === path);
+  if (!page) throw new Error(`data/pages.json に ${path} が無い`);
   return page.title;
 }
+
+// manifest の name（D419）: start_url のページの title（og と同じ出どころ）。short_name はホーム画面の名で役目が違うので触らない。
+// 本体の manifest の name は og の題名の出どころそのものなので書かない。世界を持つリポジトリにも当てる（色ではないので D369 の外）
+export function manifestName(json, title) {
+  return json.replace(/^(  "name"\s*:\s*)"(?:[^"\\]|\\.)*"/m, `$1${JSON.stringify(title)}`);
+}
+const startSub = (json) => (JSON.parse(json).start_url || './').replace(/^\.\//, '').replace(/[?#].*$/, '');
 
 export function ogHtml(title, t = tokens()) {
   const esc = title.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -151,8 +160,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     return true;
   };
   for (const d of dirs) {
-    if (isWorld(d)) { console.log(`外す ${d}（世界を持つ。D369）`); continue; }
     const site = siteDir(d);
+    const mfn = join(site, 'manifest.webmanifest');
+    if (repoName(d) !== ROOT_REPO && existsSync(mfn)) {
+      const have = readFileSync(mfn, 'utf8');
+      put(mfn, have, manifestName(have, ogTitle(d, undefined, startSub(have))));
+    }
+    if (isWorld(d)) { console.log(`外す ${d}（世界を持つ。D369）`); continue; }
     for (const f of pages(site)) {
       const have = readFileSync(f, 'utf8');
       const { text, own } = themeColor(have, t);

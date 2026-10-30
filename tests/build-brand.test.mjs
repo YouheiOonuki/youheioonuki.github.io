@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { tokens } from '../tools/build-404.mjs';
-import { themeColor, manifest, favicon, ogHtml, ogTitle, V1_TO_SKIN } from '../tools/build-brand.mjs';
+import { themeColor, manifest, manifestName, favicon, ogHtml, ogTitle, V1_TO_SKIN } from '../tools/build-brand.mjs';
 
 const t = tokens();
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -52,4 +52,18 @@ test('og の題名: 道具は pages.json の入口の title、本体は manifest
   const pages = JSON.parse(readFileSync(new URL('../data/pages.json', import.meta.url), 'utf8')).pages;
   assert.equal(ogTitle('../lifeplan', root), pages.find(p => p.path === '/lifeplan/').title);
   assert.equal(ogTitle(root, root), JSON.parse(readFileSync(new URL('../manifest.webmanifest', import.meta.url), 'utf8')).name);
+});
+
+test('manifest の name: 上の段の name だけを題名に、short_name とショートカットの name は残す（D419）', () => {
+  const json = '{\n  "name": "古い名｜yorozu-craft",\n  "short_name": "古い",\n  "shortcuts": [\n    { "name": "毎日 1 問", "url": "./mainichi/" }\n  ]\n}';
+  const out = manifestName(json, '新しい "名"');
+  assert.equal(JSON.parse(out).name, '新しい "名"');
+  assert.equal(JSON.parse(out).short_name, '古い');
+  assert.equal(JSON.parse(out).shortcuts[0].name, '毎日 1 問');
+  assert.equal(manifestName(out, '新しい "名"'), out, '2 回目は変わらない');
+});
+
+test('og の題名は start_url のページも引ける（大時計の manifest）', () => {
+  const pages = JSON.parse(readFileSync(new URL('../data/pages.json', import.meta.url), 'utf8')).pages;
+  assert.equal(ogTitle('../otasuke', root, 'tokei/'), pages.find(p => p.path === '/otasuke/tokei/').title);
 });
