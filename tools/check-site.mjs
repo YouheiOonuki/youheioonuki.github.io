@@ -78,7 +78,7 @@ const REVIEW_NO_AD_PAGES = new Set([
   '/loan-sim/',
   '/nittei-kouho/',
   '/denki-dai/',
-  '/seido-keisan/nenmatsu/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/iryohi/', '/seido-keisan/koko-mushoka/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/',
+  '/seido-keisan/nenmatsu/', '/seido-keisan/nenmatsu/hoken/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/iryohi/', '/seido-keisan/koko-mushoka/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/',
   '/tabi-shiori/',
   '/gakushu-print/en/', '/gakushu-print/booklet/', '/gakushu-print/angou/',
   '/bingo/cards.html', '/bingo/en/cards.html',
