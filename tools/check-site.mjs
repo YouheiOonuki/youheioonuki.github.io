@@ -571,6 +571,29 @@ for (const url of pages) {
   else nearGuides++;
 }
 
+// 道具の画面の集合（ROADMAP 7.172 D462）: robots → sitemap で辿れる「/ で終わる・noindex でない」ページの path ＝ pages.json の pages＋en.pages の path。
+// pages.json は「トップから届く道具と子ページ」なので、道具でないページだけを理由つきでここに挙げる（黙って外さない）
+const NOT_TOOL_SCREENS = {
+  '/': 'トップ', '/en/': '英語のトップ', '/all/': 'すべての道具（一覧）', '/updates/': '更新情報', '/print/': '印刷物の一覧', '/api/': 'API の案内',
+  '/hade/': '別館（K170。演出の別枠でトップから張らない）', '/hade/roulette/': '別館（K180）',
+};
+{
+  const { readFileSync } = await import('node:fs');
+  const pj = JSON.parse(readFileSync(new URL('../data/pages.json', import.meta.url), 'utf8'));
+  const rows = new Set([...pj.pages, ...((pj.en && pj.en.pages) || [])].map(p => p.path));
+  const screens = new Set();
+  for (const url of pages) {
+    const p = path(url);
+    if (!p.endsWith('/') || p in NOT_TOOL_SCREENS) continue;
+    const r = await get(url);
+    if (r.status !== 200 || /<meta\s+name="robots"\s+content="[^"]*noindex/i.test(r.body)) continue;
+    screens.add(p);
+  }
+  for (const p of screens) if (!rows.has(p)) fail(p, 'sitemap にあるのに pages.json に行が無い（公開した画面は同じ枝で行を起こす。D462）');
+  for (const p of rows) if (!screens.has(p)) fail(p, 'pages.json に行があるのに sitemap で辿れない（または noindex）');
+  notes.push(`道具の画面 ${screens.size} 件 ＝ pages.json ${rows.size} 行（道具でないページ ${Object.keys(NOT_TOOL_SCREENS).length} 件は除く）`);
+}
+
 // 結果
 console.log(`確認先: ${BASE}`);
 console.log(`ページ ${pages.size} 件、サイト内リンク ${internalLinks.size} 件、ツール ${toolsOnTop.size} 件（${[...toolsOnTop].join(', ')}）、近い道具が画面と同じ使い方 ${nearGuides} 件`);
