@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { nearBlock, injectNear } from '../tools/build-near.mjs';
+import { nearBlock, injectNear, GUIDE_ANCHORS } from '../tools/build-near.mjs';
 
 const items = [{ url: '/seido-keisan/iryohi/', title: '医療費控除の計算', note: 'いくら戻るかの目安' }, { url: '/otasuke/kenshin/', title: '健診グラフ<b>', note: '' }];
 
@@ -25,6 +25,18 @@ test('置き場は「この道具について」の直前、無ければ </main>
   const plain = injectNear('<main><p>x</p></main>', items);
   assert.ok(plain.indexOf('data-near-block') < plain.indexOf('</main>'));
   assert.equal(injectNear('<div>main が無い</div>', items), '<div>main が無い</div>');
+});
+
+test('使い方（guide.html）には本文の末尾（</main> の直前、フッターの前）に同じ欄を入れる。about-tool の印があっても置き場は </main>', () => {
+  const guide = '<main><h2>使い方</h2><h3 id="changelog">更新履歴</h3></main><footer>f</footer>';
+  const out = injectNear(guide, items, 'ja', GUIDE_ANCHORS);
+  assert.ok(out.indexOf('id="changelog"') < out.indexOf('data-near-block'));
+  assert.ok(out.indexOf('data-near-block') < out.indexOf('</main>'));
+  assert.equal(out.match(/data-near-link/g).length, items.length);
+  assert.equal(injectNear(out, items, 'ja', GUIDE_ANCHORS), out, '2 度目は何もしない');
+  const withAbout = '<main><!-- about-tool: x --><p>y</p></main>';
+  assert.ok(injectNear(withAbout, items, 'ja', GUIDE_ANCHORS).indexOf('data-near-block') > withAbout.indexOf('<p>y</p>'));
+  assert.equal(injectNear(guide, [], 'ja', GUIDE_ANCHORS), guide, '0 個なら出さない');
 });
 
 test('near.js は data-near-link を押したときだけ、行き先の道と near_click を送る（入力は読まない）', () => {
