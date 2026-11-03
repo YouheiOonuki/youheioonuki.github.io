@@ -14,7 +14,8 @@
     ],
     "3": [
       {"path": "/gengo/gakunen/", "reason": "新年度の学年を生年月日から。", "source": "MAINTENANCE L24"},
-      {"path": "/gakushu-print/", "reason": "春休みの復習と、入学の準備に。", "source": "7.23 初版（学校の年度）"}
+      {"path": "/gakushu-print/", "reason": "春休みの復習と、入学の準備に。", "source": "7.23 初版（学校の年度）"},
+      {"path": "/seido-keisan/iryohi/", "reason": "確定申告の期限の前に、去年の医療費を。", "source": "7.47-1 (c)（BUILDLOG 2026-10-12 昼）"}
     ],
     "4": [
       {"path": "/sekigae/", "reason": "新学期の席決めに。", "source": "7.23 初版（学校の年度）"},
