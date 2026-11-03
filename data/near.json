@@ -84,9 +84,9 @@
     "note": ""
    },
    {
-    "url": "/hoshizora-sanpo/",
-    "title": "ほしぞらさんぽ",
-    "note": "今夜の星空と星座"
+    "url": "/hoshizora-sanpo/shinwa/seiza/",
+    "title": "星座の由来",
+    "note": ""
    }
   ],
   "/web-metronome/drum/": [
@@ -219,14 +219,26 @@
   ],
   "/hoshizora-sanpo/shinwa/": [
    {
-    "url": "/hoshizora-sanpo/zukan/",
-    "title": "星座図鑑",
+    "url": "/hoshizora-sanpo/shinwa/seiza/",
+    "title": "星座の由来",
     "note": ""
    },
    {
-    "url": "/hoshizora-sanpo/",
-    "title": "ほしぞらさんぽ",
-    "note": "今夜の星空と星座"
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
+   }
+  ],
+  "/hoshizora-sanpo/shinwa/seiza/": [
+   {
+    "url": "/hoshizora-sanpo/shinwa/",
+    "title": "ギリシャ神話",
+    "note": ""
+   },
+   {
+    "url": "/hoshizora-sanpo/zukan/",
+    "title": "星座図鑑",
+    "note": ""
    }
   ],
   "/hoshizora-night/": [
@@ -430,8 +442,8 @@
     "note": ""
    },
    {
-    "url": "/hoshizora-sanpo/zukan/",
-    "title": "星座図鑑",
+    "url": "/hoshizora-sanpo/shinwa/seiza/",
+    "title": "星座の由来",
     "note": ""
    },
    {
@@ -481,14 +493,14 @@
     "note": "いくら戻るかの目安"
    },
    {
+    "url": "/seido-keisan/nenmatsu/hoken/",
+    "title": "保険料控除の計算（令和8年分）",
+    "note": "生命保険・地震保険の控除"
+   },
+   {
     "url": "/gakko-keisan/naishin/",
     "title": "内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）",
     "note": "都立の換算内申など"
-   },
-   {
-    "url": "/gakko-keisan/shusseki/",
-    "title": "出席日数・欠課時数の計算（あと何回休めるか）",
-    "note": ""
    }
   ],
   "/seido-keisan/kogaku-ryoyohi/": [
@@ -1098,14 +1110,31 @@
   ],
   "/seido-keisan/nenmatsu/": [
    {
+    "url": "/seido-keisan/nenmatsu/hoken/",
+    "title": "保険料控除の計算（令和8年分）",
+    "note": "生命保険・地震保険の控除"
+   },
+   {
     "url": "/seido-keisan/iryohi/",
     "title": "医療費控除の計算（令和8年分）",
     "note": "いくら戻るかの目安"
    },
    {
-    "url": "/seido-keisan/juminzei/",
-    "title": "住民税の計算・非課税判定（令和9年度）",
-    "note": "税額と非課税の判定"
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   }
+  ],
+  "/seido-keisan/nenmatsu/hoken/": [
+   {
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
+   },
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
    },
    {
     "url": "/seido-keisan/nenkin-kuriage/",
@@ -1120,9 +1149,9 @@
     "note": "還付か追徴かの目安"
    },
    {
-    "url": "/seido-keisan/iryohi/",
-    "title": "医療費控除の計算（令和8年分）",
-    "note": "いくら戻るかの目安"
+    "url": "/seido-keisan/nenmatsu/hoken/",
+    "title": "保険料控除の計算（令和8年分）",
+    "note": "生命保険・地震保険の控除"
    },
    {
     "url": "/seido-keisan/kogaku-ryoyohi/",
@@ -1132,6 +1161,11 @@
   ],
   "/seido-keisan/iryohi/": [
    {
+    "url": "/seido-keisan/nenmatsu/hoken/",
+    "title": "保険料控除の計算（令和8年分）",
+    "note": "生命保険・地震保険の控除"
+   },
+   {
     "url": "/seido-keisan/nenmatsu/",
     "title": "年末調整の計算（令和8年分）",
     "note": "還付か追徴かの目安"
@@ -1140,11 +1174,6 @@
     "url": "/seido-keisan/kogaku-ryoyohi/",
     "title": "高額療養費の計算",
     "note": "医療費の月の上限"
-   },
-   {
-    "url": "/seido-keisan/juminzei/",
-    "title": "住民税の計算・非課税判定（令和9年度）",
-    "note": "税額と非課税の判定"
    }
   ],
   "/seido-keisan/ikukyu/": [
@@ -1315,14 +1344,14 @@
   ],
   "/hoshizora-sanpo/zukan/": [
    {
+    "url": "/hoshizora-sanpo/shinwa/seiza/",
+    "title": "星座の由来",
+    "note": ""
+   },
+   {
     "url": "/hoshizora-sanpo/",
     "title": "ほしぞらさんぽ",
     "note": "今夜の星空と星座"
-   },
-   {
-    "url": "/hoshizora-sanpo/shinwa/",
-    "title": "ギリシャ神話",
-    "note": ""
    }
   ],
   "/hoshizora-sanpo/calendar/": [
@@ -1395,6 +1424,11 @@
     "url": "/seido-keisan/en/childcare-leave/",
     "title": "Japan Childcare Leave Benefit Calculator",
     "note": "Pay on maternity and childcare leave"
+   },
+   {
+    "url": "/gengo/en/school-grades/",
+    "title": "Japan School Grades by Age",
+    "note": "Grade from birth date"
    }
   ],
   "/seido-keisan/en/residence-tax/": [
@@ -1431,6 +1465,11 @@
     "url": "/seido-keisan/en/pension-refund/",
     "title": "Japan Pension Refund Calculator",
     "note": "Refund after leaving Japan"
+   },
+   {
+    "url": "/gengo/en/school-grades/",
+    "title": "Japan School Grades by Age",
+    "note": "Grade from birth date"
    }
   ],
   "/seido-keisan/en/high-cost-medical/": [
@@ -1440,9 +1479,9 @@
     "note": "Pay on maternity and childcare leave"
    },
    {
-    "url": "/seido-keisan/en/take-home-pay/",
-    "title": "Japan Take-Home Pay Calculator",
-    "note": "Salary after tax and insurance"
+    "url": "/seido-keisan/en/",
+    "title": "Japan Tax and Benefit Calculators",
+    "note": "All calculators in English"
    }
   ],
   "/seido-keisan/en/moving-checklist/": [
@@ -1457,14 +1496,72 @@
     "note": "Salary after tax and insurance"
    }
   ],
-  "/gengo/en/": [],
+  "/gengo/en/": [
+   {
+    "url": "/gengo/en/school-grades/",
+    "title": "Japan School Grades by Age",
+    "note": "Grade from birth date"
+   }
+  ],
+  "/gengo/en/school-grades/": [
+   {
+    "url": "/gengo/en/",
+    "title": "Japanese Era Converter",
+    "note": "Reiwa, Heisei and Shōwa years"
+   },
+   {
+    "url": "/seido-keisan/en/childcare-leave/",
+    "title": "Japan Childcare Leave Benefit Calculator",
+    "note": "Pay on maternity and childcare leave"
+   },
+   {
+    "url": "/seido-keisan/en/take-home-pay/",
+    "title": "Japan Take-Home Pay Calculator",
+    "note": "Salary after tax and insurance"
+   }
+  ],
+  "/seido-keisan/en/": [
+   {
+    "url": "/seido-keisan/en/high-cost-medical/",
+    "title": "Japan High-Cost Medical Expense Benefit Calculator",
+    "note": "Monthly limit on medical costs"
+   },
+   {
+    "url": "/seido-keisan/en/take-home-pay/",
+    "title": "Japan Take-Home Pay Calculator",
+    "note": "Salary after tax and insurance"
+   }
+  ],
   "/hoshizora-sanpo/en/": [
    {
     "url": "/hoshizora-night/en/",
     "title": "Night Sky Tonight, Full Version",
     "note": "Tonight’s sky, drawn large"
+   },
+   {
+    "url": "/hoshizora-sanpo/en/planisphere/",
+    "title": "Printable Planisphere",
+    "note": "Star wheel for your latitude"
    }
   ],
+  "/hoshizora-sanpo/en/planisphere/": [
+   {
+    "url": "/unplugged/en/",
+    "title": "Unplugged Coding Printables",
+    "note": "Screen-free coding lessons"
+   },
+   {
+    "url": "/bingo/en/",
+    "title": "Bingo Caller",
+    "note": "Big-screen draws and cards"
+   },
+   {
+    "url": "/hoshizora-sanpo/en/",
+    "title": "Web Planetarium",
+    "note": "Tonight’s sky for your city"
+   }
+  ],
+  "/hoshizora-sanpo/en/calendar/": [],
   "/hoshizora-night/en/": [
    {
     "url": "/hoshizora-sanpo/en/",
@@ -1485,9 +1582,9 @@
     "note": "Readings above kanji"
    },
    {
-    "url": "/bingo/en/",
-    "title": "Bingo Caller",
-    "note": "Big-screen draws and cards"
+    "url": "/hoshizora-sanpo/en/planisphere/",
+    "title": "Printable Planisphere",
+    "note": "Star wheel for your latitude"
    }
   ],
   "/furigana/en/": [
@@ -1502,6 +1599,11 @@
     "url": "/unplugged/en/",
     "title": "Unplugged Coding Printables",
     "note": "Screen-free coding lessons"
+   },
+   {
+    "url": "/hoshizora-sanpo/en/planisphere/",
+    "title": "Printable Planisphere",
+    "note": "Star wheel for your latitude"
    },
    {
     "url": "/gakushu-print/en/",
@@ -1520,6 +1622,11 @@
     "url": "/gakushu-print/en/",
     "title": "Hiragana & Katakana Practice Sheets",
     "note": "Printable kana tracing sheets"
+   },
+   {
+    "url": "/hoshizora-sanpo/en/planisphere/",
+    "title": "Printable Planisphere",
+    "note": "Star wheel for your latitude"
    }
   ],
   "/pac-tester/en/": [],
