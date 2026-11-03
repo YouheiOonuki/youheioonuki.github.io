@@ -49,10 +49,5 @@ export const META_ONLY_PAGES = new Set([
   '/updates/',             // 更新情報（案内のページ。about と同じ扱いで道具の 4 つは求めない: yorozu-plans D411）
 ]);
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
-// 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
-const EN_ONLY_PAGES = new Set([
-  '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
-  '/tameshite/en/sleep-calculator/', '/tameshite/en/sleep-calculator/guide.html',
-]);
 export const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/', '/hade/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）。hade はド派手版で、偽の警告の演出は AdSense の規約に触れるので全ページ広告なし（D303）
 export const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
