@@ -1,6 +1,40 @@
 {
  "about": "道具のページの近い道具（yorozu-ai scripts/near-tools.mjs が困りごと検索の索引から作る。手で直さない。D368）",
  "near": {
+  "/seido-keisan/gensen/": [
+   {
+    "url": "/seido-keisan/nenmatsu/",
+    "title": "年末調整の計算（令和8年分）",
+    "note": "還付か追徴かの目安"
+   },
+   {
+    "url": "/seido-keisan/juminzei/",
+    "title": "住民税の計算・非課税判定（令和9年度）",
+    "note": "税額と非課税の判定"
+   },
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   }
+  ],
+  "/seido-keisan/shobyo/": [
+   {
+    "url": "/seido-keisan/ikukyu/",
+    "title": "育休・産休の給付金の計算",
+    "note": "給付金の額と時短の比較"
+   },
+   {
+    "url": "/seido-keisan/kogaku-ryoyohi/",
+    "title": "高額療養費の計算",
+    "note": "医療費の月の上限"
+   },
+   {
+    "url": "/seido-keisan/dattai-ichiji/",
+    "title": "脱退一時金の計算",
+    "note": "帰国後の年金の払い戻し"
+   }
+  ],
   "/easy-split/quick/": [
    {
     "url": "/easy-split/",
@@ -125,14 +159,14 @@
     "note": "生年月日から学年"
    },
    {
+    "url": "/gengo/",
+    "title": "和暦・西暦 変換と年齢早見表",
+    "note": "和暦と西暦、学年"
+   },
+   {
     "url": "/gakko-keisan/atonannichi/",
     "title": "○○まであと何日",
     "note": ""
-   },
-   {
-    "url": "/lifeplan/",
-    "title": "ライフプラン 簡易シミュレーション",
-    "note": "家計の先行きを試算"
    }
   ],
   "/web-metronome/capo/": [
@@ -154,9 +188,9 @@
     "note": ""
    },
    {
-    "url": "/gengo/gakunen/",
-    "title": "学年早見表（生年月日・和暦・年齢）",
-    "note": "生年月日から学年"
+    "url": "/otasuke/kenshin/",
+    "title": "健診結果の経年グラフ",
+    "note": "健診の値をグラフに"
    }
   ],
   "/hoshizora-sanpo/tsuki/": [
@@ -262,14 +296,14 @@
     "note": "前回と同じ席を避ける"
    },
    {
-    "url": "/gakushu-print/angou/",
-    "title": "暗号メーカー",
-    "note": ""
-   },
-   {
     "url": "/web-roulette/",
     "title": "無料ルーレット・くじ引きアプリ",
     "note": "回して決める"
+   },
+   {
+    "url": "/gakushu-print/angou/",
+    "title": "暗号メーカー",
+    "note": ""
    }
   ],
   "/web-metronome/piano/": [
@@ -413,9 +447,9 @@
     "note": "給付金の額と時短の比較"
    },
    {
-    "url": "/seido-keisan/iryohi/",
-    "title": "医療費控除の計算（令和8年分）",
-    "note": "いくら戻るかの目安"
+    "url": "/seido-keisan/shobyo/",
+    "title": "傷病手当金の計算",
+    "note": "1日あたりと支給額"
    },
    {
     "url": "/seido-keisan/kogaku-ryoyohi/",
@@ -447,14 +481,14 @@
     "note": "いくら戻るかの目安"
    },
    {
-    "url": "/gengo/gakunen/",
-    "title": "学年早見表（生年月日・和暦・年齢）",
-    "note": "生年月日から学年"
-   },
-   {
     "url": "/gakko-keisan/naishin/",
     "title": "内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）",
     "note": "都立の換算内申など"
+   },
+   {
+    "url": "/gakko-keisan/shusseki/",
+    "title": "出席日数・欠課時数の計算（あと何回休めるか）",
+    "note": ""
    }
   ],
   "/seido-keisan/kogaku-ryoyohi/": [
@@ -464,9 +498,9 @@
     "note": "いくら戻るかの目安"
    },
    {
-    "url": "/seido-keisan/ikukyu/",
-    "title": "育休・産休の給付金の計算",
-    "note": "給付金の額と時短の比較"
+    "url": "/seido-keisan/shobyo/",
+    "title": "傷病手当金の計算",
+    "note": "1日あたりと支給額"
    },
    {
     "url": "/seido-keisan/nenkin-kuriage/",
@@ -804,19 +838,14 @@
   ],
   "/gengo/yakudoshi/": [
    {
-    "url": "/gengo/gakunen/",
-    "title": "学年早見表（生年月日・和暦・年齢）",
-    "note": "生年月日から学年"
-   },
-   {
     "url": "/gengo/",
     "title": "和暦・西暦 変換と年齢早見表",
     "note": "和暦と西暦、学年"
    },
    {
-    "url": "/gengo/kaiki/",
-    "title": "回忌の計算（一周忌〜五十回忌・四十九日）",
-    "note": "一周忌〜五十回忌の年"
+    "url": "/gengo/gakunen/",
+    "title": "学年早見表（生年月日・和暦・年齢）",
+    "note": "生年月日から学年"
    }
   ],
   "/gengo/kaiki/": [
@@ -831,9 +860,9 @@
     "note": "還付か追徴かの目安"
    },
    {
-    "url": "/gengo/yakudoshi/",
-    "title": "厄年・還暦 早見表（男女・生まれ年）",
-    "note": "生まれ年から早見"
+    "url": "/seido-keisan/dattai-ichiji/",
+    "title": "脱退一時金の計算",
+    "note": "帰国後の年金の払い戻し"
    }
   ],
   "/gengo/gakunen/": [
@@ -940,14 +969,14 @@
     "note": ""
    },
    {
+    "url": "/seido-keisan/shobyo/",
+    "title": "傷病手当金の計算",
+    "note": "1日あたりと支給額"
+   },
+   {
     "url": "/seido-keisan/dattai-ichiji/",
     "title": "脱退一時金の計算",
     "note": "帰国後の年金の払い戻し"
-   },
-   {
-    "url": "/seido-keisan/ikukyu/",
-    "title": "育休・産休の給付金の計算",
-    "note": "給付金の額と時短の比較"
    }
   ],
   "/gakko-keisan/naishin/": [
@@ -1120,14 +1149,14 @@
   ],
   "/seido-keisan/ikukyu/": [
    {
+    "url": "/seido-keisan/shobyo/",
+    "title": "傷病手当金の計算",
+    "note": "1日あたりと支給額"
+   },
+   {
     "url": "/seido-keisan/shienkin/",
     "title": "子ども・子育て支援金 いくら引かれる",
     "note": "保険料への上乗せ額"
-   },
-   {
-    "url": "/seido-keisan/nenmatsu/",
-    "title": "年末調整の計算（令和8年分）",
-    "note": "還付か追徴かの目安"
    },
    {
     "url": "/seido-keisan/kogaku-ryoyohi/",
@@ -1147,9 +1176,9 @@
     "note": "還付か追徴かの目安"
    },
    {
-    "url": "/seido-keisan/ikukyu/",
-    "title": "育休・産休の給付金の計算",
-    "note": "給付金の額と時短の比較"
+    "url": "/seido-keisan/shobyo/",
+    "title": "傷病手当金の計算",
+    "note": "1日あたりと支給額"
    }
   ],
   "/seido-keisan/": [
@@ -1189,9 +1218,9 @@
     "note": ""
    },
    {
-    "url": "/seido-keisan/nenkin-kuriage/",
-    "title": "年金の繰上げ・繰下げの計算",
-    "note": "受け取る年齢で比べる"
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
    }
   ],
   "/gakushu-print/": [
@@ -1322,14 +1351,14 @@
   ],
   "/web-roulette/": [
    {
-    "url": "/bingo/",
-    "title": "大人数ビンゴ抽選",
-    "note": "大画面とカード印刷"
-   },
-   {
     "url": "/web-roulette/amida/",
     "title": "あみだくじを作る",
     "note": "作って印刷・共有"
+   },
+   {
+    "url": "/bingo/",
+    "title": "大人数ビンゴ抽選",
+    "note": "大画面とカード印刷"
    },
    {
     "url": "/gakushu-print/tokei/",
@@ -1354,11 +1383,6 @@
     "url": "/gakko-keisan/hensachi/",
     "title": "偏差値の計算（順位の目安・5教科）",
     "note": "点数から偏差値と順位"
-   },
-   {
-    "url": "/easy-split/kakeibo/",
-    "title": "家計簿テンプレート",
-    "note": "夫婦の按分つき家計簿"
    }
   ],
   "/seido-keisan/en/take-home-pay/": [
