@@ -555,9 +555,25 @@ for (const c of checkDates) {
   else if (c.months >= c.limit - 2) notes.push(`${c.f}: 確認日 ${c.date} から ${c.months} か月（期限 ${c.limit} か月）。そろそろ出典を確かめ直す`);
 }
 
+// 近い道具（ROADMAP 7.170 D460）: 道具の画面に欄があれば、その使い方（guide.html）にも同じリンクが同じ順で並ぶ。リンク先の 200 はサイト内リンクの確認が見る
+const nearLinks = html => { const m = html.match(/<section[^>]*data-near-block[\s\S]*?<\/section>/); return m ? hrefs(m[0]) : null; };
+let nearGuides = 0;
+for (const url of pages) {
+  if (!url.endsWith('/guide.html')) continue;
+  const index = url.slice(0, -'guide.html'.length);
+  if (!cache.has(index)) continue;
+  const [g, s] = [await get(url), await get(index)];
+  if (g.status !== 200 || s.status !== 200) continue;
+  const want = nearLinks(s.body), got = nearLinks(g.body);
+  if (!want) continue;
+  if (!got) { fail(path(url), `近い道具の欄が無い（画面 ${path(index)} には ${want.length} 本）`); continue; }
+  if (want.join(' ') !== got.join(' ')) fail(path(url), `近い道具が画面と違う（画面 ${want.join(' ')} / 使い方 ${got.join(' ')}）`);
+  else nearGuides++;
+}
+
 // 結果
 console.log(`確認先: ${BASE}`);
-console.log(`ページ ${pages.size} 件、サイト内リンク ${internalLinks.size} 件、ツール ${toolsOnTop.size} 件（${[...toolsOnTop].join(', ')}）`);
+console.log(`ページ ${pages.size} 件、サイト内リンク ${internalLinks.size} 件、ツール ${toolsOnTop.size} 件（${[...toolsOnTop].join(', ')}）、近い道具が画面と同じ使い方 ${nearGuides} 件`);
 for (const c of checkDates) console.log(`確認日 ${c.tool}  ${c.f}  ${c.date}（${c.kind}、${c.months} か月・期限 ${c.limit} か月）`);
 for (const n of notes) console.log(`メモ  ${n}`);
 if (failures.length) {
