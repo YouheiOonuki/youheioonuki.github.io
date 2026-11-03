@@ -556,7 +556,7 @@ for (const c of checkDates) {
 }
 
 // 近い道具（ROADMAP 7.170 D460）: 道具の画面に欄があれば、その使い方（guide.html）にも同じリンクが同じ順で並ぶ。リンク先の 200 はサイト内リンクの確認が見る
-const nearLinks = html => { const m = html.match(/<section[^>]*data-near-block[\s\S]*?<\/section>/); return m ? hrefs(m[0]) : null; };
+const nearLinks = html => { const m = html.match(/<section\b[^>]*data-near-block[\s\S]*?<\/section>/); return m ? hrefs(m[0]) : null; };
 let nearGuides = 0;
 for (const url of pages) {
   if (!url.endsWith('/guide.html')) continue;
