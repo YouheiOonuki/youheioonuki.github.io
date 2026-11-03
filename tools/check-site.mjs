@@ -575,7 +575,8 @@ for (const url of pages) {
 // pages.json は「トップから届く道具と子ページ」なので、道具でないページだけを理由つきでここに挙げる（黙って外さない）
 const NOT_TOOL_SCREENS = {
   '/': 'トップ', '/en/': '英語のトップ', '/all/': 'すべての道具（一覧）', '/updates/': '更新情報', '/print/': '印刷物の一覧', '/api/': 'API の案内',
-  '/hade/': '別館（K170。演出の別枠でトップから張らない）', '/hade/roulette/': '別館（K180）',
+  // 別館（K170・K180）。D348: AdSense の結果が出るまでトップ・pages.json に載せない。結果が出たら pages.json に行を起こしてこの 2 行を消す
+  '/hade/': '別館（D348: AdSense の結果まで pages.json に載せない）', '/hade/roulette/': '別館（D348: AdSense の結果まで pages.json に載せない）',
 };
 {
   const { readFileSync } = await import('node:fs');
