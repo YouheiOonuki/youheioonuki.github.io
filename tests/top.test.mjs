@@ -73,6 +73,32 @@ test('いまの時期: 日付で月が切り替わる', () => {
   assert.match(html, /hayamiban/);
 });
 
+test('いまの時期の日付の窓（Q-081）: 2027-01-20〜02-03 だけ 3 枠目が恵方の行に入れ替わる。件数は 3 のまま', () => {
+  const sd = seasonData(data, season, 'ja');
+  const at = (y, m, d) => YT.seasonFor(sd, new Date(y, m - 1, d)).map((x) => x.path);
+  const EHO = '/gengo/guide.html#q-eho';
+  // 境目の 4 日: 窓の外は月の表のまま、窓の中は replaces の行（1 月 hyakunin、2 月 koko-mushoka）だけがその位置で恵方の行になる
+  const OLD = { 1: '/quiz-hiroba/hyakunin/', 2: '/seido-keisan/koko-mushoka/' };
+  for (const [[y, m, d], on] of [[[2027, 1, 19], false], [[2027, 1, 20], true], [[2027, 2, 3], true], [[2027, 2, 4], false]]) {
+    const p = at(y, m, d), name = `${y}-${m}-${d}`, month = season.months[String(m)].map((x) => x.path);
+    assert.equal(p.length, 3, name);
+    assert.equal(p.includes(EHO), on, name);
+    assert.deepEqual(p, on ? month.map((x) => (x === OLD[m] ? EHO : x)) : month, name);
+  }
+  // 窓は year の年だけ（2028 年の同じ日は出ない）
+  assert.ok(!at(2028, 1, 25).includes(EHO));
+  // 鍵が窓の出入りで変わる（top.js はこれで入れ替える）
+  assert.notEqual(YT.seasonKey(sd, new Date(2027, 0, 19)), YT.seasonKey(sd, new Date(2027, 0, 20)));
+  assert.notEqual(YT.seasonKey(sd, new Date(2027, 1, 3)), YT.seasonKey(sd, new Date(2027, 1, 4)));
+  // 静的な HTML も作った日で出る（行の形は月の行と同じ、3 件）
+  const html = buildAll(data, season, new Date(2027, 0, 25))['index.html'](read('index.html'));
+  const ul = html.match(/<ul class="yt-season"[\s\S]*?<\/ul>/)[0];
+  assert.match(ul, /<li><a href="\.\/gengo\/guide\.html#q-eho"><strong><img class="yt-ico" src="\.\/gengo\/favicon\.svg"[^>]*>[^<]+<\/strong><span>2027 年の恵方は北北西です。<\/span><\/a><\/li>/);
+  assert.equal([...ul.matchAll(/<li><a href=/g)].length, 3);
+  // 英語の表には窓が無い
+  assert.deepEqual(seasonData(data, season, 'en').windows, []);
+});
+
 test('season.json: 各行のページが pages.json にあり、出典があり、各月 3 件まで（日英）', () => {
   for (const [lang, src, pages] of [['ja', season.months, data.pages], ['en', season.en, data.en.pages]]) {
     const have = new Set(pages.map((p) => p.path));

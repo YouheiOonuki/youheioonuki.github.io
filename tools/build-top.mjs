@@ -1,7 +1,7 @@
 // トップ・すべての道具・用途別の入口・英語トップの、データから作る欄を作り直す（yorozu-plans 企画書 59・ROADMAP 7.23「トップの構成」）
 // 使い方: node tools/build-top.mjs          … 下の PAGES の <!-- top:<欄>:begin --> 〜 end と <!-- new-tools:begin --> 〜 end を書き換える
 //         node tools/build-top.mjs --check  … 書き換えが要るか（要れば終了コード 1。「いまの時期」の月の違いは見ない）
-// データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 最大 3 ページと理由）
+// データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 最大 3 ページと理由。日付の窓 windows はその間だけ 1 行を入れ替える）
 // 欄:
 //   search   … 検索欄（端末の中だけで絞る。top.js）       season … いまの時期（作った日の月。ページを開いた月が違えば top.js が入れ替える）
 //   sections … 用途の節（各節 priority の上位 VISIBLE 行、残りは <details>。新しいツールの節を NEW_TOOLS_BEFORE の前に。7.24.1・D323）   all … すべての道具（/all/）
@@ -226,13 +226,27 @@ export function seasonData(data, season, lang = 'ja') {
       return { path: x.path, name: lang === 'en' ? p.title : label(p), reason: x.reason };
     });
   }
-  return { months };
+  // 日付の窓（日本語だけ）: page は pages.json の行（名前とアイコン）、path はリンク先（そのページの使い方の節など）。
+  // 入れ替える行（replaces[月]）がその月の表に無ければ止める（件数は月の表のまま変わらない）
+  const windows = lang === 'en' ? [] : (season.windows || []).map((w) => {
+    const p = map.get(w.page);
+    const at = `season window ${w.year}-${w.from}`;
+    if (!p) throw new Error(`${at} の page ${w.page} が pages に無い`);
+    if (!w.path || !w.path.startsWith(w.page)) throw new Error(`${at} の path ${w.path} が page ${w.page} の下に無い`);
+    if (!Number.isInteger(w.year) || !/^\d\d-\d\d$/.test(w.from) || !/^\d\d-\d\d$/.test(w.to) || w.from > w.to) throw new Error(`${at} の year・from・to（"MM-DD"）`);
+    if (!w.source) throw new Error(`${at} に出典（source）が無い`);
+    const ms = Object.keys(w.replaces || {});
+    if (!ms.length) throw new Error(`${at} に replaces が無い`);
+    for (const m of ms) if (!(months[m] || []).some((x) => x.path === w.replaces[m])) throw new Error(`${at} の ${m} 月に ${w.replaces[m]} が無い`);
+    return { year: w.year, from: w.from, to: w.to, replaces: w.replaces, path: w.path, name: label(p), reason: w.reason };
+  });
+  return { months, windows };
 }
 function seasonHtml(data, season, lang = 'ja', base = './', date = new Date()) {
   const sd = seasonData(data, season, lang);
   const m = date.getMonth() + 1;
   const icons = lang === 'ja';
-  return `<ul class="yt-season" data-season-month="${m}" data-base="${base}"${icons ? ' data-icons' : ''}>${YT.seasonItemsHtml(YT.seasonFor(sd, date), base, icons)}</ul>`;
+  return `<ul class="yt-season" data-season-month="${m}" data-season-key="${YT.seasonKey(sd, date)}" data-base="${base}"${icons ? ' data-icons' : ''}>${YT.seasonItemsHtml(YT.seasonFor(sd, date), base, icons)}</ul>`;
 }
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 function dataHtml(data, season, lang = 'ja') {
