@@ -12,6 +12,7 @@ const BEACON_TOKEN = 'b79bf821e1fd4b6683866d493b1de426';
 
 // 決まりの例外（理由つき）
 import { META_ONLY_PAGES, META_ONLY_PREFIXES, isMetaOnly } from './ad-lists.mjs';   // 広告なしの画面の一覧（正本は ad-lists.mjs）
+import { ldBlocks, nameMismatches, faqDiff } from './jsonld.mjs';                     // JSON-LD と画面の突き合わせ（Q-074）
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
 const EN_ONLY_PAGES = new Set([
   '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
@@ -350,6 +351,16 @@ await pool([...pages], 6, async (url) => {
   const expect = 'https://yorozu-craft.com' + p.replace(/index\.html$/, '');
   if (!canon) fail(p, 'canonical が無い');
   else if (canon !== expect) fail(p, `canonical が ${canon}（${expect} のはず）`);
+
+  // JSON-LD（yorozu-plans ROADMAP 7.181・QUEUE Q-074。README「OGP / JSON-LD」）: JSON として読める、
+  // WebApplication・WebPage の name ＝ h1 の文、FAQPage の問いの集合 ＝ 画面の「よくある質問」の節の問いの集合
+  for (const b of ldBlocks(html)) if (b.error) fail(p, `JSON-LD が JSON として読めない（${b.error}）`);
+  for (const x of nameMismatches(html)) fail(p, `JSON-LD の ${x.type} の name「${x.name}」が h1「${x.h1 ?? '無し'}」と違う（name は h1 の文に揃える）`);
+  {
+    const d = faqDiff(html);
+    if (d && d.onlyScreen.length) fail(p, `画面の「よくある質問」にあって FAQPage に無い問い: ${d.onlyScreen.join(' / ')}`);
+    if (d && d.onlyLd.length) fail(p, `FAQPage にあって画面の「よくある質問」に無い問い: ${d.onlyLd.join(' / ')}`);
+  }
 
   // ツールのページは共通の運営者情報・プライバシーポリシーへリンクする
   // 英語ページ（<html lang="en">）は英語の共通ページ（/en/…）へ向け、日本語の共通ページには向けない（README「ツールを追加するとき」23）

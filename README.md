@@ -206,7 +206,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | 新しいツールの作り方 | 非公開の雛形リポジトリ `yorozu-template`（GitHub の Template repository）から作る。`<head>` の雛形（OGP・JSON-LD・AdSense・ビーコン・アイコン）、`guide.html`、`404.html`、`LICENSE`、`.nojekyll`、`test.yml`、PWA 用の `sw.js`・manifest は雛形に入っているので、上の手順のコード片を毎回コピーしなくてよい |
 | ビルドスクリプト | 共通のビルドは持たない。素の HTML・CSS・JS をリポジトリ直下から公開する（単一 HTML へのビルドは撤回）。同梱ライブラリがあるツールだけ、必要なら `build.mjs` を持つ |
 | 共通 CSS | ドメイン直下の共通 CSS は読まない（Service Worker が他ツールのファイルを自分のキャッシュに入れてしまうのを避けるため）。色・字・余白のトークンと部品は `tools/common/v2/` を正本にし、各ツールの `style.css` の先頭に**同じ中身を写して**持つ（下の「共通の部品とトークン」。v1 2026-10-03、v2 2026-10-18） |
-| OGP / JSON-LD | 雛形の `index.html`（`WebApplication`）と `guide.html`（`FAQPage`）で固定。`meta keywords`・`meta author` は入れない |
+| OGP / JSON-LD | 雛形の `index.html`（`WebApplication`）と `guide.html`（`FAQPage`）で固定。`meta keywords`・`meta author` は入れない。**`WebApplication`・`WebPage` の `name` はそのページの h1 の文**（title はサイト名と検索語を含むので使わない）、**`FAQPage` の問いは画面の「よくある質問」の節の問いと同じ集合**（増やさない・減らさない。yorozu-plans ROADMAP 7.181） |
 | 共通の確認テスト | このリポジトリの `tools/check-site.mjs` を GitHub Actions で週 1 回実行し、全ツールの公開ページを機械的に確かめる（下の「共通の確認テスト」） |
 | フォント | 端末のフォント（「ツールを追加するとき」の 9。経緯は下） |
 
@@ -238,6 +238,7 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - `robots.txt` の各 sitemap と、sitemap に載っている全ページが 200
 - トップのツール一覧と `robots.txt` の sitemap が一致している
 - 各ページ: AdSense の meta が 1 個・スクリプトが 1 個（全画面の本体は meta だけ）、手動・空の広告枠が無い、Cloudflare ビーコンがフッターの後に 1 個、canonical が自分の公開 URL、ツールのページは共通の運営者情報・プライバシーポリシーへリンクしている（noindex のページは省略）
+- 各ページの JSON-LD（`tools/jsonld.mjs`）: JSON として読める、`WebApplication`・`WebPage` の `name` ＝ h1 の文、`FAQPage` の問いの集合 ＝ 画面の「よくある質問」の節（その h2 から次の h2 まで）の `dt`（`dt` が無ければ `h3`）の集合（上の「OGP / JSON-LD」。noindex のページは省略）
 - 英語ページ（`<html lang="en">`）: 共通ページへのリンクは英語版（`/en/about.html`・`/en/privacy-policy.html`）であること（日本語の共通ページへのリンクは NG）。`hreflang="ja"` の対のページがあり（200）、そのページが `hreflang="en"` でこのページの URL を指し返していること。`hreflang="x-default"` があること。逆に、日本語ページに `hreflang="en"` があれば、その英語ページが 200 で `hreflang="ja"` で指し返していること
 - 英語の共通ページ（`/en/about.html`・`/en/privacy-policy.html`）と英語のトップ（`/en/`）は、ルートの sitemap.xml に載っていれば巡回する（ツールの英語ページは各ツールの sitemap に載せる）
 - 英語のトップ（`/en/`）の一覧と、sitemap に `/<リポジトリ名>/en/` を載せているツールが一致している（英語版を足したのに英語のトップに載せ忘れた、またはその逆）。ルートの sitemap.xml に `/en/` が無いときは省略
