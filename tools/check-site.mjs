@@ -600,6 +600,23 @@ for (const url of pages) {
   else nearGuides++;
 }
 
+// 画面と使い方の双方向リンク（ROADMAP 7.183 Q-086）: sitemap に画面（/x/）と使い方（/x/guide.html）が両方ある組は、画面から使い方へ、使い方から画面へ <a> がある
+{
+  const sameDoc = (h, from, to) => { try { const u = new URL(h, from); u.hash = ''; u.search = ''; return u.href.replace(/index\.html$/, '') === to; } catch { return false; } };
+  let pairs = 0;
+  for (const url of pages) {
+    if (!url.endsWith('/guide.html')) continue;
+    const index = url.slice(0, -'guide.html'.length);
+    if (!pages.has(index)) continue;
+    const [g, s] = [await get(url), await get(index)];
+    if (g.status !== 200 || s.status !== 200) continue;
+    pairs++;
+    if (!hrefs(s.body).some(h => sameDoc(h, index, url))) fail(path(index), `使い方（${path(url)}）へのリンクが無い`);
+    if (!hrefs(g.body).some(h => sameDoc(h, url, index))) fail(path(url), `画面（${path(index)}）へのリンク（「○○を使う」）が無い`);
+  }
+  notes.push(`画面と使い方の双方向リンク: ${pairs} 組`);
+}
+
 // 道具の画面の集合（ROADMAP 7.172 D462）: robots → sitemap で辿れる「/ で終わる・noindex でない」ページの path ＝ pages.json の pages＋en.pages の path。
 // pages.json は「トップから届く道具と子ページ」なので、道具でないページだけを理由つきでここに挙げる（黙って外さない）
 const NOT_TOOL_SCREENS = {
