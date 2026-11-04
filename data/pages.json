@@ -130,7 +130,7 @@
       {"path": "/seido-keisan/en/childcare-leave/", "date": "2026-10-03", "title": "Japan Childcare Leave Benefit Calculator", "note": "Pay on maternity and childcare leave", "aliases": ["parental leave", "maternity"]},
       {"path": "/seido-keisan/en/high-cost-medical/", "date": "2026-10-03", "title": "Japan High-Cost Medical Expense Benefit Calculator", "note": "Monthly limit on medical costs", "aliases": ["medical bills", "hospital"]},
       {"path": "/seido-keisan/en/moving-checklist/", "date": "2026-10-03", "title": "Japan Moving Checklist for Foreign Residents", "note": "What to do when you move", "aliases": ["moving", "address change"]},
-      {"path": "/gengo/en/", "date": "2026-09-24", "title": "Japanese Era Converter", "note": "Reiwa, Heisei and Shōwa years", "aliases": ["Reiwa", "wareki", "age"]},
+      {"path": "/gengo/en/", "date": "2026-09-24", "title": "Japanese Year Converter", "note": "Reiwa, Heisei and Shōwa years", "aliases": ["Reiwa", "wareki", "age"]},
       {"path": "/gengo/en/school-grades/", "date": "2026-10-01", "title": "Japan School Grades by Age", "note": "Grade from birth date", "aliases": ["school year", "April 2 cutoff", "gakunen"]},
       {"path": "/seido-keisan/en/", "date": "2026-10-03", "title": "Japan Tax and Benefit Calculators", "note": "All calculators in English", "aliases": ["Japan tax", "social insurance", "benefits"]},
       {"path": "/hoshizora-sanpo/en/", "date": "2026-09-24", "title": "Web Planetarium", "note": "Tonight’s sky for your city", "aliases": ["stars", "constellations", "night sky"]},
