@@ -624,13 +624,33 @@ const NOT_TOOL_SCREENS = {
   notes.push(`道具の画面 ${screens.size} 件 ＝ pages.json ${rows.size} 行（道具でないページ ${Object.keys(NOT_TOOL_SCREENS).length} 件は除く）`);
 }
 
+// 計算の API（yorozu-plans 7.186 D477）: 本番の /api/openapi.json（build が手元の yorozu-api の原文から作る）の口 ＝ 本番の Worker の定義から作った口か。
+// build は Worker を呼ばないので、上げ忘れ・写し忘れ（Worker と原文のずれ）はここで見る。警告だけ（失敗にしない）
+{
+  const { readApi, buildOpenApi, openApiSignature } = await import('./build-agent.mjs');
+  const r = await get(BASE + 'api/openapi.json');
+  if (r.status !== 200) warn('/api/openapi.json', `${r.status}（OpenAPI が無い。D477）`);
+  else {
+    try {
+      const want = openApiSignature(buildOpenApi({ ...(await readApi((req) => fetch(req))), maxBody: 0 }));
+      const got = openApiSignature(JSON.parse(r.body));
+      const onlyWorker = want.filter((x) => !got.includes(x)), onlyDoc = got.filter((x) => !want.includes(x));
+      if (onlyWorker.length || onlyDoc.length) {
+        warn('/api/openapi.json', `本番の Worker と口が違う（Worker だけ ${onlyWorker.length}・openapi.json だけ ${onlyDoc.length}。yorozu-api を上げたか、build を回し直したか。D477）`);
+        for (const x of onlyWorker) warn('/api/openapi.json', 'Worker だけ: ' + x);
+        for (const x of onlyDoc) warn('/api/openapi.json', 'openapi.json だけ: ' + x);
+      } else notes.push(`計算の API: 本番の openapi.json の口 ${got.length} ＝ 本番の Worker（D477）`);
+    } catch (e) { warn('/api/openapi.json', '本番の Worker と突き合わせられない: ' + e.message + '（D477）'); }
+  }
+}
+
 // 結果
 console.log(`確認先: ${BASE}`);
 console.log(`ページ ${pages.size} 件、サイト内リンク ${internalLinks.size} 件、ツール ${toolsOnTop.size} 件（${[...toolsOnTop].join(', ')}）、近い道具が画面と同じ使い方 ${nearGuides} 件`);
 for (const c of checkDates) console.log(`確認日 ${c.tool}  ${c.f}  ${c.date}（${c.kind}、${c.months} か月・期限 ${c.limit} か月）`);
 for (const n of notes) console.log(`メモ  ${n}`);
 for (const w of warnings) console.log(`警告  ${w}`);
-if (warnings.length) console.log(`警告 ${warnings.length} 件（title・description の長さ。失敗にしない。D472）`);
+if (warnings.length) console.log(`警告 ${warnings.length} 件（title・description の長さ〈D472〉と計算の API の突き合わせ〈D477〉。失敗にしない）`);
 if (failures.length) {
   for (const f of failures) console.log(`NG    ${f}`);
   console.log(`\n${failures.length} 件の問題があります`);

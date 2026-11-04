@@ -10,8 +10,10 @@
 //
 // まだ本番に出ていないデータを読むとき（各リポジトリの枝で確かめるとき）は、AGENT_LOCAL に手元のフォルダの型を渡す:
 //   AGENT_LOCAL='/home/user/{repo}' node tools/build-agent.mjs   （{repo} がリポジトリ名に置き換わる。無いファイルは本番から読む）
-// 計算の API の定義は、既定では動いている Worker（API）から読む（出す説明 ＝ 本番の口）。まだ上げていない yorozu-api の枝で確かめるときは
-//   AGENT_API_DIR=<yorozu-api のフォルダ> を渡すと、その src/app.mjs を手元で呼んで読む（HTTP に出ない）
+// 計算の API の定義は、手元の yorozu-api の原文（AGENT_API_DIR。無ければこのリポジトリの隣の yorozu-api）の src/app.mjs を呼んで読む。
+//   本番の Worker は呼ばない（yorozu-plans 7.186 D477）。読めなければ理由を出して終了コード 1（古いものや推測で作らない）。
+//   build.ps1 は AGENT_API_DIR に Claude\Projects\yorozu-api を渡す。本番の Worker との一致は check-site.mjs が警告で見る。
+//   node tools/build-agent.mjs --write-fixture   tests/fixtures/agent-api.json（テストがネットにも yorozu-api にも依らずに使う写し）を書き直す
 // プロキシのある環境では NODE_USE_ENV_PROXY=1 を付ける。
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -21,8 +23,6 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const SITE = 'https://yorozu-craft.com/';
 // 計算の API（yorozu-api。Cloudflare Workers の workers.dev）。独自ドメインにしたらここ 1 か所を変える
 export const API = 'https://yorozu-api.oonuki-youhei.workers.dev';
-// POST の本文の上限（バイト）。yorozu-api src/app.mjs の MAX_BODY と同じ値（tests/agent.test.mjs が突き合わせる）
-export const MAX_BODY = 65536;
 // 計算の「別の口」（/v1/<計算>/<名前>）のうち、MCP に同じ中身のツールがあるもの。yorozu-api src/app.mjs の callTool の対応（テストが答えの一致で確かめる）
 export const EXTRA_TOOLS = { 'kogaku/categories': 'list_high_cost_medical_categories' };
 
@@ -146,7 +146,7 @@ async function readSite(own = {}) {
 }
 
 // 計算の API の定義: GET /v1（計算の一覧。名前・入力・必須・説明・道具のページ・別の口）と MCP の tools/list（ツールの名前と入力）
-// call(Request) → Response。既定は本番の Worker、AGENT_API_DIR があれば手元の yorozu-api の handler
+// call(Request) → Response（yorozu-api の handler.fetch か fetch）
 export async function readApi(call) {
   const v1 = await call(new Request(API + '/v1'));
   if (!v1.ok) throw new Error(API + '/v1 → ' + v1.status);
@@ -158,11 +158,39 @@ export async function readApi(call) {
   if (!Array.isArray(index.calcs) || !index.calcs.length) throw new Error(API + '/v1 に計算が無い');
   return { index, tools };
 }
-async function apiCaller() {
-  const dir = process.env.AGENT_API_DIR;
-  if (!dir) return (req) => fetch(req);
-  const { handler } = await import(pathToFileURL(join(dir, 'src', 'app.mjs')).href);
-  return (req) => handler.fetch(req);
+// yorozu-api の原文（dir）から読む。handler を手元で呼び（HTTP に出ない）、本文の上限と固定の道は src/app.mjs の原文から読む
+export async function readApiDir(dir) {
+  const app = join(dir || '', 'src', 'app.mjs');
+  if (!dir || !existsSync(app)) throw new Error('yorozu-api の原文が無い: ' + app + '（AGENT_API_DIR に yorozu-api のフォルダを渡す）');
+  const src = readFileSync(app, 'utf8');
+  const maxBody = Number((src.match(/const MAX_BODY = (\d+);/) || [])[1]);
+  if (!maxBody) throw new Error(app + ' に MAX_BODY が無い（本文の上限を書けない）');
+  const routes = [...src.matchAll(/path === '(\/[^']*)'/g)].map((m) => m[1]);
+  const { handler } = await import(pathToFileURL(app).href);
+  const call = (req) => handler.fetch(req);
+  return { ...(await readApi(call)), maxBody, routes, call };
+}
+// テストの写し（tests/fixtures/agent-api.json）: 定義と、答えの欄の名前（meta・/v1/now）
+export async function apiFixture(dir) {
+  const { index, tools, maxBody, routes, call } = await readApiDir(dir);
+  const meta = (await (await call(new Request(API + '/v1/wareki?date=2019-04-30'))).json()).meta;
+  const now = await (await call(new Request(API + '/v1/now?date=2026-01-01'))).json();
+  return { index, tools, maxBody, routes, metaKeys: Object.keys(meta).sort(), nowKeys: Object.keys(now).sort() };
+}
+export const FIXTURE = join(root, 'tests', 'fixtures', 'agent-api.json');
+export const apiDirDefault = () => process.env.AGENT_API_DIR || join(root, '..', 'yorozu-api');
+
+// OpenAPI の口の要約（口・方法・operationId・引数の名前と必須・MCP のツール）。check-site が本番の openapi.json と本番の Worker から作ったものを比べる
+export function openApiSignature(doc) {
+  const out = [];
+  for (const [p, ops] of Object.entries(doc.paths)) {
+    for (const [m, op] of Object.entries(ops)) {
+      const params = (op.parameters || []).map((x) => x.name + (x.required ? '*' : '')).join(',');
+      const body = op.requestBody?.content?.['application/json']?.schema;
+      out.push(`${m.toUpperCase()} ${p} ${op.operationId} [${params}]${body?.required ? ' body*' + body.required.join(',') : ''}${op['x-mcp-tool'] ? ' mcp=' + op['x-mcp-tool'] : ''}${op['x-mcp-tools'] ? ' tools=' + op['x-mcp-tools'].join(',') : ''}`);
+    }
+  }
+  return out.sort();
 }
 
 /* ---------- OpenAPI 3.1（/api/openapi.json）。口と入力は yorozu-api の定義から。ここに口を書き足さない ---------- */
@@ -191,7 +219,8 @@ export function bodySchema(params, required = []) {
 const ref = (name) => ({ $ref: '#/components/schemas/' + name });
 const jsonContent = (schema) => ({ 'application/json': { schema } });
 
-export function buildOpenApi({ index, tools }) {
+export function buildOpenApi({ index, tools, maxBody }) {
+  const MAX_BODY = maxBody;
   const base = API;
   const toolNames = tools.map((t) => t.name);
   const toolByName = Object.fromEntries(tools.map((t) => [t.name, t]));
@@ -382,6 +411,7 @@ export function buildApiJson(ds, api) {
 }
 
 export function buildApiHtml(ds, api) {
+  const MAX_BODY = api.maxBody;
   const rows = ds.map((d) => `        <tr>
           <th scope="row"><a href="${esc(d.url)}">${esc(d.name)}</a><br><span class="fmt">${esc(d.format)}</span></th>
           <td>${esc(d.what)}${d.homepage ? `<br><a href="${esc(d.homepage)}">画面で見る</a>` : ''}</td>
@@ -505,12 +535,20 @@ ${rows}
 `;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1] && process.argv.includes('--write-fixture')) {
+  try {
+    const fx = await apiFixture(apiDirDefault());
+    mkdirSync(dirname(FIXTURE), { recursive: true });
+    writeFileSync(FIXTURE, JSON.stringify(fx, null, 2) + '\n');
+    console.log(FIXTURE + ' を書いた（計算 ' + fx.index.calcs.length + '・ツール ' + fx.tools.length + '）');
+  } catch (e) { console.error('build-agent: ' + e.message); process.exit(1); }
+} else if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const ds = await readDatasets();
   const bad = problems(ds);
   {
     if (bad.length) { for (const b of bad) console.error(b); process.exit(1); }
-    const api = await readApi(await apiCaller());
+    let api;
+    try { api = await readApiDir(apiDirDefault()); } catch (e) { console.error('build-agent: ' + e.message); process.exit(1); }
     const html = buildApiHtml(ds, api);
     const site = await readSite({ [SITE + 'api/']: html });
     const openapi = buildOpenApi(api);

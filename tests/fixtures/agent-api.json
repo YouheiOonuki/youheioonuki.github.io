@@ -1,0 +1,1742 @@
+{
+  "index": {
+    "title": "yorozu-craft の計算 API（認証なし・入力を保存しない）",
+    "version": "0.1.0",
+    "docs": "https://yorozu-craft.com/api/",
+    "mcp": "https://yorozu-api.oonuki-youhei.workers.dev/mcp",
+    "disclaimer": "この結果は目安です。公開された一次資料（source）の式と値で計算していますが、個別の事情は反映できません。届出・申告・受給の判断は、原文と窓口（税務署・市区町村・年金事務所・保険者など）で確かめてください。入力は保存していません。",
+    "disclaimer_en": "This result is an estimate calculated from the published primary sources listed in \"source\"; it cannot reflect individual circumstances. Check the original texts and the relevant office before filing, applying or deciding. Inputs are not stored.",
+    "lib": {
+      "seido-keisan": {
+        "repo": "https://github.com/YouheiOonuki/seido-keisan",
+        "commit": "c5cce5d000099fb40aa6d2fc83b58c9f5d950086"
+      },
+      "gengo": {
+        "repo": "https://github.com/YouheiOonuki/gengo",
+        "commit": "d000268cc9c7fcac2ba119117d33da7adee775a0"
+      },
+      "gakko-keisan": {
+        "repo": "https://github.com/YouheiOonuki/gakko-keisan",
+        "commit": "a275f826f249de394e1a11520cf20f6493645857"
+      },
+      "loan-sim": {
+        "repo": "https://github.com/YouheiOonuki/loan-sim",
+        "commit": "cdeac8fbcbb8b5953263356965e5b9b492691cbe"
+      },
+      "denki-dai": {
+        "repo": "https://github.com/YouheiOonuki/denki-dai",
+        "commit": "383c764dc7497788ac346a19fbc8d253ae92f166"
+      },
+      "shaho-check": {
+        "repo": "https://github.com/YouheiOonuki/shaho-check",
+        "commit": "9551a27d2271e2d27c0eaab60e360feb08ba8919"
+      },
+      "hoshizora-night": {
+        "repo": "https://github.com/YouheiOonuki/hoshizora-night",
+        "commit": "b5e4ba39970ece04ec3ccfd1383802860ba8e2e4"
+      }
+    },
+    "calcs": [
+      {
+        "name": "nenmatsu",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/nenmatsu",
+        "mcp_tool": "calc_year_end_tax_adjustment",
+        "title": "年末調整（所得税の年税額と還付・不足）",
+        "description": {
+          "ja": "給与の年末調整の年調年税額と、源泉徴収された税額との差（還付か不足）を、国税庁「年末調整のしかた」の手順で計算します。",
+          "en": "Year-end tax adjustment for salaried employees in Japan: annual income tax and the refund or shortfall against tax withheld, following the National Tax Agency procedure."
+        },
+        "params": {
+          "year": "年分（既定は今の年分）",
+          "income": "給与の収入金額（円）",
+          "withheld": "源泉徴収された税額（円）",
+          "shakai": "社会保険料（円）",
+          "shokibo": "小規模企業共済等掛金（円）",
+          "seimei.newIppan": "生命保険料（新・一般）など seimei.*",
+          "jishin.jishin": "地震保険料",
+          "spouse.has": "配偶者あり（true/false）",
+          "spouse.amount": "配偶者の給与の収入（円）",
+          "relatives": "扶養親族の配列 [{age, incomeType, amount, shogai}]",
+          "jutaku": "住宅借入金等特別控除の額（円）"
+        },
+        "required": [
+          "income"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/nenmatsu/"
+      },
+      {
+        "name": "juminzei",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/juminzei",
+        "mcp_tool": "calc_residence_tax",
+        "title": "住民税（個人住民税の年税額・非課税の判定）",
+        "description": {
+          "ja": "給与の人の個人住民税（所得割・均等割・森林環境税）の年税額と、非課税になるかの判定を、地方税法の手順で計算します。",
+          "en": "Japanese individual residence tax for salaried employees: income-based and per-capita levies, forest environment tax, and whether you are exempt, following the Local Tax Act."
+        },
+        "params": {
+          "nendo": "年度（既定は今の年度）",
+          "income": "給与の収入金額（円）",
+          "shakai": "社会保険料（円）",
+          "city.shitei": "政令指定都市（true/false）",
+          "self.shogai": "本人の障害（none/ippan/tokubetsu）",
+          "self.kafu": "本人の寡婦・ひとり親（none/kafu/hitorioya）",
+          "self.parent": "ひとり親の別（mother/father）",
+          "self.kinro": "勤労学生（true/false）",
+          "self.minor": "未成年（true/false）",
+          "self.seikatsuhogo": "生活扶助を受けている（true/false）",
+          "spouse.has": "配偶者あり（true/false）",
+          "spouse.incomeType": "配偶者の収入の種類（kyuyo=給与の収入金額 / shotoku=所得金額）",
+          "spouse.amount": "配偶者の収入か所得（円）",
+          "spouse.over70": "配偶者が70歳以上（true/false）",
+          "spouse.shogai": "配偶者の障害（none/ippan/tokubetsu/dokyo）",
+          "relatives": "扶養親族の配列"
+        },
+        "required": [
+          "income"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/juminzei/"
+      },
+      {
+        "name": "kogaku",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/kogaku",
+        "mcp_tool": "calc_high_cost_medical_expense",
+        "title": "高額療養費（月の自己負担の上限と払い戻し）",
+        "description": {
+          "ja": "医療費の自己負担の上限額（高額療養費）と払い戻しの額を、健康保険法施行令 41・42 条の順で計算します。区分（cat）は /v1/kogaku/categories で選びます。",
+          "en": "Japan high-cost medical expense benefit: the monthly out-of-pocket cap and the refund, in the order of the Health Insurance Act Enforcement Order arts. 41-42. Pick the income category (cat) from the categories list."
+        },
+        "params": {
+          "period": "表（r7・r8・r9。省略すると今月の表）",
+          "cat": "所得区分の id（categories で調べる）",
+          "plan": "kenpo（健保・国保）か kouki（後期高齢者）",
+          "rows.0.cost": "医療費の総額（円、10 割）",
+          "rows.0.age": "u70 か o70",
+          "rows.0.place": "in（入院）か out（外来）",
+          "rows.0.rate": "窓口の負担割合（0.3 など）",
+          "many": "多数回該当（true/false）"
+        },
+        "required": [
+          "cat"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/kogaku-ryoyohi/",
+        "extra": [
+          "https://yorozu-api.oonuki-youhei.workers.dev/v1/kogaku/categories"
+        ]
+      },
+      {
+        "name": "nenkin-kuriage",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/nenkin-kuriage",
+        "mcp_tool": "calc_pension_start_age",
+        "title": "年金の繰上げ・繰下げ（受け取り始める年齢と月額）",
+        "description": {
+          "ja": "老齢年金を 60〜75 歳のどこから受け取るかで、月額がどう変わるか（繰上げは 1 か月 0.4%、繰下げは 0.7%）を計算します。",
+          "en": "Japanese old-age pension: how the monthly amount changes if you start between age 60 and 75 (0.4% less per month early, 0.7% more per month late)."
+        },
+        "params": {
+          "birth": "生年月日（YYYY-MM-DD）",
+          "kiso": "65 歳からの老齢基礎年金（年額、円）",
+          "kosei": "65 歳からの老齢厚生年金（年額、円）",
+          "age": "受け取り始める年齢（60〜75）",
+          "mon": "その年齢の何か月目か（0〜11）"
+        },
+        "required": [
+          "birth",
+          "kiso"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/nenkin-kuriage/"
+      },
+      {
+        "name": "shienkin",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/shienkin",
+        "mcp_tool": "calc_child_support_levy",
+        "title": "子ども・子育て支援金（給与から引かれる額）",
+        "description": {
+          "ja": "会社員・任意継続の子ども・子育て支援金の月額と賞与の額を、標準報酬月額 × 支援金率で計算します。国保・後期は国のモデル試算（/v1/shienkin/model）を返します。",
+          "en": "Japan child and child-rearing support levy deducted from pay: monthly and bonus amounts from the standard monthly remuneration times the levy rate. For National Health Insurance and the late-stage elderly system, returns the government model estimates."
+        },
+        "params": {
+          "kind": "kaisha・ninkei・kokuho・kouki",
+          "mode": "salary（月給から等級を引く）か hyojun（標準報酬月額）",
+          "amount": "月給か標準報酬月額（円）",
+          "bonus": "賞与（円）"
+        },
+        "required": [
+          "amount"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/shienkin/",
+        "extra": [
+          "https://yorozu-api.oonuki-youhei.workers.dev/v1/shienkin/model"
+        ]
+      },
+      {
+        "name": "invoice",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/invoice",
+        "mcp_tool": "calc_consumption_tax_after_20pct_rule",
+        "title": "インボイス 2割特例の後の消費税（2割特例・3割特例・簡易課税・本則の比較）",
+        "description": {
+          "ja": "課税売上（税込）から、2割特例・3割特例・簡易課税・本則課税の納付税額を、国税庁の申告書の欄の順で計算して比べます（標準税率 10% だけ）。",
+          "en": "Japanese consumption tax for small invoice issuers after the 20% special rule ends: compares the 20% rule, the 30% rule, simplified taxation and the general method, following the NTA return form (10% standard rate only)."
+        },
+        "params": {
+          "year": "年分（2026〜2030 など）",
+          "uriage": "課税売上（税込、円）",
+          "kubun": "簡易課税の事業区分（1〜6）",
+          "shiire": "インボイスのある課税仕入（税込、円）",
+          "noinv": "インボイスのない課税仕入（税込、円）",
+          "henkan": "返品・値引き（税込、円）"
+        },
+        "required": [
+          "uriage"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/invoice/"
+      },
+      {
+        "name": "wareki",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/wareki",
+        "mcp_tool": "convert_japanese_era",
+        "title": "和暦と西暦の変換（元号）",
+        "description": {
+          "ja": "「令和8年5月1日」「S60.4.1」「2026-05-01」などの日付を、西暦と和暦の両方にします（明治 6 年以降。改元の日は新しい元号）。明治より前（慶長〜慶応、1596〜1867 年）は「慶応元年」「1850」のような年だけを受け、年の対応だけを返します（改元の日が旧暦のため）。",
+          "en": "Convert dates between Japanese era (Reiwa, Heisei, Showa, Taisho, Meiji) and the Western calendar, e.g. \"令和8年5月1日\", \"S60.4.1\" or \"2026-05-01\". For years before the Meiji era (Keichō to Keiō, 1596–1867), such as \"慶応元年\" or \"1850\", only the year is converted, because eras changed on lunisolar-calendar dates."
+        },
+        "params": {
+          "date": "日付の文字列（和暦か西暦）。明治より前は年だけ"
+        },
+        "required": [
+          "date"
+        ],
+        "page": "https://yorozu-craft.com/gengo/"
+      },
+      {
+        "name": "gakunen",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/gakunen",
+        "mcp_tool": "school_grade_by_birthdate",
+        "title": "学年（生年月日から、その年度の学年）",
+        "description": {
+          "ja": "生年月日から、指定した年度（4 月〜翌 3 月）の学年（年少〜大学 4 年）と小学校に入る年を出します。4 月 1 日生まれは早生まれ。",
+          "en": "Japanese school grade for a birth date in a given school year (April to March), from kindergarten to university, and the year the child starts elementary school. April 1 birthdays belong to the earlier grade."
+        },
+        "params": {
+          "birth": "生年月日（YYYY-MM-DD）",
+          "fy": "年度（西暦。既定は今の年度）"
+        },
+        "required": [
+          "birth"
+        ],
+        "page": "https://yorozu-craft.com/gengo/gakunen/"
+      },
+      {
+        "name": "tonight",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/tonight",
+        "mcp_tool": "tonight_sky_japan",
+        "title": "今夜の星空（都道府県庁の場所の 21 時）",
+        "description": {
+          "ja": "都道府県（空なら東京都）の県庁の場所で、その日の 21 時（日本時間）に南に見える星座 3 つ・月齢と月の出入り・明るい惑星 1 つと、星空のページの URL を返します。場所は都道府県だけで、市町村や位置情報は受けません。",
+          "en": "For a Japanese prefecture (default Tokyo), returns three constellations in the southern sky at 21:00 JST from the prefectural office, the moon's age and rise and set times, one bright planet, and a link to the star map. Only prefectures are accepted, not cities or coordinates."
+        },
+        "params": {
+          "pref": "都道府県の名前（「大阪」「大阪府」。空なら東京都）",
+          "date": "YYYY-MM-DD（空なら日本時間の今日）"
+        },
+        "required": [],
+        "page": "https://yorozu-craft.com/hoshizora-night/"
+      },
+      {
+        "name": "ikukyu",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/ikukyu",
+        "mcp_tool": "calc_childcare_leave_benefit",
+        "title": "育休・産休の給付（出産手当金・育児休業給付金など）",
+        "description": {
+          "ja": "会社員本人の出産手当金・出産育児一時金・出生時育児休業給付金・育児休業給付金・出生後休業支援給付金・育児時短就業給付金の目安と、産休・育休中の社会保険料の免除を、健康保険法・雇用保険法の式で計算します。",
+          "en": "Estimates of the benefits for an employee on maternity and childcare leave in Japan: the maternity allowance, the childbirth lump sum, the childcare leave benefits, the post-birth leave support benefit, the reduced-hours childcare benefit, and the social insurance premium exemption, following the Health Insurance Act and the Employment Insurance Act."
+        },
+        "params": {
+          "role": "mother か father",
+          "dueDate": "出産予定日（YYYY-MM-DD）",
+          "birthDate": "生まれた日（YYYY-MM-DD。生まれたあとに入れる）",
+          "babies": "子の人数（1〜3）",
+          "salary": "月給（円）。標準報酬月額が分かれば hyojun",
+          "hyojun": "標準報酬月額（円）",
+          "wage6": "休業前 6 か月の賃金の合計（円、賞与を除く）",
+          "under12": "健康保険に入って 12 か月未満（true/false）",
+          "leaveStart": "育休の開始日",
+          "leaveEnd": "育休の終了日",
+          "papa.use": "産後パパ育休を使う（true/false）",
+          "papa.start": "産後パパ育休の開始日",
+          "papa.end": "産後パパ育休の終了日",
+          "spouse": "leave14・notEmployee・none・noLeave",
+          "pref": "協会けんぽの支部（tokyo など）",
+          "over40": "40 歳以上（true/false）",
+          "juminzei": "月の住民税（円）",
+          "jitan.use": "育児時短就業給付金を計算する（true/false）",
+          "jitan.salary": "時短中の月の賃金（円）"
+        },
+        "required": [
+          "dueDate"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/ikukyu/"
+      },
+      {
+        "name": "iryohi",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/iryohi",
+        "mcp_tool": "calc_medical_expense_deduction",
+        "title": "医療費控除（控除額と戻る税金の目安）",
+        "description": {
+          "ja": "支払った医療費から医療費控除の額（またはセルフメディケーション税制の額）を、国税庁の明細書の計算欄の順で出し、戻る所得税と住民税の減額の目安を計算します。給与の収入（income）か、総所得金額等（mode=shotoku と shotoku）のどちらかが要ります。",
+          "en": "Japan medical expense deduction: the deduction (or the self-medication tax deduction) in the order of the National Tax Agency statement form, with an estimate of the income tax refund and the resident tax reduction. Either the salary income (income) or the total income (mode=shotoku with shotoku) is needed."
+        },
+        "params": {
+          "hiyo": "支払った医療費の合計（円）",
+          "hoten": "保険金などで補てんされる額（円）",
+          "mode": "kyuyo（給与の収入から）か shotoku（総所得金額等を直接）",
+          "income": "給与の収入金額（円。mode=kyuyo のとき）",
+          "shotoku": "総所得金額等（円。mode=shotoku のとき）",
+          "kojo": "所得控除の合計（円、医療費控除の前）",
+          "shakai": "所得控除が分からないときの社会保険料（円）",
+          "rateMode": "auto か manual",
+          "rate": "税率 %（rateMode=manual のとき。5・10・20・23・33・40・45）",
+          "self.use": "セルフメディケーション税制も比べる（true/false）",
+          "self.torikumi": "健康診断などの取組をしている（true/false）",
+          "self.amount": "対象医薬品の購入費（円）",
+          "self.hoten": "対象医薬品の補てん額（円）",
+          "jumin": "住民税の減額も出す（true/false）"
+        },
+        "required": [
+          "hiyo"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/iryohi/"
+      },
+      {
+        "name": "koko",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/koko",
+        "mcp_tool": "calc_high_school_tuition_support",
+        "title": "高校の授業料（就学支援金と都道府県の上乗せのあとの自己負担）",
+        "description": {
+          "ja": "高校の授業料から国の就学支援金と、東京都・大阪府・神奈川県・埼玉県・愛知県・兵庫県の私立の上乗せを引いた自己負担を、学年ごとに計算して合計します。授業料は、年額（fee）か、単位制の 1 単位の授業料と単位数（feeMode=unit と unitFee・units）のどちらかで入れます。",
+          "en": "Japan high school tuition: the out-of-pocket amount after the national tuition support and the added support of Tokyo, Osaka, Kanagawa, Saitama, Aichi and Hyogo for private schools, calculated for each school year and summed. Enter the tuition either as a yearly amount (fee) or, for credit-based schools, as the fee per credit and the number of credits (feeMode=unit with unitFee and units)."
+        },
+        "params": {
+          "fee": "授業料（年額、円）。単位制は feeMode=unit と unitFee・units",
+          "setchi": "shiritsu・koritsu・kokuritsu",
+          "type": "zen・tei・tsu・toku・kosen・senshu・senshu_tsu",
+          "feeMode": "year か unit（単位制）",
+          "unitFee": "1 単位の授業料（円）",
+          "units": "年の単位数",
+          "pref": "都道府県の名前（「東京都」など）",
+          "years": "3 か 4",
+          "shisetsu": "施設整備費など（年額、円）",
+          "nyugaku": "入学金（円）",
+          "status": "shin か gai（新制度の対象外）"
+        },
+        "required": [],
+        "page": "https://yorozu-craft.com/seido-keisan/koko-mushoka/"
+      },
+      {
+        "name": "dattai",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/dattai",
+        "mcp_tool": "calc_pension_lump_sum_withdrawal",
+        "title": "脱退一時金（外国人の厚生年金・国民年金）",
+        "description": {
+          "ja": "日本を出る外国人の脱退一時金の額（厚生年金・国民年金）と、源泉徴収された額、退職所得の選択課税での還付の目安、請求の期限を、日本年金機構の表の順で計算します。厚生年金の月数（ep.months）か国民年金の月数（np.months）のどちらかが要ります。",
+          "en": "Lump-sum withdrawal payment for foreign residents leaving Japan: the amount from the employees' pension and the national pension, the tax withheld, an estimate of the refund through the retirement income election, and the claim deadline, following the Japan Pension Service tables. Either the months of employees' pension (ep.months) or the months of national pension (np.months) is needed."
+        },
+        "params": {
+          "ep.months": "厚生年金の被保険者期間の月数",
+          "ep.last": "厚生年金の最終月（YYYY-MM）",
+          "ep.avg": "平均標準報酬額（円。分かるとき）",
+          "ep.salary": "平均の月給（円。avg の代わり）",
+          "ep.bonus": "賞与 1 回の額（円）",
+          "ep.bonusCount": "賞与を受けた回数",
+          "np.months": "国民年金の保険料を全額納めた月数",
+          "np.last": "最後に納めた月（YYYY-MM）",
+          "np.q1": "4 分の 1 免除の月数",
+          "np.half": "半額免除の月数",
+          "np.q3": "4 分の 3 免除の月数",
+          "left": "日本に住所を有しなくなった日（YYYY-MM-DD）",
+          "japanese": "日本国籍がある（true/false）",
+          "disability": "障害年金などの受給権がある（true/false）",
+          "country": "出身国の鍵（社会保障協定の注意に使う）",
+          "refund": "還付の目安を出す（true/false）",
+          "otherRetirement": "同じ年にほかの退職金もある（true/false）"
+        },
+        "required": [],
+        "page": "https://yorozu-craft.com/seido-keisan/dattai-ichiji/"
+      },
+      {
+        "name": "kaitei",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/kaitei",
+        "mcp_tool": "calc_upcoming_system_changes",
+        "title": "制度の改定カレンダー（次に変わる日）",
+        "description": {
+          "ja": "指定した日（空なら日本時間の今日）より後の、税・社会保険・子育てなどの制度の施行日を日付順に返します。いちばん近い日の分は next にまとめ、日数も付けます。",
+          "en": "Upcoming effective dates of Japanese tax, social insurance and child-rearing rules after a given date (default: today in Japan time), in date order. The nearest date is returned as next, with the number of days."
+        },
+        "params": {
+          "date": "基準の日（YYYY-MM-DD。空なら日本時間の今日）。この日の施行は施行済みとして数える",
+          "cat": "分野の絞り込み（zei・shaho・kosodate・other）"
+        },
+        "required": [],
+        "page": "https://yorozu-craft.com/seido-keisan/kaitei/"
+      },
+      {
+        "name": "take-home",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/take-home",
+        "mcp_tool": "calc_take_home_pay",
+        "title": "手取り（月給・賞与から、社会保険料と税を引いた額）",
+        "description": {
+          "ja": "会社員（協会けんぽ・厚生年金・雇用保険）の月給と賞与から、社会保険料・所得税・住民税を引いた月と年の手取りを、年末調整と住民税の計算を使って出します。令和8年分、年収 2,000 万円まで。",
+          "en": "Take-home pay for a salaried employee in Japan (Kyokai Kenpo health insurance, employees' pension, employment insurance): monthly and annual pay after social insurance, income tax and resident tax, using the year-end adjustment and resident tax calculations. Tax year 2026, up to 20 million yen a year."
+        },
+        "params": {
+          "amount": "月給（円）。period=year のときは年収（円）",
+          "period": "month か year",
+          "bonus": "賞与の年間合計（円）",
+          "bonusCount": "賞与の回数（1〜3）",
+          "pref": "協会けんぽの支部（tokyo など）",
+          "over40": "40 歳以上（介護保険料。true/false）",
+          "spouse.has": "配偶者あり（true/false）",
+          "spouse.income": "配偶者の給与の収入（円）",
+          "kids.u16": "16 歳未満の子の人数",
+          "kids.a16": "16〜18 歳の人数",
+          "kids.a19": "19〜22 歳の人数",
+          "juminNow": "same（住民税を引かれている）か none（まだ無い）"
+        },
+        "required": [
+          "amount"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/en/take-home-pay/"
+      },
+      {
+        "name": "yobosesshu",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/yobosesshu",
+        "mcp_tool": "calc_childhood_vaccination_schedule",
+        "title": "子どもの定期の予防接種（生年月日から日付の一覧）",
+        "description": {
+          "ja": "生年月日から、定期接種の各回の標準的な時期と接種できる期間を日付で一覧にし、今の時期の回・これから始まる最初の回・標準の時期を過ぎた回を示します。日付は厚生労働省の事務連絡（平成26年3月11日）の数え方です。",
+          "en": "Routine childhood vaccinations in Japan: from the date of birth, the standard period and the eligible period of each dose as dates, with the doses in their standard period now, the next one to start, and those past the standard period. Dates are counted as in the Ministry of Health, Labour and Welfare notice of March 11, 2014."
+        },
+        "params": {
+          "birth": "子の生年月日（YYYY-MM-DD）",
+          "today": "基準の日（YYYY-MM-DD。空なら日本時間の今日）"
+        },
+        "required": [
+          "birth"
+        ],
+        "page": "https://yorozu-craft.com/seido-keisan/yobosesshu/"
+      },
+      {
+        "name": "naishin",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/naishin",
+        "mcp_tool": "calc_high_school_naishin",
+        "title": "内申点（公立高校入試の調査書点・総合点）",
+        "description": {
+          "ja": "東京・神奈川・兵庫・大阪・埼玉・千葉の公立高校入試について、9 教科の評定から内申点（調査書点）を計算し、学力検査の点を入れると総合点、目標を入れると必要な学力検査の点を出します。値は各県の実施要綱から。",
+          "en": "Japanese public high school entrance exams (Tokyo, Kanagawa, Hyogo, Osaka, Saitama, Chiba): the school report score from the nine subject grades, the total when you enter the exam score, and the exam score needed when you enter a target. Values follow each prefecture's guidelines."
+        },
+        "params": {
+          "pref": "府県（tokyo・kanagawa・hyogo・osaka・saitama・chiba）",
+          "g": "東京・兵庫: 中3の評定（1〜5）。g.kokugo・shakai・sugaku・rika・eigo・ongaku・bijutsu・hotai・gika の 9 教科",
+          "g3": "神奈川・大阪・埼玉・千葉: 中3の評定（g と同じ 9 教科）",
+          "g2": "神奈川: 中2の評定（g と同じ 9 教科）。代わりに sum2（9 教科の合計 9〜45）でもよい",
+          "sum1": "大阪・埼玉・千葉: 中1の 9 教科の合計（9〜45）",
+          "sum2": "大阪・埼玉・千葉: 中2の 9 教科の合計（9〜45）。神奈川は g2 の代わりに使える",
+          "gaku": "学力検査の合計（素点。任意）",
+          "target": "目標の点（任意。必要な学力検査の点を出す）",
+          "kyoka": "東京: 学力検査の教科数（5 か 3）",
+          "ratio": "東京: 比率（7:3・6:4・best・best64）。埼玉: 3 年の比率（112・113・111）",
+          "esat": "東京: ESAT-J の段階（A〜F）",
+          "f": "神奈川: 内申の比率（2〜8）",
+          "gakuMax": "神奈川: 学力検査の満点（500 か 300）",
+          "gakku": "兵庫: 第1志望の学区（1〜5）",
+          "type": "大阪: タイプ（1〜5）",
+          "conv": "埼玉: 内申の換算（200・300・400）",
+          "mmul": "埼玉: 面接の倍率（1・2）",
+          "mensetsu": "埼玉: 面接の得点",
+          "k": "千葉: 倍率（0.5・1・2）"
+        },
+        "required": [
+          "pref"
+        ],
+        "page": "https://yorozu-craft.com/gakko-keisan/naishin/"
+      },
+      {
+        "name": "shusseki",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/shusseki",
+        "mcp_tool": "calc_attendance_limit",
+        "title": "出席日数（休める上限と残り）",
+        "description": {
+          "ja": "授業の回数（または日数）と、学校が決めている出席の割合から、休める上限の回数と、あと何回休めるかを計算します。割合は法令の値ではなく学校ごとの決まりなので、自分で選びます。",
+          "en": "The most classes (or days) you can miss and how many absences you have left, from the number of classes and the attendance ratio your school sets. The ratio is a school rule, not a value set by law, so you choose it."
+        },
+        "params": {
+          "total": "1 年の授業の回数（または日数）",
+          "ratio": "必要な出席の割合: 2/3・3/4・4/5 のどれか。custom を選ぶと percent を使う",
+          "percent": "ratio=custom のときの出席の割合（%。0 より大きく 100 より小さい）",
+          "absent": "休んだ回数（任意）",
+          "excused": "欠席に数えない回数（出席停止・忌引など。任意）"
+        },
+        "required": [
+          "total",
+          "ratio"
+        ],
+        "page": "https://yorozu-craft.com/gakko-keisan/shusseki/"
+      },
+      {
+        "name": "atonannichi",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/atonannichi",
+        "mcp_tool": "calc_days_until",
+        "title": "○○まであと何日（日数・毎年の日・期間の残り）",
+        "description": {
+          "ja": "日付までの日数を数えます（今日は数えない。あしたなら 1）。毎年の日（誕生日など）は次の日と何回目かを、期間（夏休みなど）は始まる前・期間中・終わったあとと残りの日数を返します。今日は日本時間です。",
+          "en": "Counts the days until a date (today is not counted; tomorrow is 1). For a yearly date such as a birthday it gives the next one and its number (the age for a birthday); for a period such as a summer break it says whether it is before, during or after, and the days left. Today is in Japan time."
+        },
+        "params": {
+          "date": "日付（YYYY-MM-DD）",
+          "yearly": "毎年くり返す日（true/false）",
+          "end": "期間のおわりの日（YYYY-MM-DD。任意）",
+          "today": "今日の日付（YYYY-MM-DD。省略すると日本時間の今日）"
+        },
+        "required": [
+          "date"
+        ],
+        "page": "https://yorozu-craft.com/gakko-keisan/atonannichi/"
+      },
+      {
+        "name": "hensachi",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/hensachi",
+        "mcp_tool": "calc_deviation_score",
+        "title": "偏差値（点数・平均点・標準偏差から）",
+        "description": {
+          "ja": "点数・平均点・標準偏差から偏差値（50＋10×（点数−平均点）÷標準偏差）を計算します。人数を入れると、点数が正規分布に従うと仮定した上位の割合と順位の目安も返します。実際の分布とはずれます。",
+          "en": "The deviation score (50 + 10 x (score - mean) / standard deviation) from a score, the mean and the standard deviation. With the number of test takers it also gives the share above you and a rank estimate, assuming the scores follow a normal distribution; real distributions differ."
+        },
+        "params": {
+          "score": "点数",
+          "mean": "平均点",
+          "sd": "標準偏差（0 より大きい）",
+          "n": "受けた人数（任意。順位の目安を出す）"
+        },
+        "required": [
+          "score",
+          "mean",
+          "sd"
+        ],
+        "page": "https://yorozu-craft.com/gakko-keisan/hensachi/"
+      },
+      {
+        "name": "loan",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/loan",
+        "mcp_tool": "calc_mortgage_repayment",
+        "title": "住宅ローンの返済（毎月の返済額・利息の総額・完済まで）",
+        "description": {
+          "ja": "借入額・返済期間・金利から、住宅ローンの毎月の返済額・利息の総額・完済までの月数を計算します。元利均等と元金均等、金利の変更、繰上返済（期間短縮か返済額軽減）、変動金利の 5 年ルール・125% ルールに対応します。",
+          "en": "Home loan repayment: the monthly payment, total interest and number of months to repay, from the amount, term and interest rate. Covers equal-payment and equal-principal repayment, rate changes, prepayments (shorten the term or reduce the payment) and the 5-year and 125% rules for variable-rate loans."
+        },
+        "params": {
+          "principal": "借入額（円）",
+          "years": "返済期間（年。1〜50）",
+          "rate": "最初の金利（年利 %。0〜20）",
+          "method": "annuity（元利均等。既定）か principal（元金均等）",
+          "rates.0.from": "金利を変える時期（何か月目から。2 以上）。rates.0.rate とセットで、配列 rates に何回でも",
+          "rates.0.rate": "変えたあとの金利（年利 %）",
+          "rule5": "5 年ルール（true/false。既定 true。元利均等のときだけ有効）",
+          "rule125": "125% ルール（true/false。既定 true。元利均等のときだけ有効）",
+          "prepayments.0.month": "繰上返済をする時期（何か月目の返済のあとに）",
+          "prepayments.0.amount": "繰上返済の金額（円）",
+          "prepayments.0.type": "shorten（期間短縮。既定）か reduce（返済額軽減）",
+          "prepayFee": "繰上返済 1 回あたりの手数料（円）"
+        },
+        "required": [
+          "principal",
+          "years",
+          "rate"
+        ],
+        "page": "https://yorozu-craft.com/loan-sim/"
+      },
+      {
+        "name": "denki",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/denki",
+        "mcp_tool": "calc_appliance_electricity_cost",
+        "title": "家電の電気代（1 か月・1 年の電力量と金額）",
+        "description": {
+          "ja": "家電ごとの消費電力と使う時間（または年間消費電力量）と電気料金の単価から、1 か月・1 年の電力量と電気代を計算し、金額の多い順に並べます。単価の既定は出典の目安単価です。",
+          "en": "Electricity cost of home appliances: the monthly and yearly energy use and cost from each appliance's power and hours of use (or annual consumption) and the unit price, ranked by cost. The default unit price is the guide price in the source."
+        },
+        "params": {
+          "unitPrice": "電気料金の単価（円/kWh。既定は出典の目安単価）",
+          "items": "家電の配列（1〜40 件）。各要素の欄は下の items.0.*（items.0.watt の形で平らにも送れる）",
+          "items.0.method": "wh（消費電力 W × 時間。既定）か annual（年間消費電力量）",
+          "items.0.name": "名前",
+          "items.0.watt": "消費電力（W）",
+          "items.0.hours": "1 日の使用時間（時間。24 まで）",
+          "items.0.days": "1 か月の使用日数（31 まで）",
+          "items.0.standbyW": "待機電力（W。wh のときだけ）",
+          "items.0.annualKwh": "年間消費電力量（kWh。annual のとき）",
+          "items.0.qty": "台数（既定 1）"
+        },
+        "required": [
+          "items"
+        ],
+        "page": "https://yorozu-craft.com/denki-dai/"
+      },
+      {
+        "name": "denki-kaikae",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/denki-kaikae",
+        "mcp_tool": "calc_appliance_replacement_saving",
+        "title": "家電の買い替え（年間の電気代の差と、元が取れる年数）",
+        "description": {
+          "ja": "今の家電と買い替え先の消費電力と使う時間（method=wh）、または年間消費電力量（method=annual）のどちらかと、電気料金の単価から、年間の電力量と電気代の差を計算します。購入価格を入れると、元が取れるまでの年数も返します（差が無いか増えるときは null）。単価の既定は出典の目安単価です。",
+          "en": "Replacing a home appliance: the yearly difference in energy use and electricity cost between the current and the new appliance, from either their power and hours of use (method=wh) or their annual consumption (method=annual), and the unit price. With the purchase price it also returns the years to pay it back (null when there is no saving or the cost goes up). The default unit price is the guide price in the source."
+        },
+        "params": {
+          "method": "wh（消費電力 W × 時間。既定）か annual（年間消費電力量）",
+          "oldWatt": "今の家電の消費電力（W。wh のとき）",
+          "newWatt": "買い替え先の消費電力（W。wh のとき）",
+          "hours": "1 日の使用時間（時間。wh のとき）",
+          "days": "1 か月の使用日数（wh のとき）",
+          "oldAnnualKwh": "今の家電の年間消費電力量（kWh。annual のとき）",
+          "newAnnualKwh": "買い替え先の年間消費電力量（kWh。annual のとき）",
+          "qty": "台数（既定 1）",
+          "price": "購入価格（円。元が取れる年数に使う）",
+          "unitPrice": "電気料金の単価（円/kWh。既定は出典の目安単価）"
+        },
+        "required": [],
+        "page": "https://yorozu-craft.com/denki-dai/"
+      },
+      {
+        "name": "shaho",
+        "url": "https://yorozu-api.oonuki-youhei.workers.dev/v1/shaho",
+        "mcp_tool": "calc_social_insurance_eligibility",
+        "title": "社会保険（厚生年金・健康保険）の加入判定",
+        "description": {
+          "ja": "週の所定労働時間・勤務先の規模・学生かどうか・雇用の見込みから、パート・アルバイトが社会保険（厚生年金・健康保険）の加入対象かを判定します。月の給与を送ると、保険料（本人負担）の目安も返します。",
+          "en": "Social insurance (employees' pension and health insurance) eligibility for part-time workers in Japan, judged from weekly contracted hours, employer size, student status and expected length of employment. If a monthly wage is sent, it also returns a guide to the employee share of the premiums."
+        },
+        "params": {
+          "weeklyHours": "週の所定労働時間（契約上の時間）",
+          "employer": "勤務先の規模: 51+・36-50・21-35・11-20・1-10・public（国・地方公共団体）・sole（個人経営）・unknown（わからない）",
+          "fullTimeHours": "正社員の週の所定労働時間（既定 40）",
+          "daysThreeQuarter": "月の勤務日数が正社員の 4 分の 3 以上か: yes・no（既定）・unknown",
+          "overTwoMonths": "2 か月を超えて働く見込みか: yes（既定）・no",
+          "student": "none（学生でない。既定）・daytime（昼間の学生）・other（夜間・通信制・定時制・休学中など）",
+          "monthlyWage": "月の給与（円。保険料の目安を出すとき）",
+          "date": "判定日 YYYY-MM-DD（省略すると日本時間の今日）"
+        },
+        "required": [
+          "weeklyHours",
+          "employer"
+        ],
+        "page": "https://yorozu-craft.com/shaho-check/"
+      }
+    ]
+  },
+  "tools": [
+    {
+      "name": "calc_year_end_tax_adjustment",
+      "title": "年末調整（所得税の年税額と還付・不足）",
+      "description": "給与の年末調整の年調年税額と、源泉徴収された税額との差（還付か不足）を、国税庁「年末調整のしかた」の手順で計算します。\nYear-end tax adjustment for salaried employees in Japan: annual income tax and the refund or shortfall against tax withheld, following the National Tax Agency procedure.\n入力 / Inputs: year = 年分（既定は今の年分）; income = 給与の収入金額（円）; withheld = 源泉徴収された税額（円）; shakai = 社会保険料（円）; shokibo = 小規模企業共済等掛金（円）; seimei.newIppan = 生命保険料（新・一般）など seimei.*; jishin.jishin = 地震保険料; spouse.has = 配偶者あり（true/false）; spouse.amount = 配偶者の給与の収入（円）; relatives = 扶養親族の配列 [{age, incomeType, amount, shogai}]; jutaku = 住宅借入金等特別控除の額（円）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "description": "年分（既定は今の年分）"
+          },
+          "income": {
+            "description": "給与の収入金額（円）"
+          },
+          "withheld": {
+            "description": "源泉徴収された税額（円）"
+          },
+          "shakai": {
+            "description": "社会保険料（円）"
+          },
+          "shokibo": {
+            "description": "小規模企業共済等掛金（円）"
+          },
+          "seimei.newIppan": {
+            "description": "生命保険料（新・一般）など seimei.*"
+          },
+          "jishin.jishin": {
+            "description": "地震保険料"
+          },
+          "spouse.has": {
+            "description": "配偶者あり（true/false）"
+          },
+          "spouse.amount": {
+            "description": "配偶者の給与の収入（円）"
+          },
+          "relatives": {
+            "description": "扶養親族の配列 [{age, incomeType, amount, shogai}]"
+          },
+          "jutaku": {
+            "description": "住宅借入金等特別控除の額（円）"
+          }
+        },
+        "required": [
+          "income"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_residence_tax",
+      "title": "住民税（個人住民税の年税額・非課税の判定）",
+      "description": "給与の人の個人住民税（所得割・均等割・森林環境税）の年税額と、非課税になるかの判定を、地方税法の手順で計算します。\nJapanese individual residence tax for salaried employees: income-based and per-capita levies, forest environment tax, and whether you are exempt, following the Local Tax Act.\n入力 / Inputs: nendo = 年度（既定は今の年度）; income = 給与の収入金額（円）; shakai = 社会保険料（円）; city.shitei = 政令指定都市（true/false）; self.shogai = 本人の障害（none/ippan/tokubetsu）; self.kafu = 本人の寡婦・ひとり親（none/kafu/hitorioya）; self.parent = ひとり親の別（mother/father）; self.kinro = 勤労学生（true/false）; self.minor = 未成年（true/false）; self.seikatsuhogo = 生活扶助を受けている（true/false）; spouse.has = 配偶者あり（true/false）; spouse.incomeType = 配偶者の収入の種類（kyuyo=給与の収入金額 / shotoku=所得金額）; spouse.amount = 配偶者の収入か所得（円）; spouse.over70 = 配偶者が70歳以上（true/false）; spouse.shogai = 配偶者の障害（none/ippan/tokubetsu/dokyo）; relatives = 扶養親族の配列",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nendo": {
+            "description": "年度（既定は今の年度）"
+          },
+          "income": {
+            "description": "給与の収入金額（円）"
+          },
+          "shakai": {
+            "description": "社会保険料（円）"
+          },
+          "city.shitei": {
+            "description": "政令指定都市（true/false）"
+          },
+          "self.shogai": {
+            "description": "本人の障害（none/ippan/tokubetsu）"
+          },
+          "self.kafu": {
+            "description": "本人の寡婦・ひとり親（none/kafu/hitorioya）"
+          },
+          "self.parent": {
+            "description": "ひとり親の別（mother/father）"
+          },
+          "self.kinro": {
+            "description": "勤労学生（true/false）"
+          },
+          "self.minor": {
+            "description": "未成年（true/false）"
+          },
+          "self.seikatsuhogo": {
+            "description": "生活扶助を受けている（true/false）"
+          },
+          "spouse.has": {
+            "description": "配偶者あり（true/false）"
+          },
+          "spouse.incomeType": {
+            "description": "配偶者の収入の種類（kyuyo=給与の収入金額 / shotoku=所得金額）"
+          },
+          "spouse.amount": {
+            "description": "配偶者の収入か所得（円）"
+          },
+          "spouse.over70": {
+            "description": "配偶者が70歳以上（true/false）"
+          },
+          "spouse.shogai": {
+            "description": "配偶者の障害（none/ippan/tokubetsu/dokyo）"
+          },
+          "relatives": {
+            "description": "扶養親族の配列"
+          }
+        },
+        "required": [
+          "income"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_high_cost_medical_expense",
+      "title": "高額療養費（月の自己負担の上限と払い戻し）",
+      "description": "医療費の自己負担の上限額（高額療養費）と払い戻しの額を、健康保険法施行令 41・42 条の順で計算します。区分（cat）は /v1/kogaku/categories で選びます。\nJapan high-cost medical expense benefit: the monthly out-of-pocket cap and the refund, in the order of the Health Insurance Act Enforcement Order arts. 41-42. Pick the income category (cat) from the categories list.\n入力 / Inputs: period = 表（r7・r8・r9。省略すると今月の表）; cat = 所得区分の id（categories で調べる）; plan = kenpo（健保・国保）か kouki（後期高齢者）; rows.0.cost = 医療費の総額（円、10 割）; rows.0.age = u70 か o70; rows.0.place = in（入院）か out（外来）; rows.0.rate = 窓口の負担割合（0.3 など）; many = 多数回該当（true/false）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "description": "表（r7・r8・r9。省略すると今月の表）"
+          },
+          "cat": {
+            "description": "所得区分の id（categories で調べる）"
+          },
+          "plan": {
+            "description": "kenpo（健保・国保）か kouki（後期高齢者）"
+          },
+          "rows.0.cost": {
+            "description": "医療費の総額（円、10 割）"
+          },
+          "rows.0.age": {
+            "description": "u70 か o70"
+          },
+          "rows.0.place": {
+            "description": "in（入院）か out（外来）"
+          },
+          "rows.0.rate": {
+            "description": "窓口の負担割合（0.3 など）"
+          },
+          "many": {
+            "description": "多数回該当（true/false）"
+          }
+        },
+        "required": [
+          "cat"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_pension_start_age",
+      "title": "年金の繰上げ・繰下げ（受け取り始める年齢と月額）",
+      "description": "老齢年金を 60〜75 歳のどこから受け取るかで、月額がどう変わるか（繰上げは 1 か月 0.4%、繰下げは 0.7%）を計算します。\nJapanese old-age pension: how the monthly amount changes if you start between age 60 and 75 (0.4% less per month early, 0.7% more per month late).\n入力 / Inputs: birth = 生年月日（YYYY-MM-DD）; kiso = 65 歳からの老齢基礎年金（年額、円）; kosei = 65 歳からの老齢厚生年金（年額、円）; age = 受け取り始める年齢（60〜75）; mon = その年齢の何か月目か（0〜11）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "birth": {
+            "description": "生年月日（YYYY-MM-DD）"
+          },
+          "kiso": {
+            "description": "65 歳からの老齢基礎年金（年額、円）"
+          },
+          "kosei": {
+            "description": "65 歳からの老齢厚生年金（年額、円）"
+          },
+          "age": {
+            "description": "受け取り始める年齢（60〜75）"
+          },
+          "mon": {
+            "description": "その年齢の何か月目か（0〜11）"
+          }
+        },
+        "required": [
+          "birth",
+          "kiso"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_child_support_levy",
+      "title": "子ども・子育て支援金（給与から引かれる額）",
+      "description": "会社員・任意継続の子ども・子育て支援金の月額と賞与の額を、標準報酬月額 × 支援金率で計算します。国保・後期は国のモデル試算（/v1/shienkin/model）を返します。\nJapan child and child-rearing support levy deducted from pay: monthly and bonus amounts from the standard monthly remuneration times the levy rate. For National Health Insurance and the late-stage elderly system, returns the government model estimates.\n入力 / Inputs: kind = kaisha・ninkei・kokuho・kouki; mode = salary（月給から等級を引く）か hyojun（標準報酬月額）; amount = 月給か標準報酬月額（円）; bonus = 賞与（円）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "description": "kaisha・ninkei・kokuho・kouki"
+          },
+          "mode": {
+            "description": "salary（月給から等級を引く）か hyojun（標準報酬月額）"
+          },
+          "amount": {
+            "description": "月給か標準報酬月額（円）"
+          },
+          "bonus": {
+            "description": "賞与（円）"
+          }
+        },
+        "required": [
+          "amount"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_consumption_tax_after_20pct_rule",
+      "title": "インボイス 2割特例の後の消費税（2割特例・3割特例・簡易課税・本則の比較）",
+      "description": "課税売上（税込）から、2割特例・3割特例・簡易課税・本則課税の納付税額を、国税庁の申告書の欄の順で計算して比べます（標準税率 10% だけ）。\nJapanese consumption tax for small invoice issuers after the 20% special rule ends: compares the 20% rule, the 30% rule, simplified taxation and the general method, following the NTA return form (10% standard rate only).\n入力 / Inputs: year = 年分（2026〜2030 など）; uriage = 課税売上（税込、円）; kubun = 簡易課税の事業区分（1〜6）; shiire = インボイスのある課税仕入（税込、円）; noinv = インボイスのない課税仕入（税込、円）; henkan = 返品・値引き（税込、円）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "description": "年分（2026〜2030 など）"
+          },
+          "uriage": {
+            "description": "課税売上（税込、円）"
+          },
+          "kubun": {
+            "description": "簡易課税の事業区分（1〜6）"
+          },
+          "shiire": {
+            "description": "インボイスのある課税仕入（税込、円）"
+          },
+          "noinv": {
+            "description": "インボイスのない課税仕入（税込、円）"
+          },
+          "henkan": {
+            "description": "返品・値引き（税込、円）"
+          }
+        },
+        "required": [
+          "uriage"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "convert_japanese_era",
+      "title": "和暦と西暦の変換（元号）",
+      "description": "「令和8年5月1日」「S60.4.1」「2026-05-01」などの日付を、西暦と和暦の両方にします（明治 6 年以降。改元の日は新しい元号）。明治より前（慶長〜慶応、1596〜1867 年）は「慶応元年」「1850」のような年だけを受け、年の対応だけを返します（改元の日が旧暦のため）。\nConvert dates between Japanese era (Reiwa, Heisei, Showa, Taisho, Meiji) and the Western calendar, e.g. \"令和8年5月1日\", \"S60.4.1\" or \"2026-05-01\". For years before the Meiji era (Keichō to Keiō, 1596–1867), such as \"慶応元年\" or \"1850\", only the year is converted, because eras changed on lunisolar-calendar dates.\n入力 / Inputs: date = 日付の文字列（和暦か西暦）。明治より前は年だけ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "日付の文字列（和暦か西暦）。明治より前は年だけ"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "school_grade_by_birthdate",
+      "title": "学年（生年月日から、その年度の学年）",
+      "description": "生年月日から、指定した年度（4 月〜翌 3 月）の学年（年少〜大学 4 年）と小学校に入る年を出します。4 月 1 日生まれは早生まれ。\nJapanese school grade for a birth date in a given school year (April to March), from kindergarten to university, and the year the child starts elementary school. April 1 birthdays belong to the earlier grade.\n入力 / Inputs: birth = 生年月日（YYYY-MM-DD）; fy = 年度（西暦。既定は今の年度）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "birth": {
+            "description": "生年月日（YYYY-MM-DD）"
+          },
+          "fy": {
+            "description": "年度（西暦。既定は今の年度）"
+          }
+        },
+        "required": [
+          "birth"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "tonight_sky_japan",
+      "title": "今夜の星空（都道府県庁の場所の 21 時）",
+      "description": "都道府県（空なら東京都）の県庁の場所で、その日の 21 時（日本時間）に南に見える星座 3 つ・月齢と月の出入り・明るい惑星 1 つと、星空のページの URL を返します。場所は都道府県だけで、市町村や位置情報は受けません。\nFor a Japanese prefecture (default Tokyo), returns three constellations in the southern sky at 21:00 JST from the prefectural office, the moon's age and rise and set times, one bright planet, and a link to the star map. Only prefectures are accepted, not cities or coordinates.\n入力 / Inputs: pref = 都道府県の名前（「大阪」「大阪府」。空なら東京都）; date = YYYY-MM-DD（空なら日本時間の今日）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pref": {
+            "description": "都道府県の名前（「大阪」「大阪府」。空なら東京都）"
+          },
+          "date": {
+            "description": "YYYY-MM-DD（空なら日本時間の今日）"
+          }
+        },
+        "required": [],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_childcare_leave_benefit",
+      "title": "育休・産休の給付（出産手当金・育児休業給付金など）",
+      "description": "会社員本人の出産手当金・出産育児一時金・出生時育児休業給付金・育児休業給付金・出生後休業支援給付金・育児時短就業給付金の目安と、産休・育休中の社会保険料の免除を、健康保険法・雇用保険法の式で計算します。\nEstimates of the benefits for an employee on maternity and childcare leave in Japan: the maternity allowance, the childbirth lump sum, the childcare leave benefits, the post-birth leave support benefit, the reduced-hours childcare benefit, and the social insurance premium exemption, following the Health Insurance Act and the Employment Insurance Act.\n入力 / Inputs: role = mother か father; dueDate = 出産予定日（YYYY-MM-DD）; birthDate = 生まれた日（YYYY-MM-DD。生まれたあとに入れる）; babies = 子の人数（1〜3）; salary = 月給（円）。標準報酬月額が分かれば hyojun; hyojun = 標準報酬月額（円）; wage6 = 休業前 6 か月の賃金の合計（円、賞与を除く）; under12 = 健康保険に入って 12 か月未満（true/false）; leaveStart = 育休の開始日; leaveEnd = 育休の終了日; papa.use = 産後パパ育休を使う（true/false）; papa.start = 産後パパ育休の開始日; papa.end = 産後パパ育休の終了日; spouse = leave14・notEmployee・none・noLeave; pref = 協会けんぽの支部（tokyo など）; over40 = 40 歳以上（true/false）; juminzei = 月の住民税（円）; jitan.use = 育児時短就業給付金を計算する（true/false）; jitan.salary = 時短中の月の賃金（円）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "description": "mother か father"
+          },
+          "dueDate": {
+            "description": "出産予定日（YYYY-MM-DD）"
+          },
+          "birthDate": {
+            "description": "生まれた日（YYYY-MM-DD。生まれたあとに入れる）"
+          },
+          "babies": {
+            "description": "子の人数（1〜3）"
+          },
+          "salary": {
+            "description": "月給（円）。標準報酬月額が分かれば hyojun"
+          },
+          "hyojun": {
+            "description": "標準報酬月額（円）"
+          },
+          "wage6": {
+            "description": "休業前 6 か月の賃金の合計（円、賞与を除く）"
+          },
+          "under12": {
+            "description": "健康保険に入って 12 か月未満（true/false）"
+          },
+          "leaveStart": {
+            "description": "育休の開始日"
+          },
+          "leaveEnd": {
+            "description": "育休の終了日"
+          },
+          "papa.use": {
+            "description": "産後パパ育休を使う（true/false）"
+          },
+          "papa.start": {
+            "description": "産後パパ育休の開始日"
+          },
+          "papa.end": {
+            "description": "産後パパ育休の終了日"
+          },
+          "spouse": {
+            "description": "leave14・notEmployee・none・noLeave"
+          },
+          "pref": {
+            "description": "協会けんぽの支部（tokyo など）"
+          },
+          "over40": {
+            "description": "40 歳以上（true/false）"
+          },
+          "juminzei": {
+            "description": "月の住民税（円）"
+          },
+          "jitan.use": {
+            "description": "育児時短就業給付金を計算する（true/false）"
+          },
+          "jitan.salary": {
+            "description": "時短中の月の賃金（円）"
+          }
+        },
+        "required": [
+          "dueDate"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_medical_expense_deduction",
+      "title": "医療費控除（控除額と戻る税金の目安）",
+      "description": "支払った医療費から医療費控除の額（またはセルフメディケーション税制の額）を、国税庁の明細書の計算欄の順で出し、戻る所得税と住民税の減額の目安を計算します。給与の収入（income）か、総所得金額等（mode=shotoku と shotoku）のどちらかが要ります。\nJapan medical expense deduction: the deduction (or the self-medication tax deduction) in the order of the National Tax Agency statement form, with an estimate of the income tax refund and the resident tax reduction. Either the salary income (income) or the total income (mode=shotoku with shotoku) is needed.\n入力 / Inputs: hiyo = 支払った医療費の合計（円）; hoten = 保険金などで補てんされる額（円）; mode = kyuyo（給与の収入から）か shotoku（総所得金額等を直接）; income = 給与の収入金額（円。mode=kyuyo のとき）; shotoku = 総所得金額等（円。mode=shotoku のとき）; kojo = 所得控除の合計（円、医療費控除の前）; shakai = 所得控除が分からないときの社会保険料（円）; rateMode = auto か manual; rate = 税率 %（rateMode=manual のとき。5・10・20・23・33・40・45）; self.use = セルフメディケーション税制も比べる（true/false）; self.torikumi = 健康診断などの取組をしている（true/false）; self.amount = 対象医薬品の購入費（円）; self.hoten = 対象医薬品の補てん額（円）; jumin = 住民税の減額も出す（true/false）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hiyo": {
+            "description": "支払った医療費の合計（円）"
+          },
+          "hoten": {
+            "description": "保険金などで補てんされる額（円）"
+          },
+          "mode": {
+            "description": "kyuyo（給与の収入から）か shotoku（総所得金額等を直接）"
+          },
+          "income": {
+            "description": "給与の収入金額（円。mode=kyuyo のとき）"
+          },
+          "shotoku": {
+            "description": "総所得金額等（円。mode=shotoku のとき）"
+          },
+          "kojo": {
+            "description": "所得控除の合計（円、医療費控除の前）"
+          },
+          "shakai": {
+            "description": "所得控除が分からないときの社会保険料（円）"
+          },
+          "rateMode": {
+            "description": "auto か manual"
+          },
+          "rate": {
+            "description": "税率 %（rateMode=manual のとき。5・10・20・23・33・40・45）"
+          },
+          "self.use": {
+            "description": "セルフメディケーション税制も比べる（true/false）"
+          },
+          "self.torikumi": {
+            "description": "健康診断などの取組をしている（true/false）"
+          },
+          "self.amount": {
+            "description": "対象医薬品の購入費（円）"
+          },
+          "self.hoten": {
+            "description": "対象医薬品の補てん額（円）"
+          },
+          "jumin": {
+            "description": "住民税の減額も出す（true/false）"
+          }
+        },
+        "required": [
+          "hiyo"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_high_school_tuition_support",
+      "title": "高校の授業料（就学支援金と都道府県の上乗せのあとの自己負担）",
+      "description": "高校の授業料から国の就学支援金と、東京都・大阪府・神奈川県・埼玉県・愛知県・兵庫県の私立の上乗せを引いた自己負担を、学年ごとに計算して合計します。授業料は、年額（fee）か、単位制の 1 単位の授業料と単位数（feeMode=unit と unitFee・units）のどちらかで入れます。\nJapan high school tuition: the out-of-pocket amount after the national tuition support and the added support of Tokyo, Osaka, Kanagawa, Saitama, Aichi and Hyogo for private schools, calculated for each school year and summed. Enter the tuition either as a yearly amount (fee) or, for credit-based schools, as the fee per credit and the number of credits (feeMode=unit with unitFee and units).\n入力 / Inputs: fee = 授業料（年額、円）。単位制は feeMode=unit と unitFee・units; setchi = shiritsu・koritsu・kokuritsu; type = zen・tei・tsu・toku・kosen・senshu・senshu_tsu; feeMode = year か unit（単位制）; unitFee = 1 単位の授業料（円）; units = 年の単位数; pref = 都道府県の名前（「東京都」など）; years = 3 か 4; shisetsu = 施設整備費など（年額、円）; nyugaku = 入学金（円）; status = shin か gai（新制度の対象外）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fee": {
+            "description": "授業料（年額、円）。単位制は feeMode=unit と unitFee・units"
+          },
+          "setchi": {
+            "description": "shiritsu・koritsu・kokuritsu"
+          },
+          "type": {
+            "description": "zen・tei・tsu・toku・kosen・senshu・senshu_tsu"
+          },
+          "feeMode": {
+            "description": "year か unit（単位制）"
+          },
+          "unitFee": {
+            "description": "1 単位の授業料（円）"
+          },
+          "units": {
+            "description": "年の単位数"
+          },
+          "pref": {
+            "description": "都道府県の名前（「東京都」など）"
+          },
+          "years": {
+            "description": "3 か 4"
+          },
+          "shisetsu": {
+            "description": "施設整備費など（年額、円）"
+          },
+          "nyugaku": {
+            "description": "入学金（円）"
+          },
+          "status": {
+            "description": "shin か gai（新制度の対象外）"
+          }
+        },
+        "required": [],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_pension_lump_sum_withdrawal",
+      "title": "脱退一時金（外国人の厚生年金・国民年金）",
+      "description": "日本を出る外国人の脱退一時金の額（厚生年金・国民年金）と、源泉徴収された額、退職所得の選択課税での還付の目安、請求の期限を、日本年金機構の表の順で計算します。厚生年金の月数（ep.months）か国民年金の月数（np.months）のどちらかが要ります。\nLump-sum withdrawal payment for foreign residents leaving Japan: the amount from the employees' pension and the national pension, the tax withheld, an estimate of the refund through the retirement income election, and the claim deadline, following the Japan Pension Service tables. Either the months of employees' pension (ep.months) or the months of national pension (np.months) is needed.\n入力 / Inputs: ep.months = 厚生年金の被保険者期間の月数; ep.last = 厚生年金の最終月（YYYY-MM）; ep.avg = 平均標準報酬額（円。分かるとき）; ep.salary = 平均の月給（円。avg の代わり）; ep.bonus = 賞与 1 回の額（円）; ep.bonusCount = 賞与を受けた回数; np.months = 国民年金の保険料を全額納めた月数; np.last = 最後に納めた月（YYYY-MM）; np.q1 = 4 分の 1 免除の月数; np.half = 半額免除の月数; np.q3 = 4 分の 3 免除の月数; left = 日本に住所を有しなくなった日（YYYY-MM-DD）; japanese = 日本国籍がある（true/false）; disability = 障害年金などの受給権がある（true/false）; country = 出身国の鍵（社会保障協定の注意に使う）; refund = 還付の目安を出す（true/false）; otherRetirement = 同じ年にほかの退職金もある（true/false）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "ep.months": {
+            "description": "厚生年金の被保険者期間の月数"
+          },
+          "ep.last": {
+            "description": "厚生年金の最終月（YYYY-MM）"
+          },
+          "ep.avg": {
+            "description": "平均標準報酬額（円。分かるとき）"
+          },
+          "ep.salary": {
+            "description": "平均の月給（円。avg の代わり）"
+          },
+          "ep.bonus": {
+            "description": "賞与 1 回の額（円）"
+          },
+          "ep.bonusCount": {
+            "description": "賞与を受けた回数"
+          },
+          "np.months": {
+            "description": "国民年金の保険料を全額納めた月数"
+          },
+          "np.last": {
+            "description": "最後に納めた月（YYYY-MM）"
+          },
+          "np.q1": {
+            "description": "4 分の 1 免除の月数"
+          },
+          "np.half": {
+            "description": "半額免除の月数"
+          },
+          "np.q3": {
+            "description": "4 分の 3 免除の月数"
+          },
+          "left": {
+            "description": "日本に住所を有しなくなった日（YYYY-MM-DD）"
+          },
+          "japanese": {
+            "description": "日本国籍がある（true/false）"
+          },
+          "disability": {
+            "description": "障害年金などの受給権がある（true/false）"
+          },
+          "country": {
+            "description": "出身国の鍵（社会保障協定の注意に使う）"
+          },
+          "refund": {
+            "description": "還付の目安を出す（true/false）"
+          },
+          "otherRetirement": {
+            "description": "同じ年にほかの退職金もある（true/false）"
+          }
+        },
+        "required": [],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_upcoming_system_changes",
+      "title": "制度の改定カレンダー（次に変わる日）",
+      "description": "指定した日（空なら日本時間の今日）より後の、税・社会保険・子育てなどの制度の施行日を日付順に返します。いちばん近い日の分は next にまとめ、日数も付けます。\nUpcoming effective dates of Japanese tax, social insurance and child-rearing rules after a given date (default: today in Japan time), in date order. The nearest date is returned as next, with the number of days.\n入力 / Inputs: date = 基準の日（YYYY-MM-DD。空なら日本時間の今日）。この日の施行は施行済みとして数える; cat = 分野の絞り込み（zei・shaho・kosodate・other）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "基準の日（YYYY-MM-DD。空なら日本時間の今日）。この日の施行は施行済みとして数える"
+          },
+          "cat": {
+            "description": "分野の絞り込み（zei・shaho・kosodate・other）"
+          }
+        },
+        "required": [],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_take_home_pay",
+      "title": "手取り（月給・賞与から、社会保険料と税を引いた額）",
+      "description": "会社員（協会けんぽ・厚生年金・雇用保険）の月給と賞与から、社会保険料・所得税・住民税を引いた月と年の手取りを、年末調整と住民税の計算を使って出します。令和8年分、年収 2,000 万円まで。\nTake-home pay for a salaried employee in Japan (Kyokai Kenpo health insurance, employees' pension, employment insurance): monthly and annual pay after social insurance, income tax and resident tax, using the year-end adjustment and resident tax calculations. Tax year 2026, up to 20 million yen a year.\n入力 / Inputs: amount = 月給（円）。period=year のときは年収（円）; period = month か year; bonus = 賞与の年間合計（円）; bonusCount = 賞与の回数（1〜3）; pref = 協会けんぽの支部（tokyo など）; over40 = 40 歳以上（介護保険料。true/false）; spouse.has = 配偶者あり（true/false）; spouse.income = 配偶者の給与の収入（円）; kids.u16 = 16 歳未満の子の人数; kids.a16 = 16〜18 歳の人数; kids.a19 = 19〜22 歳の人数; juminNow = same（住民税を引かれている）か none（まだ無い）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "description": "月給（円）。period=year のときは年収（円）"
+          },
+          "period": {
+            "description": "month か year"
+          },
+          "bonus": {
+            "description": "賞与の年間合計（円）"
+          },
+          "bonusCount": {
+            "description": "賞与の回数（1〜3）"
+          },
+          "pref": {
+            "description": "協会けんぽの支部（tokyo など）"
+          },
+          "over40": {
+            "description": "40 歳以上（介護保険料。true/false）"
+          },
+          "spouse.has": {
+            "description": "配偶者あり（true/false）"
+          },
+          "spouse.income": {
+            "description": "配偶者の給与の収入（円）"
+          },
+          "kids.u16": {
+            "description": "16 歳未満の子の人数"
+          },
+          "kids.a16": {
+            "description": "16〜18 歳の人数"
+          },
+          "kids.a19": {
+            "description": "19〜22 歳の人数"
+          },
+          "juminNow": {
+            "description": "same（住民税を引かれている）か none（まだ無い）"
+          }
+        },
+        "required": [
+          "amount"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_childhood_vaccination_schedule",
+      "title": "子どもの定期の予防接種（生年月日から日付の一覧）",
+      "description": "生年月日から、定期接種の各回の標準的な時期と接種できる期間を日付で一覧にし、今の時期の回・これから始まる最初の回・標準の時期を過ぎた回を示します。日付は厚生労働省の事務連絡（平成26年3月11日）の数え方です。\nRoutine childhood vaccinations in Japan: from the date of birth, the standard period and the eligible period of each dose as dates, with the doses in their standard period now, the next one to start, and those past the standard period. Dates are counted as in the Ministry of Health, Labour and Welfare notice of March 11, 2014.\n入力 / Inputs: birth = 子の生年月日（YYYY-MM-DD）; today = 基準の日（YYYY-MM-DD。空なら日本時間の今日）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "birth": {
+            "description": "子の生年月日（YYYY-MM-DD）"
+          },
+          "today": {
+            "description": "基準の日（YYYY-MM-DD。空なら日本時間の今日）"
+          }
+        },
+        "required": [
+          "birth"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_high_school_naishin",
+      "title": "内申点（公立高校入試の調査書点・総合点）",
+      "description": "東京・神奈川・兵庫・大阪・埼玉・千葉の公立高校入試について、9 教科の評定から内申点（調査書点）を計算し、学力検査の点を入れると総合点、目標を入れると必要な学力検査の点を出します。値は各県の実施要綱から。\nJapanese public high school entrance exams (Tokyo, Kanagawa, Hyogo, Osaka, Saitama, Chiba): the school report score from the nine subject grades, the total when you enter the exam score, and the exam score needed when you enter a target. Values follow each prefecture's guidelines.\n入力 / Inputs: pref = 府県（tokyo・kanagawa・hyogo・osaka・saitama・chiba）; g = 東京・兵庫: 中3の評定（1〜5）。g.kokugo・shakai・sugaku・rika・eigo・ongaku・bijutsu・hotai・gika の 9 教科; g3 = 神奈川・大阪・埼玉・千葉: 中3の評定（g と同じ 9 教科）; g2 = 神奈川: 中2の評定（g と同じ 9 教科）。代わりに sum2（9 教科の合計 9〜45）でもよい; sum1 = 大阪・埼玉・千葉: 中1の 9 教科の合計（9〜45）; sum2 = 大阪・埼玉・千葉: 中2の 9 教科の合計（9〜45）。神奈川は g2 の代わりに使える; gaku = 学力検査の合計（素点。任意）; target = 目標の点（任意。必要な学力検査の点を出す）; kyoka = 東京: 学力検査の教科数（5 か 3）; ratio = 東京: 比率（7:3・6:4・best・best64）。埼玉: 3 年の比率（112・113・111）; esat = 東京: ESAT-J の段階（A〜F）; f = 神奈川: 内申の比率（2〜8）; gakuMax = 神奈川: 学力検査の満点（500 か 300）; gakku = 兵庫: 第1志望の学区（1〜5）; type = 大阪: タイプ（1〜5）; conv = 埼玉: 内申の換算（200・300・400）; mmul = 埼玉: 面接の倍率（1・2）; mensetsu = 埼玉: 面接の得点; k = 千葉: 倍率（0.5・1・2）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pref": {
+            "description": "府県（tokyo・kanagawa・hyogo・osaka・saitama・chiba）"
+          },
+          "g": {
+            "description": "東京・兵庫: 中3の評定（1〜5）。g.kokugo・shakai・sugaku・rika・eigo・ongaku・bijutsu・hotai・gika の 9 教科"
+          },
+          "g3": {
+            "description": "神奈川・大阪・埼玉・千葉: 中3の評定（g と同じ 9 教科）"
+          },
+          "g2": {
+            "description": "神奈川: 中2の評定（g と同じ 9 教科）。代わりに sum2（9 教科の合計 9〜45）でもよい"
+          },
+          "sum1": {
+            "description": "大阪・埼玉・千葉: 中1の 9 教科の合計（9〜45）"
+          },
+          "sum2": {
+            "description": "大阪・埼玉・千葉: 中2の 9 教科の合計（9〜45）。神奈川は g2 の代わりに使える"
+          },
+          "gaku": {
+            "description": "学力検査の合計（素点。任意）"
+          },
+          "target": {
+            "description": "目標の点（任意。必要な学力検査の点を出す）"
+          },
+          "kyoka": {
+            "description": "東京: 学力検査の教科数（5 か 3）"
+          },
+          "ratio": {
+            "description": "東京: 比率（7:3・6:4・best・best64）。埼玉: 3 年の比率（112・113・111）"
+          },
+          "esat": {
+            "description": "東京: ESAT-J の段階（A〜F）"
+          },
+          "f": {
+            "description": "神奈川: 内申の比率（2〜8）"
+          },
+          "gakuMax": {
+            "description": "神奈川: 学力検査の満点（500 か 300）"
+          },
+          "gakku": {
+            "description": "兵庫: 第1志望の学区（1〜5）"
+          },
+          "type": {
+            "description": "大阪: タイプ（1〜5）"
+          },
+          "conv": {
+            "description": "埼玉: 内申の換算（200・300・400）"
+          },
+          "mmul": {
+            "description": "埼玉: 面接の倍率（1・2）"
+          },
+          "mensetsu": {
+            "description": "埼玉: 面接の得点"
+          },
+          "k": {
+            "description": "千葉: 倍率（0.5・1・2）"
+          }
+        },
+        "required": [
+          "pref"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_attendance_limit",
+      "title": "出席日数（休める上限と残り）",
+      "description": "授業の回数（または日数）と、学校が決めている出席の割合から、休める上限の回数と、あと何回休めるかを計算します。割合は法令の値ではなく学校ごとの決まりなので、自分で選びます。\nThe most classes (or days) you can miss and how many absences you have left, from the number of classes and the attendance ratio your school sets. The ratio is a school rule, not a value set by law, so you choose it.\n入力 / Inputs: total = 1 年の授業の回数（または日数）; ratio = 必要な出席の割合: 2/3・3/4・4/5 のどれか。custom を選ぶと percent を使う; percent = ratio=custom のときの出席の割合（%。0 より大きく 100 より小さい）; absent = 休んだ回数（任意）; excused = 欠席に数えない回数（出席停止・忌引など。任意）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "description": "1 年の授業の回数（または日数）"
+          },
+          "ratio": {
+            "description": "必要な出席の割合: 2/3・3/4・4/5 のどれか。custom を選ぶと percent を使う"
+          },
+          "percent": {
+            "description": "ratio=custom のときの出席の割合（%。0 より大きく 100 より小さい）"
+          },
+          "absent": {
+            "description": "休んだ回数（任意）"
+          },
+          "excused": {
+            "description": "欠席に数えない回数（出席停止・忌引など。任意）"
+          }
+        },
+        "required": [
+          "total",
+          "ratio"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_days_until",
+      "title": "○○まであと何日（日数・毎年の日・期間の残り）",
+      "description": "日付までの日数を数えます（今日は数えない。あしたなら 1）。毎年の日（誕生日など）は次の日と何回目かを、期間（夏休みなど）は始まる前・期間中・終わったあとと残りの日数を返します。今日は日本時間です。\nCounts the days until a date (today is not counted; tomorrow is 1). For a yearly date such as a birthday it gives the next one and its number (the age for a birthday); for a period such as a summer break it says whether it is before, during or after, and the days left. Today is in Japan time.\n入力 / Inputs: date = 日付（YYYY-MM-DD）; yearly = 毎年くり返す日（true/false）; end = 期間のおわりの日（YYYY-MM-DD。任意）; today = 今日の日付（YYYY-MM-DD。省略すると日本時間の今日）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "日付（YYYY-MM-DD）"
+          },
+          "yearly": {
+            "description": "毎年くり返す日（true/false）"
+          },
+          "end": {
+            "description": "期間のおわりの日（YYYY-MM-DD。任意）"
+          },
+          "today": {
+            "description": "今日の日付（YYYY-MM-DD。省略すると日本時間の今日）"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_deviation_score",
+      "title": "偏差値（点数・平均点・標準偏差から）",
+      "description": "点数・平均点・標準偏差から偏差値（50＋10×（点数−平均点）÷標準偏差）を計算します。人数を入れると、点数が正規分布に従うと仮定した上位の割合と順位の目安も返します。実際の分布とはずれます。\nThe deviation score (50 + 10 x (score - mean) / standard deviation) from a score, the mean and the standard deviation. With the number of test takers it also gives the share above you and a rank estimate, assuming the scores follow a normal distribution; real distributions differ.\n入力 / Inputs: score = 点数; mean = 平均点; sd = 標準偏差（0 より大きい）; n = 受けた人数（任意。順位の目安を出す）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "description": "点数"
+          },
+          "mean": {
+            "description": "平均点"
+          },
+          "sd": {
+            "description": "標準偏差（0 より大きい）"
+          },
+          "n": {
+            "description": "受けた人数（任意。順位の目安を出す）"
+          }
+        },
+        "required": [
+          "score",
+          "mean",
+          "sd"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_mortgage_repayment",
+      "title": "住宅ローンの返済（毎月の返済額・利息の総額・完済まで）",
+      "description": "借入額・返済期間・金利から、住宅ローンの毎月の返済額・利息の総額・完済までの月数を計算します。元利均等と元金均等、金利の変更、繰上返済（期間短縮か返済額軽減）、変動金利の 5 年ルール・125% ルールに対応します。\nHome loan repayment: the monthly payment, total interest and number of months to repay, from the amount, term and interest rate. Covers equal-payment and equal-principal repayment, rate changes, prepayments (shorten the term or reduce the payment) and the 5-year and 125% rules for variable-rate loans.\n入力 / Inputs: principal = 借入額（円）; years = 返済期間（年。1〜50）; rate = 最初の金利（年利 %。0〜20）; method = annuity（元利均等。既定）か principal（元金均等）; rates.0.from = 金利を変える時期（何か月目から。2 以上）。rates.0.rate とセットで、配列 rates に何回でも; rates.0.rate = 変えたあとの金利（年利 %）; rule5 = 5 年ルール（true/false。既定 true。元利均等のときだけ有効）; rule125 = 125% ルール（true/false。既定 true。元利均等のときだけ有効）; prepayments.0.month = 繰上返済をする時期（何か月目の返済のあとに）; prepayments.0.amount = 繰上返済の金額（円）; prepayments.0.type = shorten（期間短縮。既定）か reduce（返済額軽減）; prepayFee = 繰上返済 1 回あたりの手数料（円）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "principal": {
+            "description": "借入額（円）"
+          },
+          "years": {
+            "description": "返済期間（年。1〜50）"
+          },
+          "rate": {
+            "description": "最初の金利（年利 %。0〜20）"
+          },
+          "method": {
+            "description": "annuity（元利均等。既定）か principal（元金均等）"
+          },
+          "rates.0.from": {
+            "description": "金利を変える時期（何か月目から。2 以上）。rates.0.rate とセットで、配列 rates に何回でも"
+          },
+          "rates.0.rate": {
+            "description": "変えたあとの金利（年利 %）"
+          },
+          "rule5": {
+            "description": "5 年ルール（true/false。既定 true。元利均等のときだけ有効）"
+          },
+          "rule125": {
+            "description": "125% ルール（true/false。既定 true。元利均等のときだけ有効）"
+          },
+          "prepayments.0.month": {
+            "description": "繰上返済をする時期（何か月目の返済のあとに）"
+          },
+          "prepayments.0.amount": {
+            "description": "繰上返済の金額（円）"
+          },
+          "prepayments.0.type": {
+            "description": "shorten（期間短縮。既定）か reduce（返済額軽減）"
+          },
+          "prepayFee": {
+            "description": "繰上返済 1 回あたりの手数料（円）"
+          }
+        },
+        "required": [
+          "principal",
+          "years",
+          "rate"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_appliance_electricity_cost",
+      "title": "家電の電気代（1 か月・1 年の電力量と金額）",
+      "description": "家電ごとの消費電力と使う時間（または年間消費電力量）と電気料金の単価から、1 か月・1 年の電力量と電気代を計算し、金額の多い順に並べます。単価の既定は出典の目安単価です。\nElectricity cost of home appliances: the monthly and yearly energy use and cost from each appliance's power and hours of use (or annual consumption) and the unit price, ranked by cost. The default unit price is the guide price in the source.\n入力 / Inputs: unitPrice = 電気料金の単価（円/kWh。既定は出典の目安単価）; items = 家電の配列（1〜40 件）。各要素の欄は下の items.0.*（items.0.watt の形で平らにも送れる）; items.0.method = wh（消費電力 W × 時間。既定）か annual（年間消費電力量）; items.0.name = 名前; items.0.watt = 消費電力（W）; items.0.hours = 1 日の使用時間（時間。24 まで）; items.0.days = 1 か月の使用日数（31 まで）; items.0.standbyW = 待機電力（W。wh のときだけ）; items.0.annualKwh = 年間消費電力量（kWh。annual のとき）; items.0.qty = 台数（既定 1）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "unitPrice": {
+            "description": "電気料金の単価（円/kWh。既定は出典の目安単価）"
+          },
+          "items": {
+            "description": "家電の配列（1〜40 件）。各要素の欄は下の items.0.*（items.0.watt の形で平らにも送れる）"
+          },
+          "items.0.method": {
+            "description": "wh（消費電力 W × 時間。既定）か annual（年間消費電力量）"
+          },
+          "items.0.name": {
+            "description": "名前"
+          },
+          "items.0.watt": {
+            "description": "消費電力（W）"
+          },
+          "items.0.hours": {
+            "description": "1 日の使用時間（時間。24 まで）"
+          },
+          "items.0.days": {
+            "description": "1 か月の使用日数（31 まで）"
+          },
+          "items.0.standbyW": {
+            "description": "待機電力（W。wh のときだけ）"
+          },
+          "items.0.annualKwh": {
+            "description": "年間消費電力量（kWh。annual のとき）"
+          },
+          "items.0.qty": {
+            "description": "台数（既定 1）"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_appliance_replacement_saving",
+      "title": "家電の買い替え（年間の電気代の差と、元が取れる年数）",
+      "description": "今の家電と買い替え先の消費電力と使う時間（method=wh）、または年間消費電力量（method=annual）のどちらかと、電気料金の単価から、年間の電力量と電気代の差を計算します。購入価格を入れると、元が取れるまでの年数も返します（差が無いか増えるときは null）。単価の既定は出典の目安単価です。\nReplacing a home appliance: the yearly difference in energy use and electricity cost between the current and the new appliance, from either their power and hours of use (method=wh) or their annual consumption (method=annual), and the unit price. With the purchase price it also returns the years to pay it back (null when there is no saving or the cost goes up). The default unit price is the guide price in the source.\n入力 / Inputs: method = wh（消費電力 W × 時間。既定）か annual（年間消費電力量）; oldWatt = 今の家電の消費電力（W。wh のとき）; newWatt = 買い替え先の消費電力（W。wh のとき）; hours = 1 日の使用時間（時間。wh のとき）; days = 1 か月の使用日数（wh のとき）; oldAnnualKwh = 今の家電の年間消費電力量（kWh。annual のとき）; newAnnualKwh = 買い替え先の年間消費電力量（kWh。annual のとき）; qty = 台数（既定 1）; price = 購入価格（円。元が取れる年数に使う）; unitPrice = 電気料金の単価（円/kWh。既定は出典の目安単価）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "description": "wh（消費電力 W × 時間。既定）か annual（年間消費電力量）"
+          },
+          "oldWatt": {
+            "description": "今の家電の消費電力（W。wh のとき）"
+          },
+          "newWatt": {
+            "description": "買い替え先の消費電力（W。wh のとき）"
+          },
+          "hours": {
+            "description": "1 日の使用時間（時間。wh のとき）"
+          },
+          "days": {
+            "description": "1 か月の使用日数（wh のとき）"
+          },
+          "oldAnnualKwh": {
+            "description": "今の家電の年間消費電力量（kWh。annual のとき）"
+          },
+          "newAnnualKwh": {
+            "description": "買い替え先の年間消費電力量（kWh。annual のとき）"
+          },
+          "qty": {
+            "description": "台数（既定 1）"
+          },
+          "price": {
+            "description": "購入価格（円。元が取れる年数に使う）"
+          },
+          "unitPrice": {
+            "description": "電気料金の単価（円/kWh。既定は出典の目安単価）"
+          }
+        },
+        "required": [],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "calc_social_insurance_eligibility",
+      "title": "社会保険（厚生年金・健康保険）の加入判定",
+      "description": "週の所定労働時間・勤務先の規模・学生かどうか・雇用の見込みから、パート・アルバイトが社会保険（厚生年金・健康保険）の加入対象かを判定します。月の給与を送ると、保険料（本人負担）の目安も返します。\nSocial insurance (employees' pension and health insurance) eligibility for part-time workers in Japan, judged from weekly contracted hours, employer size, student status and expected length of employment. If a monthly wage is sent, it also returns a guide to the employee share of the premiums.\n入力 / Inputs: weeklyHours = 週の所定労働時間（契約上の時間）; employer = 勤務先の規模: 51+・36-50・21-35・11-20・1-10・public（国・地方公共団体）・sole（個人経営）・unknown（わからない）; fullTimeHours = 正社員の週の所定労働時間（既定 40）; daysThreeQuarter = 月の勤務日数が正社員の 4 分の 3 以上か: yes・no（既定）・unknown; overTwoMonths = 2 か月を超えて働く見込みか: yes（既定）・no; student = none（学生でない。既定）・daytime（昼間の学生）・other（夜間・通信制・定時制・休学中など）; monthlyWage = 月の給与（円。保険料の目安を出すとき）; date = 判定日 YYYY-MM-DD（省略すると日本時間の今日）",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "weeklyHours": {
+            "description": "週の所定労働時間（契約上の時間）"
+          },
+          "employer": {
+            "description": "勤務先の規模: 51+・36-50・21-35・11-20・1-10・public（国・地方公共団体）・sole（個人経営）・unknown（わからない）"
+          },
+          "fullTimeHours": {
+            "description": "正社員の週の所定労働時間（既定 40）"
+          },
+          "daysThreeQuarter": {
+            "description": "月の勤務日数が正社員の 4 分の 3 以上か: yes・no（既定）・unknown"
+          },
+          "overTwoMonths": {
+            "description": "2 か月を超えて働く見込みか: yes（既定）・no"
+          },
+          "student": {
+            "description": "none（学生でない。既定）・daytime（昼間の学生）・other（夜間・通信制・定時制・休学中など）"
+          },
+          "monthlyWage": {
+            "description": "月の給与（円。保険料の目安を出すとき）"
+          },
+          "date": {
+            "description": "判定日 YYYY-MM-DD（省略すると日本時間の今日）"
+          }
+        },
+        "required": [
+          "weeklyHours",
+          "employer"
+        ],
+        "additionalProperties": true
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "list_high_cost_medical_categories",
+      "title": "高額療養費の所得区分の表",
+      "description": "高額療養費の所得区分（cat の id）と、各区分の上限額の式。calc_high_cost_medical_expense の前に呼びます。\nIncome categories (cat ids) and cap formulas for the Japan high-cost medical expense benefit. Call before calc_high_cost_medical_expense.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "description": "r7・r8・r9（省略すると今月の表） / omit for the current month"
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "idempotentHint": true
+      }
+    }
+  ],
+  "maxBody": 65536,
+  "routes": [
+    "/mcp",
+    "/",
+    "/v1",
+    "/v1/now"
+  ],
+  "metaKeys": [
+    "api_version",
+    "calc",
+    "checked",
+    "disclaimer",
+    "disclaimer_en",
+    "lib",
+    "page",
+    "source"
+  ],
+  "nowKeys": [
+    "checked",
+    "next",
+    "page",
+    "today"
+  ]
+}

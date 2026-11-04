@@ -1,25 +1,22 @@
-// agent 向けの読み口（tools/build-agent.mjs。yorozu-plans ROADMAP 7.184 F・QUEUE Q-090）
-// OpenAPI は yorozu-api の今のコード（src/app.mjs の handler）を手元で呼んで作り、口の集合 ＝ Worker のルートの集合を確かめる。
-// yorozu-api の場所は YOROZU_API_DIR、無ければこのリポジトリの隣（Claude\Projects\yorozu-api）
+// agent 向けの読み口（tools/build-agent.mjs。yorozu-plans ROADMAP 7.184 F・QUEUE Q-090、7.186 D477）
+// ネットにも yorozu-api にも依らない: 計算の API の定義は tests/fixtures/agent-api.json（yorozu-api の原文から
+// `AGENT_API_DIR=<yorozu-api> node tools/build-agent.mjs --write-fixture` で書いた写し）を使う。
+// 写しが今のコードと同じかは最後の 1 本が確かめる（yorozu-api が YOROZU_API_DIR か隣にあるときだけ。無ければ skip）
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { API, SITE, MAX_BODY, EXTRA_TOOLS, readApi, buildOpenApi, bodySchema, buildLlms, buildApiJson, buildApiHtml, pageInfo } from '../tools/build-agent.mjs';
+import { API, SITE, EXTRA_TOOLS, FIXTURE, buildOpenApi, bodySchema, buildLlms, buildApiJson, buildApiHtml, pageInfo, apiFixture, readApiDir, openApiSignature } from '../tools/build-agent.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const apiDir = process.env.YOROZU_API_DIR || join(root, '..', 'yorozu-api');
-if (!existsSync(join(apiDir, 'src', 'app.mjs'))) throw new Error('yorozu-api が見つからない: ' + apiDir + '（YOROZU_API_DIR で場所を渡す）');
-const { handler, mcpTools } = await import(pathToFileURL(join(apiDir, 'src', 'app.mjs')).href);
-const call = (req) => handler.fetch(req);
-const api = await readApi(call);
+const fx = JSON.parse(readFileSync(FIXTURE, 'utf8'));
+const api = { index: fx.index, tools: fx.tools, maxBody: fx.maxBody };
 const doc = buildOpenApi(api);
-const appSrc = readFileSync(join(apiDir, 'src', 'app.mjs'), 'utf8');
+const extras = (c) => (c.extra || []).map((u) => u.slice(API.length));
 
-test('OpenAPI は JSON として読み戻せ、3.1 の形（info・servers・paths、どの操作にも responses）', () => {
-  const back = JSON.parse(JSON.stringify(doc));
-  assert.deepEqual(back, doc);
+test('OpenAPI は JSON として読み戻せ、3.1 の形（info・servers・paths、どの操作にも responses、$ref は解決する）', () => {
+  assert.deepEqual(JSON.parse(JSON.stringify(doc)), doc);
   assert.equal(doc.openapi, '3.1.0');
   assert.ok(doc.info.title && doc.info.version);
   assert.deepEqual(doc.servers, [{ url: API }]);
@@ -27,37 +24,30 @@ test('OpenAPI は JSON として読み戻せ、3.1 の形（info・servers・pat
   for (const [p, ops] of Object.entries(doc.paths)) {
     assert.match(p, /^\//);
     for (const [m, op] of Object.entries(ops)) {
-      assert.ok(['get', 'post'].includes(m), p + ' ' + m);
-      assert.ok(op.responses && op.responses[200] || op.responses[202], p + ' ' + m + ' に responses');
+      assert.ok(op.responses && (op.responses[200] || op.responses[202]), p + ' ' + m + ' に responses');
       ids.push(op.operationId);
     }
   }
   assert.equal(new Set(ids).size, ids.length, 'operationId が重ならない');
-  // $ref はすべて components にある
   for (const r of JSON.stringify(doc).matchAll(/"\$ref":"#\/components\/schemas\/([^"]+)"/g)) assert.ok(doc.components.schemas[r[1]], r[1]);
 });
 
 test('口の集合 ＝ Worker のルートの集合（app.mjs の固定の道 ＋ 計算の名前 ＋ 別の口）', () => {
-  const fixed = [...appSrc.matchAll(/path === '(\/[^']*)'/g)].map((m) => m[1]);
-  assert.ok(fixed.includes('/mcp') && fixed.includes('/v1/now'), '固定の道を読めている: ' + fixed);
-  const worker = new Set([...fixed, ...api.index.calcs.map((c) => '/v1/' + c.name), ...api.index.calcs.flatMap((c) => (c.extra || []).map((u) => u.slice(API.length)))]);
+  assert.ok(fx.routes.includes('/mcp') && fx.routes.includes('/v1/now'), '固定の道: ' + fx.routes);
+  const worker = new Set([...fx.routes, ...fx.index.calcs.map((c) => '/v1/' + c.name), ...fx.index.calcs.flatMap(extras)]);
   assert.deepEqual(new Set(Object.keys(doc.paths)), worker);
 });
 
-test('書いた口と方法は、どれも Worker が答える（404・405 にならない）。書いていない名前は 404', async () => {
+test('方法: /mcp は POST だけ（GET は 405）、計算は GET と POST、ほかは GET', () => {
+  const calcs = new Set(fx.index.calcs.map((c) => '/v1/' + c.name));
   for (const [p, ops] of Object.entries(doc.paths)) {
-    for (const m of Object.keys(ops)) {
-      const init = m === 'post' ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: p === '/mcp' ? JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'ping' }) : '{}' } : {};
-      const r = await call(new Request(API + p, init));
-      assert.ok(r.status !== 404 && r.status !== 405, `${m.toUpperCase()} ${p} → ${r.status}`);
-    }
+    const want = p === '/mcp' ? ['post'] : calcs.has(p) ? ['get', 'post'] : ['get'];
+    assert.deepEqual(Object.keys(ops), want, p);
   }
-  assert.equal((await call(new Request(API + '/v1/no-such-calc'))).status, 404);
-  assert.equal((await call(new Request(API + '/mcp'))).status, 405, 'MCP の GET は無い（書いていない）');
 });
 
 test('GET の引数 ＝ 計算の params（名前・必須）。POST の本文の必須 ＝ required', () => {
-  for (const c of api.index.calcs) {
+  for (const c of fx.index.calcs) {
     const op = doc.paths['/v1/' + c.name];
     assert.deepEqual(op.get.parameters.map((x) => x.name), Object.keys(c.params), c.name);
     assert.deepEqual(op.get.parameters.filter((x) => x.required).map((x) => x.name), c.required || [], c.name);
@@ -66,41 +56,36 @@ test('GET の引数 ＝ 計算の params（名前・必須）。POST の本文�
   }
 });
 
-test('MCP のツールの集合 ＝ tools/list（コードの mcpTools）。/mcp の説明の本数も同じ', () => {
-  const names = mcpTools().map((t) => t.name).sort();
-  assert.deepEqual(api.tools.map((t) => t.name).sort(), names);
+test('MCP のツールの集合 ＝ tools/list。どのツールにも同じ中身の HTTP の口がある。/mcp の説明の本数も同じ', () => {
+  const names = fx.tools.map((t) => t.name).sort();
   assert.deepEqual([...doc.paths['/mcp'].post['x-mcp-tools']].sort(), names);
   const onOps = new Set(Object.values(doc.paths).flatMap((ops) => Object.values(ops).map((o) => o['x-mcp-tool']).filter(Boolean)));
-  assert.deepEqual([...onOps].sort(), names, 'どのツールにも同じ中身の HTTP の口がある');
+  assert.deepEqual([...onOps].sort(), names);
   assert.match(doc.paths['/mcp'].post.description, new RegExp('ツール ' + names.length + ' 本'));
 });
 
-test('別の口と同じ中身のツール（EXTRA_TOOLS）は、答えが一致する', async () => {
+test('別の口と同じ中身のツール（EXTRA_TOOLS）: 口とツールがどちらもあり、引数はツールの inputSchema', () => {
+  const allExtras = new Set(fx.index.calcs.flatMap(extras));
   for (const [sub, tool] of Object.entries(EXTRA_TOOLS)) {
-    const viaHttp = await (await call(new Request(API + '/v1/' + sub + '?period=r8'))).json();
-    const viaMcp = await (await call(new Request(API + '/mcp', { method: 'POST', body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: tool, arguments: { period: 'r8' } } }) }))).json();
-    assert.deepEqual(viaMcp.result.structuredContent.result, viaHttp.result, sub + ' ＝ ' + tool);
+    assert.ok(allExtras.has('/v1/' + sub), sub);
+    const t = fx.tools.find((x) => x.name === tool);
+    assert.ok(t, tool);
+    assert.deepEqual(doc.paths['/v1/' + sub].get.parameters.map((x) => x.name), Object.keys(t.inputSchema.properties));
   }
 });
 
-test('POST の本文の上限 ＝ app.mjs の MAX_BODY。超えると 413', async () => {
-  assert.equal(Number((appSrc.match(/const MAX_BODY = (\d+);/) || [])[1]), MAX_BODY);
-  const r = await call(new Request(API + '/v1/wareki', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ date: 'x'.repeat(MAX_BODY) }) }));
-  assert.equal(r.status, 413);
-  assert.ok(doc.paths['/v1/wareki'].post.responses[413]);
+test('POST の本文の上限は app.mjs の MAX_BODY（写しの maxBody）から。413 と /api/ の KB', () => {
+  assert.ok(fx.maxBody > 0);
+  assert.match(doc.paths['/v1/wareki'].post.responses[413].description, new RegExp(fx.maxBody / 1024 + ' KB'));
+  assert.ok(!doc.paths['/v1/wareki'].get.responses[413], 'GET に 413 は無い');
+  assert.ok(buildApiHtml([], api).includes(`${fx.maxBody / 1024} KB まで`));
 });
 
-test('POST の本文の形（入れ子）で送ると、GET のクエリ（a.b・rows.0.x）と同じ答え', async () => {
-  // README の例（ACCEPTANCE 2.1 の検算 1 行目）
-  const q = 'period=r8&cat=u&rows.0.cost=1000000&rows.0.age=u70&rows.0.place=in&rows.0.rate=0.3';
-  const get = await (await call(new Request(API + '/v1/kogaku?' + q))).json();
-  const body = { period: 'r8', cat: 'u', rows: [{ cost: 1000000, age: 'u70', place: 'in', rate: 0.3 }] };
-  const post = await (await call(new Request(API + '/v1/kogaku', { method: 'POST', body: JSON.stringify(body) }))).json();
-  assert.equal(get.result.limit, 92940);
-  assert.deepEqual(post.result, get.result);
+test('POST の本文の形は入れ子（kogaku の rows.0.cost → rows: [{ cost }]）', () => {
   const s = doc.paths['/v1/kogaku'].post.requestBody.content['application/json'].schema;
   assert.equal(s.properties.rows.type, 'array');
   assert.ok(s.properties.rows.items.properties.cost.description);
+  assert.ok(!('rows.0.cost' in s.properties));
 });
 
 test('bodySchema: a.b は入れ子、a.0.b は配列、親にも説明がある欄はそのまま残す', () => {
@@ -113,12 +98,9 @@ test('bodySchema: a.b は入れ子、a.0.b は配列、親にも説明がある�
   assert.equal(s.properties.items.items.properties.watt.description, 'W');
 });
 
-test('答えの meta の欄 ＝ OpenAPI の Meta の欄', async () => {
-  const r = await (await call(new Request(API + '/v1/wareki?date=2019-04-30'))).json();
-  assert.deepEqual(Object.keys(r.meta).sort(), Object.keys(doc.components.schemas.Meta.properties).sort());
-  const now = await (await call(new Request(API + '/v1/now?date=2026-01-01'))).json();
-  assert.equal(now.today, '2026-01-01', '/v1/now の date を読む');
-  assert.deepEqual(Object.keys(now).sort(), Object.keys(doc.paths['/v1/now'].get.responses[200].content['application/json'].schema.properties).sort());
+test('答えの欄: Meta ＝ 答えの meta の欄、/v1/now の答えの欄', () => {
+  assert.deepEqual(Object.keys(doc.components.schemas.Meta.properties).sort(), fx.metaKeys);
+  assert.deepEqual(Object.keys(doc.paths['/v1/now'].get.responses[200].content['application/json'].schema.properties).sort(), fx.nowKeys);
 });
 
 /* ---------- llms.txt と /api/ ---------- */
@@ -151,7 +133,7 @@ test('llms.txt: H1・要約・作成日（check.ps1 が読む形）、計算の 
   assert.match(t, /^- 作成日: \d{4}-\d{2}-\d{2}/m);
   assert.match(t, /^- English: Free tools\. \(https:\/\/yorozu-craft\.com\/en\/\)$/m);
   assert.ok(t.includes(`- [OpenAPI 3.1](${SITE}api/openapi.json)`));
-  assert.ok(t.includes(`- [MCP](${API}/mcp): `) && t.includes(`ツール ${api.tools.length} 本: `));
+  assert.ok(t.includes(`- [MCP](${API}/mcp): `) && t.includes(`ツール ${fx.tools.length} 本: `));
   const heads = [...t.matchAll(/^##+ (.+)$/gm)].map((m) => m[1]);
   assert.deepEqual(heads, ['計算の API と MCP', 'データ（CC0）', '入口', '道具（日本語）', 'くらし・お金', '情シス・IT', 'English', 'Optional']);
   assert.ok(t.indexOf('[計算 B]') < t.indexOf('[計算 A]'), '節の中は priority の高い順');
@@ -167,13 +149,45 @@ test('llms.txt: 道具の行に使い方と英語の対、英語の行に日本�
   assert.ok(!entry.includes(`(${SITE}t/a/)`), 'pages.json の道具は入口に出さない');
 });
 
-test('/api/: index.json に OpenAPI と MCP の URL、index.html に MCP の接続の節（URL・ツールの本数・本文の上限）', () => {
+test('/api/: index.json に OpenAPI と MCP の URL、index.html に MCP の接続の節（URL・ツールの本数・openapi.json）', () => {
   const j = JSON.parse(buildApiJson(ds, api));
-  assert.deepEqual(j.api, { openapi: SITE + 'api/openapi.json', calcs: API + '/v1', mcp: API + '/mcp', mcp_tools: api.tools.length });
+  assert.deepEqual(j.api, { openapi: SITE + 'api/openapi.json', calcs: API + '/v1', mcp: API + '/mcp', mcp_tools: fx.tools.length });
   const h = buildApiHtml(ds, api);
   const sec = h.slice(h.indexOf('<h2 id="calc-api">'), h.indexOf('<h2 id="use">'));
   assert.ok(sec.includes(`<code>${API}/mcp</code>`));
-  assert.ok(sec.includes(`ツールは ${api.tools.length} 本`));
-  assert.ok(sec.includes(`${MAX_BODY / 1024} KB まで`));
+  assert.ok(sec.includes(`ツールは ${fx.tools.length} 本`));
   assert.ok(sec.includes('href="./openapi.json"'));
+});
+
+/* ---------- 写し ＝ 今の yorozu-api（手元にあるときだけ。ネットには出ない） ---------- */
+const apiDir = process.env.YOROZU_API_DIR || join(root, '..', 'yorozu-api');
+const hasApi = existsSync(join(apiDir, 'src', 'app.mjs'));
+test('写し（fixtures/agent-api.json）＝ yorozu-api の今のコード。書いた口はどれも Worker が答え、答えの形も合う', { skip: hasApi ? false : 'yorozu-api が無い（YOROZU_API_DIR で場所を渡す）: ' + apiDir }, async () => {
+  assert.deepEqual(await apiFixture(apiDir), fx, '違えば `AGENT_API_DIR=<yorozu-api> node tools/build-agent.mjs --write-fixture` で書き直す');
+  const local = await readApiDir(apiDir);
+  const call = local.call;
+  for (const [p, ops] of Object.entries(doc.paths)) {
+    for (const m of Object.keys(ops)) {
+      const init = m === 'post' ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: p === '/mcp' ? JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'ping' }) : '{}' } : {};
+      const r = await call(new Request(API + p, init));
+      assert.ok(r.status !== 404 && r.status !== 405, `${m.toUpperCase()} ${p} → ${r.status}`);
+    }
+  }
+  assert.equal((await call(new Request(API + '/v1/no-such-calc'))).status, 404);
+  assert.equal((await call(new Request(API + '/mcp'))).status, 405);
+  // 本文の上限を超えると 413
+  assert.equal((await call(new Request(API + '/v1/wareki', { method: 'POST', body: JSON.stringify({ date: 'x'.repeat(fx.maxBody) }) }))).status, 413);
+  // POST の入れ子 ＝ GET のクエリ（README の例、ACCEPTANCE 2.1 の検算 1 行目）
+  const get = await (await call(new Request(API + '/v1/kogaku?period=r8&cat=u&rows.0.cost=1000000&rows.0.age=u70&rows.0.place=in&rows.0.rate=0.3'))).json();
+  const post = await (await call(new Request(API + '/v1/kogaku', { method: 'POST', body: JSON.stringify({ period: 'r8', cat: 'u', rows: [{ cost: 1000000, age: 'u70', place: 'in', rate: 0.3 }] }) }))).json();
+  assert.equal(get.result.limit, 92940);
+  assert.deepEqual(post.result, get.result);
+  // 別の口 ＝ 同じ中身のツール
+  for (const [sub, tool] of Object.entries(EXTRA_TOOLS)) {
+    const viaHttp = await (await call(new Request(API + '/v1/' + sub + '?period=r8'))).json();
+    const viaMcp = await (await call(new Request(API + '/mcp', { method: 'POST', body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: tool, arguments: { period: 'r8' } } }) }))).json();
+    assert.deepEqual(viaMcp.result.structuredContent.result, viaHttp.result, sub + ' ＝ ' + tool);
+  }
+  // check-site の突き合わせに使う要約は、同じ定義なら同じ
+  assert.deepEqual(openApiSignature(buildOpenApi(local)), openApiSignature(doc));
 });
