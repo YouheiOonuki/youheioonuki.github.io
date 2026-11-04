@@ -624,6 +624,37 @@ const NOT_TOOL_SCREENS = {
   notes.push(`道具の画面 ${screens.size} 件 ＝ pages.json ${rows.size} 行（道具でないページ ${Object.keys(NOT_TOOL_SCREENS).length} 件は除く）`);
 }
 
+// 共通の土台と皮の同一性（ROADMAP 7.183 Q-087）: 配った begin〜end（tools/common/v2 の土台＋皮）が、公開されている全ページ・読み込まれる全 CSS で正本と同じ、
+// 印のあるファイルが全ツールとトップにある。違えば `node tools/sync-common.mjs --write <リポジトリ>` で配り直す
+{
+  const { master, extract } = await import('./sync-common.mjs');
+  const want = master();
+  const toolOf = u => { const seg = path(u).split('/').filter(Boolean)[0]; return toolsInRobots.has(seg) ? seg : '(トップ)'; };
+  const sources = new Set(pages);   // 本文と、そこから読み込む同じサイトの CSS
+  for (const url of pages) {
+    const r = await get(url);
+    if (r.status !== 200) continue;
+    for (const m of r.body.matchAll(/<link\b[^>]*>/g)) {
+      if (!/\srel="stylesheet"/.test(m[0])) continue;
+      const h = (m[0].match(/\shref="([^"]+)"/) || [])[1];
+      if (!h) continue;
+      try { const u = new URL(h, url); if (u.origin === ORIGIN) { u.hash = ''; u.search = ''; sources.add(u.href); } } catch { /* 読めない href は他の確認が見る */ }
+    }
+  }
+  const marked = new Map(); let same = 0, total = 0;   // ツール → 印のあるファイルの数
+  for (const u of sources) {
+    const r = await get(u);
+    if (r.status !== 200) continue;
+    const x = extract(r.body);
+    if (!x) continue;
+    total++;
+    marked.set(toolOf(u), (marked.get(toolOf(u)) || 0) + 1);
+    if (x.body === want) same++; else fail(path(u), '共通の土台と皮（yorozu-common:begin〜end）が正本（root の tools/common/v2）と違う。sync-common.mjs --write で配り直す');
+  }
+  for (const t of [...toolsInRobots, '(トップ)']) if (!marked.has(t)) fail(t, '共通の土台と皮（yorozu-common:begin〜end）が配られていない');
+  notes.push(`共通の土台と皮: 印のあるファイル ${total} 件のうち正本と同じ ${same} 件（${marked.size} 個のツールとトップ）`);
+}
+
 // 結果
 console.log(`確認先: ${BASE}`);
 console.log(`ページ ${pages.size} 件、サイト内リンク ${internalLinks.size} 件、ツール ${toolsOnTop.size} 件（${[...toolsOnTop].join(', ')}）、近い道具が画面と同じ使い方 ${nearGuides} 件`);
