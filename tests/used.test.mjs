@@ -9,6 +9,7 @@ import { join, dirname, resolve, relative, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync, spawnSync } from 'node:child_process';
 import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = new URL('..', import.meta.url);
 const USED = readFileSync(new URL('../tools/common/used.js', import.meta.url), 'utf8');
@@ -75,7 +76,7 @@ test('used.js: 送るのは page と event だけ。入力・結果・Cookie・�
 test('sync-common.mjs --check はフォルダの下の used.js も正本と比べる（改行の形は問わない）。--used で置く', () => {
   const d = mkdtempSync(join(tmpdir(), 'yz-used-'));
   try {
-    const tool = new URL('../tools/sync-common.mjs', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+    const tool = fileURLToPath(new URL('../tools/sync-common.mjs', import.meta.url));   // pathname だと日本語のパス（OneDrive の「ドキュメント」）が %E3… のまま残って見つからない
     const run = (...a) => spawnSync(process.execPath, [tool, ...a], { encoding: 'utf8' });
     assert.equal(run('--used', d).status, 0);
     assert.equal(readFileSync(join(d, 'used.js'), 'utf8'), USED);
