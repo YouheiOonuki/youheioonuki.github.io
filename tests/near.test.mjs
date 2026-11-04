@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { nearBlock, injectNear, GUIDE_ANCHORS } from '../tools/build-near.mjs';
+import { nearBlock, injectNear, NEAR_STYLE, GUIDE_ANCHORS } from '../tools/build-near.mjs';
 
 const items = [{ url: '/seido-keisan/iryohi/', title: '医療費控除の計算', note: 'いくら戻るかの目安' }, { url: '/otasuke/kenshin/', title: '健診グラフ<b>', note: '' }];
 
@@ -18,23 +18,23 @@ test('0 個なら欄を出さない。中身はエスケープし、日英で見
 });
 
 test('置き場は「この道具について」の直前、無ければ </main> の直前。2 度は入れない', () => {
-  const page = '<main><p>計算</p>\n<!-- about-tool: 説明 -->\n<details class="about-tool card" id="about-tool">…</details></main>';
+  const page = '<head></head><main><p>計算</p>\n<!-- about-tool: 説明 -->\n<details class="about-tool card" id="about-tool">…</details></main>';
   const out = injectNear(page, items);
   assert.ok(out.indexOf('data-near-block') < out.indexOf('<!-- about-tool:'));
   assert.equal(injectNear(out, items), out, '2 度目は何もしない');
-  const plain = injectNear('<main><p>x</p></main>', items);
+  const plain = injectNear('<head></head><main><p>x</p></main>', items);
   assert.ok(plain.indexOf('data-near-block') < plain.indexOf('</main>'));
   assert.equal(injectNear('<div>main が無い</div>', items), '<div>main が無い</div>');
 });
 
 test('使い方（guide.html）には本文の末尾（</main> の直前、フッターの前）に同じ欄を入れる。about-tool の印があっても置き場は </main>', () => {
-  const guide = '<main><h2>使い方</h2><h3 id="changelog">更新履歴</h3></main><footer>f</footer>';
+  const guide = '<head></head><main><h2>使い方</h2><h3 id="changelog">更新履歴</h3></main><footer>f</footer>';
   const out = injectNear(guide, items, 'ja', GUIDE_ANCHORS);
   assert.ok(out.indexOf('id="changelog"') < out.indexOf('data-near-block'));
   assert.ok(out.indexOf('data-near-block') < out.indexOf('</main>'));
   assert.equal(out.match(/data-near-link/g).length, items.length);
   assert.equal(injectNear(out, items, 'ja', GUIDE_ANCHORS), out, '2 度目は何もしない');
-  const withAbout = '<main><!-- about-tool: x --><p>y</p></main>';
+  const withAbout = '<head></head><main><!-- about-tool: x --><p>y</p></main>';
   assert.ok(injectNear(withAbout, items, 'ja', GUIDE_ANCHORS).indexOf('data-near-block') > withAbout.indexOf('<p>y</p>'));
   assert.equal(injectNear(guide, [], 'ja', GUIDE_ANCHORS), guide, '0 個なら出さない');
 });
@@ -53,4 +53,14 @@ test('data/near.json は 125 ページ分で、各 3 つまで・自分を含ま
     assert.ok(list.length <= 3, p);
     assert.ok(!list.some((n) => n.url === p), p);
   }
+});
+
+test('見た目の <style> は <section> の中でなく </head> の直前に 1 回だけ入る（HTML の妥当性、Q-088）。<head> が無ければ差し込まない', () => {
+  assert.ok(!nearBlock(items).includes('<style'), '欄の中に <style> を置かない');
+  const out = injectNear('<html><head><title>t</title></head><body><main><p>x</p></main></body></html>', items);
+  assert.equal(out.match(/<style data-near-style>/g).length, 1);
+  assert.ok(out.indexOf(NEAR_STYLE) < out.indexOf('</head>'));
+  assert.ok(out.indexOf('</head>') < out.indexOf('data-near-block'));
+  assert.ok(!/<section[^>]*data-near-block[\s\S]*<style[\s\S]*<\/section>/.test(out));
+  assert.equal(injectNear('<main><p>x</p></main>', items), '<main><p>x</p></main>', '<head> が無いページはそのまま');
 });
