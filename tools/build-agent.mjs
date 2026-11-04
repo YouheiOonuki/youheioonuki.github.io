@@ -221,6 +221,7 @@ function buildApiHtml(ds) {
   <meta property="og:image" content="${SITE}og-image.png">
   <meta property="og:site_name" content="yorozu-craft">
   <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary">
 
   <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
   <meta name="google-adsense-account" content="ca-pub-5375267956079717">
