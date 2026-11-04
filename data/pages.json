@@ -90,6 +90,7 @@
     {"path": "/seido-keisan/nenmatsu/hoken/", "date": "2026-11-02", "title": "保険料控除の計算（令和8年分）", "section": "kurashi", "priority": 7, "aliases": ["生命保険料控除", "地震保険料控除", "保険料控除申告書"], "chip": "保険料控除", "name": "保険料控除", "note": "生命保険・地震保険の控除"},
     {"path": "/seido-keisan/juminzei/", "date": "2026-09-24", "title": "住民税の計算・非課税判定（令和9年度）", "section": "kurashi", "priority": 9, "aliases": ["非課税世帯", "住民税決定通知書"], "name": "住民税", "note": "税額と非課税の判定"},
     {"path": "/seido-keisan/iryohi/", "date": "2026-09-24", "title": "医療費控除の計算（令和8年分）", "section": "kurashi", "priority": 9, "aliases": ["確定申告", "セルフメディケーション"], "name": "医療費控除", "note": "いくら戻るかの目安"},
+    {"path": "/seido-keisan/iryohi/meisai/", "date": "2026-11-05", "title": "医療費控除の明細書を作る（令和8年分）", "section": "kurashi", "priority": 9, "aliases": ["医療費控除の明細書", "領収書"], "chip": "医療費の明細書", "name": "医療費控除の明細書", "note": "領収書を明細書の形に"},
     {"path": "/seido-keisan/ikukyu/", "date": "2026-09-24", "title": "育休・産休の給付金の計算", "section": "kurashi", "priority": 9, "aliases": ["育児休業給付金", "出産手当金", "産休"], "chip": "育休の給付金", "name": "育休・産休の給付金", "note": "給付金の額と時短の比較"},
     {"path": "/seido-keisan/dattai-ichiji/", "date": "2026-09-24", "title": "脱退一時金の計算", "section": "kurashi", "priority": 7, "aliases": ["年金の払い戻し", "帰国"], "chip": "脱退一時金", "name": "脱退一時金", "note": "帰国後の年金の払い戻し"},
     {"path": "/seido-keisan/", "date": "2026-09-24", "title": "制度の計算機", "section": "kurashi", "priority": 7, "aliases": ["税金", "社会保険"], "name": "制度の計算機", "note": "税・保険・給付の計算"},
