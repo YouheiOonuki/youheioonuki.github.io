@@ -265,7 +265,7 @@ function buildApiHtml(ds) {
 </head>
 <body>
 
-  <div class="site-bar"><a href="../">yorozu-craft</a></div>
+  <header class="site-bar"><a href="../">yorozu-craft</a></header>
 
   <main>
     <article>
