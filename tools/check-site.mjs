@@ -90,6 +90,9 @@ const NO_COMMON_LINK_PAGES = new Set(['/hoshizora-sanpo/', '/hoshizora-sanpo/en/
 const failures = [];
 const notes = [];
 const fail = (where, what) => failures.push(`${where}: ${what}`);
+// 警告（失敗にしない。終了コードに影響しない）。title・description の長さの上限（yorozu-plans ROADMAP 7.181 D472）。既存ページは 12-20 の判定の後まで直さない
+const warnings = [];
+const warn = (where, what) => warnings.push(`${where}: ${what}`);
 // 広告を出してよいかの条件（yorozu-plans QUEUE Q-019。REVIEW_NO_AD_PAGES を手で持つ表から条件の計算に置き換える準備）。
 // 不可: 本文 600 字未満（details を含む）・読み物で 800 字未満・案内と法的ページ・高齢者向け（D118 の ELDERLY）・/for/kaigo/ に載る道具・全画面などの META_ONLY。
 // **いまは AdSense の審査中なので、計算の結果にかかわらず全部「不可」として扱う**（広告の script は戻さない）。結果はメモに内訳だけ出す
@@ -287,6 +290,21 @@ await pool([...pages], 6, async (url) => {
   const meta = count(html, new RegExp(`name="google-adsense-account"\\s+content="${ADSENSE_ID}"`, 'g'));
   const script = count(html, new RegExp(`adsbygoogle\\.js\\?client=${ADSENSE_ID}`, 'g'));
   if (meta !== 1) fail(p, `AdSense の meta が ${meta} 個（1 個のはず）`);
+  // D472: title 本体（末尾の「｜yorozu-craft」「 | yorozu-craft」を除く）は日本語 32 字・英語 60 字まで、description は日本語 70〜120 字・英語 110〜160 字。warning だけ
+  {
+    const en = langOf(html) === 'en';
+    const dec = t => t.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    const tm = html.match(/<title>([^<]*)<\/title>/);
+    if (tm) {
+      const title = [...dec(tm[1]).replace(/\s*[｜|]\s*yorozu-craft\s*$/, '').trim()].length, max = en ? 60 : 32;
+      if (title > max) warn(p, `title 本体が ${title} 字（${en ? '英語' : '日本語'}の上限 ${max}。D472）`);
+    }
+    const dm = html.match(/<meta\s+name="description"\s+content="([^"]*)"/);
+    if (dm) {
+      const d = [...dec(dm[1]).trim()].length, [lo, hi] = en ? [110, 160] : [70, 120];
+      if (d < lo || d > hi) warn(p, `description が ${d} 字（${en ? '英語' : '日本語'}は ${lo}〜${hi}。D472）`);
+    }
+  }
   // ホーム画面に置ける形（yorozu-plans ROADMAP 7.41.2 K179、D309 の (a)）: どのページも manifest の link を 1 つ（道具の manifest か root の /manifest.webmanifest）
   const manifests = (html.match(/<link rel="manifest" href="[^"]+">/g) || []).length;
   if (manifests !== 1) fail(p, `manifest の link が ${manifests} 個（1 個のはず。K179）`);
@@ -600,6 +618,8 @@ console.log(`確認先: ${BASE}`);
 console.log(`ページ ${pages.size} 件、サイト内リンク ${internalLinks.size} 件、ツール ${toolsOnTop.size} 件（${[...toolsOnTop].join(', ')}）、近い道具が画面と同じ使い方 ${nearGuides} 件`);
 for (const c of checkDates) console.log(`確認日 ${c.tool}  ${c.f}  ${c.date}（${c.kind}、${c.months} か月・期限 ${c.limit} か月）`);
 for (const n of notes) console.log(`メモ  ${n}`);
+for (const w of warnings) console.log(`警告  ${w}`);
+if (warnings.length) console.log(`警告 ${warnings.length} 件（title・description の長さ。失敗にしない。D472）`);
 if (failures.length) {
   for (const f of failures) console.log(`NG    ${f}`);
   console.log(`\n${failures.length} 件の問題があります`);
