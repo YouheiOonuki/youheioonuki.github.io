@@ -2,10 +2,11 @@
 // 既存の生成器（脳トレ・ビンゴカード・季語・冷蔵庫の紙）を Playwright で開いて画面の操作どおりに設定し、印刷の形のまま PDF にして、pdf-lib でつなぐ。
 // 1 枚目はスマホでかざす QR の紙（冷蔵庫に貼る紙の生成器 /otasuke/reizoko/ の「QR の紙」）。脳トレの答えは末尾にまとめる。問題は毎回ちがうので、出来た PDF をそのままコミットする。
 //
-//   node tools/print-set/build.mjs [--out print/noutore-reku-2026-11.pdf]
+//   node tools/print-set/build.mjs [--month 2026-12] [--out print/noutore-reku-2026-12.pdf]
+// --month は塗り絵カレンダーの始まりの月と PDF の題（既定 2026-11）。--out の既定は print/noutore-reku-<月>.pdf。
 //
 // Playwright はこのリポジトリの依存に入れていない（公開物に入らない道具）。グローバルか、PLAYWRIGHT にパッケージの場所を渡す。
-// 隣に otasuke・bingo・henkan の作業用クローンが要る（Claude\Projects の並び）。
+// 隣に otasuke・bingo・henkan の作業用クローンが要る（Claude\Projects の並び）。別の作業コピーから動かすときは PROJECTS にその場所を渡す。
 import { createRequire } from 'node:module';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -16,11 +17,13 @@ import { servePath } from './serve-path.mjs';
 const require = createRequire(import.meta.url);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
-const PROJECTS = path.resolve(ROOT, '..');
+const PROJECTS = process.env.PROJECTS || path.resolve(ROOT, '..');
 const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
 const { PDFDocument } = require(path.join(PROJECTS, 'henkan/vendor/pdf-lib/pdf-lib.min.js'));
 
-const out = path.join(ROOT, (process.argv.includes('--out') ? process.argv[process.argv.indexOf('--out') + 1] : 'print/noutore-reku-2026-11.pdf'));
+const arg = (name, dflt) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : dflt);
+const MONTH = arg('--month', '2026-11');
+const out = path.join(ROOT, arg('--out', `print/noutore-reku-${MONTH}.pdf`));
 const PORT = 8790;
 
 // /<リポジトリ>/… を Claude\Projects\<リポジトリ>\… に。配るのは使う 3 つのリポジトリの中だけで、待つのは 127.0.0.1 だけ
@@ -59,9 +62,9 @@ const radio = (p, name, value) => p.evaluate(([n, v]) => { const e = document.qu
 /** 欄に値を入れる（見えなくても）。input と change を起こす */
 const setVal = (p, sel, value) => p.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, [sel, value]);
 
-// 脳トレ: 種類ごとに 2 枚、答えつき。答えのページ（3 枚目以降）は末尾へ。塗り絵カレンダーは 11 月から 2 か月
+// 脳トレ: 種類ごとに 2 枚、答えつき。答えのページ（3 枚目以降）は末尾へ。塗り絵カレンダーは MONTH から 2 か月
 const NOTORE = [
-  ['calc', null], ['kanji', null], ['machigai', null], ['cross', null], ['nurie', '2026-11'],
+  ['calc', null], ['kanji', null], ['machigai', null], ['cross', null], ['nurie', MONTH],
 ];
 const parts = { qr: null, notore: [], answers: [], bingo: null, season: [], reizoko: [] };
 parts.qr = await pdfOf('/otasuke/reizoko/', async (p) => { await radio(p, 'kind', 'qr'); await p.waitForSelector('.qr-code svg'); });
@@ -78,7 +81,7 @@ for (const [kind, month] of NOTORE) {
 }
 // ビンゴカード: 40 枚（1 枚の紙に 4 枚 → 10 ページ）
 parts.bingo = await pdfOf('/bingo/cards.html', async (p) => { await setVal(p, '#c-count', '40'); await setVal(p, '#c-per', '4'); });
-// 季節の紙: 冬の季語（説明つきの表 3 枚・季語だけ 2 枚。大きい字）。塗り絵カレンダーは脳トレの 2 枚（11・12 月）
+// 季節の紙: 冬の季語（説明つきの表 3 枚・季語だけ 2 枚。大きい字）。塗り絵カレンダーは脳トレの 2 枚（MONTH から 2 か月）
 parts.season.push(await pdfOf('/otasuke/kigo/', async (p) => { await radio(p, 'season', '冬'); await radio(p, 'form', 'table'); await radio(p, 'size', 'large'); }));
 parts.season.push(await pdfOf('/otasuke/kigo/', async (p) => { await radio(p, 'season', '冬'); await radio(p, 'form', 'words'); await radio(p, 'size', 'large'); }));
 // 冷蔵庫の紙: 救急情報（シートと「冷蔵庫にあります」の貼り紙で 2 枚）・服薬 1 週間・服薬 4 週間・血圧（空欄のまま）
@@ -101,7 +104,7 @@ await add('ビンゴカード', parts.bingo);
 for (const d of parts.season) await add('季節の紙', d);
 for (const d of parts.reizoko) await add('冷蔵庫の紙', d);
 for (const [d, i] of parts.answers) await add('脳トレの答え', d, i);
-book.setTitle('脳トレ・レクの 1 か月セット 2026-11（yorozu-craft.com）');
+book.setTitle(`脳トレ・レクの 1 か月セット ${MONTH}（yorozu-craft.com）`);
 book.setCreator('yorozu-craft.com');
 book.setProducer('yorozu-craft.com');
 fs.mkdirSync(path.dirname(out), { recursive: true });
