@@ -33,12 +33,12 @@ export function extract(text) {
   const e = text.indexOf(END, b); if (e < 0) return null;
   return { start: b, end: e + END.length, body: text.slice(b, e + END.length) };
 }
-export function replaceBlock(text, block = master()) {
+function replaceBlock(text, block = master()) {
   const x = extract(text); if (!x) return null;
   return text.slice(0, x.start) + block + text.slice(x.end);
 }
 // 先頭のコメント（ファイルの説明）の直後に入れる
-export function insertBlock(text, block = master()) {
+function insertBlock(text, block = master()) {
   const m = text.match(/^\s*\/\*[\s\S]*?\*\/\s*\n/);
   const at = m ? m[0].length : 0;
   return text.slice(0, at) + block + '\n\n' + text.slice(at);

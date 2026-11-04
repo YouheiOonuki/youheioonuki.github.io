@@ -58,7 +58,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const md = (s) => String(s).replace(/([\[\]])/g, '\\$1');
 
 // iCalendar の X-WR-CALDESC から license・確認日・生成日・出典の URL を読む（RFC 5545 の折り返しを戻す）
-export function icsMeta(text) {
+function icsMeta(text) {
   const u = text.replace(/\r\n[ \t]/g, '');
   const m = u.match(/^X-WR-CALDESC:(.*)\r?$/m);
   const desc = m ? m[1].replace(/\\n/g, '\n').replace(/\\([,;\\])/g, '$1') : '';
@@ -76,7 +76,7 @@ export function icsMeta(text) {
   };
 }
 
-export async function readDatasets() {
+async function readDatasets() {
   const out = [];
   for (const d of DATASETS) {
     const text = await getData(d.path);
@@ -107,7 +107,7 @@ export function problems(ds) {
 
 // ツールの一覧: 本番の sitemap にある「/ で終わるページ」（入口・道具・読みもの）。トップ・英語のトップ・用途別の入口は別に並べる
 // own: この script 自身が書き出すページ（/api/）の HTML。配信フォルダにはまだ無いので、読む代わりに渡す
-export async function readTools(own = {}) {
+async function readTools(own = {}) {
   const robots = await get(SITE + 'robots.txt');
   const maps = [...robots.matchAll(/^Sitemap:\s*(\S+)/gm)].map((m) => m[1]);
   const groups = [];
@@ -127,7 +127,7 @@ export async function readTools(own = {}) {
   return groups;
 }
 
-export function buildLlms(groups, ds) {
+function buildLlms(groups, ds) {
   const L = [];
   L.push('# yorozu-craft');
   L.push('');
@@ -179,7 +179,7 @@ export function buildLlms(groups, ds) {
   return L.join('\n') + '\n';
 }
 
-export function buildApiJson(ds) {
+function buildApiJson(ds) {
   const latest = (k) => ds.map((d) => d[k]).filter(Boolean).sort().at(-1) || null;
   return JSON.stringify({
     title: 'yorozu-craft の公開データの一覧',
@@ -194,7 +194,7 @@ export function buildApiJson(ds) {
   }, null, 2) + '\n';
 }
 
-export function buildApiHtml(ds) {
+function buildApiHtml(ds) {
   const rows = ds.map((d) => `        <tr>
           <th scope="row"><a href="${esc(d.url)}">${esc(d.name)}</a><br><span class="fmt">${esc(d.format)}</span></th>
           <td>${esc(d.what)}${d.homepage ? `<br><a href="${esc(d.homepage)}">画面で見る</a>` : ''}</td>

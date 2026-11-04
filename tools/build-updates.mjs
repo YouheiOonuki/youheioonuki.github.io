@@ -48,7 +48,7 @@ export function updateRows(pages, readGuide) {
   return rows.slice(0, LIMIT);
 }
 
-export function updatesHtml(rows) {
+function updatesHtml(rows) {
   const li = rows.map((r) => `        <li><time datetime="${r.date}">${r.date}</time> <a href="${esc(r.url)}">${esc(r.name)}</a>: ${esc(r.what)}</li>`).join('\n');
   return `${BEGIN}\n      <ul class="updates-list">\n${li}\n      </ul>\n      ${END}`;
 }

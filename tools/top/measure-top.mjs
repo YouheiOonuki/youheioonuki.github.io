@@ -10,7 +10,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT || 'playwright');
 const url = process.argv[2] || 'https://yorozu-craft.com/';
-export const GOALS = { pcVisible: 40, mobileFirst: 10, mobileScreens: 2.5 };
+const GOALS = { pcVisible: 40, mobileFirst: 10, mobileScreens: 2.5 };
 
 const b = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 const out = {};
