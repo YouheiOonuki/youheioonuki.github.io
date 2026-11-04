@@ -16,23 +16,26 @@ export function nearBlock(items, lang = 'ja') {
   if (!items || !items.length) return '';
   const en = lang === 'en';
   const li = items.map((n) => `<li><a href="${esc(n.url)}" data-near-link>${esc(n.title)}</a>${n.note ? `<span>${esc(n.note)}</span>` : ''}</li>`).join('');
-  return `<section class="yz-near no-print" ${MARK} aria-labelledby="yz-near-h"><h2 id="yz-near-h">${en ? 'Related tools' : '近い道具'}</h2><ul>${li}</ul>` +
-    '<style>.yz-near{margin:var(--sp-6,1.5rem) 0}.yz-near h2{font-size:var(--fs-m,1rem);margin:0 0 var(--sp-1,.25rem)}.yz-near ul{list-style:none;margin:0;padding:0}' +
-    '.yz-near li{border-top:1px solid var(--border,#ccc)}.yz-near a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}' +
-    '.yz-near span{display:block;margin:-6px 0 6px;font-size:var(--fs-s,.875rem);color:var(--muted,#555)}</style></section>' +
+  return `<section class="yz-near no-print" ${MARK} aria-labelledby="yz-near-h"><h2 id="yz-near-h">${en ? 'Related tools' : '近い道具'}</h2><ul>${li}</ul></section>` +
     '<script src="/near.js" defer></script>';
 }
+
+// 欄の見た目。<style> は <section> の中に置けない（HTML の妥当性、Q-088）ので、injectNear が <head> の終わりに入れる
+export const NEAR_STYLE = '<style data-near-style>.yz-near{margin:var(--sp-6,1.5rem) 0}.yz-near h2{font-size:var(--fs-m,1rem);margin:0 0 var(--sp-1,.25rem)}.yz-near ul{list-style:none;margin:0;padding:0}' +
+  '.yz-near li{border-top:1px solid var(--border,#ccc)}.yz-near a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}' +
+  '.yz-near span{display:block;margin:-6px 0 6px;font-size:var(--fs-s,.875rem);color:var(--muted,#555)}</style>';
 
 const SCREEN_ANCHORS = ['<!-- about-tool:', '<details class="about-tool', '</main>'];
 export const GUIDE_ANCHORS = ['</main>'];
 
-/** ページの HTML に欄を差し込む。既にあれば・置き場が無ければそのまま。anchors は置き場の候補（前から順に） */
+/** ページの HTML に欄を差し込む（見た目の <style> は </head> の直前）。既にあれば・置き場（</head> と anchors のどれか）が無ければそのまま。anchors は置き場の候補（前から順に） */
 export function injectNear(html, items, lang = 'ja', anchors = SCREEN_ANCHORS) {
   const block = nearBlock(items, lang);
-  if (!block || html.includes(MARK)) return html;
+  const head = html.indexOf('</head>');
+  if (!block || head < 0 || html.includes(MARK)) return html;
   for (const a of anchors) {
     const i = html.indexOf(a);
-    if (i >= 0) return html.slice(0, i) + block + '\n' + html.slice(i);
+    if (i >= head) return html.slice(0, head) + NEAR_STYLE + '\n' + html.slice(head, i) + block + '\n' + html.slice(i);
   }
   return html;
 }
