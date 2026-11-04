@@ -3,6 +3,7 @@
 /llms.txt
 /api/index.json
 /api/index.html
+/api/openapi.json
 
 # --- estate-audit 共通ベースライン（2026-08-02） ---
 # 秘密と再発ごみの共通除外。個別の事情がある行は、このブロックより上に
