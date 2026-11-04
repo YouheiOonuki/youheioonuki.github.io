@@ -25,7 +25,7 @@ export function loadTop(root = ROOT) {
 const YT = loadTop();
 const esc = YT.esc;
 // 欄に出す名前: short があればそれ、無ければ題名から括弧書き（（令和8年分）など）を落とす
-export const shortTitle = (t) => t.replace(/（[^）]*）/g, '').trim();
+const shortTitle = (t) => t.replace(/（[^）]*）/g, '').trim();
 const label = (p) => p.short || shortTitle(p.title);
 
 // 近い道具（data/near.json。yorozu-ai near-tools.mjs が索引から作る。D368）も読み、チップの元にする（related は 7.98 で消した）
@@ -66,11 +66,10 @@ export const VISIBLE = 5;   // 節ごとに見せる行（第 2 版 D323。残�
 // チップを出す行の数（節の先頭から）。規則で 1（7.24.2 の 3。全体 3 画面（2,532px）を優先。2 にすると 2,800px 前後: 2026-10-03 の実測）
 export const CHIP_ROWS = 0;   // 第 2 版は節の行を 5 にしたのでチップの行を出さない（スマホの高さ。D323）
 const rowName = (p) => p.name || label(p);
-export const isEntry = (path) => /^\/[^/]+\/$/.test(path);
+const isEntry = (path) => /^\/[^/]+\/$/.test(path);
 export const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (isEntry(b.path) - isEntry(a.path)) || (a.date < b.date ? -1 : a.date > b.date ? 1 : a.i - b.i);
-export function checkPages(data) {
+function checkPages(data) {
   const ids = new Set(data.sections.map((s) => s.id));
-  const paths = new Set(data.pages.map((p) => p.path));
   for (const p of data.pages) {
     if (!ids.has(p.section)) throw new Error(`${p.path} の section「${p.section}」が sections に無い`);
     if (!Number.isInteger(p.priority)) throw new Error(`${p.path} に priority が無い（node tools/top/priority.mjs）`);
@@ -133,7 +132,7 @@ const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほ�
 const EN = { icon: false, all: 'See all', other: (n) => `${n} more` };
 // 新しいツールの節は「親・家族」の前に置く（第 2 版 D323: 戻ってきた人が増えたものをすぐ見る）。中に new-tools の印を持つので apply が中身を入れ直せる
 export const NEW_TOOLS_BEFORE = 'oya';
-export function newToolsSection(data, base = './') {
+function newToolsSection(data, base = './') {
   return `    <section class="yt-sec" id="new" aria-labelledby="new-h">
       <div class="yt-head"><h2 id="new-h">新しいツール</h2><a href="${base}all/">すべての道具（一覧・印刷）</a></div>
       <!-- 公開日の新しい順に newCount 件（data/pages.json から。check-site が最新かを確かめる） -->
@@ -145,14 +144,14 @@ export function sectionsHtml(data, base = './') {
 }
 
 // 英語トップの節（行は英語ページ。チップなし）
-export function sectionsEn(data) {
+function sectionsEn(data) {
   const map = new Map(data.en.pages.map((p) => [p.path, p]));
   return data.en.sections.map((s) => ({ ...s, rows: s.rows.map((path) => {
     const p = map.get(path); if (!p) throw new Error(`英語の節 ${s.name} の ${path} が en.pages に無い`);
     return { path, name: p.title, note: p.note, chips: [] };
   }) }));
 }
-export function sectionsEnHtml(data, base = '../') {
+function sectionsEnHtml(data, base = '../') {
   return sectionsEn(data).map((s) => sectionBlock(s, base, null, EN)).join('\n');
 }
 
@@ -170,10 +169,10 @@ export function allRows(data) {
   });
 }
 // /all/ の 1 画面目の節の目次（7 つへのジャンプ。7.24.2 の 4）
-export function tocHtml(data) {
+function tocHtml(data) {
   return `<nav class="yt-toc" aria-label="節の目次"><ul>${data.sections.map((s) => `<li><a href="#${s.id}">${esc(s.name)}</a></li>`).join('')}</ul></nav>`;
 }
-export function allHtml(data, base = '../') {
+function allHtml(data, base = '../') {
   return allRows(data).map((s) => {
     const li = s.items.map(({ page, kids }) => {
       const sub = kids.length ? `\n          <ul>${kids.map((k) => `<li><a href="${base}${k.path.slice(1)}">${esc(k.title)}</a></li>`).join('')}</ul>` : '';
@@ -229,20 +228,20 @@ export function seasonData(data, season, lang = 'ja') {
   }
   return { months };
 }
-export function seasonHtml(data, season, lang = 'ja', base = './', date = new Date()) {
+function seasonHtml(data, season, lang = 'ja', base = './', date = new Date()) {
   const sd = seasonData(data, season, lang);
   const m = date.getMonth() + 1;
   const icons = lang === 'ja';
   return `<ul class="yt-season" data-season-month="${m}" data-base="${base}"${icons ? ' data-icons' : ''}>${YT.seasonItemsHtml(YT.seasonFor(sd, date), base, icons)}</ul>`;
 }
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
-export function dataHtml(data, season, lang = 'ja') {
+function dataHtml(data, season, lang = 'ja') {
   const s = season ? `\n  <script type="application/json" id="yt-season">${json(seasonData(data, season, lang))}</script>` : '';
   return `<script type="application/json" id="yt-index">${json({ rows: searchRows(data, lang) })}</script>${s}`;
 }
 
 // ---- 書き換え ----
-export function replaceRegion(html, name, body, file = '') {
+function replaceRegion(html, name, body, file = '') {
   const b = `<!-- top:${name}:begin -->`, e = `<!-- top:${name}:end -->`;
   const i = html.indexOf(b), j = html.indexOf(e);
   if (i < 0 || j < 0) throw new Error(`${file} に top:${name}:begin / end が無い`);

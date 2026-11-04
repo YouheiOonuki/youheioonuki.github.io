@@ -28,7 +28,7 @@ export const WEEKS = 2;              // 使う週の数（D323: 直近 2 週の�
 // 配信が止まっていた期間（GitHub のアカウント停止で全ページ 404。ROADMAP 7.26）。重なる週は数字が歪むので使わない
 export const OUTAGES = [{ from: '2026-10-05', to: '2026-10-10' }];
 
-export const repoOf = (path) => path.split('/')[1];
+const repoOf = (path) => path.split('/')[1];
 // { key: 数 } を数の多い順の順位に（同数は同じ順位）。min 未満は順位なし
 export function ranksOf(counts = {}, min = 0) {
   const list = Object.entries(counts).map(([k, n]) => [k, Number(n) || 0]).filter(([, n]) => n >= min);
@@ -40,7 +40,7 @@ export function overlapsOutage(period, outages = OUTAGES) {
   return ranges.some(([a, b]) => outages.some((o) => a <= o.to && b >= o.from));
 }
 // 使う週: 停止と重なる週を外し、新しい WEEKS 週
-export function usableWeeks(weekly) {
+function usableWeeks(weekly) {
   return ((weekly && weekly.weeks) || []).filter((w) => !overlapsOutage(w.period)).slice(-WEEKS);
 }
 // 使う週の平均: { impressions: {repo: 数}, pv: {repo: 数}, periods: [...] }。値の無い週は 0 として割る
@@ -61,7 +61,7 @@ export function ranksFrom(weekly) {
   const a = aggregate(weekly);
   return { impr: ranksOf(a.impressions, MIN_IMPRESSIONS), pv: ranksOf(a.pv, MIN_PV) };
 }
-export function seasonPoints(path, season, month) {
+function seasonPoints(path, season, month) {
   return (season.months[String(month)] || []).some((x) => x.path === path) ? 2 : 0;
 }
 // 1 ページの 4 項

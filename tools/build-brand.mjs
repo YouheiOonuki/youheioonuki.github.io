@@ -35,7 +35,7 @@ export function siteDir(repoDir) {
 }
 const repoName = (repoDir) => basename(resolve(repoDir));
 const isBase = (html) => /<html[^>]*data-skin="base"/.test(html);
-export function isWorld(repoDir) {
+function isWorld(repoDir) {
   if (repoName(repoDir) === ROOT_REPO) return false;
   const index = join(siteDir(repoDir), 'index.html');
   return existsSync(index) && isBase(readFileSync(index, 'utf8'));
