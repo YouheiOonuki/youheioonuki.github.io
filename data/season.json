@@ -1,5 +1,5 @@
 {
-  "about": "トップの「いまの時期」（yorozu-plans ROADMAP 7.23）。月 → 最大 3 ページと理由 1 文。初版の表は 7.23 の「season.json の初版」。各行の source は理由の根拠: MAINTENANCE は yorozu-plans docs/MAINTENANCE.md の行番号（2026-10-03 の main 379a30b）、GROWTH 5-3 は docs/GROWTH.md の季節の告知。どちらにも行が無いもの（季節の行事・学校の年度）は「7.23 初版」と書く。path は data/pages.json にあるページだけ（tools/build-top.mjs とテストが確かめる。公開前のページ・lifeplan は入れない）。月が変わると、ページの中の top.js が今日の月の行に入れ替える",
+  "about": "トップの「いまの時期」（yorozu-plans ROADMAP 7.23）。月 → 最大 3 ページと理由 1 文。初版の表は 7.23 の「season.json の初版」。各行の source は理由の根拠: MAINTENANCE は yorozu-plans docs/MAINTENANCE.md の行番号（2026-10-03 の main 379a30b）、GROWTH 5-3 は docs/GROWTH.md の季節の告知。どちらにも行が無いもの（季節の行事・学校の年度）は「7.23 初版」と書く。path は data/pages.json にあるページだけ（tools/build-top.mjs とテストが確かめる。公開前のページ・lifeplan は入れない）。月が変わると、ページの中の top.js が今日の月の行に入れ替える。windows（日本語だけ、ROADMAP 7.183 Q-081）は日付の窓: year の年の from〜to（\"MM-DD\"、両端を含む）の間だけ、その月の replaces[月] の行をこの行と入れ替える（件数は変わらない）。page は名前とアイコンを取る pages.json の行、path はリンク先。年は毎年書き直す（過ぎた窓は出ない）",
   "checked": "2026-10-03",
   "months": {
     "1": [
@@ -63,6 +63,9 @@
       {"path": "/gengo/yakudoshi/", "reason": "来年の厄年・還暦を。", "source": "MAINTENANCE L20（12 月に翌年へ）"}
     ]
   },
+  "windows": [
+    {"year": 2027, "from": "01-20", "to": "02-03", "replaces": {"1": "/quiz-hiroba/hyakunin/", "2": "/seido-keisan/koko-mushoka/"}, "page": "/gengo/", "path": "/gengo/guide.html#q-eho", "reason": "2027 年の恵方は北北西です。", "source": "ROADMAP 7.183 Q-081。方角は農林水産省「節分と恵方巻レシピ」の十干の組み合わせ（丁・壬の年は北北西）、2027 年の干支 丁未は国立天文台「六十干支」、節分 2 月 3 日は国立天文台「令和 9 年暦要項」（確認 2026-11-05）"}
+  ],
   "en": {
     "1": [
       {"path": "/gengo/en/", "reason": "New year: convert dates to the Reiwa era.", "source": "7.23 初版（季節の行事）"}

@@ -1,7 +1,7 @@
 /* トップ・すべての道具・用途別の入口・英語トップで共有する部品（yorozu-plans ROADMAP 7.23「トップの構成」）
    - 検索: ページに埋めた一覧（<script type="application/json" id="yt-index">、tools/build-top.mjs が data/pages.json から作る）を
      端末の中だけで絞る。入力はどこにも送らない（<form> を使わない。通信は一切しない）
-   - いまの時期: 埋めた季節表（id="yt-season"、data/season.json から）から、今日の月の 3 枚を出す（作った月と違えば入れ替える）
+   - いまの時期: 埋めた季節表（id="yt-season"、data/season.json から）から、今日の月の 3 枚を出す（日付の窓の間はその行と入れ替える。作った日と表が違えば入れ替える）
    tools/build-top.mjs とテスト（tests/top.test.mjs）も同じ関数を使う（node では vm で読む） */
 (function (root) {
   'use strict';
@@ -36,10 +36,29 @@
     hit.sort(function (a, b) { return a.sum - b.sum || a.i - b.i; });
     return hit.slice(0, limit || 8).map(function (h) { return h.row; });
   }
-  // 今日（Date）の月の季節表。無い月は空
+  // 日付の窓（season.json の windows）: year の年の from〜to（"MM-DD"、両端を含む、端末の日付）の間だけ、その月の replaces[月] の行と入れ替える
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  function windowsOn(season, date) {
+    var md = pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+    return ((season && season.windows) || []).filter(function (w) {
+      return w.year === date.getFullYear() && w.from <= md && md <= w.to;
+    });
+  }
+  // 今日（Date）の季節表（月の表に窓を当てたもの）。無い月は空
   function seasonFor(season, date) {
-    var m = String((date || new Date()).getMonth() + 1);
-    return (season && season.months && season.months[m]) || [];
+    date = date || new Date();
+    var m = String(date.getMonth() + 1);
+    var list = (season && season.months && season.months[m]) || [];
+    windowsOn(season, date).forEach(function (w) {
+      var old = w.replaces && w.replaces[m];
+      list = list.map(function (x) { return x.path === old ? w : x; });
+    });
+    return list;
+  }
+  // 出している表の鍵（月と、当たっている窓）。鍵が変われば入れ替える
+  function seasonKey(season, date) {
+    date = date || new Date();
+    return [String(date.getMonth() + 1)].concat(windowsOn(season, date).map(function (w) { return w.year + '-' + w.from; })).join(' ');
   }
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
   // 最上位のフォルダのうち、道具のリポジトリではなくサイト本体（このリポジトリ）の中にあるもの。
@@ -59,22 +78,23 @@
       return '<li><a href="' + esc(base + x.path.slice(1)) + '"><strong>' + (icons ? iconHtml(x.path, base, false) : '') + esc(x.name) + '</strong><span>' + esc(x.reason) + '</span></a></li>';
     }).join('');
   }
-  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonItemsHtml: seasonItemsHtml, iconHtml: iconHtml, esc: esc, ROOT_DIRS: ROOT_DIRS };
+  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonKey: seasonKey, seasonItemsHtml: seasonItemsHtml, iconHtml: iconHtml, esc: esc, ROOT_DIRS: ROOT_DIRS };
   root.YorozuTop = api;
   if (typeof document === 'undefined') return;
 
   function json(id) { var e = document.getElementById(id); if (!e) return null; try { return JSON.parse(e.textContent); } catch (_) { return null; } }
 
-  // いまの時期: 作った月と今日の月が違えば入れ替える
+  // いまの時期: 作った日と今日で表の鍵（月・日付の窓）が違えば入れ替える
   var season = json('yt-season');
   var list = document.querySelector('[data-season-month]');
   if (season && list) {
-    var now = new Date(), m = now.getMonth() + 1;
-    if (String(m) !== list.getAttribute('data-season-month')) {
+    var now = new Date(), m = now.getMonth() + 1, key = seasonKey(season, now);
+    if (key !== list.getAttribute('data-season-key')) {
       var items = seasonFor(season, now);
       if (items.length) {
         list.innerHTML = seasonItemsHtml(items, list.getAttribute('data-base') || './', list.hasAttribute('data-icons'));
         list.setAttribute('data-season-month', String(m));
+        list.setAttribute('data-season-key', key);
         var mh = document.querySelector('[data-season-label]');
         if (mh) mh.textContent = mh.getAttribute('data-season-label').replace('{m}', String(m));
       }
