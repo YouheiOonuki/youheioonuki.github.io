@@ -1,6 +1,6 @@
 // 道具が使われた回数（yorozu-plans ROADMAP 7.178 D468・企画書 99。K171 の 2 枝目）の門:
 // (1) tools/common/used.js は、人が操作した後に結果が初めて出たときだけ 1 回、{ page, event: 'used' } を送る（入力は送らない）
-// (2) 送る画面の集合 ＝ yorozu-plans docs/content-classes.csv の種類「計算・制度」「道具」の画面（面が「画面」）の集合 − EXCLUDED
+// (2) 送る画面の集合 ＝ yorozu-plans docs/content-classes.csv の種類「計算・制度」「道具」の画面（面が「画面」）の集合。広告の有無は見ない（ROADMAP 7.182）
 //     各リポジトリの作業コピーを読む。場所は環境変数 YOROZU_PROJECTS か、このリポジトリの git の本体（worktree でも同じ）の 1 つ上
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -35,6 +35,19 @@ test('used.js: 開いただけ（操作の前）に結果が出ても送らな�
   assert.equal(p.sent[0].url, 'https://yorozu-ai.oonuki-youhei.workers.dev/v1/ping');
   assert.equal(p.sent[0].blob.type, 'text/plain');
   assert.deepEqual(JSON.parse(p.sent[0].blob.text), { page: '/seido-keisan/juminzei/', event: 'used' });
+});
+
+test('used.js: 結果を出す関数が複数ある画面（filetime・gengo・tabi-shiori など。ROADMAP 7.182）で、別々の関数から何度呼んでも 1 回の表示で 1 回だけ送る', () => {
+  const p = page({ path: '/gengo/' });
+  const renderConv = () => p.window.yzUsed(), renderAge = () => p.window.yzUsed(), renderTable = () => p.window.yzUsed();
+  renderConv(); renderAge(); renderTable();          // 開いたときに 3 つとも描く: 送らない
+  assert.equal(p.sent.length, 0);
+  p.fire('input'); renderConv(); p.fire('change'); renderAge(); renderTable(); renderConv();
+  assert.equal(p.sent.length, 1);
+  assert.deepEqual(JSON.parse(p.sent[0].blob.text), { page: '/gengo/', event: 'used' });
+  const q = page({ path: '/gengo/' });               // 読み直した表示は別の 1 回
+  q.fire('pointerdown'); q.window.yzUsed(); q.window.yzUsed();
+  assert.equal(q.sent.length, 1);
 });
 
 test('used.js: 押す・入れる・選ぶ・落とす・キーのどれでも「操作した」になる（捕まえる側で聞く）', () => {
@@ -83,38 +96,16 @@ test('sync-common.mjs --check はフォルダの下の used.js も正本と比�
 });
 
 // --- (2) 送る画面の集合 ---
-// csv の 2 種類の画面のうち、送らないもの。理由ごとに書く（足すときは企画書 99 の「送らない画面」にも）
-const NO_AD = '広告なしの画面（D468 は広告なしの画面を対象とするかを書いていない。Fable の判断待ち）';
-const NOT_ONE = '結果を出す関数が 1 つに決まらない（Fable の判断待ち）';
+// 送らないもの（yorozu-plans ROADMAP 7.182: 対象は種類で決め、広告の有無は見ない。結果を出す関数が複数ある画面は全部で呼ぶ）
 export const EXCLUDED = {
-  '/easy-split/quick/': NO_AD,
-  '/gakko-keisan/atonannichi/': NO_AD,
-  '/gakko-keisan/timer/': NO_AD,
-  '/gakushu-print/anki/': NO_AD,
-  '/gakushu-print/tokei/': NO_AD,
-  '/gengo/kaiki/': NO_AD,
-  '/lifeplan/': NO_AD,
-  '/otasuke/daicho/': NO_AD,
-  '/otasuke/honmono/': NO_AD,
-  '/otasuke/kenshin/': NO_AD,
-  '/otasuke/kigo/': NO_AD,
-  '/otasuke/notore/': NO_AD,
-  '/otasuke/reizoko/': NO_AD,
-  '/otasuke/shakyo/': NO_AD,
-  '/otasuke/tejun/': NO_AD,
-  '/otasuke/tokei/': NO_AD,
-  '/otasuke/yasashii/': NO_AD,
-  '/post/': NO_AD,
-  '/seido-keisan/en/high-cost-medical/': NO_AD,
-  '/seido-keisan/kogaku-ryoyohi/': NO_AD,
-  '/seido-keisan/nenkin-kuriage/': NO_AD,
-  '/tameshite/roogan/': NO_AD,
-  '/filetime/': NOT_ONE + '。変換・逆引き・まとめての 3 つの欄がそれぞれ別の関数で結果を出す',
-  '/filetime/en/': NOT_ONE + '。日本語版と同じ main.js',
-  '/gengo/': NOT_ONE + '。和暦の変換・年齢・早見表の 3 つが別の関数',
-  '/gengo/en/': NOT_ONE + '。日本語版と同じ main.js',
-  '/tabi-shiori/': NOT_ONE + '。しおりの編集の画面で、結果（冊子）は見本の表示と印刷の 2 つの道から出る',
+  kinds: {
+    '見せる・遊ぶ': '道具ではなく、見る・遊ぶもの（D468）',
+    '読み物・案内': '結果を出さない読み物と案内（D468）',
+  },
+  faces: { '使い方': '画面ではなく使い方のページ（D468 は画面だけ）' },
+  repos: { lab: '試作の置き場（D468）' },
 };
+const isTarget = (r) => !EXCLUDED.kinds[r['種類']] && ['計算・制度', '道具'].includes(r['種類']) && r['面'] === '画面' && !EXCLUDED.faces[r['面']];
 
 function projectsDir() {
   if (process.env.YOROZU_PROJECTS) return resolve(process.env.YOROZU_PROJECTS);
@@ -145,13 +136,12 @@ const scripts = (html) => [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].m
 const inline = (html) => [...html.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n');
 const usedSrc = (html) => scripts(html).find((s) => /(^|\/)used\.js$/.test(s));
 
-test('送る画面の集合 ＝ content-classes.csv の「計算・制度」「道具」の画面 − 除いた一覧。どれも used.js を読み、結果を出す関数で yzUsed を呼ぶ', { skip: !existsSync(CSV) && `content-classes.csv が無い（${CSV}）` }, () => {
+test('送る画面の集合 ＝ content-classes.csv の「計算・制度」「道具」の画面（広告なしも）。どれも used.js を読み、結果を出す関数で yzUsed を呼ぶ', { skip: !existsSync(CSV) && `content-classes.csv が無い（${CSV}）` }, () => {
   const rows = readCsv(readFileSync(CSV, 'utf8'));
-  const target = rows.filter((r) => ['計算・制度', '道具'].includes(r['種類']) && r['面'] === '画面');
+  const target = rows.filter(isTarget);
   assert.ok(target.length > 50, `母数 ${target.length}`);
-  const urls = new Set(target.map((r) => r.URL));
-  for (const u of Object.keys(EXCLUDED)) assert.ok(urls.has(u), `除いた一覧の ${u} は csv の 2 種類の画面に無い（古い行は消す）`);
-  const want = target.filter((r) => !EXCLUDED[r.URL]);
+  for (const k of Object.keys(EXCLUDED.kinds)) assert.ok(rows.some((r) => r['種類'] === k), `送らない種類 ${k} が csv に無い（名前が変わったら直す）`);
+  const want = target;
   const problems = [];
   for (const r of want) {
     const [repo, rel] = locate(r['ファイル']);
@@ -169,11 +159,11 @@ test('送る画面の集合 ＝ content-classes.csv の「計算・制度」「�
   assert.deepEqual(problems, []);
 });
 
-test('逆向き: used.js を読むページは、送る画面の集合の中だけ（除いた画面・見せる・遊ぶ・読み物・案内・lab は送らない）', { skip: !existsSync(CSV) && 'content-classes.csv が無い' }, () => {
+test('逆向き: used.js を読むページは、送る画面の集合の中だけ（見せる・遊ぶ・読み物・案内・使い方・lab は送らない）', { skip: !existsSync(CSV) && 'content-classes.csv が無い' }, () => {
   const rows = readCsv(readFileSync(CSV, 'utf8'));
-  const allowed = new Set(rows.filter((r) => ['計算・制度', '道具'].includes(r['種類']) && r['面'] === '画面' && !EXCLUDED[r.URL]).map((r) => r['ファイル']));
+  const allowed = new Set(rows.filter(isTarget).map((r) => r['ファイル']));
   const repos = new Set(rows.map((r) => locate(r['ファイル'])[0]));
-  if (isRepo('lab')) repos.add(join(P, 'lab'));
+  for (const name of Object.keys(EXCLUDED.repos)) if (isRepo(name)) repos.add(join(P, name));
   const extra = [];
   const walk = (d, out = []) => {
     for (const n of readdirSync(d)) {

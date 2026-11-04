@@ -92,6 +92,7 @@
   </footer>
 
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="../used.js"></script>
   <script>
     (function () {
       var form = document.getElementById('post-form');
@@ -118,6 +119,7 @@
               result.appendChild(document.createTextNode(' に載ります。'));
               body.value = '';
               form.querySelectorAll('input[name="kind"]').forEach(function (r) { r.checked = false; });
+              window.yzUsed?.();
             } else {
               result.textContent = '送れませんでした。時間をおいてもう一度お試しください。';
             }
