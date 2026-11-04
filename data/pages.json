@@ -16,6 +16,7 @@
     {"path": "/gengo/nenpyo/", "date": "2026-10-03", "title": "家族の年表", "short": "家族の年表", "section": "kurashi", "priority": 7, "aliases": ["年表"], "name": "家族の年表"},
     {"path": "/web-metronome/capo/", "date": "2026-10-03", "title": "カポ・移調の計算（ギターのコード変換）", "short": "カポ・移調", "section": "asobu", "priority": 7, "aliases": ["移調", "ギター"], "chip": "カポ・移調"},
     {"path": "/seido-keisan/yobosesshu/", "date": "2026-10-03", "title": "子どもの予防接種スケジュール", "short": "子どもの予防接種", "section": "kurashi", "priority": 8, "aliases": ["ワクチン", "予防接種"], "chip": "予防接種", "name": "子どもの予防接種", "note": "接種の予定を一覧に"},
+    {"path": "/seido-keisan/hikkoshi/", "date": "2026-11-05", "title": "引越しの手続きの一覧（期限の日付つき）", "section": "kurashi", "priority": 7, "aliases": ["転入届", "転出届", "住所変更"], "chip": "引越しの手続き", "name": "引越しの手続き", "note": "手続きの順と期限"},
     {"path": "/hoshizora-sanpo/tsuki/", "date": "2026-10-03", "title": "月の出・月の入りの時刻と方角", "short": "月の出・月の入り", "section": "asobu", "priority": 8, "aliases": ["月の出", "月の入り"], "chip": "月の出入り", "name": "月の出入り"},
     {"path": "/otasuke/kenshin/", "date": "2026-10-02", "title": "健診結果の経年グラフ", "short": "健診の経年グラフ", "section": "oya", "priority": 6, "aliases": ["健康診断", "検査値"], "chip": "健診グラフ", "name": "健診グラフ", "note": "健診の値をグラフに"},
     {"path": "/hoshizora-sanpo/shinwa/", "date": "2026-10-02", "title": "ギリシャ神話", "short": "ギリシャ神話", "section": "asobu", "priority": 9, "aliases": ["星座の神話", "ゼウス"]},
