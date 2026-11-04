@@ -30,15 +30,19 @@
 
   <main>
     <article>
-      <h1>脳トレ・レクの 1 か月セット（2026 年 11 月）</h1>
+      <h1>脳トレ・レクの 1 か月セット</h1>
       <p>介護施設・デイサービスのレク担当の方へ。大きな字の脳トレ、ビンゴカード、季節の紙、冷蔵庫に貼る紙を、印刷してそのまま配れる 1 冊の PDF にまとめました。無料です。</p>
 
-      <p><a class="download" id="download" href="./noutore-reku-2026-11.pdf" download>PDF をダウンロード（A4・39 ページ・約 3.5 MB）</a></p>
+      <h2>2026 年 12 月</h2>
+      <p><a class="download" href="./noutore-reku-2026-12.pdf" download>PDF をダウンロード（A4・39 ページ・約 3.5 MB）</a></p>
+
+      <h2>2026 年 11 月</h2>
+      <p><a class="download" href="./noutore-reku-2026-11.pdf" download>PDF をダウンロード（A4・39 ページ・約 3.8 MB）</a></p>
 
       <h2>中身</h2>
       <ul>
         <li>1 ページ目: スマホをかざして使う道具の QR（LINE で計算・やさしい日本語・入院したときの医療費・健診のグラフ）。ご家族への案内に</li>
-        <li>脳トレ 10 枚: 計算・漢字の読み・間違い探し・かなクロスワード・塗り絵カレンダー（11 月・12 月）を 2 枚ずつ。むずかしさは「ふつう」</li>
+        <li>脳トレ 10 枚: 計算・漢字の読み・間違い探し・かなクロスワード・塗り絵カレンダー（その月から 2 か月）を 2 枚ずつ。むずかしさは「ふつう」</li>
         <li>ビンゴカード 40 枚（1 ページに 4 枚 × 10 ページ）。1〜75 の数字</li>
         <li>冬の季語 5 枚: 説明つきの表と、季語だけの一覧。読みがなつき</li>
         <li>冷蔵庫に貼る紙 5 枚: 救急情報シートと貼り紙・おくすりカレンダー（1 週間・4 週間）・血圧の記録</li>
@@ -69,8 +73,10 @@
 
   <script>
     // ダウンロードの回数（ROADMAP 7.46 K173）。押したことと PDF の場所だけを送る。失敗してもダウンロードは止めない
-    document.getElementById('download').addEventListener('click', function () {
-      try { navigator.sendBeacon('https://yorozu-ai.oonuki-youhei.workers.dev/v1/ping', new Blob([JSON.stringify({ page: '/print/noutore-reku-2026-11.pdf', event: 'download' })], { type: 'text/plain' })); } catch (e) {}
+    document.querySelectorAll('a.download').forEach(function (a) {
+      a.addEventListener('click', function () {
+        try { navigator.sendBeacon('https://yorozu-ai.oonuki-youhei.workers.dev/v1/ping', new Blob([JSON.stringify({ page: '/print/' + a.getAttribute('href').replace('./', ''), event: 'download' })], { type: 'text/plain' })); } catch (e) {}
+      });
     });
   </script>
   <!-- Cloudflare Web Analytics（Cookie を使わないアクセス解析） --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
