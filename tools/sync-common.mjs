@@ -4,11 +4,13 @@
 //   node tools/sync-common.mjs --write <ファイルかフォルダ ...>   … begin〜end を正本で置き換える
 //   node tools/sync-common.mjs --insert <リポジトリのフォルダ ...> … 印の無い style.css の先頭（最初のコメントの後）に入れる
 //   node tools/sync-common.mjs --status <リポジトリのフォルダ ...>  … リポジトリごとに 済（同じ版）／古い／未（印なし）を 1 行ずつ（配る前後の確認）
+//   node tools/sync-common.mjs --used <リポジトリのフォルダ ...>    … リポジトリの最上位に used.js（正本 tools/common/used.js の写し）を置く・同じにする
 // フォルダを渡すと、その下の .css と .html（node_modules・.git を除く）のうち印のあるものを対象にする。
 // 印: /* yorozu-common:begin … */ 〜 /* yorozu-common:end */。この間は手で直さない。ツール固有の上書きは end の後に書く
 // （後に書いた :root や規則が勝つので、入れるだけでは見た目は変わらない。トークンの重複は配ったあとに消してよい）
 // v1 から v2 に替えたとき、v1 の見た目（和紙の色・body・リンク）は各ファイルの end の直後に /* yorozu-v1-carry … */〜/* yorozu-v1-carry:end */ で持ち込んだ。
 // 段 3 の 2〜4 で各ページを v2 のトークンに載せ替えるときに消す。--status が残りの数を出す
+// used.js（道具が使われた回数。yorozu-plans D468）はファイルまるごとが正本の写し。--check と --write はフォルダの下の used.js も正本と比べる・置き換える
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,6 +19,10 @@ const V2 = join(dirname(fileURLToPath(import.meta.url)), 'common', 'v2');
 const BEGIN = '/* yorozu-common:begin';
 const END = '/* yorozu-common:end */';
 const CARRY = '/* yorozu-v1-carry';
+const USED = join(dirname(fileURLToPath(import.meta.url)), 'common', 'used.js');
+export const usedMaster = () => readFileSync(USED, 'utf8');
+const lf = (t) => t.replace(/\r\n/g, '\n');   // used.js は改行の形（git の autocrlf）を問わず中身で比べる
+const isUsed = (f) => /(^|[\\/])used\.js$/.test(f);
 // 正本: 土台 → 皮 の順に begin〜end で包む（値は v2 の 2 つのファイルだけが持つ）
 export const master = () => [
   '/* yorozu-common:begin v2 — サイト共通の土台と皮。正本は youheioonuki.github.io の tools/common/v2/base.css と skin.css（yorozu-plans DESIGN.md）。',
@@ -49,15 +55,15 @@ function walk(p, out = []) {
   for (const n of readdirSync(p)) {
     if (n === 'node_modules' || n.startsWith('.')) continue;
     const q = join(p, n); const st = statSync(q);
-    if (st.isDirectory()) walk(q, out); else if (/\.(css|html)$/.test(n)) out.push(q);
+    if (st.isDirectory()) walk(q, out); else if (/\.(css|html)$/.test(n) || n === 'used.js') out.push(q);
   }
   return out;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [mode, ...targets] = process.argv.slice(2);
-  if (!['--check', '--write', '--insert', '--status'].includes(mode) || !targets.length) {
-    console.error('使い方: node tools/sync-common.mjs --check|--write|--insert|--status <ファイルかフォルダ ...>'); process.exit(2);
+  if (!['--check', '--write', '--insert', '--status', '--used'].includes(mode) || !targets.length) {
+    console.error('使い方: node tools/sync-common.mjs --check|--write|--insert|--status|--used <ファイルかフォルダ ...>'); process.exit(2);
   }
   const block = master(); let bad = 0;
   if (mode === '--status') {
@@ -74,7 +80,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.log(`済 ${n.済}・古い ${n.古い}・未 ${n.未}`);
     process.exit(n.古い || n.未 ? 1 : 0);
   }
+  const used = usedMaster();
   for (const t of targets) {
+    if (mode === '--used') {
+      const f = join(t, 'used.js');
+      const had = existsSync(f) ? readFileSync(f, 'utf8') : null;
+      if (had !== null && lf(had) === lf(used)) { console.log(`同じ  ${f}`); continue; }
+      writeFileSync(f, used); console.log(`${had === null ? '追加' : '更新'}  ${f}`);
+      continue;
+    }
     if (mode === '--insert') {
       const css = join(t, 'style.css');
       if (!existsSync(css)) { console.log(`なし  ${css}（style.css が無い。手で入れる）`); bad++; continue; }
@@ -83,8 +97,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       else { writeFileSync(css, insertBlock(s, block)); console.log(`追加  ${css}`); }
       continue;
     }
-    const files = walk(t).filter(f => extract(readFileSync(f, 'utf8')));
+    const all = walk(t);
+    const files = all.filter(f => !isUsed(f) && extract(readFileSync(f, 'utf8')));
     if (!files.length) { console.log(`なし  ${t}（印のあるファイルが無い）`); bad++; continue; }
+    for (const f of all.filter(isUsed)) {
+      if (lf(readFileSync(f, 'utf8')) === lf(used)) { console.log(`同じ  ${f}（used.js）`); continue; }
+      if (mode === '--write') { writeFileSync(f, used); console.log(`更新  ${f}（used.js）`); }
+      else { console.log(`違う  ${f}（used.js が正本と違う）`); bad++; }
+    }
     for (const f of files) {
       const s = readFileSync(f, 'utf8'); const x = extract(s);
       if (x.body === block) { console.log(`同じ  ${f}（${version(s)}）`); continue; }
