@@ -68,6 +68,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 | `data/pages.json` / `data/season.json` / `tools/build-top.mjs` / `top.js` / `top.css` / `all/index.html` / `tests/top.test.mjs` | トップの構成（yorozu-plans ROADMAP 7.23。2026-10-03）。`data/pages.json` は道具と子ページの一覧・公開日・別名（`aliases`、検索だけに使う）・用途の節（`sections`）・英語トップの行（`en`）。`data/season.json` は「いまの時期」（月 → 最大 3 ページと理由 1 文と出典）。`tools/build-top.mjs` がそこからトップ・英語トップ・すべての道具（`/all/`）・用途別の入口の欄（`<!-- top:<欄>:begin -->`〜`end` と `new-tools`）を作る（手で書かない。`--check` で最新か）。`top.js` は検索（端末の中だけで絞る。送信しない）と月の入れ替え、`top.css` は共有の部品。`top.js` の `ROOT_DIRS`（`en`・`all`・`line`）は、道具のリポジトリではなくこのリポジトリの中にある最上位のフォルダ: トップの行のアイコンは本体の `favicon.svg` を指し、check-site は道具として数えない（sitemap・404・保存内容の一覧を求めない）。本体に最上位のページを足すときはここに足す（`/line/` は yorozu-plans 企画書 76）。テストは `node --test tests/*.test.mjs` |
 | `tools/top/priority.mjs` / `tools/top/ledger.mjs` / `data/priority-input.json` / `tests/priority.test.mjs` | トップの行の順（`priority`。yorozu-plans ROADMAP 7.24.1。2026-10-03）。下の「トップの行の順（priority）」 |
 | `tools/common/v2/base.css`・`skin.css` / `tools/sync-common.mjs` | 共通の土台と皮の正本と、それを各ツール・このリポジトリのページに配る・確かめるスクリプト（下の「共通の部品とトークン」） |
+| `tools/common/calc/*.js` | 道具をまたいで使う計算の正本（`sync-common.mjs --calc` で各リポジトリに配る。下の「道具をまたいで使う計算」。D484） |
 | `LICENSE` | MIT License（著作権者 Youhei Oonuki） |
 
 ## ツールを追加するとき
@@ -222,6 +223,22 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 - まだ入っていないツールに入れる: `node tools/sync-common.mjs --insert <リポジトリのフォルダ ...>`（`style.css` の最初のコメントの後に入れる。ツールの規則が後に来るので、入れるだけでは見た目はほぼ変わらない）。入れたら、そのツールの `measure_fold.cjs`・テスト・画面の撮影で前後を比べ、PWA は `sw.js` のキャッシュ名を上げる（stale-while-revalidate のツールは古い CSS が 1 回出るため）。`style.css` の無いリポジトリ（ADSearch の紹介ページなど）は手で入れる
 - 全体の状況: `node tools/sync-common.mjs --status <各リポジトリのフォルダ ...>`（済・古い・未を 1 行ずつ）
 - 使い方（ボタン・エラー・字の大きさ）は yorozu-template の README「画面の部品の使い方」
+
+### 道具をまたいで使う計算（`tools/common/calc/`、yorozu-plans D484）
+
+2 つ以上の道具が使う計算と、その値（値・出典・確認日）の正本。各リポジトリの写しは `sync-common.mjs` の生成物で、先頭の 1 行（「生成物。正本は …」）のほかは正本と 1 字も違わない。どの正本をどの repo のどこに配るかは `sync-common.mjs` の `CALC` の表にだけ書く。
+
+| 正本 | 中身 | 移した元（2026-11-05） |
+|---|---|---|
+| `loan.js` | 住宅ローンの返済（元利均等・元金均等・金利の見直し・5 年／125% ルール・繰上返済） | loan-sim の `calc.js` |
+| `pension.js` / `pension-values.js` | 年金の繰上げ・繰下げ（増減率・在職老齢年金）とその値 | seido-keisan の `lib/kuriage.js`・`kuriage-values.js` |
+| `kaitei-data.js` | 制度の改定カレンダーのデータ | seido-keisan の `lib/kaitei-values.js` |
+| `gakunen.js` | 学年（4 月 2 日の区切り）・学年早見表・履歴書の学歴と、その法令の値 | gengo の `calc.js`・`constants.js` |
+| `yakudoshi.js` | 厄年・年祝いと、その年齢の例 | gengo の `calc.js`・`constants.js` |
+
+- 正本を直したら: `node tools/sync-common.mjs --calc <配り先のリポジトリのフォルダ ...>` で写しを置き換え、その repo のテストを走らせてから両方を上げる。`--check <リポジトリ>` は写しも比べる。本番の写しは `check-site.mjs` が比べる（配り先を上げるまで落ちる）
+- 写しは 1 字も変えないので、正本の中の `require('./…')` と `window` の名は配り先の名のまま（`pension.js` は `./kuriage-values.js` を読む）
+- 移す前と後で同じ入力の出力が同じことは `tests/calc-common.test.mjs` が確かめる（移す前の元のファイルの出力 451 件の SHA-256 が `tests/fixtures/calc-before.json`。作り直さない）
 
 ## 共通の確認テスト
 
