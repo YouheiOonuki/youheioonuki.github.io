@@ -35,13 +35,16 @@ function load(master, seen = new Map()) {
   return module.exports;
 }
 
+const withoutSourceOf = (V) => { const m = { ...V.mangaku }; for (const k of ['source', 'url', 'checked']) delete m[k]; return { ...V, mangaku: m }; };
+
 test('同値性: 正本の出力は、移す前の元のファイルの出力と同じ（451 件。住宅ローン・年金の繰上げ繰下げ・改定カレンダー・学年・厄年）', () => {
   const cases = require('./fixtures/calc-cases.cjs');
   const before = JSON.parse(readFileSync(join(ROOT, 'tests', 'fixtures', 'calc-before.json'), 'utf8'));
   const G = load('gakunen.js'), Y = load('yakudoshi.js');
   const out = cases({
     loan: load('loan.js'),
-    pension: Object.assign({}, load('pension.js'), { __values: load('pension-values.js') }),
+    // 移した後（2026-11-05、yorozu-plans 7.189 の続き 3）に満額の行へ足した出典の欄（source・url・checked）は値ではないので、外して比べる。値は 1 つも変えていない
+    pension: Object.assign({}, load('pension.js'), { __values: withoutSourceOf(load('pension-values.js')) }),
     kaitei: load('kaitei-data.js'),
     gakunen: Object.assign({}, G, { __K: G.VALUES }),
     yakudoshi: Object.assign({}, Y, { __K: Y.VALUES }),
