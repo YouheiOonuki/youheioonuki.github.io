@@ -29,7 +29,7 @@ const REVIEW_NO_AD_PAGES = new Set([
   '/loan-sim/',
   '/nittei-kouho/',
   '/denki-dai/',
-  '/seido-keisan/nenmatsu/', '/seido-keisan/nenmatsu/hoken/', '/seido-keisan/gensen/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/shobyo/', '/seido-keisan/iryohi/', '/seido-keisan/iryohi/meisai/', '/seido-keisan/koko-mushoka/', '/seido-keisan/lifeplan/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/',
+  '/seido-keisan/nenmatsu/', '/seido-keisan/nenmatsu/hoken/', '/seido-keisan/gensen/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/shobyo/', '/seido-keisan/iryohi/', '/seido-keisan/iryohi/meisai/', '/seido-keisan/koko-mushoka/', '/seido-keisan/lifeplan/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/', '/seido-keisan/hikkoshi/',
   '/tabi-shiori/',
   '/gakushu-print/en/', '/gakushu-print/booklet/', '/gakushu-print/angou/',
   '/bingo/cards.html', '/bingo/en/cards.html',
