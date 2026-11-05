@@ -2,6 +2,7 @@
   "about": "トップから届く道具と子ページの一覧と公開日（その index.html を初めてコミットした日。git log --diff-filter=A）。新しいページを公開したら 1 行足して node tools/top/priority.mjs と node tools/build-top.mjs を実行する。1 行 ＝ 1 用途（入口も子ページも同列。ROADMAP 7.24.1）: section（節の id）・priority（tools/top/priority.mjs が data/priority-input.json から計算して書く。手で直さない）・aliases（検索の別名）は全行に。note（一言 15 字以内）がある行が節の行の候補で、related（用途のつながりで手で選ぶ最大 3 の path）を持つ。name は行とチップの表示名（無ければ short か題名）。pin: true は節ごとに 1 件まで（常に行に出す）。節ごとに priority の上位 3 が行、残りの候補は「ほかに N 件」、候補でないページはチップと /all/ に出る。check-site が、sitemap の道具のページがここに全部あるか・新しいツールの欄が最新か・どのページもトップから 2 クリック以内かを確かめる（企画書 59）。en は英語トップ",
   "newCount": 3,
   "pages": [
+    {"path": "/seido-keisan/lifeplan/", "date": "2026-11-05", "title": "人生の数字を1枚に（住宅ローンと年金の時間軸）", "short": "人生の数字を1枚に", "section": "kurashi", "priority": 7, "aliases": ["ライフプラン", "時間軸", "住宅ローン", "年金"], "chip": "人生の時間軸", "name": "人生の数字を1枚に", "note": "ローンと年金を1本に"},
     {"path": "/seido-keisan/gensen/", "date": "2026-11-03", "title": "源泉徴収票の見方と手取り（令和8年分）", "section": "kurashi", "priority": 7, "aliases": ["源泉徴収票", "年収", "手取り", "ふるさと納税 上限"], "chip": "源泉徴収票", "name": "源泉徴収票の見方", "note": "年収・手取り・所得税"},
     {"path": "/seido-keisan/shobyo/", "date": "2026-11-03", "title": "傷病手当金の計算", "section": "kurashi", "priority": 7, "aliases": ["病気で休職", "けがで休む", "協会けんぽ"], "chip": "傷病手当金", "name": "傷病手当金", "note": "1日あたりと支給額"},
     {"path": "/easy-split/quick/", "date": "2026-10-11", "title": "割り勘（スマホ版）", "section": "atsumari", "priority": 5, "aliases": ["割り勘 スマホ", "1人いくら"], "name": "割り勘（スマホ版）", "note": "合計と人数だけで 1 人いくら"},

@@ -29,7 +29,7 @@ const REVIEW_NO_AD_PAGES = new Set([
   '/loan-sim/',
   '/nittei-kouho/',
   '/denki-dai/',
-  '/seido-keisan/nenmatsu/', '/seido-keisan/nenmatsu/hoken/', '/seido-keisan/gensen/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/shobyo/', '/seido-keisan/iryohi/', '/seido-keisan/iryohi/meisai/', '/seido-keisan/koko-mushoka/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/',
+  '/seido-keisan/nenmatsu/', '/seido-keisan/nenmatsu/hoken/', '/seido-keisan/gensen/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/shobyo/', '/seido-keisan/iryohi/', '/seido-keisan/iryohi/meisai/', '/seido-keisan/koko-mushoka/', '/seido-keisan/lifeplan/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/',
   '/tabi-shiori/',
   '/gakushu-print/en/', '/gakushu-print/booklet/', '/gakushu-print/angou/',
   '/bingo/cards.html', '/bingo/en/cards.html',
@@ -670,6 +670,19 @@ const NOT_TOOL_SCREENS = {
   }
   for (const t of [...toolsInRobots, '(トップ)']) if (!marked.has(t)) fail(t, '共通の土台と皮（yorozu-common:begin〜end）が配られていない');
   notes.push(`共通の土台と皮: 印のあるファイル ${total} 件のうち正本と同じ ${same} 件（${marked.size} 個のツールとトップ）`);
+}
+// 道具をまたいで使う計算の写しの同一性（yorozu-plans D484・企画書 102 の 4 章）: 公開されている写し（/<repo>/<場所>）が「生成物の印の 1 行＋正本（root の tools/common/calc）」と同じ。
+// 違えば `node tools/sync-common.mjs --calc <リポジトリ>` で配り直して、その repo を上げる（root の正本だけを直して上げると、配り先を上げるまでここが落ちる）
+{
+  const { CALC, calcCopy } = await import('./sync-common.mjs');
+  let same = 0;
+  for (const c of CALC) {
+    const u = BASE + c.repo + '/' + c.to, r = await get(u);
+    if (r.status !== 200) { fail(path(u), `${r.status}（計算の写し ${c.master} が公開されていない。D484）`); continue; }
+    if (r.body.replace(/\r\n/g, '\n') === calcCopy(c.master)) same++;
+    else fail(path(u), `計算の写しが正本（root の tools/common/calc/${c.master}）と違う。sync-common.mjs --calc で配り直す（D484）`);
+  }
+  notes.push(`計算の写し: ${CALC.length} 件のうち正本と同じ ${same} 件（D484）`);
 }
 // 計算の API（yorozu-plans 7.186 D477）: 本番の /api/openapi.json（build が手元の yorozu-api の原文から作る）の口 ＝ 本番の Worker の定義から作った口か。
 // build は Worker を呼ばないので、上げ忘れ・写し忘れ（Worker と原文のずれ）はここで見る。警告だけ（失敗にしない）
