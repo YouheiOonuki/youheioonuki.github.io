@@ -7,9 +7,10 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync, statSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 import { tmpdir } from 'node:os';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { projectsOf } from '../tools/sync-common.mjs';
 
 const ROOT = new URL('..', import.meta.url);
 const USED = readFileSync(new URL('../tools/common/used.js', import.meta.url), 'utf8');
@@ -108,12 +109,7 @@ export const EXCLUDED = {
 };
 const isTarget = (r) => !EXCLUDED.kinds[r['種類']] && ['計算・制度', '道具'].includes(r['種類']) && r['面'] === '画面' && !EXCLUDED.faces[r['面']];
 
-function projectsDir() {
-  if (process.env.YOROZU_PROJECTS) return resolve(process.env.YOROZU_PROJECTS);
-  const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: ROOT, encoding: 'utf8' }).trim();
-  return dirname(dirname(common));   // <Projects>/youheioonuki.github.io/.git → <Projects>
-}
-const P = projectsDir();
+const P = projectsOf(ROOT);
 const isRepo = (name) => !!name && existsSync(join(P, name, '.git'));
 // csv の「ファイル」（root からの道）→ [リポジトリのフォルダ, リポジトリの中の道]。最初の段がリポジトリでなければ root
 function locate(file) {

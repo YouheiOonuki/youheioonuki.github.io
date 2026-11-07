@@ -15,7 +15,7 @@
 // 計算の写しは「先頭の 1 行（生成物の印）＋ 正本のまま」。--check と --write はリポジトリのフォルダ（git の最上位）を渡すと、その repo の CALC の行も比べる・置き換える。
 // 写しは 1 字も変えないので、正本の中の require('./…') と window の名は配り先の名のまま（例: pension.js は './kuriage-values.js' を読む）
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, dirname, basename } from 'node:path';
+import { join, dirname, basename, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -49,8 +49,10 @@ export function repoOf(dir) {
     return basename(dirname(common));
   } catch { return null; }
 }
-// 隣の repo の基点（Claude/Projects）: git の共通の .git の 2 つ上。worktree（%LOCALAPPDATA%/yorozu-wt）で開いても作業コピーの隣を指す（QUEUE Q-134）
+// 隣の repo の基点（Claude/Projects）: git の共通の .git の 2 つ上。worktree（%LOCALAPPDATA%/yorozu-wt）で開いても作業コピーの隣を指す（QUEUE Q-134）。
+// YOROZU_PROJECTS で上書きできる。テストもここを読む（場所の計算を 1 か所に）
 export function projectsOf(dir) {
+  if (process.env.YOROZU_PROJECTS) return resolve(process.env.YOROZU_PROJECTS);
   const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: dir, encoding: 'utf8' }).trim();
   return dirname(dirname(common));
 }

@@ -6,14 +6,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
-import { join, dirname, resolve, basename } from 'node:path';
+import { join, basename } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { CALC, calcCopy, calcHeader, master } from '../tools/sync-common.mjs';
+import { CALC, calcCopy, calcHeader, master, projectsOf } from '../tools/sync-common.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CALC_DIR = join(ROOT, 'tools', 'common', 'calc');
@@ -67,14 +67,8 @@ test('CALC の表: 正本はどれも表に行があり、表の正本はどれ�
   for (const m of masters) assert.match(calcCopy(m), /^\/\/ 生成物。正本は youheioonuki\.github\.io の tools\/common\/calc\//);
 });
 
-function projectsDir() {
-  if (process.env.YOROZU_PROJECTS) return resolve(process.env.YOROZU_PROJECTS);
-  const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: ROOT, encoding: 'utf8' }).trim();
-  return dirname(dirname(common));
-}
-
 test('同一性: 各リポジトリの写しは「生成物の印の 1 行＋正本」と同じ（違えば node tools/sync-common.mjs --calc <repo>）', () => {
-  const P = projectsDir();
+  const P = projectsOf(ROOT);
   const problems = [];
   for (const c of CALC) {
     const f = join(P, c.repo, c.to);
