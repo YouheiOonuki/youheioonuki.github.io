@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { projectsOf } from '../tools/sync-common.mjs';
 import { API, SITE, EXTRA_TOOLS, FIXTURE, buildOpenApi, bodySchema, buildLlms, buildApiJson, buildApiHtml, pageInfo, apiFixture, readApiDir, openApiSignature } from '../tools/build-agent.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -160,7 +161,7 @@ test('/api/: index.json に OpenAPI と MCP の URL、index.html に MCP の接�
 });
 
 /* ---------- 写し ＝ 今の yorozu-api（手元にあるときだけ。ネットには出ない） ---------- */
-const apiDir = process.env.YOROZU_API_DIR || join(root, '..', 'yorozu-api');
+const apiDir = process.env.YOROZU_API_DIR || join(projectsOf(root), 'yorozu-api');
 const hasApi = existsSync(join(apiDir, 'src', 'app.mjs'));
 test('写し（fixtures/agent-api.json）＝ yorozu-api の今のコード。書いた口はどれも Worker が答え、答えの形も合う', { skip: hasApi ? false : 'yorozu-api が無い（YOROZU_API_DIR で場所を渡す）: ' + apiDir }, async () => {
   assert.deepEqual(await apiFixture(apiDir), fx, '違えば `AGENT_API_DIR=<yorozu-api> node tools/build-agent.mjs --write-fixture` で書き直す');

@@ -17,6 +17,7 @@ import { join, dirname, basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { tokens } from './build-404.mjs';
+import { repoOf } from './sync-common.mjs';
 
 const ROOT_REPO = 'youheioonuki.github.io';
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -33,7 +34,8 @@ const ICON_PNGS = ['apple-touch-icon.png', 'favicon-32.png', 'icon-192.png', 'ic
 export function siteDir(repoDir) {
   return existsSync(join(repoDir, 'docs', 'index.html')) ? join(repoDir, 'docs') : repoDir;
 }
-const repoName = (repoDir) => basename(resolve(repoDir));
+// repo の名は作業コピーの名（worktree のフォルダ名でなく。QUEUE Q-134）。git の外のフォルダはフォルダ名
+const repoName = (repoDir) => repoOf(repoDir) ?? basename(resolve(repoDir));
 const isBase = (html) => /<html[^>]*data-skin="base"/.test(html);
 function isWorld(repoDir) {
   if (repoName(repoDir) === ROOT_REPO) return false;

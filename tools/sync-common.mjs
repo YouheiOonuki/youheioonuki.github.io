@@ -49,6 +49,11 @@ export function repoOf(dir) {
     return basename(dirname(common));
   } catch { return null; }
 }
+// 隣の repo の基点（Claude/Projects）: git の共通の .git の 2 つ上。worktree（%LOCALAPPDATA%/yorozu-wt）で開いても作業コピーの隣を指す（QUEUE Q-134）
+export function projectsOf(dir) {
+  const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: dir, encoding: 'utf8' }).trim();
+  return dirname(dirname(common));
+}
 export const calcRows = (dir) => { const r = statSync(dir).isDirectory() ? repoOf(dir) : null; return r ? CALC.filter(c => c.repo === r) : []; };
 const isUsed = (f) => /(^|[\\/])used\.js$/.test(f);
 // 正本: 土台 → 皮 の順に begin〜end で包む（値は v2 の 2 つのファイルだけが持つ）
