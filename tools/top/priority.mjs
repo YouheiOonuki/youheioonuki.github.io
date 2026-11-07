@@ -17,6 +17,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { projectsOf } from '../sync-common.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -96,7 +97,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const season = JSON.parse(readFileSync(join(ROOT, 'data', 'season.json'), 'utf8'));
   // 週次の表: 隣の yorozu-plans から読めたら写しを更新、読めなければ写しを使う（--check は写しだけを見る）
   const copy = join(ROOT, 'data', 'weekly-tools.json');
-  const src = process.env.WEEKLY_TOOLS || join(ROOT, '..', 'yorozu-plans', 'docs', 'data', 'weekly-tools.json');
+  const src = process.env.WEEKLY_TOOLS || join(projectsOf(ROOT), 'yorozu-plans', 'docs', 'data', 'weekly-tools.json');
   let weeklyText = null;
   if (!process.argv.includes('--check') && existsSync(src)) {
     weeklyText = readFileSync(src, 'utf8');
