@@ -18,6 +18,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
+import { projectsOf } from './sync-common.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const SITE = 'https://yorozu-craft.com/';
@@ -178,7 +179,7 @@ export async function apiFixture(dir) {
   return { index, tools, maxBody, routes, metaKeys: Object.keys(meta).sort(), nowKeys: Object.keys(now).sort() };
 }
 export const FIXTURE = join(root, 'tests', 'fixtures', 'agent-api.json');
-export const apiDirDefault = () => process.env.AGENT_API_DIR || join(root, '..', 'yorozu-api');
+export const apiDirDefault = () => process.env.AGENT_API_DIR || join(projectsOf(root), 'yorozu-api');
 
 // OpenAPI の口の要約（口・方法・operationId・引数の名前と必須・MCP のツール）。check-site が本番の openapi.json と本番の Worker から作ったものを比べる
 export function openApiSignature(doc) {

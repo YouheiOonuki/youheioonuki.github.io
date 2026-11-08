@@ -8,6 +8,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname, basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { repoOf } from './sync-common.mjs';
 
 const V2 = join(dirname(fileURLToPath(import.meta.url)), 'common', 'v2');
 const ROOT_REPO = 'youheioonuki.github.io';
@@ -29,7 +30,7 @@ export function tokens(skin = readFileSync(join(V2, 'skin.css'), 'utf8'), base =
 const COLORS = ['--bg', '--text', '--accent', '--on-accent', '--focus', '--focus-ring'];
 
 export function manifestHref(repoDir) {
-  const name = basename(resolve(repoDir));
+  const name = repoOf(repoDir) ?? basename(resolve(repoDir));   // worktree でも作業コピーの名（QUEUE Q-134）
   return name !== ROOT_REPO && existsSync(join(repoDir, 'manifest.webmanifest')) ? `/${name}/manifest.webmanifest` : '/manifest.webmanifest';
 }
 
