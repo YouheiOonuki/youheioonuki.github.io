@@ -35,6 +35,7 @@ export const CALC = [
   { master: 'pension-values.js', repo: 'seido-keisan', to: 'lib/kuriage-values.js' },
   { master: 'kaitei-data.js', repo: 'seido-keisan', to: 'lib/kaitei-values.js' },
   { master: 'gakunen.js', repo: 'gengo', to: 'gakunen-calc.js' },
+  { master: 'gakunen.js', repo: 'seido-keisan', to: 'lib/gakunen.js' },
   { master: 'yakudoshi.js', repo: 'gengo', to: 'yakudoshi-calc.js' },
 ];
 export const calcHeader = (master) => `// 生成物。正本は youheioonuki.github.io の tools/common/calc/${master}（tools/sync-common.mjs --calc で配る。ここは手で直さない。yorozu-plans D484）\n`;
