@@ -24,7 +24,7 @@ const BEGIN = '/* yorozu-common:begin';
 const END = '/* yorozu-common:end */';
 const CARRY = '/* yorozu-v1-carry';
 const USED = join(dirname(fileURLToPath(import.meta.url)), 'common', 'used.js');
-export const usedMaster = () => readFileSync(USED, 'utf8');
+const usedMaster = () => readFileSync(USED, 'utf8');
 const lf = (t) => t.replace(/\r\n/g, '\n');   // used.js は改行の形（git の autocrlf）を問わず中身で比べる
 const CALC_DIR = join(dirname(fileURLToPath(import.meta.url)), 'common', 'calc');
 // 計算の正本 → 配り先（repo の名とその中の場所）。repo の名は git の本体のフォルダの名（worktree でも同じ）
@@ -57,7 +57,7 @@ export function projectsOf(dir) {
   const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: dir, encoding: 'utf8' }).trim();
   return dirname(dirname(common));
 }
-export const calcRows = (dir) => { const r = statSync(dir).isDirectory() ? repoOf(dir) : null; return r ? CALC.filter(c => c.repo === r) : []; };
+const calcRows = (dir) => { const r = statSync(dir).isDirectory() ? repoOf(dir) : null; return r ? CALC.filter(c => c.repo === r) : []; };
 const isUsed = (f) => /(^|[\\/])used\.js$/.test(f);
 // 正本: 土台 → 皮 の順に begin〜end で包む（値は v2 の 2 つのファイルだけが持つ）
 export const master = () => [
