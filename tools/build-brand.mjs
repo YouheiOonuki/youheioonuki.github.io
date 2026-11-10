@@ -31,7 +31,7 @@ const V1_THEME = ['#8b4513', '#1c1814', '#f0ebe0'];
 const ICON_PNGS = ['apple-touch-icon.png', 'favicon-32.png', 'icon-192.png', 'icon-512.png'];
 
 // 配る面（ADSearch は docs/ が公開のフォルダ）
-export function siteDir(repoDir) {
+function siteDir(repoDir) {
   return existsSync(join(repoDir, 'docs', 'index.html')) ? join(repoDir, 'docs') : repoDir;
 }
 // repo の名は作業コピーの名（worktree のフォルダ名でなく。QUEUE Q-134）。git の外のフォルダはフォルダ名

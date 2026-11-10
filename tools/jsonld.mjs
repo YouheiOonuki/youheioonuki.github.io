@@ -25,7 +25,7 @@ export function ldBlocks(html) {
 }
 
 /** JSON-LD の中の @type を持つオブジェクトを全部（配列・@graph をたどる） */
-export function ldNodes(html) {
+function ldNodes(html) {
   const nodes = [];
   const walk = (v) => {
     if (Array.isArray(v)) { v.forEach(walk); return; }
@@ -59,7 +59,7 @@ export function nameMismatches(html) {
 }
 
 /** FAQPage の問いの文（FAQPage が無ければ null） */
-export function faqLd(html) {
+function faqLd(html) {
   let found = false;
   const qs = [];
   for (const n of ldNodes(html)) {
@@ -74,7 +74,7 @@ export function faqLd(html) {
 const FAQ_HEADING = /よくある質問|よくあるご質問|^FAQ|Frequently asked|Common questions/i;
 
 /** 画面の「よくある質問」の節の問い（節が無ければ null）。節は見出し h2 から次の h2 まで、問いは dt か、dt が無ければ h3 */
-export function faqScreen(html) {
+function faqScreen(html) {
   const body = html.replace(/<script\b[\s\S]*?<\/script>/gi, '').replace(/<!--[\s\S]*?-->/g, '');
   const heads = [...body.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)];
   const i = heads.findIndex((m) => FAQ_HEADING.test(plain(m[1])));

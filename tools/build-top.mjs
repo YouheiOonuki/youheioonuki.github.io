@@ -131,7 +131,7 @@ function sectionBlock(s, base, allHref, more) {
 const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件`, restLink: (n) => `ほかに ${n} 件 →` };
 const EN = { icon: false, all: 'See all', other: (n) => `${n} more` };
 // 新しいツールの節は「親・家族」の前に置く（第 2 版 D323: 戻ってきた人が増えたものをすぐ見る）。中に new-tools の印を持つので apply が中身を入れ直せる
-export const NEW_TOOLS_BEFORE = 'oya';
+const NEW_TOOLS_BEFORE = 'oya';
 function newToolsSection(data, base = './') {
   return `    <section class="yt-sec" id="new" aria-labelledby="new-h">
       <div class="yt-head"><h2 id="new-h">新しいツール</h2><a href="${base}all/">すべての道具（一覧・印刷）</a></div>
@@ -198,7 +198,7 @@ const TEXT = {
 // トップの窓（7.96 D366・K192 段 3 の 1）: 日本語のトップだけ、問いの形の見出しと例の一行。/all/・/for/・英語は「道具を探す」のまま
 const ASK = { label: '何に困っていますか', hint: '例: 親の医療費が高い、年末調整', ph: 'ここに書く', list: '道具の候補' };
 // 検索欄。送信しない: <form> を使わず、Enter は top.js が候補を開くだけ。ask: トップの窓の形
-export function searchHtml(lang = 'ja', base = './', id = 'yt-q', ask = false) {
+function searchHtml(lang = 'ja', base = './', id = 'yt-q', ask = false) {
   const t = TEXT[lang];
   const w = ask && lang === 'ja' ? ASK : null;
   const label = w ? `<label for="${id}" class="yt-ask">${w.label}</label>

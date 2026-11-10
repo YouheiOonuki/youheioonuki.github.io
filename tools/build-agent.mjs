@@ -28,7 +28,7 @@ export const API = 'https://yorozu-api.oonuki-youhei.workers.dev';
 export const EXTRA_TOOLS = { 'kogaku/categories': 'list_high_cost_medical_categories' };
 
 // 公開データ（どれも CC0。ファイルの中に license・checked・generated・source がある。ACCEPTANCE 7.10.3 e）
-export const DATASETS = [
+const DATASETS = [
   { path: 'seido-keisan/data/kaitei.json', name: '制度の改定カレンダー', what: '税・社会保険・給付の施行日と出典' },
   { path: 'seido-keisan/data/kaitei.ics', name: '制度の改定カレンダー（iCalendar）', what: '同じ施行日の購読用カレンダー' },
   { path: 'gakko-keisan/data/naishin.json', name: '都道府県別の内申点の計算式', what: '公立高校入試の調査書点の式と値、計算例' },
@@ -179,7 +179,7 @@ export async function apiFixture(dir) {
   return { index, tools, maxBody, routes, metaKeys: Object.keys(meta).sort(), nowKeys: Object.keys(now).sort() };
 }
 export const FIXTURE = join(root, 'tests', 'fixtures', 'agent-api.json');
-export const apiDirDefault = () => process.env.AGENT_API_DIR || join(projectsOf(root), 'yorozu-api');
+const apiDirDefault = () => process.env.AGENT_API_DIR || join(projectsOf(root), 'yorozu-api');
 
 // OpenAPI の口の要約（口・方法・operationId・引数の名前と必須・MCP のツール）。check-site が本番の openapi.json と本番の Worker から作ったものを比べる
 export function openApiSignature(doc) {
