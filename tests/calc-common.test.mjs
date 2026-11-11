@@ -40,6 +40,26 @@ function load(master, seen = new Map(), patch = (t) => t) {
 const CHECKED_BEFORE = '2026-09-25';
 const withoutSourceOf = (V) => { const m = { ...V.mangaku }; for (const k of ['source', 'url', 'checked']) delete m[k]; return { ...V, CHECKED: CHECKED_BEFORE, mangaku: m }; };
 
+// 改定カレンダーに移した後で足したもの（行・ツール・出典の where の書き足し）は外して比べる。今ある行の値は 1 つも変えていない。
+// 足すたびにここへ書き、where は移す前の文で始まることを確かめてから移す前の文に戻す（2026-11-12、Q-196 ふるさと納税の上限）
+const KAITEI_ADDED = {
+  items: ['2027-01-furusato'],
+  tools: ['gensen'],
+  whereBefore: { chiho2027: '292条 同一生計配偶者・扶養親族の合計所得金額 58万円→62万円以下' },
+};
+const withoutAddedKaitei = (V) => ({
+  ...V,
+  SOURCES: V.SOURCES.map((s) => {
+    const w = KAITEI_ADDED.whereBefore[s.key];
+    if (w === undefined) return s;
+    assert.ok(s.where.startsWith(w), `${s.key} の where が移す前の文で始まらない`);
+    return { ...s, where: w };
+  }),
+  TOOLS: Object.fromEntries(Object.entries(V.TOOLS).filter(([k]) => !KAITEI_ADDED.tools.includes(k))),
+  ITEMS: V.ITEMS.filter((i) => !KAITEI_ADDED.items.includes(i.id))
+    .map((i) => ({ ...i, tools: i.tools.filter((t) => !KAITEI_ADDED.tools.includes(t.key)) })),
+});
+
 test('同値性: 正本の出力は、移す前の元のファイルの出力と同じ（451 件。住宅ローン・年金の繰上げ繰下げ・改定カレンダー・学年・厄年）', () => {
   const cases = require('./fixtures/calc-cases.cjs');
   const before = JSON.parse(readFileSync(join(ROOT, 'tests', 'fixtures', 'calc-before.json'), 'utf8'));
@@ -49,7 +69,8 @@ test('同値性: 正本の出力は、移す前の元のファイルの出力と
     // 移した後（2026-11-05、yorozu-plans 7.189 の続き 3）に満額の行へ足した出典の欄（source・url・checked）は値ではないので、外して比べる。値は 1 つも変えていない
     pension: Object.assign({}, load('pension.js'), { __values: withoutSourceOf(load('pension-values.js')) }),
     // 改定カレンダーの CHECKED は .ics の DTSTAMP などに出るので、読み込む前に移す前の値に置く（2026-11-12、Q-169）
-    kaitei: load('kaitei-data.js', new Map(), (t) => t.replace(/var CHECKED = '[^']*'/, `var CHECKED = '${CHECKED_BEFORE}'`)),
+    // 移した後に足した行などは withoutAddedKaitei で外す（Q-196）
+    kaitei: withoutAddedKaitei(load('kaitei-data.js', new Map(), (t) => t.replace(/var CHECKED = '[^']*'/, `var CHECKED = '${CHECKED_BEFORE}'`))),
     gakunen: Object.assign({}, G, { __K: G.VALUES }),
     yakudoshi: Object.assign({}, Y, { __K: Y.VALUES }),
   });
