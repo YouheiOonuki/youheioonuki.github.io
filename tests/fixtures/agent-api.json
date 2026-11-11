@@ -9,11 +9,11 @@
     "lib": {
       "seido-keisan": {
         "repo": "https://github.com/YouheiOonuki/seido-keisan",
-        "commit": "e3ddae4796d0422916bac0b89badbadb7c1de1a0"
+        "commit": "b033ed0353597086df190847ae67f43f0daded06"
       },
       "gengo": {
         "repo": "https://github.com/YouheiOonuki/gengo",
-        "commit": "497bb712e102d5070137b0753fc1070ec4328449"
+        "commit": "20b2bd2f324766a54d05106c1a80c4fc34b77026"
       },
       "gakko-keisan": {
         "repo": "https://github.com/YouheiOonuki/gakko-keisan",

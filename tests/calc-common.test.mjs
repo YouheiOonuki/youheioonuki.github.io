@@ -35,7 +35,10 @@ function load(master, seen = new Map()) {
   return module.exports;
 }
 
-const withoutSourceOf = (V) => { const m = { ...V.mangaku }; for (const k of ['source', 'url', 'checked']) delete m[k]; return { ...V, mangaku: m }; };
+// 出典の欄は値ではないので比べない: 満額の行の source・url・checked は外し、表全体の確認日 CHECKED は移す前の値（2026-09-25）に置いて比べる
+// （calc-before.json は移す前の出力の写しで、CHECKED を含む。CHECKED は出典を開き直すたびに変わる。2026-11-11、Q-162）
+const CHECKED_BEFORE = '2026-09-25';
+const withoutSourceOf = (V) => { const m = { ...V.mangaku }; for (const k of ['source', 'url', 'checked']) delete m[k]; return { ...V, CHECKED: CHECKED_BEFORE, mangaku: m }; };
 
 test('同値性: 正本の出力は、移す前の元のファイルの出力と同じ（451 件。住宅ローン・年金の繰上げ繰下げ・改定カレンダー・学年・厄年）', () => {
   const cases = require('./fixtures/calc-cases.cjs');
