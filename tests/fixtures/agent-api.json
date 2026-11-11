@@ -9,7 +9,7 @@
     "lib": {
       "seido-keisan": {
         "repo": "https://github.com/YouheiOonuki/seido-keisan",
-        "commit": "b033ed0353597086df190847ae67f43f0daded06"
+        "commit": "96b45e23686c7b50489a8857e97a9e7e0f0acce8"
       },
       "gengo": {
         "repo": "https://github.com/YouheiOonuki/gengo",
