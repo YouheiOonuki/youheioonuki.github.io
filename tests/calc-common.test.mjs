@@ -21,7 +21,7 @@ const require = createRequire(import.meta.url);
 const lf = (t) => t.replace(/\r\n/g, '\n');
 
 // 正本を読み込む。正本の中の require('./x.js') は配り先の名なので、同じ repo の CALC の行から正本に引き直す
-function load(master, seen = new Map()) {
+function load(master, seen = new Map(), patch = (t) => t) {
   if (seen.has(master)) return seen.get(master);
   const repo = CALC.find(c => c.master === master).repo;
   const module = { exports: {} };
@@ -30,7 +30,7 @@ function load(master, seen = new Map()) {
     assert.ok(row, `${master} が読む ${name} が CALC の表に無い`);
     return load(row.master, seen);
   };
-  vm.runInNewContext(readFileSync(join(CALC_DIR, master), 'utf8'), { module, require: req }, { filename: master });
+  vm.runInNewContext(patch(readFileSync(join(CALC_DIR, master), 'utf8')), { module, require: req }, { filename: master });
   seen.set(master, module.exports);
   return module.exports;
 }
@@ -48,7 +48,8 @@ test('同値性: 正本の出力は、移す前の元のファイルの出力と
     loan: load('loan.js'),
     // 移した後（2026-11-05、yorozu-plans 7.189 の続き 3）に満額の行へ足した出典の欄（source・url・checked）は値ではないので、外して比べる。値は 1 つも変えていない
     pension: Object.assign({}, load('pension.js'), { __values: withoutSourceOf(load('pension-values.js')) }),
-    kaitei: load('kaitei-data.js'),
+    // 改定カレンダーの CHECKED は .ics の DTSTAMP などに出るので、読み込む前に移す前の値に置く（2026-11-12、Q-169）
+    kaitei: load('kaitei-data.js', new Map(), (t) => t.replace(/var CHECKED = '[^']*'/, `var CHECKED = '${CHECKED_BEFORE}'`)),
     gakunen: Object.assign({}, G, { __K: G.VALUES }),
     yakudoshi: Object.assign({}, Y, { __K: Y.VALUES }),
   });
