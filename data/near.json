@@ -1,6 +1,23 @@
 {
  "about": "道具のページの近い道具（yorozu-ai scripts/near-tools.mjs が困りごと検索の索引から作る。手で直さない。D368）",
  "near": {
+  "/seido-keisan/lifeplan/": [
+   {
+    "url": "/seido-keisan/nenkin-kuriage/",
+    "title": "年金の繰上げ・繰下げの計算",
+    "note": "受け取る年齢で比べる"
+   },
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
+   }
+  ],
   "/seido-keisan/gensen/": [
    {
     "url": "/seido-keisan/nenmatsu/",
@@ -67,9 +84,9 @@
     "note": "金利の上昇と繰上返済"
    },
    {
-    "url": "/gengo/nenpyo/",
-    "title": "家族の年表",
-    "note": ""
+    "url": "/seido-keisan/lifeplan/",
+    "title": "人生の数字を1枚に（住宅ローンと年金の時間軸）",
+    "note": "ローンと年金を1本に"
    },
    {
     "url": "/otasuke/kenshin/",
@@ -183,14 +200,31 @@
     "note": ""
    },
    {
+    "url": "/seido-keisan/lifeplan/",
+    "title": "人生の数字を1枚に（住宅ローンと年金の時間軸）",
+    "note": "ローンと年金を1本に"
+   },
+   {
+    "url": "/gakko-keisan/atonannichi/",
+    "title": "○○まであと何日",
+    "note": ""
+   }
+  ],
+  "/seido-keisan/hikkoshi/": [
+   {
     "url": "/gakko-keisan/atonannichi/",
     "title": "○○まであと何日",
     "note": ""
    },
    {
-    "url": "/otasuke/kenshin/",
-    "title": "健診結果の経年グラフ",
-    "note": "健診の値をグラフに"
+    "url": "/seido-keisan/kaitei/",
+    "title": "制度の改定カレンダー",
+    "note": "税・社保の施行日の一覧"
+   },
+   {
+    "url": "/gengo/nenpyo/",
+    "title": "家族の年表",
+    "note": ""
    }
   ],
   "/hoshizora-sanpo/tsuki/": [
@@ -202,14 +236,14 @@
   ],
   "/otasuke/kenshin/": [
    {
+    "url": "/seido-keisan/lifeplan/",
+    "title": "人生の数字を1枚に（住宅ローンと年金の時間軸）",
+    "note": "ローンと年金を1本に"
+   },
+   {
     "url": "/lifeplan/",
     "title": "ライフプラン 簡易シミュレーション",
     "note": "家計の先行きを試算"
-   },
-   {
-    "url": "/gengo/nenpyo/",
-    "title": "家族の年表",
-    "note": ""
    },
    {
     "url": "/seido-keisan/nenkin-kuriage/",
@@ -471,14 +505,14 @@
   ],
   "/seido-keisan/nenkin-kuriage/": [
    {
+    "url": "/seido-keisan/lifeplan/",
+    "title": "人生の数字を1枚に（住宅ローンと年金の時間軸）",
+    "note": "ローンと年金を1本に"
+   },
+   {
     "url": "/seido-keisan/dattai-ichiji/",
     "title": "脱退一時金の計算",
     "note": "帰国後の年金の払い戻し"
-   },
-   {
-    "url": "/seido-keisan/nenmatsu/",
-    "title": "年末調整の計算（令和8年分）",
-    "note": "還付か追徴かの目安"
    },
    {
     "url": "/gengo/kaiki/",
@@ -510,9 +544,9 @@
     "note": "いくら戻るかの目安"
    },
    {
-    "url": "/seido-keisan/shobyo/",
-    "title": "傷病手当金の計算",
-    "note": "1日あたりと支給額"
+    "url": "/seido-keisan/iryohi/meisai/",
+    "title": "医療費控除の明細書を作る（令和8年分）",
+    "note": "領収書を明細書の形に"
    },
    {
     "url": "/seido-keisan/nenkin-kuriage/",
@@ -525,6 +559,11 @@
     "url": "/seido-keisan/",
     "title": "制度の計算機",
     "note": "税・保険・給付の計算"
+   },
+   {
+    "url": "/seido-keisan/hikkoshi/",
+    "title": "引越しの手続きの一覧（期限の日付つき）",
+    "note": "手続きの順と期限"
    }
   ],
   "/seido-keisan/invoice/": [
@@ -534,9 +573,9 @@
     "note": "還付か追徴かの目安"
    },
    {
-    "url": "/seido-keisan/juminzei/",
-    "title": "住民税の計算・非課税判定（令和9年度）",
-    "note": "税額と非課税の判定"
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
    }
   ],
   "/quiz-hiroba/shuto/": [
@@ -1161,14 +1200,31 @@
   ],
   "/seido-keisan/iryohi/": [
    {
+    "url": "/seido-keisan/iryohi/meisai/",
+    "title": "医療費控除の明細書を作る（令和8年分）",
+    "note": "領収書を明細書の形に"
+   },
+   {
     "url": "/seido-keisan/nenmatsu/hoken/",
     "title": "保険料控除の計算（令和8年分）",
     "note": "生命保険・地震保険の控除"
    },
    {
-    "url": "/seido-keisan/nenmatsu/",
-    "title": "年末調整の計算（令和8年分）",
-    "note": "還付か追徴かの目安"
+    "url": "/seido-keisan/kogaku-ryoyohi/",
+    "title": "高額療養費の計算",
+    "note": "医療費の月の上限"
+   }
+  ],
+  "/seido-keisan/iryohi/meisai/": [
+   {
+    "url": "/seido-keisan/iryohi/",
+    "title": "医療費控除の計算（令和8年分）",
+    "note": "いくら戻るかの目安"
+   },
+   {
+    "url": "/seido-keisan/nenmatsu/hoken/",
+    "title": "保険料控除の計算（令和8年分）",
+    "note": "生命保険・地震保険の控除"
    },
    {
     "url": "/seido-keisan/kogaku-ryoyohi/",
@@ -1412,6 +1468,11 @@
     "url": "/gakko-keisan/hensachi/",
     "title": "偏差値の計算（順位の目安・5教科）",
     "note": "点数から偏差値と順位"
+   },
+   {
+    "url": "/lifeplan/",
+    "title": "ライフプラン 簡易シミュレーション",
+    "note": "家計の先行きを試算"
    }
   ],
   "/seido-keisan/en/take-home-pay/": [
@@ -1506,7 +1567,7 @@
   "/gengo/en/school-grades/": [
    {
     "url": "/gengo/en/",
-    "title": "Japanese Era Converter",
+    "title": "Japanese Year Converter",
     "note": "Reiwa, Heisei and Shōwa years"
    },
    {
