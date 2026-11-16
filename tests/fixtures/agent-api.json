@@ -9,7 +9,7 @@
     "lib": {
       "seido-keisan": {
         "repo": "https://github.com/YouheiOonuki/seido-keisan",
-        "commit": "96b45e23686c7b50489a8857e97a9e7e0f0acce8"
+        "commit": "8d9e3fc51f718ddfc10825a2b6116d5e7d99e970"
       },
       "gengo": {
         "repo": "https://github.com/YouheiOonuki/gengo",
@@ -17,23 +17,23 @@
       },
       "gakko-keisan": {
         "repo": "https://github.com/YouheiOonuki/gakko-keisan",
-        "commit": "efa42ea93c6be63798c706ba13dfef768a78afd2"
+        "commit": "ae2bd20c71746038fb4e00733d0f0a12feb27dfe"
       },
       "loan-sim": {
         "repo": "https://github.com/YouheiOonuki/loan-sim",
-        "commit": "5d50149b602ccff8aa56964d54a48e39088bd479"
+        "commit": "dee22634d44874604013546a4f1d13571c296ada"
       },
       "denki-dai": {
         "repo": "https://github.com/YouheiOonuki/denki-dai",
-        "commit": "8c17a0a1574b5cab175fad3a61aea5be668f81c7"
+        "commit": "c58e2875a320025cd40d94119e6f905d46d81191"
       },
       "shaho-check": {
         "repo": "https://github.com/YouheiOonuki/shaho-check",
-        "commit": "26d1d4bcda6755c45c4f20b00796d94faa7367ef"
+        "commit": "d431ed65069b630b2ed68da88f12734a66bd8a5f"
       },
       "hoshizora-night": {
         "repo": "https://github.com/YouheiOonuki/hoshizora-night",
-        "commit": "2d62683c2f50b59fcb2886233522f2d7ef0b90dd"
+        "commit": "42a2ec2bfe1cda95785420bccafd8711340aa0ea"
       }
     },
     "calcs": [
