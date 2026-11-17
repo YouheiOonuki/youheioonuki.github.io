@@ -8,7 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { projectsOf } from '../tools/sync-common.mjs';
-import { API, SITE, EXTRA_TOOLS, FIXTURE, buildOpenApi, bodySchema, buildLlms, buildApiJson, buildApiHtml, pageInfo, apiFixture, readApiDir, openApiSignature } from '../tools/build-agent.mjs';
+import { API, SITE, EXTRA_TOOLS, FIXTURE, buildOpenApi, bodySchema, buildLlms, buildApiJson, buildApiHtml, pageInfo, apiFixture, fixtureOf, readApiDir, openApiSignature } from '../tools/build-agent.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const fx = JSON.parse(readFileSync(FIXTURE, 'utf8'));
@@ -158,6 +158,16 @@ test('/api/: index.json に OpenAPI と MCP の URL、index.html に MCP の接�
   assert.ok(sec.includes(`<code>${API}/mcp</code>`));
   assert.ok(sec.includes(`ツールは ${fx.tools.length} 本`));
   assert.ok(sec.includes('href="./openapi.json"'));
+});
+
+test('写しは計算の写し元の commit（index.lib）を持たない。yorozu-api が写し直すだけでは写しは変わらない（Q-291）', () => {
+  assert.ok(!('lib' in fx.index), '写しに index.lib がある。`--write-fixture` で書き直す');
+  const base = { index: { ...fx.index, lib: { gengo: { repo: 'r', commit: 'aaa' } } }, tools: fx.tools, maxBody: fx.maxBody, routes: fx.routes };
+  const moved = { ...base, index: { ...base.index, lib: { gengo: { repo: 'r', commit: 'bbb' } } } };
+  const meta = Object.fromEntries(fx.metaKeys.map((k) => [k, 1]));
+  const now = Object.fromEntries(fx.nowKeys.map((k) => [k, 1]));
+  assert.deepEqual(fixtureOf(moved, meta, now), fixtureOf(base, meta, now));
+  assert.deepEqual(fixtureOf(base, meta, now), fx);
 });
 
 /* ---------- 写し ＝ 今の yorozu-api（手元にあるときだけ。ネットには出ない） ---------- */
