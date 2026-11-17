@@ -171,12 +171,18 @@ export async function readApiDir(dir) {
   const call = (req) => handler.fetch(req);
   return { ...(await readApi(call)), maxBody, routes, call };
 }
-// テストの写し（tests/fixtures/agent-api.json）: 定義と、答えの欄の名前（meta・/v1/now）
+// テストの写し（tests/fixtures/agent-api.json）: 定義と、答えの欄の名前（meta・/v1/now）。
+// index.lib（計算の写し元の repo と commit）は持たない: yorozu-api の vendor/SOURCES.json の二重記入で、このリポジトリはどこにも使わない。
+// 持っていると、yorozu-api が計算を写し直すだけ（確認日の日付だけでも）で root の main のテストが落ちた（Q-291。11-16・11-17 の 2 回）
+export function fixtureOf({ index, tools, maxBody, routes }, meta, now) {
+  const { lib, ...rest } = index;
+  return { index: rest, tools, maxBody, routes, metaKeys: Object.keys(meta).sort(), nowKeys: Object.keys(now).sort() };
+}
 export async function apiFixture(dir) {
-  const { index, tools, maxBody, routes, call } = await readApiDir(dir);
-  const meta = (await (await call(new Request(API + '/v1/wareki?date=2019-04-30'))).json()).meta;
-  const now = await (await call(new Request(API + '/v1/now?date=2026-01-01'))).json();
-  return { index, tools, maxBody, routes, metaKeys: Object.keys(meta).sort(), nowKeys: Object.keys(now).sort() };
+  const api = await readApiDir(dir);
+  const meta = (await (await api.call(new Request(API + '/v1/wareki?date=2019-04-30'))).json()).meta;
+  const now = await (await api.call(new Request(API + '/v1/now?date=2026-01-01'))).json();
+  return fixtureOf(api, meta, now);
 }
 export const FIXTURE = join(root, 'tests', 'fixtures', 'agent-api.json');
 const apiDirDefault = () => process.env.AGENT_API_DIR || join(projectsOf(root), 'yorozu-api');

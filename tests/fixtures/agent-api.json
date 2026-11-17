@@ -6,36 +6,6 @@
     "mcp": "https://yorozu-api.oonuki-youhei.workers.dev/mcp",
     "disclaimer": "この結果は目安です。公開された一次資料（source）の式と値で計算していますが、個別の事情は反映できません。届出・申告・受給の判断は、原文と窓口（税務署・市区町村・年金事務所・保険者など）で確かめてください。入力は保存していません。",
     "disclaimer_en": "This result is an estimate calculated from the published primary sources listed in \"source\"; it cannot reflect individual circumstances. Check the original texts and the relevant office before filing, applying or deciding. Inputs are not stored.",
-    "lib": {
-      "seido-keisan": {
-        "repo": "https://github.com/YouheiOonuki/seido-keisan",
-        "commit": "8d9e3fc51f718ddfc10825a2b6116d5e7d99e970"
-      },
-      "gengo": {
-        "repo": "https://github.com/YouheiOonuki/gengo",
-        "commit": "20b2bd2f324766a54d05106c1a80c4fc34b77026"
-      },
-      "gakko-keisan": {
-        "repo": "https://github.com/YouheiOonuki/gakko-keisan",
-        "commit": "ae2bd20c71746038fb4e00733d0f0a12feb27dfe"
-      },
-      "loan-sim": {
-        "repo": "https://github.com/YouheiOonuki/loan-sim",
-        "commit": "dee22634d44874604013546a4f1d13571c296ada"
-      },
-      "denki-dai": {
-        "repo": "https://github.com/YouheiOonuki/denki-dai",
-        "commit": "c58e2875a320025cd40d94119e6f905d46d81191"
-      },
-      "shaho-check": {
-        "repo": "https://github.com/YouheiOonuki/shaho-check",
-        "commit": "d431ed65069b630b2ed68da88f12734a66bd8a5f"
-      },
-      "hoshizora-night": {
-        "repo": "https://github.com/YouheiOonuki/hoshizora-night",
-        "commit": "42a2ec2bfe1cda95785420bccafd8711340aa0ea"
-      }
-    },
     "calcs": [
       {
         "name": "nenmatsu",
