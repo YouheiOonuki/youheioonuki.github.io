@@ -12,6 +12,12 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+// トップに載せないツール（sitemap には載る）。5000兆円欲しい館は AdSense の結果が出るまでトップの外（ROADMAP 7.46.1）。結果が出たら消して pages.json に足す。
+// check-site.mjs と tests/reach.test.mjs がここを読む
+export const NOT_ON_TOP = ['hade'];
+// sitemap の URL のうち、data/pages.json に 1 行ずつ載せる道具のページ: /<ツール>/ と、その下 2 段までのフォルダ（/seido-keisan/iryohi/meisai/ など）。
+// 英語（/en/ を含む。英語は pages.json の en.pages）・印刷の着地（/print/）・共有の着地（/s/）・サイト本体の案内（/for/ /api/ /yt/ /all/ /updates/）・.html の頁（使い方・読み物）は数えない
+export const isToolPage = (p) => /^\/[^/]+\/(?:[^/]+\/){0,2}$/.test(p) && !/^\/(?:for|api|yt|en|all|updates)\//.test(p) && !/\/en\//.test(p) && !/\/(?:print|s)\/$/.test(p);
 const BEGIN = '<!-- new-tools:begin -->';
 const END = '<!-- new-tools:end -->';
 

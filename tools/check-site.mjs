@@ -178,14 +178,14 @@ for (const sm of sitemaps) {
 // 2. トップのツール一覧と robots.txt の sitemap が一致しているか
 const top = await get(BASE);
 // サイト本体の中のページ（英語のトップ ./en/・すべての道具 ./all/・LINE 版の案内 ./line/）はツールではない。一覧は top.js の ROOT_DIRS
-const { loadTop } = await import('./build-top.mjs');
+const { loadTop, NOT_ON_TOP: NOT_ON_TOP_LIST, isToolPage } = await import('./build-top.mjs');
 const ROOT_DIRS = new Set(loadTop().ROOT_DIRS);
 const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]).filter(t => !ROOT_DIRS.has(t)));
 // ツールの sitemap は /<ツール>/sitemap.xml。ドメイン直下の /sitemap.xml（トップ自身）は除く
 const toolsInRobots = new Set(sitemaps.map(s => path(s).split('/').filter(Boolean)).filter(seg => seg.length >= 2).map(seg => seg[0]));
 for (const t of toolsOnTop) if (!toolsInRobots.has(t)) fail('robots.txt', `トップに載っている ${t} の Sitemap が無い`);
-// トップに載せないツール（sitemap には載る）。5000兆円欲しい館は AdSense の結果が出るまでトップの外（ROADMAP 7.46.1）。結果が出たら消して pages.json に足す
-const NOT_ON_TOP = new Set(['hade']);
+// トップに載せないツール（sitemap には載る）。一覧と理由は tools/build-top.mjs の NOT_ON_TOP
+const NOT_ON_TOP = new Set(NOT_ON_TOP_LIST);
 for (const t of toolsOnTop) if (NOT_ON_TOP.has(t)) fail('index.html', `${t} は AdSense の結果が出るまでトップに載せない（NOT_ON_TOP）`);
 for (const t of toolsInRobots) if (!toolsOnTop.has(t) && !NOT_ON_TOP.has(t)) fail('index.html', `robots.txt にある ${t} がトップのツール一覧に無い`);
 
@@ -200,7 +200,7 @@ if (pages.has(BASE + 'en/')) {
 } else if (toolsWithEn.size) notes.push(`英語のトップ /en/ がルートの sitemap.xml に無いため、英語ページの一覧の確認を省略（英語ページのあるツール: ${[...toolsWithEn].join(', ')}）`);
 
 // 2c. 道具のページの一覧（data/pages.json）と、トップからの届きやすさ（yorozu-plans 企画書 59）
-//  - sitemap にある道具のページ（/<ツール>/ と /<ツール>/<子>/。英語・印刷の着地・共有の着地・用途別の入口は除く）が data/pages.json に全部ある
+//  - sitemap にある道具のページ（build-top.mjs の isToolPage）が data/pages.json に全部ある
 //    （無ければ新しいページ: 公開日を 1 行足して node tools/build-top.mjs）
 //  - トップの「新しいツール」の欄が data/pages.json の新しい順と同じ（tools/build-top.mjs の出力）
 //  - どのページもトップから 2 クリック以内（トップに直接か、トップにある入口のページから）。新しい順の上位はトップに直接
@@ -211,7 +211,7 @@ if (pages.has(BASE + 'en/')) {
   try { reg = JSON.parse(pj.body); } catch { fail('/data/pages.json', `読めない（${pj.status}）`); }
   if (reg) {
     const regPaths = new Set(reg.pages.map(p => p.path));
-    const usePage = p => /^\/[^/]+\/(?:[^/]+\/)?$/.test(p) && !/^\/(?:for|api|yt|en|all|updates)\//.test(p) && !/\/(?:en|print|s)\/$/.test(p) && !NOT_ON_TOP.has(p.split('/')[1]); // NOT_ON_TOP のツールは pages.json にも載せない
+    const usePage = p => isToolPage(p) && !NOT_ON_TOP.has(p.split('/')[1]); // NOT_ON_TOP のツールは pages.json にも載せない
     for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
     for (const p of regPaths) if (![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
     const want = newToolsHtml(reg);
