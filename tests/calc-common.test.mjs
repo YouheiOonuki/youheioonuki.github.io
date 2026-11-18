@@ -1,8 +1,8 @@
 // 道具をまたいで使う計算の正本（tools/common/calc/、yorozu-plans D484・企画書 102 の 4 章）の門:
 // (1) 同値性: 正本に同じ入力を通した出力が、移す前の元のファイルの出力（tests/fixtures/calc-before.json）と同じ（1 円も変わらない）
-// (2) 同一性: 各リポジトリの写しが「生成物の印の 1 行＋正本」と同じ（sync-common.mjs --check と同じ判定）
-// (3) sync-common.mjs --calc が写しを置き、--check が違いを落とす
-//     各リポジトリの作業コピーを読む。場所は環境変数 YOROZU_PROJECTS か、このリポジトリの git の本体（worktree でも同じ）の 1 つ上
+// (2) sync-common.mjs --calc が写しを置き、--check が違いを落とす（一時のフォルダで。隣の repo の作業コピーは読まない）
+//     写しが正本と同じことは、ここでは見ない。順は「正本が先」で、正本を変えた枝では隣の写しがまだ古いため（yorozu-plans Q-463）。
+//     見るのは 2 か所: 写しの枝のマージの時（yorozu-plans の merge.ps1 の calc-copies）と、配信の前（yorozu-plans の tools/deploy/check.ps1）
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
@@ -13,7 +13,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { CALC, calcCopy, calcHeader, master, projectsOf } from '../tools/sync-common.mjs';
+import { CALC, calcCopy, calcHeader, master } from '../tools/sync-common.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CALC_DIR = join(ROOT, 'tools', 'common', 'calc');
@@ -90,18 +90,6 @@ test('CALC の表: 正本はどれも表に行があり、表の正本はどれ�
   const keys = CALC.map(c => c.repo + '/' + c.to);
   assert.equal(new Set(keys).size, keys.length);
   for (const m of masters) assert.match(calcCopy(m), /^\/\/ 生成物。正本は youheioonuki\.github\.io の tools\/common\/calc\//);
-});
-
-test('同一性: 各リポジトリの写しは「生成物の印の 1 行＋正本」と同じ（違えば node tools/sync-common.mjs --calc <repo>）', () => {
-  const P = projectsOf(ROOT);
-  const problems = [];
-  for (const c of CALC) {
-    const f = join(P, c.repo, c.to);
-    if (!existsSync(join(P, c.repo, '.git'))) { problems.push(`${c.repo}: リポジトリが ${P} に無い`); continue; }
-    if (!existsSync(f)) problems.push(`${c.repo}/${c.to}: 写しが無い`);
-    else if (lf(readFileSync(f, 'utf8')) !== calcCopy(c.master)) problems.push(`${c.repo}/${c.to}: 正本 ${c.master} と違う`);
-  }
-  assert.deepEqual(problems, []);
 });
 
 test('sync-common.mjs --calc は CALC の表の場所に写しを置き、--check は手で直した写しを落とす', () => {
