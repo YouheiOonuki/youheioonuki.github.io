@@ -10,7 +10,7 @@
 // （後に書いた :root や規則が勝つので、入れるだけでは見た目は変わらない。トークンの重複は配ったあとに消してよい）
 // v1 から v2 に替えたとき、v1 の見た目（和紙の色・body・リンク）は各ファイルの end の直後に /* yorozu-v1-carry … */〜/* yorozu-v1-carry:end */ で持ち込んだ。
 // 段 3 の 2〜4 で各ページを v2 のトークンに載せ替えるときに消す。--status が残りの数を出す
-// ファイルまるごとが正本の写し（WHOLE の表: used.js〈道具が使われた回数。yorozu-plans D468〉・share-card.js〈結果カード。K124・Q-464〉）。
+// ファイルまるごとが正本の写し（WHOLE の表: used.js〈道具が使われた回数。yorozu-plans D468〉・share-card.js〈結果カード。K124・Q-464〉・reset-storage.js〈保存した内容をすべて消す。K123・Q-506〉）。
 // --check と --write はフォルダの下のその名のファイルも正本 tools/common/<名> と比べる・置き換える
 //   node tools/sync-common.mjs --calc <リポジトリのフォルダ ...>    … 道具をまたいで使う計算（正本 tools/common/calc/、yorozu-plans D484）の写しを CALC の表の場所に置く・同じにする
 // 計算の写しは「先頭の 1 行（生成物の印）＋ 正本のまま」。--check と --write はリポジトリのフォルダ（git の最上位）を渡すと、その repo の CALC の行も比べる・置き換える。
@@ -25,7 +25,7 @@ const BEGIN = '/* yorozu-common:begin';
 const END = '/* yorozu-common:end */';
 const CARRY = '/* yorozu-v1-carry';
 // ファイルまるごとが正本の写し: 配り先のファイル名（正本は tools/common/<名>）。写しは印の行を持たない
-export const WHOLE = ['used.js', 'share-card.js'];
+export const WHOLE = ['used.js', 'share-card.js', 'reset-storage.js'];
 const wholeMaster = (name) => readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'common', name), 'utf8');
 const lf = (t) => t.replace(/\r\n/g, '\n');   // まるごとの写しは改行の形（git の autocrlf）を問わず中身で比べる
 const CALC_DIR = join(dirname(fileURLToPath(import.meta.url)), 'common', 'calc');
