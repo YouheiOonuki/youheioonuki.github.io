@@ -10,7 +10,8 @@
 // （後に書いた :root や規則が勝つので、入れるだけでは見た目は変わらない。トークンの重複は配ったあとに消してよい）
 // v1 から v2 に替えたとき、v1 の見た目（和紙の色・body・リンク）は各ファイルの end の直後に /* yorozu-v1-carry … */〜/* yorozu-v1-carry:end */ で持ち込んだ。
 // 段 3 の 2〜4 で各ページを v2 のトークンに載せ替えるときに消す。--status が残りの数を出す
-// used.js（道具が使われた回数。yorozu-plans D468）はファイルまるごとが正本の写し。--check と --write はフォルダの下の used.js も正本と比べる・置き換える
+// ファイルまるごとが正本の写し（WHOLE の表: used.js〈道具が使われた回数。yorozu-plans D468〉・share-card.js〈結果カード。K124・Q-464〉）。
+// --check と --write はフォルダの下のその名のファイルも正本 tools/common/<名> と比べる・置き換える
 //   node tools/sync-common.mjs --calc <リポジトリのフォルダ ...>    … 道具をまたいで使う計算（正本 tools/common/calc/、yorozu-plans D484）の写しを CALC の表の場所に置く・同じにする
 // 計算の写しは「先頭の 1 行（生成物の印）＋ 正本のまま」。--check と --write はリポジトリのフォルダ（git の最上位）を渡すと、その repo の CALC の行も比べる・置き換える。
 // 写しは 1 字も変えないので、正本の中の require('./…') と window の名は配り先の名のまま（例: pension.js は './kuriage-values.js' を読む）
@@ -23,9 +24,10 @@ const V2 = join(dirname(fileURLToPath(import.meta.url)), 'common', 'v2');
 const BEGIN = '/* yorozu-common:begin';
 const END = '/* yorozu-common:end */';
 const CARRY = '/* yorozu-v1-carry';
-const USED = join(dirname(fileURLToPath(import.meta.url)), 'common', 'used.js');
-const usedMaster = () => readFileSync(USED, 'utf8');
-const lf = (t) => t.replace(/\r\n/g, '\n');   // used.js は改行の形（git の autocrlf）を問わず中身で比べる
+// ファイルまるごとが正本の写し: 配り先のファイル名（正本は tools/common/<名>）。写しは印の行を持たない
+export const WHOLE = ['used.js', 'share-card.js'];
+const wholeMaster = (name) => readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'common', name), 'utf8');
+const lf = (t) => t.replace(/\r\n/g, '\n');   // まるごとの写しは改行の形（git の autocrlf）を問わず中身で比べる
 const CALC_DIR = join(dirname(fileURLToPath(import.meta.url)), 'common', 'calc');
 // 計算の正本 → 配り先（repo の名とその中の場所）。repo の名は git の本体のフォルダの名（worktree でも同じ）
 export const CALC = [
@@ -58,7 +60,7 @@ export function projectsOf(dir) {
   return dirname(dirname(common));
 }
 const calcRows = (dir) => { const r = statSync(dir).isDirectory() ? repoOf(dir) : null; return r ? CALC.filter(c => c.repo === r) : []; };
-const isUsed = (f) => /(^|[\\/])used\.js$/.test(f);
+const wholeOf = (f) => WHOLE.find((n) => basename(f) === n) || null;
 // 正本: 土台 → 皮 の順に begin〜end で包む（値は v2 の 2 つのファイルだけが持つ）
 export const master = () => [
   '/* yorozu-common:begin v2 — サイト共通の土台と皮。正本は youheioonuki.github.io の tools/common/v2/base.css と skin.css（yorozu-plans DESIGN.md）。',
@@ -91,7 +93,7 @@ function walk(p, out = []) {
   for (const n of readdirSync(p)) {
     if (n === 'node_modules' || n.startsWith('.')) continue;
     const q = join(p, n); const st = statSync(q);
-    if (st.isDirectory()) walk(q, out); else if (/\.(css|html)$/.test(n) || n === 'used.js') out.push(q);
+    if (st.isDirectory()) walk(q, out); else if (/\.(css|html)$/.test(n) || WHOLE.includes(n)) out.push(q);
   }
   return out;
 }
@@ -116,7 +118,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.log(`済 ${n.済}・古い ${n.古い}・未 ${n.未}`);
     process.exit(n.古い || n.未 ? 1 : 0);
   }
-  const used = usedMaster();
+  const used = wholeMaster('used.js');
   // 計算の写し（D484）: --calc は置く、--write は置き換える、--check は比べる
   const calcFiles = (t) => {
     for (const c of calcRows(t)) {
@@ -149,12 +151,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       continue;
     }
     const all = walk(t);
-    const files = all.filter(f => !isUsed(f) && extract(readFileSync(f, 'utf8')));
+    const files = all.filter(f => !wholeOf(f) && extract(readFileSync(f, 'utf8')));
     if (!files.length) { console.log(`なし  ${t}（印のあるファイルが無い）`); bad++; continue; }
-    for (const f of all.filter(isUsed)) {
-      if (lf(readFileSync(f, 'utf8')) === lf(used)) { console.log(`同じ  ${f}（used.js）`); continue; }
-      if (mode === '--write') { writeFileSync(f, used); console.log(`更新  ${f}（used.js）`); }
-      else { console.log(`違う  ${f}（used.js が正本と違う）`); bad++; }
+    for (const f of all.filter(wholeOf)) {
+      const n = wholeOf(f), want = wholeMaster(n);
+      if (lf(readFileSync(f, 'utf8')) === lf(want)) { console.log(`同じ  ${f}（${n}）`); continue; }
+      if (mode === '--write') { writeFileSync(f, want); console.log(`更新  ${f}（${n}）`); }
+      else { console.log(`違う  ${f}（${n} が正本と違う）`); bad++; }
     }
     for (const f of files) {
       const s = readFileSync(f, 'utf8'); const x = extract(s);
