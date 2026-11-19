@@ -27,7 +27,7 @@ const CARRY = '/* yorozu-v1-carry';
 // ファイルまるごとが正本の写し: 配り先のファイル名（正本は tools/common/<名>）。写しは印の行を持たない
 export const WHOLE = ['used.js', 'share-card.js', 'reset-storage.js'];
 const wholeMaster = (name) => readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'common', name), 'utf8');
-const lf = (t) => t.replace(/\r\n/g, '\n');   // まるごとの写しは改行の形（git の autocrlf）を問わず中身で比べる
+const lf = (t) => t.replace(/\r\n/g, '\n');   // 枠・まるごとの写し・計算の写しは、改行の形（git の autocrlf）を問わず中身で比べる
 const CALC_DIR = join(dirname(fileURLToPath(import.meta.url)), 'common', 'calc');
 // 計算の正本 → 配り先（repo の名とその中の場所）。repo の名は git の本体のフォルダの名（worktree でも同じ）
 export const CALC = [
@@ -109,7 +109,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     for (const t of targets) {
       const files = walk(t).filter(f => /\.(css|html)$/.test(f));
       const marked = files.filter(f => extract(readFileSync(f, 'utf8')));
-      const stale = marked.filter(f => extract(readFileSync(f, 'utf8')).body !== block);
+      const stale = marked.filter(f => lf(extract(readFileSync(f, 'utf8')).body) !== lf(block));
       const st = !marked.length ? '未' : stale.length ? '古い' : '済';
       n[st]++;
       const carry = marked.filter(f => readFileSync(f, 'utf8').includes(CARRY)).length;
@@ -161,7 +161,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }
     for (const f of files) {
       const s = readFileSync(f, 'utf8'); const x = extract(s);
-      if (x.body === block) { console.log(`同じ  ${f}（${version(s)}）`); continue; }
+      if (lf(x.body) === lf(block)) { console.log(`同じ  ${f}（${version(s)}）`); continue; }   // 枠も改行の形（git の autocrlf）を問わず中身で比べる（Q-595）
       if (mode === '--write') { writeFileSync(f, replaceBlock(s, block)); console.log(`更新  ${f}（${version(s)} → ${version(block)}）`); }
       else { console.log(`違う  ${f}（${version(s)}。正本は ${version(block)}）`); bad++; }
     }
