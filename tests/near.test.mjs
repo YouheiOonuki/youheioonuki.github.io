@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { nearBlock, injectNear, NEAR_STYLE, GUIDE_ANCHORS } from '../tools/build-near.mjs';
+import { nearBlock, injectNear, injectScreen, NEAR_STYLE, GUIDE_ANCHORS } from '../tools/build-near.mjs';
 
 const items = [{ url: '/seido-keisan/iryohi/', title: '医療費控除の計算', note: 'いくら戻るかの目安' }, { url: '/otasuke/kenshin/', title: '健診グラフ<b>', note: '' }];
 
@@ -37,6 +37,27 @@ test('使い方（guide.html）には本文の末尾（</main> の直前、フ�
   const withAbout = '<head></head><main><!-- about-tool: x --><p>y</p></main>';
   assert.ok(injectNear(withAbout, items, 'ja', GUIDE_ANCHORS).indexOf('data-near-block') > withAbout.indexOf('<p>y</p>'));
   assert.equal(injectNear(guide, [], 'ja', GUIDE_ANCHORS), guide, '0 個なら出さない');
+});
+
+test('全画面の印（<body data-fullscreen>）の在る画面は、入った物と出た物がバイトで同じ（Q-564）', () => {
+  for (const html of [
+    '<html><head></head><body class="app" data-fullscreen><main><canvas id="sky"></canvas></main></body></html>',
+    '<html><head></head><body data-fullscreen>\n<main><p>x</p>\n<!-- about-tool: x -->\n</main></body></html>',
+  ]) assert.equal(injectScreen(html, items), html);
+  // 本文の中の字や別の要素の属性は印ではない
+  const notBody = '<html><head></head><body class="app"><main><div data-fullscreen>x</div></main></body></html>';
+  assert.ok(injectScreen(notBody, items).includes('data-near-block'));
+});
+
+test('印の無い画面は今までどおり差し込む（injectNear と同じ物を返す）', () => {
+  for (const html of [
+    '<head></head><main><p>計算</p>\n<!-- about-tool: 説明 -->\n<details class="about-tool card" id="about-tool">…</details></main>',
+    '<html><head></head><body class="app"><main><p>x</p></main></body></html>',
+  ]) {
+    const out = injectScreen(html, items);
+    assert.equal(out, injectNear(html, items));
+    assert.ok(out.includes('data-near-block'));
+  }
 });
 
 test('near.js は data-near-link を押したときだけ、行き先の道と near_click を送る（入力は読まない）', () => {
