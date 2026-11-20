@@ -3,9 +3,12 @@
 // 本番の公開ページを巡回して、全ツールに共通の決まりが守られているかを機械的に確かめる。
 // 使い方: node tools/check-site.mjs            … https://yorozu-craft.com/ を確認
 //         node tools/check-site.mjs <ベースURL> … 別の場所（ローカル配信など）を確認
+//         node tools/check-site.mjs --no-worker … 計算の API の本番の Worker を呼ばずに回す（測りで回すとき。D477 の節を飛ばす）
 // 失敗が1件でもあれば終了コード 1。外部パッケージは使わない（Node 20 以上の fetch だけ）。
 
-const BASE = (process.argv[2] || 'https://yorozu-craft.com/').replace(/\/?$/, '/');
+const ARGS = process.argv.slice(2);
+const NO_WORKER = ARGS.includes('--no-worker');
+const BASE = (ARGS.find(a => !a.startsWith('--')) || 'https://yorozu-craft.com/').replace(/\/?$/, '/');
 const ORIGIN = new URL(BASE).origin;
 const ADSENSE_ID = 'ca-pub-5375267956079717';
 const BEACON_TOKEN = 'b79bf821e1fd4b6683866d493b1de426';
@@ -686,7 +689,9 @@ const NOT_TOOL_SCREENS = {
 }
 // 計算の API（yorozu-plans 7.186 D477）: 本番の /api/openapi.json（build が手元の yorozu-api の原文から作る）の口 ＝ 本番の Worker の定義から作った口か。
 // build は Worker を呼ばないので、上げ忘れ・写し忘れ（Worker と原文のずれ）はここで見る。警告だけ（失敗にしない）
-{
+// --no-worker のときは節ごと飛ばし、飛ばしたことをメモに 1 行出す（警告にも失敗にも数えない）
+if (NO_WORKER) notes.push('計算の API: Worker と突き合わせていない（--no-worker）');
+else {
   const { readApi, buildOpenApi, openApiSignature } = await import('./build-agent.mjs');
   const r = await get(BASE + 'api/openapi.json');
   if (r.status !== 200) warn('/api/openapi.json', `${r.status}（OpenAPI が無い。D477）`);
