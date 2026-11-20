@@ -71,7 +71,10 @@ test('同値性: 正本の出力は、移す前の元のファイルの出力と
     // 改定カレンダーの CHECKED は .ics の DTSTAMP などに出るので、読み込む前に移す前の値に置く（2026-11-12、Q-169）
     // 移した後に足した行などは withoutAddedKaitei で外す（Q-196）
     kaitei: withoutAddedKaitei(load('kaitei-data.js', new Map(), (t) => t.replace(/var CHECKED = '[^']*'/, `var CHECKED = '${CHECKED_BEFORE}'`))),
-    gakunen: Object.assign({}, G, { __K: G.VALUES }),
+    // 修業年限の checked も出典の欄で値ではないので、移す前の値に置いて比べる（条文を開き直すたびに変わる。2026-11-21、Q-623）
+    gakunen: Object.assign({}, G, { __K: { ...G.VALUES,
+      schoolLength: { ...G.VALUES.schoolLength, checked: CHECKED_BEFORE },
+      gradSchoolLength: { ...G.VALUES.gradSchoolLength, checked: CHECKED_BEFORE } } }),
     yakudoshi: Object.assign({}, Y, { __K: Y.VALUES }),
   });
   const got = {};
