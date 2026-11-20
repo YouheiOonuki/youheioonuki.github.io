@@ -73,15 +73,37 @@ function faqLd(html) {
 // 「よくある質問」の節の見出し（日本語・英語）
 const FAQ_HEADING = /よくある質問|よくあるご質問|^FAQ|Frequently asked|Common questions/i;
 
-/** 画面の「よくある質問」の節の問い（節が無ければ null）。節は見出し h2 から次の h2 まで、問いは dt か、dt が無ければ h3 */
+/** 見出しが <summary> の節: summary の後から、その <details> の対の閉じまで（入れ子の details を数える）。無ければ null */
+function summarySection(body) {
+  for (const m of body.matchAll(/<summary\b[^>]*>([\s\S]*?)<\/summary>/gi)) {
+    if (!FAQ_HEADING.test(plain(m[1]))) continue;
+    const from = m.index + m[0].length;
+    const tag = /<details\b[^>]*>|<\/details\s*>/gi;
+    tag.lastIndex = from;
+    let depth = 1, t;
+    while ((t = tag.exec(body))) {
+      depth += t[0][1] === '/' ? -1 : 1;
+      if (depth === 0) return body.slice(from, t.index);
+    }
+    return body.slice(from);
+  }
+  return null;
+}
+
+/** 画面の「よくある質問」の節の問い（節が無ければ null）。節は見出し h2 から次の h2 まで（合う h2 が無ければ、見出しが summary の details の中）、問いは dt か、dt が無ければ h3 */
 function faqScreen(html) {
   const body = html.replace(/<script\b[\s\S]*?<\/script>/gi, '').replace(/<!--[\s\S]*?-->/g, '');
   const heads = [...body.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)];
   const i = heads.findIndex((m) => FAQ_HEADING.test(plain(m[1])));
-  if (i < 0) return null;
-  const from = heads[i].index + heads[i][0].length;
-  const to = i + 1 < heads.length ? heads[i + 1].index : body.length;
-  const sec = body.slice(from, to);
+  let sec;
+  if (i >= 0) {
+    const from = heads[i].index + heads[i][0].length;
+    const to = i + 1 < heads.length ? heads[i + 1].index : body.length;
+    sec = body.slice(from, to);
+  } else {
+    sec = summarySection(body);
+    if (sec === null) return null;
+  }
   const dts = [...sec.matchAll(/<dt\b[^>]*>([\s\S]*?)<\/dt>/gi)].map((m) => plain(m[1]));
   if (dts.length) return dts;
   return [...sec.matchAll(/<h3\b[^>]*>([\s\S]*?)<\/h3>/gi)].map((m) => plain(m[1]));
