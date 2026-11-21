@@ -458,14 +458,8 @@ export function buildApiHtml(ds, api) {
   <link rel="manifest" href="/manifest.webmanifest">
   <style>body{margin:0}</style>
   <link rel="stylesheet" href="../legal.css">
-  <!-- このページだけの追加（calendar-help.html と同じ型）: ダークモードと表 -->
+  <!-- このページだけの追加: 表。色は明暗とも legal.css の共通の皮（tools/common/v2/skin.css）から -->
   <style>
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1c1814; --bg-2: #25201a; --card: #2b251e; --text: #ece4d6;
-        --muted: #b9ab96; --accent: #e0a066; --border: #4a3f33; --shadow: rgba(0, 0, 0, 0.4);
-      }
-    }
     .wrap { overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
     th, td { border-bottom: 1px solid var(--border); padding: 0.45rem 0.4rem; text-align: left; vertical-align: top; }
