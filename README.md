@@ -221,7 +221,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 - 写した範囲は `/* yorozu-common:begin v2 … */` 〜 `/* yorozu-common:end */`。**この間は手で直さない**。ツール固有の色・大きさは `end` の後に書く（後に書いた `:root` や規則が勝つ）
 - 正本を直したら: `node tools/sync-common.mjs --write <ファイルかリポジトリのフォルダ ...>` で置き換え、`--check` で同じかを確かめる
 - まだ入っていないツールに入れる: `node tools/sync-common.mjs --insert <リポジトリのフォルダ ...>`（`style.css` の最初のコメントの後に入れる。ツールの規則が後に来るので、入れるだけでは見た目はほぼ変わらない）。入れたら、そのツールの `measure_fold.cjs`・テスト・画面の撮影で前後を比べ、PWA は `sw.js` のキャッシュ名を上げる（stale-while-revalidate のツールは古い CSS が 1 回出るため）。`style.css` の無いリポジトリ（ADSearch の紹介ページなど）は手で入れる
-- 全体の状況: `node tools/sync-common.mjs --status <各リポジトリのフォルダ ...>`（済・古い・未を 1 行ずつ）
+- 全体の状況: `node tools/sync-common.mjs --status <各リポジトリのフォルダ ...>`（済・古い・未・枠の外を 1 行ずつ。枠の外は本館の配信に乗らない repo で、どれが乗るかは `robots.txt` の Sitemap 行で決まる）
 - 使い方（ボタン・エラー・字の大きさ）は yorozu-template の README「画面の部品の使い方」
 
 ### 道具をまたいで使う計算（`tools/common/calc/`、yorozu-plans D484）
