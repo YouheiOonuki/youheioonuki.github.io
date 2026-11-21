@@ -83,7 +83,7 @@ a { overflow-wrap: anywhere; }
 }
 .site-bar a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; color: var(--accent); text-decoration: none; }
 /* 日英の切り替え（右端） */
-.site-bar a.lang-switch { font-weight: 400; font-size: var(--fs-s); text-decoration: underline; }
+.site-bar .lang-switch a { font-weight: 400; font-size: var(--fs-s); text-decoration: underline; }
 /* 本文の行は 40 字（DESIGN 5 章。main と article の余白と枠の分を足す） */
 main { max-width: calc(40em + 2 * var(--sp-4) + 2 * var(--sp-4) + 2px); margin: 0 auto; padding: var(--sp-6) var(--sp-4) var(--sp-8); }
 /* 本文の面: 影は付けない（impeccable quieter） */
