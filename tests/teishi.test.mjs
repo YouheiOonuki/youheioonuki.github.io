@@ -143,8 +143,7 @@ test('相手ごとの「次に止まる」: from より後に始まる最初の�
     ['b', '2026-11-29T01:00+09:00'],
     ['c', '2026-11-30T21:00+09:00'],
     ['d', '2026-11-29T00:00+09:00'],
-    ['n', null],
-  ]);
+  ]);   // n は止まる物を持つが、規則も臨時の区間も無いので並べない（D642）
   assert.equal(T.nextStops(LEDGER, '2026-11-29T00:00', { now: NOW }).find(x => x.id === 'd').next.start, '2026-12-06T00:00+09:00');
 });
 
@@ -197,7 +196,18 @@ test('台帳の名前（D630）: region null・stops 空・link の checked null
     ['ATM', '2026-11-29T21:00+09:00', '2026-11-29T23:00+09:00', 'mixed', false],   // limited の規則と limited でない臨時が接する → 止まる側
   ]);
   assert.deepEqual(T.summary([G, E, Z], NOW), { link: { count: 1, names: ['架空のリンク'] }, stale: { count: 0, names: [] }, none: { count: 1, names: ['架空の止まる物なし'] } });
-  assert.deepEqual(T.nextStops([G, E, H], NOW).map(x => x.id), ['h']);   // 止まる物の無い相手は「次に止まる」を並べない
+  assert.deepEqual(T.nextStops([G, E, H], NOW).map(x => x.id), ['h']);   // 規則も臨時の区間も無い相手は「次に止まる」を並べない
+});
+
+test('「次に止まる」の並べ方（D642）: 規則か臨時の区間を持つ相手は stops が 0 でも並べ、規則も区間も無い相手は止まる物があっても並べない', () => {
+  const R0 = row({ id: 'r0', name: '架空の規則だけ', stops: [], rules: [{ service: 'ATM', every: 'day', from: '01:00', to: '02:00' }] });
+  const X0 = row({ id: 'x0', name: '架空の臨時だけ', stops: [], extra: [{ service: 'ATM', start: '2026-11-24T01:00', end: '2026-11-24T02:00' }] });
+  const S0 = row({ id: 's0', name: '架空の止まる物だけ', stops: ['ATM'] });
+  assert.deepEqual(T.nextStops([R0, S0, X0, A], NOW), [
+    { id: 'r0', name: '架空の規則だけ', next: null },   // 止まる物の名前は空（stops に無い物の区間は作らない）
+    { id: 'x0', name: '架空の臨時だけ', next: null },
+    { id: 'a', name: '架空銀行あ', next: T.upcoming([A], NOW).find(s => T.toMs(s.start) > T.toMs(NOW)) },
+  ]);
 });
 
 test('口に要求を出さない: 正本に fetch・XMLHttpRequest・sendBeacon・WebSocket・require・import が無い', () => {
