@@ -1,5 +1,5 @@
 // ===========================
-// トマルカ（K241・K248）の配る形の芯（純粋関数）: 相手の一覧と区間の並びから、now.json（いま）と ahead.json（これから 60 日）を作る
+// この場所（K241・K248）の配る形の芯（純粋関数）: 相手の一覧と区間の並びから、now.json（いま）と ahead.json（これから 60 日）を作る
 // yorozu-plans QUEUE Q-771・Q-798・D603・D606・D608・D609・D618・D619・D622・D623・D630・D631。企画書 113 の 14.2・14.3・15.2
 // 外の口に要求を出さない。ほかのファイルは teishi.js（Q-770）だけを使う（ブラウザでは先に teishi.js を読む）
 // ブラウザでは window.InfraBoard、Node（テスト）では module.exports で使う
@@ -113,9 +113,9 @@
       color: a.color, limited: a.limited, start: T.toJst(a.s), end: a.e === null ? null : T.toJst(a.e), url: a.url,
       checked: p.mode === 'ledger' ? p.checked : null, lastRead: a.lastRead };
   }
+  // 相手の 1 行。checked は渡された値をそのまま（'auto' は最後に読めた時刻、'ledger'・'link' は最後に確かめた日。欄が無ければ null。D660）
   var partnerOut = function (p) {
-    var c = p.mode === 'auto' || p.checked === undefined ? null : p.checked;
-    return { id: p.id, name: p.name, column: p.column, url: pageOf(p), checked: c };
+    return { id: p.id, name: p.name, column: p.column, url: pageOf(p), checked: p.checked === undefined ? null : p.checked };
   };
   var linkOut = function (list) {
     var ps = list.map(function (p) { return { id: p.id, name: p.name, column: p.column, url: pageOf(p) }; });
@@ -176,7 +176,7 @@
     };
   }
 
-  // (c) ahead.json と日時 t から、t に止まっている物・「発表なし N 件」・いちばん古い確かめた日。端末の中だけで絞る
+  // (c) ahead.json と日時 t から、t に止まっている物・「発表なし N 件」・いちばん古い時点（相手の checked）。端末の中だけで絞る
   //     返すのは予定（planned）だけ。いま続いている障害を t に持ち込まない。終わりが null の予定は、t が始まり以後なら返す
   //     opts.column: 'shigoto' か 'kurashi' で片方の列だけ。t が ahead の範囲の外なら inRange: false で、何も言わない
   function at(ahead, t, opts) {

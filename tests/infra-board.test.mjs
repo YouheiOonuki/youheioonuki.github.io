@@ -104,7 +104,7 @@ test('t が先の日時: その時点に止まっている物、「ほか N 件�
   assert.deepEqual(nine.stopped, []);
   assert.equal(nine.none.count, 5);
   assert.deepEqual(B.at(ahead, '2026-11-24T23:45', { column: 'shigoto' }).none.partners.map(p => p.id), ['sa', 'sb', 'sc']);
-  assert.equal(B.at(ahead, '2026-11-24T23:45', { column: 'shigoto' }).oldestChecked, null);
+  assert.equal(B.at(ahead, '2026-11-24T23:45', { column: 'shigoto' }).oldestChecked, READ);   // auto の時点もそのまま（D660）
   const far = B.at(ahead, '2027-02-01T00:00');
   assert.deepEqual(far, { inRange: false, stopped: [], none: null, oldestChecked: '2026-11-19' });
   assert.equal(B.at(ahead, '2026-11-24T02:59').inRange, false);       // ahead の始まりより前
@@ -116,6 +116,10 @@ test('確かめられていない相手は「予定なし」に入らない（au
   const none = { ...SA, checked: undefined };                          // 一度も読めていない
   const { now, ahead } = build([], { partners: [none, edge, late, SM, KN, KO, KL] });
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['sa', 'sc', 'ko']);
+  // 「時点」は渡された checked をそのまま出す。auto も null にしない。渡さなければ null（D660・Q-841）
+  assert.deepEqual(now.unconfirmed.map(p => [p.id, p.checked]), [['sa', null], ['sc', '2026-11-23T17:44:59Z'], ['ko', '2026-11-15']]);
+  assert.deepEqual(now.none.partners.map(p => [p.id, p.checked]), [['sb', '2026-11-23T17:45:00Z'], ['kn', '2026-11-19']]);
+  assert.deepEqual(ahead.partners.map(p => [p.id, p.checked]), [['sb', '2026-11-23T17:45:00Z'], ['kn', '2026-11-19']]);
   assert.deepEqual(now.none.partners.map(p => p.id), ['sb', 'kn']);
   assert.deepEqual(now.link.partners.map(p => p.id), ['sm', 'kl']);
   assert.equal(now.link.count, 2);
