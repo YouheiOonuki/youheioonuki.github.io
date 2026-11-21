@@ -3,7 +3,7 @@
 //   node tools/sync-common.mjs --check <ファイルかフォルダ ...>   … 配った版と同じかを確かめる（違えば終了コード 1）
 //   node tools/sync-common.mjs --write <ファイルかフォルダ ...>   … begin〜end を正本で置き換える
 //   node tools/sync-common.mjs --insert <リポジトリのフォルダ ...> … 印の無い style.css の先頭（最初のコメントの後）に入れる
-//   node tools/sync-common.mjs --status <リポジトリのフォルダ ...>  … リポジトリごとに 済（同じ版）／古い／未（印なし）を 1 行ずつ（配る前後の確認）
+//   node tools/sync-common.mjs --status <リポジトリのフォルダ ...>  … リポジトリごとに 済（同じ版）／古い／未（印なし）／枠の外（本館の配信に乗らない repo）を 1 行ずつ（配る前後の確認）
 //   node tools/sync-common.mjs --used <リポジトリのフォルダ ...>    … リポジトリの最上位に used.js（正本 tools/common/used.js の写し）を置く・同じにする
 // フォルダを渡すと、その下の .css と .html（node_modules・.git を除く）のうち印のあるものを対象にする。
 // 印: /* yorozu-common:begin … */ 〜 /* yorozu-common:end */。この間は手で直さない。ツール固有の上書きは end の後に書く
@@ -44,9 +44,13 @@ export const CALC = [
   { master: 'teishi.js', repo: 'infra-dashboard', to: 'site/calc/teishi.js' },
   { master: 'infra-board.js', repo: 'infra-dashboard', to: 'site/calc/infra-board.js' },
 ];
-// 共通の枠（begin〜end）を持たない repo: 計算の写しだけを受ける。--check と --write は枠の無いことで落とさない
-// （infra-dashboard は本館の外の独立したサブドメインで、本館の枠・皮を入れない。yorozu-plans D603・Q-799）
-export const FRAMELESS = ['infra-dashboard'];
+// 本館（yorozu-craft.com）の配信に乗る repo: root の robots.txt の Sitemap 行（yorozu-plans の tools/deploy/sync.ps1 が配信の一覧として読む表。
+// 名前の表をここに 2 つ目として持たない。yorozu-plans D672・Q-870）。root 自身（/sitemap.xml）も乗る
+const ROOT_DIR = dirname(dirname(fileURLToPath(import.meta.url)));
+export const HONKAN = [...readFileSync(join(ROOT_DIR, 'robots.txt'), 'utf8').matchAll(/^Sitemap:\s*https:\/\/yorozu-craft\.com\/([^/]+)\/sitemap\.xml/gm)].map((m) => m[1]);
+// 計算の写しだけを受け、共通の枠（begin〜end）を持たない repo = CALC の repo のうち本館に乗らないもの。--check と --write は枠の無いことで落とさない
+// （infra-dashboard は本館の外の独立したサブドメインで、本館の枠・皮を入れない。yorozu-plans D603・Q-799）。check-site・yorozu-plans の check.ps1 もこれを読む
+export const FRAMELESS = [...new Set(CALC.map((c) => c.repo))].filter((r) => !HONKAN.includes(r));
 export const calcHeader = (master) => `// 生成物。正本は youheioonuki.github.io の tools/common/calc/${master}（tools/sync-common.mjs --calc で配る。ここは手で直さない。yorozu-plans D484）\n`;
 export const calcCopy = (master) => calcHeader(master) + lf(readFileSync(join(CALC_DIR, master), 'utf8'));
 // フォルダが git の最上位なら repo の名（worktree は本体の名）。そうでなければ null
@@ -112,17 +116,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
   const block = master(); let bad = 0;
   if (mode === '--status') {
-    const n = { 済: 0, 古い: 0, 未: 0 };
+    const n = { 済: 0, 古い: 0, 枠の外: 0, 未: 0 };
+    const rootName = repoOf(ROOT_DIR);
+    // 本館に乗らない repo（git の最上位で、root でも HONKAN でもない）は、入れる枠が無い。git の最上位でないフォルダは今までどおり未
+    const outside = (t) => { const r = statSync(t).isDirectory() ? repoOf(t) : null; return r !== null && r !== rootName && !HONKAN.includes(r); };
     for (const t of targets) {
       const files = walk(t).filter(f => /\.(css|html)$/.test(f));
       const marked = files.filter(f => extract(readFileSync(f, 'utf8')));
       const stale = marked.filter(f => lf(extract(readFileSync(f, 'utf8')).body) !== lf(block));
-      const st = !marked.length ? '未' : stale.length ? '古い' : '済';
+      const st = !marked.length ? (outside(t) ? '枠の外' : '未') : stale.length ? '古い' : '済';
       n[st]++;
       const carry = marked.filter(f => readFileSync(f, 'utf8').includes(CARRY)).length;
-      console.log(`${st}  ${t}${marked.length ? `（印のあるファイル ${marked.length}、古い ${stale.length}${carry ? `、v1 の持ち込み ${carry}` : ''}）` : existsSync(join(t, 'style.css')) ? '（style.css あり。--insert で入れる）' : '（style.css なし。手で入れる）'}`);
+      console.log(`${st}  ${t}${marked.length ? `（印のあるファイル ${marked.length}、古い ${stale.length}${carry ? `、v1 の持ち込み ${carry}` : ''}）` : st === '枠の外' ? '（本館の配信に乗らない）' : existsSync(join(t, 'style.css')) ? '（style.css あり。--insert で入れる）' : '（style.css なし。手で入れる）'}`);
     }
-    console.log(`済 ${n.済}・古い ${n.古い}・未 ${n.未}`);
+    console.log(`済 ${n.済}・古い ${n.古い}・枠の外 ${n.枠の外}・未 ${n.未}`);
     process.exit(n.古い || n.未 ? 1 : 0);
   }
   const used = wholeMaster('used.js');
