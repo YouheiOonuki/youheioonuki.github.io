@@ -205,6 +205,12 @@ test('英語トップ: 同じ骨組み（検索・いまの時期・誰向け 3�
   for (const p of data.en.pages) assert.ok(h.includes(`href="..${p.path}"`), p.path);
 });
 
+test('英語トップ: 候補の一覧の aria-label は英文（「の候補」を混ぜない。Q-822）', () => {
+  const h = read('en/index.html');
+  assert.ok(!h.includes('の候補'));
+  assert.match(h, /role="listbox" aria-label="Tool suggestions"/);
+});
+
 test('アイコン: 節・「ほかに」・/all/ の全行と「いまの時期」に、その道具の favicon.svg（alt 空・寸法あり・1 画面目より下は lazy）', () => {
   const fs = (u) => u.replace(/^(\.\.\/|\.\/)/, '').split('/')[0];
   const check = (html, sel, lazy, f) => {
