@@ -5,12 +5,12 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { esc } from './common/share-stub.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const LIMIT = 12;   // intro 型の 600 字（QUEUE Q-018）に地の文と合わせて収まる行数
 const BEGIN = '<!-- updates:begin -->';
 const END = '<!-- updates:end -->';
-const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 export const MAX_WHAT = 40;   // 1 行の内容の字数（超えたら …。くわしくはリンク先の更新履歴）
 const cut = (t) => ([...t].length > MAX_WHAT ? [...t].slice(0, MAX_WHAT).join('') + '…' : t);
 const text = (html) => html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
