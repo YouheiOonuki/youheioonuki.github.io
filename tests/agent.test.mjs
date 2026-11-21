@@ -160,6 +160,15 @@ test('/api/: index.json に OpenAPI と MCP の URL、index.html に MCP の接�
   assert.ok(sec.includes('href="./openapi.json"'));
 });
 
+test('/api/: 色は明暗とも共通の皮（legal.css）に任せ、ページの中に色の値を持たない（Q-814）', () => {
+  const h = buildApiHtml(ds, api);
+  assert.ok(h.includes('<link rel="stylesheet" href="../legal.css">'));
+  assert.ok(!/<html[^>]*data-skin=/.test(h), '土台のページにすると皮が外れる');
+  const styles = [...h.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
+  assert.ok(!styles.includes('prefers-color-scheme'), '暗い側の値は skin.css が持つ');
+  assert.deepEqual(styles.match(/#[0-9a-fA-F]{3,8}\b/g), null, '色の値を道具の中に写さない');
+});
+
 test('写しは計算の写し元の commit（index.lib）を持たない。yorozu-api が写し直すだけでは写しは変わらない（Q-291）', () => {
   assert.ok(!('lib' in fx.index), '写しに index.lib がある。`--write-fixture` で書き直す');
   const base = { index: { ...fx.index, lib: { gengo: { repo: 'r', commit: 'aaa' } } }, tools: fx.tools, maxBody: fx.maxBody, routes: fx.routes };
