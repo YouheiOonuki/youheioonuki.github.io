@@ -176,7 +176,7 @@
     };
   }
 
-  // (c) ahead.json と日時 t から、t に止まっている物・「発表なし N 件」・いちばん古い時点（相手の checked）。端末の中だけで絞る
+  // (c) ahead.json と日時 t から、t に止まっている物と「発表なし N 件」。端末の中だけで絞る
   //     返すのは予定（planned）だけ。いま続いている障害を t に持ち込まない。終わりが null の予定は、t が始まり以後なら返す
   //     opts.column: 'shigoto' か 'kurashi' で片方の列だけ。t が ahead の範囲の外なら inRange: false で、何も言わない
   function at(ahead, t, opts) {
@@ -184,17 +184,15 @@
     var col = opts && opts.column;
     var inCol = function (x) { return !col || x.column === col; };
     var partners = (ahead.partners || []).filter(inCol);
-    var dates = partners.map(function (p) { return p.checked; }).filter(Boolean).sort();
-    var oldest = dates.length ? dates[0] : null;
     var f = toMs(ahead.from), u = toMs(ahead.until);
-    if (f === null || u === null || tm < f || tm >= u) return { inRange: false, stopped: [], none: null, oldestChecked: oldest };
+    if (f === null || u === null || tm < f || tm >= u) return { inRange: false, stopped: [], none: null };
     var stopped = (ahead.items || []).filter(function (x) {
       return inCol(x) && x.kind === 'planned' && toMs(x.start) <= tm && (x.end === null || tm < toMs(x.end));
     });
     var busy = {};
     stopped.forEach(function (x) { busy[x.id] = true; });
     var list = partners.filter(function (p) { return !busy[p.id]; });
-    return { inRange: true, stopped: stopped, none: { count: list.length, partners: list }, oldestChecked: oldest };
+    return { inRange: true, stopped: stopped, none: { count: list.length, partners: list } };
   }
 
   // 配る JSON の文字列（末尾に改行 1 つ）

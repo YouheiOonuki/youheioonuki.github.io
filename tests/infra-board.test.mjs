@@ -89,7 +89,7 @@ test('日またぎ: 23:30〜翌 5:00 の区間は、3 時のいまに出て、ah
   assert.deepEqual(a2.items.map(x => x.start), [...a2.items.map(x => x.start)].sort());
 });
 
-test('t が先の日時: その時点に止まっている物、「ほか N 件は予定なし」の N、いちばん古い確かめた日。範囲の外は何も言わない', () => {
+test('t が先の日時: その時点に止まっている物、「ほか N 件は予定なし」の N。範囲の外は何も言わない', () => {
   const { ahead } = build(SPANS_BUSY);
   const night = B.at(ahead, '2026-11-24T23:45');
   assert.equal(night.inRange, true);
@@ -97,16 +97,14 @@ test('t が先の日時: その時点に止まっている物、「ほか N 件�
   // 確かめた相手は sa・sb・sc（5 分前に読めた）と ka・kn。23:45 に止まっているのは ka だけ → N は 4
   assert.equal(night.none.count, 4);
   assert.deepEqual(night.none.partners.map(p => p.id), ['sa', 'sb', 'sc', 'kn']);
-  assert.equal(night.oldestChecked, '2026-11-19');
   const sat = B.at(ahead, '2026-11-28T00:00');                         // 土曜 0 時: ネットバンキング（臨時）と ATM（毎日）
   assert.deepEqual(sat.stopped.map(x => x.service), ['ATM', 'ネットバンキング']);
   const nine = B.at(ahead, '2026-11-25T09:00');                         // あすの朝 9 時: 何も止まっていない
   assert.deepEqual(nine.stopped, []);
   assert.equal(nine.none.count, 5);
   assert.deepEqual(B.at(ahead, '2026-11-24T23:45', { column: 'shigoto' }).none.partners.map(p => p.id), ['sa', 'sb', 'sc']);
-  assert.equal(B.at(ahead, '2026-11-24T23:45', { column: 'shigoto' }).oldestChecked, READ);   // auto の時点もそのまま（D660）
   const far = B.at(ahead, '2027-02-01T00:00');
-  assert.deepEqual(far, { inRange: false, stopped: [], none: null, oldestChecked: '2026-11-19' });
+  assert.deepEqual(far, { inRange: false, stopped: [], none: null });
   assert.equal(B.at(ahead, '2026-11-24T02:59').inRange, false);       // ahead の始まりより前
 });
 
