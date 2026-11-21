@@ -19,6 +19,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { projectsOf } from './sync-common.mjs';
+import { esc } from './common/share-stub.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const SITE = 'https://yorozu-craft.com/';
@@ -65,7 +66,6 @@ async function getData(path) {
 }
 
 const decode = (s) => String(s).replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim();
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const md = (s) => String(s).replace(/([\[\]])/g, '\\$1');
 
 // iCalendar の X-WR-CALDESC から license・確認日・生成日・出典の URL を読む（RFC 5545 の折り返しを戻す）
