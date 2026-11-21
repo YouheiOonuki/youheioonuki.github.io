@@ -39,9 +39,10 @@ export const CALC = [
   { master: 'gakunen.js', repo: 'gengo', to: 'gakunen-calc.js' },
   { master: 'gakunen.js', repo: 'seido-keisan', to: 'lib/gakunen.js' },
   { master: 'yakudoshi.js', repo: 'gengo', to: 'yakudoshi-calc.js' },
-  // インフラダッシュボード（本館の外の repo。yorozu-plans Q-799）: infra-board.js は require('./teishi.js') なので同じフォルダに置く
-  { master: 'teishi.js', repo: 'infra-dashboard', to: 'src/calc/teishi.js' },
-  { master: 'infra-board.js', repo: 'infra-dashboard', to: 'src/calc/infra-board.js' },
+  // インフラダッシュボード（本館の外の repo。yorozu-plans Q-799）: infra-board.js は require('./teishi.js') なので同じフォルダに置く。
+  // 置き場は site/calc/ の 1 か所で、画面（calc/）も Worker（../site/calc/）も同じ 1 本を読む（yorozu-plans D661・Q-842）
+  { master: 'teishi.js', repo: 'infra-dashboard', to: 'site/calc/teishi.js' },
+  { master: 'infra-board.js', repo: 'infra-dashboard', to: 'site/calc/infra-board.js' },
 ];
 // 共通の枠（begin〜end）を持たない repo: 計算の写しだけを受ける。--check と --write は枠の無いことで落とさない
 // （infra-dashboard は本館の外の独立したサブドメインで、本館の枠・皮を入れない。yorozu-plans D603・Q-799）
