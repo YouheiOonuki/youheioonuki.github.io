@@ -1,5 +1,5 @@
 // ===========================
-// インフラダッシュボード（K241・K248）の配る形の芯（純粋関数）: 相手の一覧と区間の並びから、now.json（いま）と ahead.json（これから 60 日）を作る
+// トマルカ（K241・K248）の配る形の芯（純粋関数）: 相手の一覧と区間の並びから、now.json（いま）と ahead.json（これから 60 日）を作る
 // yorozu-plans QUEUE Q-771・Q-798・D603・D606・D608・D609・D618・D619・D622・D623・D630・D631。企画書 113 の 14.2・14.3・15.2
 // 外の口に要求を出さない。ほかのファイルは teishi.js（Q-770）だけを使う（ブラウザでは先に teishi.js を読む）
 // ブラウザでは window.InfraBoard、Node（テスト）では module.exports で使う
@@ -22,11 +22,11 @@
 // 重さ（いまの並びの順）: critical > major > minor > unknown > none。impact の無い区間（止まる予定）は unknown
 // 色の段（color）: planned は blue、critical・major は red、minor・unknown・none は amber（D623）
 // 相手の分け方（D622）:
-//   確かめられていない（unconfirmed）… 'auto' で線を超えた（読めた時刻が無い・読めない時も）、'ledger' で確かめた日が 8 日より古い
-//     'auto' の確かめられていない相手の区間は出し、その相手を最後に読めた時刻を lastRead に付ける（取り込みは前の値を消さない）
+//   更新できていない（unconfirmed）… 'auto' で線を超えた（読めた時刻が無い・読めない時も）、'ledger' で確かめた日が 8 日より古い
+//     'auto' の更新できていない相手の区間は出し、その相手を最後に読めた時刻を lastRead に付ける（取り込みは前の値を消さない）
 //     'ledger' の古い相手の区間は出さない（D602）
 //   リンクだけ（link）… 区間を出さず、名前と公式のページだけを別の並びに。数も別
-//   「予定なし」（none）… 'auto'・'ledger' で確かめられていて、いまにも 60 日の中にも区間が無い相手
+//   「発表なし」（none）… 'auto'・'ledger' で更新できていて、いまにも 60 日の中にも区間が無い相手
 // 出す字は、相手の名前・止まる物の名前・公式の題（しごとの列だけ）・URL・日時だけ。日時は 'YYYY-MM-DDTHH:MM+09:00'
 // 同じ入力から同じ JSON（バイトまで）: 欄の順は固定、並びは 時刻 → 一覧の行の順 → 止まる物 → id の順
 // ===========================
@@ -38,7 +38,7 @@
   var MIN = 60000;
   var DAY = 86400000;
   var DAYS = T.DAYS;            // ahead の長さ（日）。teishi.js と同じ
-  var STALE_MIN = 15;           // 取り込みがこれより古ければ「いま」を出さない（D609）。'auto' の相手で source.every が無い時の線
+  var STALE_MIN = 15;           // 更新がこれより古ければ「いま」を出さない（D609）。'auto' の相手で source.every が無い時の線
   var EVERY_TIMES = 3;          // 'auto' の線は読む間隔のこの回数ぶん（D619）
   var IMPACT_RANK = { critical: 4, major: 3, minor: 2, unknown: 1, none: 0 };
   var TEISHI_KINDS = ['rule', 'extra', 'mixed'];
@@ -61,7 +61,7 @@
     return typeof e === 'number' && isFinite(e) && e > 0 ? e * EVERY_TIMES : STALE_MIN;
   }
 
-  // 相手を、確かめられた（ok）・確かめられていない（un）・リンクだけ（link）に分ける。並びは一覧の行の順
+  // 相手を、更新できている（ok）・更新できていない（un）・リンクだけ（link）に分ける。並びは一覧の行の順
   function partition(partners, nowMs) {
     var sp = T.split(partners, nowMs);
     var link = {}, stale = {};
@@ -128,7 +128,7 @@
     var parts = partition(partners, nowMs);
     var byId = {};
     parts.ok.forEach(function (row) { byId[row.id] = { row: row, ri: partners.indexOf(row), lastRead: null }; });
-    // 確かめられていない 'auto' の相手の区間は、最後に読めた時刻を付けて出す（ledger の古い相手と link は出さない）
+    // 更新できていない 'auto' の相手の区間は、最後に読めた時刻を付けて出す（ledger の古い相手と link は出さない）
     parts.un.forEach(function (row) {
       if (row.mode !== 'auto') return;
       var r = toMs(row.checked);
@@ -144,16 +144,16 @@
 
   var isOldMs = function (ingMs, tMs) { return ingMs === null || tMs - ingMs > STALE_MIN * MIN; };
 
-  // 取り込みの時刻 ingestedAt が、日時 t から見て 15 分より古いか（画面が「いま」を出さない線。D609）
+  // 更新の時刻 ingestedAt が、日時 t から見て 15 分より古いか（画面が「いま」を出さない線。D609）
   function isOld(ingestedAt, t) { return isOldMs(toMs(ingestedAt), mustMs(t, '日時')); }
 
-  // 確かめた相手のうち、区間を 1 つも持たない相手（予定なし）
+  // 更新できている相手のうち、区間を 1 つも持たない相手（発表なし）
   function noneOf(ok, busy) {
     var list = ok.filter(function (p) { return !busy[p.id]; }).map(partnerOut);
     return { count: list.length, partners: list };
   }
 
-  // (a) now.json と (b) ahead.json を作る。now は「いま」、ingestedAt は取り込みの時刻
+  // (a) now.json と (b) ahead.json を作る。now は「いま」、ingestedAt は更新の時刻
   function build(partnerList, spans, now, ingestedAt) {
     var n = mustMs(now, 'いま'), ing = toMs(ingestedAt), until = n + DAYS * DAY;
     var pre = prepare(partnerList, spans, n);
@@ -176,7 +176,7 @@
     };
   }
 
-  // (c) ahead.json と日時 t から、t に止まっている物・「ほか N 件は予定なし」・いちばん古い確かめた日。端末の中だけで絞る
+  // (c) ahead.json と日時 t から、t に止まっている物・「発表なし N 件」・いちばん古い確かめた日。端末の中だけで絞る
   //     返すのは予定（planned）だけ。いま続いている障害を t に持ち込まない。終わりが null の予定は、t が始まり以後なら返す
   //     opts.column: 'shigoto' か 'kurashi' で片方の列だけ。t が ahead の範囲の外なら inRange: false で、何も言わない
   function at(ahead, t, opts) {
