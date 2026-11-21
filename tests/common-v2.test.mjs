@@ -87,3 +87,17 @@ test('運営者情報・プライバシーポリシーの言語の切り替え�
   assert.ok(legal.includes('.site-bar .lang-switch a {'), 'legal.css: 切り替えの見た目の規則');
   assert.ok(!legal.includes('a.lang-switch'), 'legal.css: 古い選び方');
 });
+
+test('ボタンの線と角丸は .btn を持たない .btn-primary にも当たり、塗り・字・余白の規則は button と .btn だけ（yorozu-plans D695・Q-905: henkan・pac-tester の <a class="btn-primary"> が角丸 0 だった）', () => {
+  const rule = (sel) => { const i = skin.indexOf(sel + ' {'); assert.ok(i >= 0, sel); return skin.slice(i, skin.indexOf('}', i)); };
+  const line = rule(':where(html:not([data-skin="base"])) :where(button, .btn, .btn-primary)');
+  for (const d of ['border: 1px solid var(--input-border)', 'border-radius: var(--radius)']) assert.ok(line.includes(d), `線と角丸: ${d}`);
+  assert.doesNotMatch(line, /background|padding|font-weight|cursor/, '線と角丸の規則に、ほかの性質を混ぜない');
+  const face = rule(':where(html:not([data-skin="base"])) :where(button, .btn)');
+  for (const d of ['background: var(--card)', 'padding: 0 var(--sp-4)', 'font-weight: 700']) assert.ok(face.includes(d), `面: ${d}`);
+});
+
+test('ページの脚（body の直下の footer）の字は --fs-s（14px。yorozu-plans D695・Q-905）', () => {
+  assert.match(skin, /:where\(html:not\(\[data-skin="base"\]\)\) :where\(body > footer\) \{ font-size: var\(--fs-s\); \}/);
+  assert.match(base, /--fs-s: 0\.875rem;/);
+});
