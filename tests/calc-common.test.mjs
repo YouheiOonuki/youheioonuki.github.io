@@ -123,7 +123,7 @@ test('sync-common.mjs --calc は CALC の表の場所に写しを置き、--chec
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
 
-test('infra-dashboard（枠を持たない repo。Q-799）: --calc が src/calc/ に 2 本を置き、写し同士で読み合え、--check は枠が無くても写しだけを見る', () => {
+test('infra-dashboard（枠を持たない repo。Q-799）: --calc が site/calc/ に 2 本を置き（画面と Worker が読む 1 か所。D661）、写し同士で読み合え、--check は枠が無くても写しだけを見る', () => {
   const tmp = mkdtempSync(join(tmpdir(), 'calc-'));
   try {
     const repo = join(tmp, 'infra-dashboard');
@@ -133,13 +133,14 @@ test('infra-dashboard（枠を持たない repo。Q-799）: --calc が src/calc/
     const run = (...a) => spawnSync(process.execPath, [tool, ...a], { encoding: 'utf8' });
     let r = run('--calc', repo);
     assert.equal(r.status, 0, r.stdout + r.stderr);
-    for (const m of ['teishi.js', 'infra-board.js']) assert.equal(readFileSync(join(repo, 'src', 'calc', m), 'utf8'), calcCopy(m));
+    for (const m of ['teishi.js', 'infra-board.js']) assert.equal(readFileSync(join(repo, 'site', 'calc', m), 'utf8'), calcCopy(m));
+    assert.equal(existsSync(join(repo, 'src')), false);   // 写しを 2 か所に置かない（D661）
     // 写しの infra-board.js は、隣の写しの teishi.js を require('./teishi.js') で読む
-    const B = createRequire(join(repo, 'src', 'calc', 'x.js'))('./infra-board.js');
+    const B = createRequire(join(repo, 'site', 'calc', 'x.js'))('./infra-board.js');
     assert.equal(typeof B.build, 'function');
     r = run('--check', repo);
     assert.equal(r.status, 0, r.stdout + r.stderr);
-    writeFileSync(join(repo, 'src', 'calc', 'teishi.js'), calcCopy('teishi.js') + '// 手で直した\n');
+    writeFileSync(join(repo, 'site', 'calc', 'teishi.js'), calcCopy('teishi.js') + '// 手で直した\n');
     r = run('--check', repo);
     assert.equal(r.status, 1);
     assert.match(r.stdout, /違う .*teishi\.js（計算の写しが正本 tools\/common\/calc\/teishi\.js と違う/);
