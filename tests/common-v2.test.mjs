@@ -68,3 +68,11 @@ test('本体のトップ・すべての道具・英語トップの theme-color �
     assert.deepEqual(metas.map((m) => [m[1].toLowerCase(), m[2] || '']), [[light, ' media="(prefers-color-scheme: light)"'], [dark, ' media="(prefers-color-scheme: dark)"']], f);
   }
 });
+
+test('1 つだけで置くリンクとチップは、高さも幅も押せる大きさ（--tap）を持つ（yorozu-plans QUEUE Q-554: 「使い方」42・About 39.4 px が幅 44 px に届かなかった）', () => {
+  const rule = (css, sel) => { const i = css.indexOf(sel + ' {'); assert.ok(i >= 0, sel); return css.slice(i, css.indexOf('}', i)); };
+  const link = rule(base, ':where(nav li > a, p.card > a:only-child, .lang-switch a, .crumb a)');
+  for (const d of ['min-height: var(--tap)', 'min-width: var(--tap)', 'justify-content: center']) assert.ok(link.includes(d), `リンク: ${d}`);
+  const chip = rule(skin, ':where(html:not([data-skin="base"])) :where(.chip)');
+  for (const d of ['min-height: var(--tap)', 'min-width: var(--tap)']) assert.ok(chip.includes(d), `チップ: ${d}`);
+});
