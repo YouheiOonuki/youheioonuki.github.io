@@ -17,6 +17,11 @@
 .yt-search [role="option"] span { font-size: var(--fs-s); color: var(--muted); }
 .yt-search [role="option"][aria-selected="true"] { background: var(--bg-2); text-decoration: underline; text-underline-offset: 3px; }
 @media (hover: hover) { .yt-search [role="option"]:hover { background: var(--bg-2); } }
+/* 箱と押す所（「探す」・Search）を 1 行に。日本語と英語のトップだけが持つ。押した時だけ送る（D604・D625）。ボタンは副ボタンの形（入口の画面に主ボタンは置かない、DESIGN 4 章） */
+.yt-search .yt-row { display: flex; gap: var(--sp-2); }
+.yt-search .yt-row input { flex: 1; min-width: 0; }
+.yt-search .yt-go { flex: none; min-height: 52px; min-width: var(--tap); padding: 0 var(--sp-3); font: inherit; font-size: 1.125rem; font-weight: 700; color: var(--text); background: var(--card); border: 1px solid var(--input-border); border-radius: var(--radius); cursor: pointer; }
+.yt-search .yt-send { color: var(--muted); font-size: var(--fs-s); margin: var(--sp-1) 0 0; }
 /* 選んだ行の印: 背景の差（1.2:1）だけでは見えないので、左に本文の色の線（検収役の accessibility-review、K166。強調色は「いまの時期」だけの決まり） */
 .yt-search [role="option"][aria-selected="true"] { border-left: 4px solid var(--text); padding-left: calc(var(--sp-3) - 4px); }
 .yt-empty { margin-top: var(--sp-1); }

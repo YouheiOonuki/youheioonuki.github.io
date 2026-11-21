@@ -159,7 +159,8 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     <div class="yt-first">
       <!-- top:search:begin --><div class="yt-search" role="search" data-base="../">
         <label for="yt-q">Find a tool</label>
-        <input id="yt-q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="yt-q-list" autocomplete="off" enterkeyhint="go" placeholder="Tax, furigana, bingo…">
+        <div class="yt-row"><input id="yt-q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="yt-q-list" aria-describedby="yt-q-send" autocomplete="off" enterkeyhint="go" placeholder="Tax, furigana, bingo…"><button type="button" class="yt-go">Search</button></div>
+        <p class="yt-send" id="yt-q-send">The text you enter is sent to a server to find tools. It is not stored.</p>
         <ul id="yt-q-list" role="listbox" aria-label="Find a toolの候補" hidden></ul>
         <p class="yt-status visually-hidden" aria-live="polite"></p>
         <p class="yt-empty" hidden>No match.<a href="../all/">See the Japanese tool list</a></p>
