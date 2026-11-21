@@ -248,7 +248,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 
 ```bash
 node tools/check-site.mjs                           # 本番 https://yorozu-craft.com/ を確認
-node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確認（404 の確認は GitHub Pages でしか正しく出ない）
+node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確認（404 の確認は GitHub Pages でしか正しく出ない。計算の API の本番の Worker との突き合わせは飛ばす。yorozu-plans D708）
 ```
 
 確かめること:
