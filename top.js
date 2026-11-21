@@ -1,6 +1,6 @@
 /* トップ・すべての道具・用途別の入口・英語トップで共有する部品（yorozu-plans ROADMAP 7.23「トップの構成」）
    - 検索: ページに埋めた一覧（<script type="application/json" id="yt-index">、tools/build-top.mjs が data/pages.json から作る）を
-     端末の中だけで絞る。入力はどこにも送らない（<form> を使わない。通信は一切しない）
+     端末の中だけで絞る。このファイルは通信を一切しない（<form> を使わない）。トップでは、Enter か「探す」を押した時だけ top-find.js が文を送る（D604）
    - いまの時期: 埋めた季節表（id="yt-season"、data/season.json から）から、今日の月の 3 枚を出す（日付の窓の間はその行と入れ替える。作った日と表が違えば入れ替える）
    tools/build-top.mjs とテスト（tests/top.test.mjs）も同じ関数を使う（node では vm で読む） */
 (function (root) {
@@ -139,26 +139,34 @@
       if (empty) empty.hidden = !(norm(q) && !has);
       active = -1; input.removeAttribute('aria-activedescendant');
       if (status) status.textContent = !norm(q) ? '' : has ? (en ? results.length + (results.length === 1 ? ' result' : ' results') : results.length + ' 件') : (en ? 'No results' : '見つかりません');
-      // 打った語と、語で当たった件数・名前とぴったり一致したかを箱に知らせる（K166・D365）。文を送るかどうかと通信は top-find.js（トップだけが読む）が持つ。
-      // show は近い道具を語の結果の下に足す（同じ道具は重ねない）。入力が変わっていたら何もしない
-      if (norm(q) && typeof CustomEvent === 'function') {
-        var nq = norm(q);
-        // 名前（題名か短い名前）が打った語と同じか、その語で始まる（点 0・1）なら名前で探している（送らない）
-        var exact = results.some(function (r) { var sc = scoreTerm(r, nq); return sc !== null && sc <= 1; });
-        box.dispatchEvent(new CustomEvent('yt-query', { detail: { q: q, hits: results.length, exact: exact, show: function (found) {
-          if (input.value !== q || !found.length) return;
-          var seen = {};
-          results.forEach(function (r) { seen[r.p] = 1; });
-          var add = found.filter(function (r) { return !seen[r.p]; }).map(function (r) { r.near = true; return r; });
-          if (!add.length) return;
-          results = results.concat(add);
-          paint();
-          if (active >= 0) setActive(active);   // 描き直しても、↓↑ で選んでいた行の印を残す（近い道具は後ろに足すだけなので番号はずれない）
-          lb.hidden = false; input.setAttribute('aria-expanded', 'true');
-          if (empty) empty.hidden = true;
-          if (status) status.textContent = en ? results.length + ' results, including closest tools' : results.length + ' 件（近い道具を含む）';
-        } } }));
-      }
+    }
+    // 押した（Enter か「探す」）ことを、打った語と語で当たった件数・名前とぴったり一致したかと一緒に箱に知らせる（K166・D365・D604）。
+    // 文を送るかどうかと通信は top-find.js（トップだけが読む）が持ち、送った時は preventDefault する。送らなければ、最初の候補を開く。
+    // show は近い道具を語の結果の下に足す（同じ道具は重ねない）。入力が変わっていたら何もしない
+    function go() {
+      var q = input.value, nq = norm(q);
+      if (!nq) return;
+      // 名前（題名か短い名前）が打った語と同じか、その語で始まる（点 0・1）なら名前で探している（送らない）
+      var exact = results.some(function (r) { var sc = scoreTerm(r, nq); return sc !== null && sc <= 1; });
+      var ev = typeof CustomEvent === 'function' ? new CustomEvent('yt-go', { cancelable: true, detail: { q: q, hits: results.length, exact: exact, show: function (found) {
+        if (input.value !== q || !found.length) return;
+        var seen = {};
+        results.forEach(function (r) { seen[r.p] = 1; });
+        var add = found.filter(function (r) { return !seen[r.p]; }).map(function (r) { r.near = true; return r; });
+        if (!add.length) return;
+        results = results.concat(add);
+        paint();
+        if (active >= 0) setActive(active);   // 描き直しても、↓↑ で選んでいた行の印を残す（近い道具は後ろに足すだけなので番号はずれない）
+        lb.hidden = false; input.setAttribute('aria-expanded', 'true');
+        if (empty) empty.hidden = true;
+        if (status) status.textContent = en ? results.length + ' results, including closest tools' : results.length + ' 件（近い道具を含む）';
+      } } }) : null;
+      if (ev && !box.dispatchEvent(ev)) return;   // top-find.js が送った
+      openAt(0);
+    }
+    function openAt(i) {
+      var opt = lb.querySelectorAll('[role="option"]')[i];
+      if (opt) { picked(opt); location.href = opt.href; }
     }
     // 選んだ行を箱に知らせる（近い道具から進んだ数を top-find.js が数える。D367 find_click）
     function picked(a) {
@@ -166,14 +174,15 @@
     }
     lb.addEventListener('click', function (e) { picked(e.target.closest('[role="option"]')); });
     input.addEventListener('input', render);
+    var goBtn = box.querySelector('.yt-go');
+    if (goBtn) goBtn.addEventListener('click', function () { input.focus(); go(); });
     input.addEventListener('keydown', function (e) {
       var n = results.length;
       if (e.key === 'ArrowDown') { e.preventDefault(); if (lb.hidden && n) { lb.hidden = false; input.setAttribute('aria-expanded', 'true'); } if (n) setActive((active + 1) % n); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); if (n) setActive(active <= 0 ? n - 1 : active - 1); }
       else if (e.key === 'Enter') {
-        e.preventDefault(); // 送信しない（form は無いが、念のため）
-        var i = active >= 0 ? active : (n ? 0 : -1);
-        if (i >= 0) { var opt = lb.querySelectorAll('[role="option"]')[i]; picked(opt); location.href = opt.href; }
+        e.preventDefault(); // form は無いが、念のため
+        if (active >= 0) openAt(active); else go();   // ↓↑ で選んだ行はそこを開く。選んでいなければ押した合図（送るか、最初の候補を開く）
       } else if (e.key === 'Escape') { if (!lb.hidden) close(); else { input.value = ''; render(); } }
     });
     input.addEventListener('blur', function () { setTimeout(function () { if (!box.contains(document.activeElement)) close(); }, 150); });

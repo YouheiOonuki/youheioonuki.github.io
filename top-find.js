@@ -1,13 +1,13 @@
 /* トップの困りごと検索（yorozu-plans ROADMAP 7.81.1 K166、7.96 D365・D367）。
-   検索の箱に 3〜200 字が入り、名前とぴったり一致する語でないとき（top.js が箱に yt-query を出す）、入力が 0.8 秒止まってから
-   yorozu-ai の /v1/find に文を送り、近い道具を 3 つ、語で当たった道具の下に足す（2 段）。文は yorozu-ai が保存しない（プライバシーポリシー 7.11）。
+   検索の箱に 3〜200 字が入り、名前とぴったり一致する語でないとき、Enter か「探す」を押した時だけ（top.js が箱に yt-go を出す。D604: 押す前に自動で送らない）
+   yorozu-ai の /v1/find に文を送り、近い道具を 3 つ、語で当たった道具の下に足す（2 段）。同じ文を続けて押したら送らず、top.js が最初の候補を開く。
+   文は yorozu-ai が保存しない（プライバシーポリシー 7.11）。
    数えるのは件数だけ（D367。/v1/ping に page と event だけ。文は送らない）: find_used（送った）・find_zero（語の一致が 0 件だった）・find_click（近い道具から進んだ）。
    top.js は通信をしない決まりなので、通信はこのファイルに分けてトップだけが読む（top-next.js と同じ形）。3 秒で返らなければ何も足さない */
 (function (root) {
   'use strict';
   var API = 'https://yorozu-ai.oonuki-youhei.workers.dev/v1/find';
   var PING = 'https://yorozu-ai.oonuki-youhei.workers.dev/v1/ping';
-  var WAIT_MS = 800;
   /** 送るか: 3〜200 字（NFKC・空白を詰めた長さ）で、名前とぴったり一致する語でない */
   function shouldSend(q, exact) {
     var n = Array.from(String(q || '').normalize('NFKC').replace(/\s+/g, ' ').trim()).length;
@@ -25,30 +25,27 @@
   }
   /** 一覧の href（./x/ や ../x/）→ サイトの道（/x/） */
   function pathOf(href) { return '/' + String(href || '').replace(/^(\.\.?\/)+/, '').replace(/^\//, ''); }
-  root.YorozuTopFind = { shouldSend: shouldSend, toRows: toRows, pathOf: pathOf, API: API, PING: PING, WAIT_MS: WAIT_MS };
+  root.YorozuTopFind = { shouldSend: shouldSend, toRows: toRows, pathOf: pathOf, API: API, PING: PING };
   if (typeof document === 'undefined' || !root.fetch) return;
-  var timer = null;
+  var sent = null;   // 最後に送った文（続けて押したら送らない）
   var here = function () { return (root.location && root.location.pathname) || '/'; };
-  document.addEventListener('yt-query', function (e) {
-    clearTimeout(timer);
+  document.addEventListener('yt-go', function (e) {
     var d = e.detail || {};
-    if (!shouldSend(d.q, d.exact) || typeof d.show !== 'function') return;
-    timer = setTimeout(function () {
-      ping(here(), 'find_used');
-      if (d.hits === 0) ping(here(), 'find_zero');
-      var ac = root.AbortController ? new AbortController() : null;
-      if (ac) setTimeout(function () { ac.abort(); }, 3000);
-      root.fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: d.q }), signal: ac ? ac.signal : undefined })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (j) { var rows = toRows(j); if (rows.length) d.show(rows); })
-        .catch(function () { /* 届かなければ語の結果のまま */ });
-    }, WAIT_MS);
+    if (!shouldSend(d.q, d.exact) || typeof d.show !== 'function' || d.q === sent) return;
+    e.preventDefault();   // 送ったので、top.js は候補を開かない
+    sent = d.q;
+    ping(here(), 'find_used');
+    if (d.hits === 0) ping(here(), 'find_zero');
+    var ac = root.AbortController ? new AbortController() : null;
+    if (ac) setTimeout(function () { ac.abort(); }, 3000);
+    root.fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: d.q }), signal: ac ? ac.signal : undefined })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { var rows = toRows(j); if (rows.length) d.show(rows); })
+      .catch(function () { /* 届かなければ語の結果のまま */ });
   }, true);
   // 近い道具から進んだ（行き先の道だけを数える）
   document.addEventListener('yt-pick', function (e) {
     var d = e.detail || {};
     if (d.near && typeof d.href === 'string') ping(pathOf(d.href), 'find_click');
   }, true);
-  // 箱に文字が入るたびに待ちを取り消す
-  document.addEventListener('input', function () { clearTimeout(timer); }, true);
 })(typeof window !== 'undefined' ? window : globalThis);
