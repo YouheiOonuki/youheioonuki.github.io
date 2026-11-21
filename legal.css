@@ -117,7 +117,7 @@ details .src li { overflow-wrap: anywhere; font-size: var(--fs-s); }
 .steps { padding-left: 1.3rem; }
 .others { font-size: var(--fs-s); }
 footer { text-align: center; padding: var(--sp-4); font-size: var(--fs-s); color: var(--muted); border-top: 1px solid var(--border); }
-footer nav ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0 var(--sp-4); margin-bottom: var(--sp-2); }
+footer nav ul { list-style: none; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); margin-bottom: var(--sp-2); }
 footer nav li + li { margin-top: 0; }
 footer nav a { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--muted); }
 footer nav a[aria-current="page"] { color: var(--accent); }
