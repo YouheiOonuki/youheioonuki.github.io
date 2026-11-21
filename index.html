@@ -136,11 +136,6 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     .yt-first > section:first-of-type { margin-top: var(--sp-2); }
     .yt-search .yt-ask { display: block; font-size: 1.375rem; font-weight: 800; line-height: var(--lh-tight); color: var(--text); margin: 0; }
     .yt-search .yt-hint { color: var(--muted); font-size: var(--fs-s); margin: 0 0 var(--sp-2); }
-    /* 箱と「探す」を 1 行に。押した時だけ送る（D604）。ボタンは副ボタンの形（入口の画面に主ボタンは置かない、DESIGN 4 章） */
-    .yt-search .yt-row { display: flex; gap: var(--sp-2); }
-    .yt-search .yt-row input { flex: 1; min-width: 0; }
-    .yt-search .yt-go { flex: none; min-height: 52px; min-width: var(--tap); padding: 0 var(--sp-3); font: inherit; font-size: 1.125rem; font-weight: 700; color: var(--text); background: var(--card); border: 1px solid var(--input-border); border-radius: var(--radius); cursor: pointer; }
-    .yt-search .yt-send { color: var(--muted); font-size: var(--fs-s); margin: var(--sp-1) 0 0; }
     .yt-first h2 { font-size: var(--fs-m); color: var(--muted); margin: 0 0 var(--sp-1); }
     /* 使う人から 4: チップ（間を空ける。つなげるとタブに見える。DESIGN 4 章） */
     .yt-for { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); margin-top: var(--sp-3); }
