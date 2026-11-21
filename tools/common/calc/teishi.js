@@ -4,20 +4,22 @@
 // 時刻はすべて日本時間（JST、+09:00。夏時間は無い）。外の口に要求を出さない。ほかのファイルを読まない（祝日の表も読まない）
 // ブラウザでは window.Teishi、Node（テスト）では module.exports で使う
 //
-// 台帳は行の並び（または { rows: [...] }）。1 行の欄（企画書 113 の 15.2）:
+// 台帳は行の並び（または infra-dashboard の data/targets.json の形 { targets: [...] }）。欄の名前は台帳が正（D630。写して合わせる層を置かない）。1 行の欄（企画書 113 の 15.2）:
 //   id      相手の識別子（台帳の中で 1 つ）
 //   name    相手の名前（載せる時の呼び名）
 //   column  列: 'shigoto' | 'kurashi'
 //   field   分野（15.3 の表の名前）
 //   scope   範囲: 'world' | 'national' | 'regional'（拠点の値は持たない）
 //   country 国: 'global' | 国の 2 文字（'JP'）
-//   region  地域（scope が 'regional' の時だけ）
+//   region  地域（scope が 'regional' の時だけ。ほかは null か欄なし）
 //   mode    載せ方: 'auto'（機械で読む）| 'ledger'（台帳で予定を出す）| 'link'（リンクだけ）
-//   services 止まる物の名前（1 相手 2 つまで）
-//   source  出どころ { url, how }
-//   checked 確認: 'ledger'・'link' は最後に確かめた日 'YYYY-MM-DD'。'auto' は最後に読めた時刻（ここでは見ない。15 分の線は配る側〈Q-771〉）
+//   stops   止まる物の名前（1 相手 2 つまで。規則・臨時の区間の無い相手は空でよい）
+//   page    公式のページ（https）
+//   source  読み方 { method, urls, every? }（ここでは見ない。every の線は配る側〈infra-board.js〉）
+//   checked 確認: 'ledger' は最後に確かめた日 'YYYY-MM-DD'。'link' はその日か null。'auto' は最後に読めた時刻（ここでは見ない）
 //   rules   決まった休止の規則（下の 4 つの形）
 //   extra   臨時の区間 [{ service, start: 'YYYY-MM-DDTHH:MM', end: 'YYYY-MM-DDTHH:MM' }]（JST。+09:00 を付けてもよい）
+//   規則と臨時の区間は、任意の欄 limited（true は「止まる」でなく「一部が使えない」。D631）を持てる。出す区間まで運ぶ
 //
 // 規則の形 4 つ（from・to は 'hh:mm'。to が from 以下なら翌日に終わる。to は '24:00' も可）:
 //   毎日            { service, every: 'day', from, to }
@@ -25,7 +27,7 @@
 //   毎月 第 n 何曜  { service, every: 'month', nth, dow, from, to }      nth: 1〜5（第 5 の無い月は出ない）
 //   毎月 n 日       { service, every: 'month', day, from, to }           day: 1〜31（その日の無い月は出ない。2 月 29 日はうるう年だけ）
 // 祝日で規則が変わる相手は、規則に持たせず臨時の区間で足す。
-// 同じ相手・同じ止まる物の区間が重なるか接する時は 1 つにまとめる（kind: 'rule' | 'extra' | 'mixed'）。
+// 同じ相手・同じ止まる物の区間が重なるか接する時は 1 つにまとめる（kind: 'rule' | 'extra' | 'mixed'。limited は、まとめた全部が limited の時だけ true）。
 // 区間は始まりを含み、終わりを含まない（終わりちょうどは止まっていない側）。
 // ===========================
 (function (root) {
@@ -40,7 +42,9 @@
   var COLUMNS = ['shigoto', 'kurashi'];
   var SCOPES = ['world', 'national', 'regional'];
 
-  var rowsOf = function (ledger) { return Array.isArray(ledger) ? ledger : (ledger && Array.isArray(ledger.rows) ? ledger.rows : []); };
+  var rowsOf = function (ledger) { return Array.isArray(ledger) ? ledger : (ledger && Array.isArray(ledger.targets) ? ledger.targets : []); };
+  var stopsOf = function (row) { return Array.isArray(row.stops) ? row.stops : []; };
+  var limitedProblem = function (x) { return x.limited === undefined || typeof x.limited === 'boolean' ? null : 'limited が true・false でない'; };
   var pad = function (n) { return (n < 10 ? '0' : '') + n; };
 
   // 'hh:mm' → 分。'24:00' は to の時だけ。読めなければ null
@@ -92,7 +96,8 @@
   // 規則 1 つの誤り（無ければ null）
   function ruleProblem(row, r) {
     if (!r || typeof r !== 'object') return '規則が物でない';
-    if ((row.services || []).indexOf(r.service) < 0) return '規則の止まる物が services に無い: ' + r.service;
+    if (stopsOf(row).indexOf(r.service) < 0) return '規則の止まる物が stops に無い: ' + r.service;
+    if (limitedProblem(r)) return limitedProblem(r);
     var f = minutesOf(r.from, false), t = minutesOf(r.to, true);
     if (f === null || t === null) return '規則の時刻が hh:mm でない';
     if (f === t) return '規則の始まりと終わりが同じ';
@@ -108,7 +113,8 @@
 
   function extraProblem(row, x) {
     if (!x || typeof x !== 'object') return '臨時の区間が物でない';
-    if ((row.services || []).indexOf(x.service) < 0) return '臨時の区間の止まる物が services に無い: ' + x.service;
+    if (stopsOf(row).indexOf(x.service) < 0) return '臨時の区間の止まる物が stops に無い: ' + x.service;
+    if (limitedProblem(x)) return limitedProblem(x);
     var s = toMs(x.start), e = toMs(x.end);
     if (s === null || e === null) return '臨時の区間の日時が読めない';
     if (e <= s) return '臨時の区間の終わりが始まり以前';
@@ -128,11 +134,11 @@
       if (COLUMNS.indexOf(row.column) < 0) add('column が shigoto・kurashi でない');
       if (SCOPES.indexOf(row.scope) < 0) add('scope が world・national・regional でない');
       if (typeof row.country !== 'string' || !/^(global|[A-Z]{2})$/.test(row.country)) add('country が global か国の 2 文字でない');
-      if (row.scope === 'regional' ? !row.region : row.region !== undefined) add('region は scope が regional の時だけ');
+      if (row.scope === 'regional' ? !row.region : (row.region !== undefined && row.region !== null)) add('region は scope が regional の時だけ');
       if (MODES.indexOf(row.mode) < 0) add('mode が auto・ledger・link でない');
-      if (!Array.isArray(row.services) || !row.services.length || row.services.length > 2) add('services は 1〜2 つ');
-      if (!row.source || typeof row.source.url !== 'string' || !/^https:\/\//.test(row.source.url)) add('source.url が https でない');
-      if (row.mode !== 'auto' && dateMs(row.checked) === null) add('checked が YYYY-MM-DD でない');
+      if (!Array.isArray(row.stops) || row.stops.length > 2) add('stops は 0〜2 つ');
+      if (typeof row.page !== 'string' || !/^https:\/\//.test(row.page)) add('page が https でない');
+      if (row.mode === 'ledger' ? dateMs(row.checked) === null : (row.mode === 'link' && row.checked !== null && row.checked !== undefined && dateMs(row.checked) === null)) add('checked が YYYY-MM-DD でない');
       if (row.mode === 'link' && ((row.rules || []).length || (row.extra || []).length)) add('link の相手が規則か区間を持つ');
       (row.rules || []).forEach(function (r) { add(ruleProblem(row, r)); });
       (row.extra || []).forEach(function (x) { add(extraProblem(row, x)); });
@@ -163,28 +169,30 @@
       // 規則 1 回の長さは 24 時間以下なので、前の日から作れば from に掛かる回を落とさない
       for (var day0 = dayStart(from) - DAY; day0 < until; day0 += DAY) {
         var se = ruleOn(r, day0);
-        if (se) raw.push({ service: r.service, s: se[0], e: se[1], kind: 'rule' });
+        if (se) raw.push({ service: r.service, s: se[0], e: se[1], kind: 'rule', limited: r.limited === true });
       }
     });
     (row.extra || []).forEach(function (x) {
       if (extraProblem(row, x)) return;
-      raw.push({ service: x.service, s: toMs(x.start), e: toMs(x.end), kind: 'extra' });
+      raw.push({ service: x.service, s: toMs(x.start), e: toMs(x.end), kind: 'extra', limited: x.limited === true });
     });
     var out = [];
-    row.services.forEach(function (svc, si) {
+    stopsOf(row).forEach(function (svc, si) {
       var list = raw.filter(function (a) { return a.service === svc; }).sort(function (a, b) { return a.s - b.s || a.e - b.e; });
       var cur = null;
       list.forEach(function (a) {
         if (cur && a.s <= cur.e) {   // 重なるか接する → 1 つに
           if (a.e > cur.e) cur.e = a.e;
           if (a.kind !== cur.kind) cur.kind = 'mixed';
-        } else { cur = { service: svc, si: si, s: a.s, e: a.e, kind: a.kind }; out.push(cur); }
+          cur.limited = cur.limited && a.limited;
+        } else { cur = { service: svc, si: si, s: a.s, e: a.e, kind: a.kind, limited: a.limited }; out.push(cur); }
       });
     });
     return out.filter(function (a) { return a.e > from && a.s < until; });
   }
 
   // 相手を「予定を出す」と「出さない」（link・確かめた日が 8 日より古い ledger）に分ける。now は判断の時刻
+  // shown は 'auto' と確かめた 'ledger'（止まる物の無い相手も入る。区間は出ない）
   function split(ledger, now) {
     var nowMs = toMs(now), today = dayStart(nowMs);
     var shown = [], link = [], stale = [];
@@ -195,7 +203,6 @@
         var c = dateMs(row.checked);
         if (c === null || (today - c) / DAY > STALE_DAYS) { stale.push(row); return; }
       }
-      if (!Array.isArray(row.services) || !row.services.length) return;
       shown.push(row);
     });
     return { shown: shown, link: link, stale: stale };
@@ -205,7 +212,7 @@
 
   function spanOut(row, a) {
     return { id: row.id, name: row.name, column: row.column, service: a.service, start: toJst(a.s), end: toJst(a.e),
-      kind: a.kind, url: row.source && row.source.url, checked: row.checked };
+      kind: a.kind, limited: a.limited, url: row.page, checked: row.checked };
   }
 
   // 並びの順: 始まり → 台帳の行の順 → 止まる物の順
@@ -234,23 +241,24 @@
       .map(function (p) { return spanOut(p.row, p.a); });
   }
 
-  // (c) 相手ごとの「次に止まる」（from より後に始まる最初の区間。days 日の中に無ければ null）。台帳の行の順
+  // (c) 相手ごとの「次に止まる」（from より後に始まる最初の区間。days 日の中に無ければ null）。台帳の行の順。止まる物の無い相手は並べない
   function nextStops(ledger, from, opts) {
     var f = toMs(from); if (f === null) throw new Error('日時が読めない: ' + from);
     var days = opts && opts.days !== undefined ? opts.days : DAYS;
-    return split(ledger, nowOf(opts, from)).shown.map(function (row) {
+    return split(ledger, nowOf(opts, from)).shown.filter(function (row) { return stopsOf(row).length; }).map(function (row) {
       var n = collect([row], f, f + days * DAY).filter(function (p) { return p.a.s > f; })[0];
       return { id: row.id, name: row.name, next: n ? spanOut(row, n.a) : null };
     });
   }
 
-  // (d) 予定を出さない相手（link・古い）と、残りのうち now から days 日に区間が 1 つも無い相手（予定なし）。名前は台帳の行の順
+  // (d) 予定を出さない相手（link・古い）と、確かめた 'ledger' の相手のうち now から days 日に区間が 1 つも無い相手（予定なし）。名前は台帳の行の順
+  //     'auto' の相手は「予定なし」に数えない（確かめられているかは読めた時刻で決まり、ここでは見ない。配る側〈infra-board.js〉が数える）
   function summary(ledger, now, opts) {
     var n = toMs(now); if (n === null) throw new Error('日時が読めない: ' + now);
     var days = opts && opts.days !== undefined ? opts.days : DAYS;
     var sp = split(ledger, now);
     var names = function (rows) { return rows.map(function (r) { return r.name; }); };
-    var none = sp.shown.filter(function (row) { return !rowSpans(row, n, n + days * DAY).length; });
+    var none = sp.shown.filter(function (row) { return row.mode === 'ledger' && !rowSpans(row, n, n + days * DAY).length; });
     return {
       link: { count: sp.link.length, names: names(sp.link) },
       stale: { count: sp.stale.length, names: names(sp.stale) },
@@ -258,7 +266,7 @@
     };
   }
 
-  var api = { DAYS: DAYS, STALE_DAYS: STALE_DAYS, validate: validate, split: split, upcoming: upcoming,
+  var api = { DAYS: DAYS, STALE_DAYS: STALE_DAYS, rowsOf: rowsOf, validate: validate, split: split, upcoming: upcoming,
     stoppedAt: stoppedAt, nextStops: nextStops, summary: summary, toMs: toMs, toJst: toJst };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Teishi = api;
