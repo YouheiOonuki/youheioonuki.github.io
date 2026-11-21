@@ -197,9 +197,10 @@ export function searchRows(data, lang = 'ja') {
   const names = new Map(data.sections.map((s) => [s.id, s.name]));
   return data.pages.map((p) => ({ p: p.path, t: p.title, ...(p.short ? { s: p.short } : {}), g: names.get(p.section), ...(p.note != null ? { n: p.note } : {}), ...(p.aliases && p.aliases.length ? { a: p.aliases } : {}) }));
 }
+// list: 候補の一覧の aria-label。英文は yorozu-plans ROADMAP 続き 43 の答えの文案（関門を通したもの。Q-822）
 const TEXT = {
-  ja: { label: '道具を探す', ph: '年末調整、席替え、ふりがな…', empty: '見つかりません。', all: 'すべての道具を見る', allHref: 'all/' },
-  en: { label: 'Find a tool', ph: 'Tax, furigana, bingo…', empty: 'No match.', all: 'See the Japanese tool list', allHref: 'all/' },
+  ja: { label: '道具を探す', ph: '年末調整、席替え、ふりがな…', list: '道具を探すの候補', empty: '見つかりません。', all: 'すべての道具を見る', allHref: 'all/' },
+  en: { label: 'Find a tool', ph: 'Tax, furigana, bingo…', list: 'Tool suggestions', empty: 'No match.', all: 'See the Japanese tool list', allHref: 'all/' },
 };
 // トップの窓（7.96 D366・K192 段 3 の 1）: 日本語のトップだけ、問いの形の見出しと例の一行。/all/・/for/・英語は「道具を探す」のまま
 const ASK = { label: '何に困っていますか', hint: '例: 親の医療費が高い、年末調整', ph: 'ここに書く', list: '道具の候補' };
@@ -221,7 +222,7 @@ function searchHtml(lang = 'ja', base = './', id = 'yt-q', top = false) {
         ${label}
         ${s ? '<div class="yt-row">' : ''}<input id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list"${desc} autocomplete="off" enterkeyhint="go" placeholder="${w ? w.ph : t.ph}">${s ? `<button type="button" class="yt-go">${s.go}</button></div>
         <p class="yt-send" id="${id}-send">${s.send}</p>` : ''}
-        <ul id="${id}-list" role="listbox" aria-label="${w ? w.list : t.label + 'の候補'}" hidden></ul>
+        <ul id="${id}-list" role="listbox" aria-label="${w ? w.list : t.list}" hidden></ul>
         <p class="yt-status visually-hidden" aria-live="polite"></p>
         <p class="yt-empty" hidden>${t.empty}<a href="${base}${t.allHref}">${t.all}</a></p>
       </div>`;
