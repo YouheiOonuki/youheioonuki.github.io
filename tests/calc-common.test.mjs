@@ -84,7 +84,7 @@ test('同値性: 正本の出力は、移す前の元のファイルの出力と
 });
 
 test('CALC の表: 正本はどれも表に行があり、表の正本はどれもある。配り先は repo の中で重ならない', () => {
-  const masters = ['loan.js', 'pension.js', 'pension-values.js', 'kaitei-data.js', 'gakunen.js', 'yakudoshi.js'];
+  const masters = ['loan.js', 'pension.js', 'pension-values.js', 'kaitei-data.js', 'gakunen.js', 'yakudoshi.js', 'teishi.js', 'infra-board.js'];
   for (const m of masters) {
     assert.ok(existsSync(join(CALC_DIR, m)), m);
     assert.ok(CALC.some(c => c.master === m), m);
@@ -120,5 +120,34 @@ test('sync-common.mjs --calc は CALC の表の場所に写しを置き、--chec
     // repo の最上位でないフォルダには置かない
     mkdirSync(join(repo, 'sub'));
     assert.equal(run('--calc', join(repo, 'sub')).status, 1);
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test('infra-dashboard（枠を持たない repo。Q-799）: --calc が src/calc/ に 2 本を置き、写し同士で読み合え、--check は枠が無くても写しだけを見る', () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'calc-'));
+  try {
+    const repo = join(tmp, 'infra-dashboard');
+    mkdirSync(repo);
+    execFileSync('git', ['init', '-q'], { cwd: repo });
+    const tool = join(ROOT, 'tools', 'sync-common.mjs');
+    const run = (...a) => spawnSync(process.execPath, [tool, ...a], { encoding: 'utf8' });
+    let r = run('--calc', repo);
+    assert.equal(r.status, 0, r.stdout + r.stderr);
+    for (const m of ['teishi.js', 'infra-board.js']) assert.equal(readFileSync(join(repo, 'src', 'calc', m), 'utf8'), calcCopy(m));
+    // 写しの infra-board.js は、隣の写しの teishi.js を require('./teishi.js') で読む
+    const B = createRequire(join(repo, 'src', 'calc', 'x.js'))('./infra-board.js');
+    assert.equal(typeof B.build, 'function');
+    r = run('--check', repo);
+    assert.equal(r.status, 0, r.stdout + r.stderr);
+    writeFileSync(join(repo, 'src', 'calc', 'teishi.js'), calcCopy('teishi.js') + '// 手で直した\n');
+    r = run('--check', repo);
+    assert.equal(r.status, 1);
+    assert.match(r.stdout, /違う .*teishi\.js（計算の写しが正本 tools\/common\/calc\/teishi\.js と違う/);
+    // 枠を持たない repo の扱いは infra-dashboard だけ（ほかの repo は枠が無ければ今のまま落とす）
+    const other = join(tmp, 'loan-sim');
+    mkdirSync(other);
+    execFileSync('git', ['init', '-q'], { cwd: other });
+    assert.equal(run('--calc', other).status, 0);
+    assert.equal(run('--check', other).status, 1);
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });

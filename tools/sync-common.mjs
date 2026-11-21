@@ -15,7 +15,7 @@
 //   node tools/sync-common.mjs --calc <リポジトリのフォルダ ...>    … 道具をまたいで使う計算（正本 tools/common/calc/、yorozu-plans D484）の写しを CALC の表の場所に置く・同じにする
 // 計算の写しは「先頭の 1 行（生成物の印）＋ 正本のまま」。--check と --write はリポジトリのフォルダ（git の最上位）を渡すと、その repo の CALC の行も比べる・置き換える。
 // 写しは 1 字も変えないので、正本の中の require('./…') と window の名は配り先の名のまま（例: pension.js は './kuriage-values.js' を読む）
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, basename, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -39,7 +39,13 @@ export const CALC = [
   { master: 'gakunen.js', repo: 'gengo', to: 'gakunen-calc.js' },
   { master: 'gakunen.js', repo: 'seido-keisan', to: 'lib/gakunen.js' },
   { master: 'yakudoshi.js', repo: 'gengo', to: 'yakudoshi-calc.js' },
+  // インフラダッシュボード（本館の外の repo。yorozu-plans Q-799）: infra-board.js は require('./teishi.js') なので同じフォルダに置く
+  { master: 'teishi.js', repo: 'infra-dashboard', to: 'src/calc/teishi.js' },
+  { master: 'infra-board.js', repo: 'infra-dashboard', to: 'src/calc/infra-board.js' },
 ];
+// 共通の枠（begin〜end）を持たない repo: 計算の写しだけを受ける。--check と --write は枠の無いことで落とさない
+// （infra-dashboard は本館の外の独立したサブドメインで、本館の枠・皮を入れない。yorozu-plans D603・Q-799）
+export const FRAMELESS = ['infra-dashboard'];
 export const calcHeader = (master) => `// 生成物。正本は youheioonuki.github.io の tools/common/calc/${master}（tools/sync-common.mjs --calc で配る。ここは手で直さない。yorozu-plans D484）\n`;
 export const calcCopy = (master) => calcHeader(master) + lf(readFileSync(join(CALC_DIR, master), 'utf8'));
 // フォルダが git の最上位なら repo の名（worktree は本体の名）。そうでなければ null
@@ -126,6 +132,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       const had = existsSync(f) ? lf(readFileSync(f, 'utf8')) : null;
       if (had === want) { console.log(`同じ  ${f}（計算 ${c.master}）`); continue; }
       if (mode === '--check') { console.log(`違う  ${f}（計算の写しが正本 tools/common/calc/${c.master} と違う。--calc で配り直す）`); bad++; continue; }
+      mkdirSync(dirname(f), { recursive: true });
       writeFileSync(f, want); console.log(`${had === null ? '追加' : '更新'}  ${f}（計算 ${c.master}）`);
     }
   };
@@ -152,6 +159,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }
     const all = walk(t);
     const files = all.filter(f => !wholeOf(f) && extract(readFileSync(f, 'utf8')));
+    if (!files.length && statSync(t).isDirectory() && FRAMELESS.includes(repoOf(t))) continue;   // 枠を持たない repo は計算の写しだけを見た
     if (!files.length) { console.log(`なし  ${t}（印のあるファイルが無い）`); bad++; continue; }
     for (const f of all.filter(wholeOf)) {
       const n = wholeOf(f), want = wholeMaster(n);
