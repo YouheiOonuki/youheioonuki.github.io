@@ -76,3 +76,14 @@ test('1 つだけで置くリンクとチップは、高さも幅も押せる大
   const chip = rule(skin, ':where(html:not([data-skin="base"])) :where(.chip)');
   for (const d of ['min-height: var(--tap)', 'min-width: var(--tap)']) assert.ok(chip.includes(d), `チップ: ${d}`);
 });
+
+test('運営者情報・プライバシーポリシーの言語の切り替えは、箱に lang-switch を付けて中に a を置く（共通の .lang-switch a に当たる形。yorozu-plans QUEUE Q-705: a に直に付けた「日本語」が 42 px で幅 44 px に届かなかった）', () => {
+  for (const f of ['about.html', 'privacy-policy.html', 'en/about.html', 'en/privacy-policy.html']) {
+    const html = readFileSync(new URL('../' + f, import.meta.url), 'utf8');
+    assert.match(html, /<header class="site-bar"><a href="\.\/">yorozu-craft<\/a> <p class="lang-switch"><a href="[^"]+" hreflang="[a-z]+" lang="[a-z]+">[^<]+<\/a><\/p><\/header>/, f);
+    assert.ok(!html.includes('<a class="lang-switch"'), `${f}: a に直に付けた lang-switch`);
+  }
+  const legal = readFileSync(new URL('../legal.css', import.meta.url), 'utf8');
+  assert.ok(legal.includes('.site-bar .lang-switch a {'), 'legal.css: 切り替えの見た目の規則');
+  assert.ok(!legal.includes('a.lang-switch'), 'legal.css: 古い選び方');
+});
