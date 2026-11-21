@@ -1,5 +1,5 @@
-// トップの困りごと検索（yorozu-plans ROADMAP 7.81.1 K166、7.96 D365・D367）: 3〜200 字で名前とぴったり一致しなければ、入力が止まってから /v1/find に送り、
-// 近い道具を語の結果の下に足す（2 段）。数えるのは件数だけ（find_used・find_zero・find_click。文は送らない）
+// トップの困りごと検索（yorozu-plans ROADMAP 7.81.1 K166、7.96 D365・D367）: 3〜200 字で名前とぴったり一致しなければ、Enter か「探す」を押した時だけ
+// /v1/find に送り（D604。押す前に自動で送らない）、近い道具を語の結果の下に足す（2 段）。数えるのは件数だけ（find_used・find_zero・find_click。文は送らない）
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -8,7 +8,7 @@ import vm from 'node:vm';
 const read = (f) => readFileSync(new URL('../' + f, import.meta.url), 'utf8');
 const src = read('top-find.js');
 
-/** top-find.js を偽の document・fetch・タイマー・sendBeacon で動かす。fire(type, detail) で合図、flush() でタイマーを進める */
+/** top-find.js を偽の document・fetch・タイマー・sendBeacon で動かす。fire(type, detail) で合図（返りは preventDefault されたか）、flush() でタイマーを進める */
 function run(fetchImpl) {
   const listeners = {}, timers = [], calls = [], pings = [];
   const document = { addEventListener: (t, f) => { (listeners[t] ||= []).push(f); } };
@@ -20,7 +20,7 @@ function run(fetchImpl) {
   return {
     api: window.YorozuTopFind, calls,
     events: () => pings.map(([u, b]) => { assert.equal(u, 'https://yorozu-ai.oonuki-youhei.workers.dev/v1/ping'); return JSON.parse(b.text); }),
-    fire: (type, detail) => (listeners[type] || []).forEach((f) => f({ detail })),
+    fire: (type, detail) => { const ev = { detail, prevented: false, preventDefault() { this.prevented = true; } }; (listeners[type] || []).forEach((f) => f(ev)); return ev.prevented; },
     flush: () => { const t = timers.slice(); timers.fill(null); t.forEach((f) => f && f()); },
   };
 }
@@ -43,12 +43,10 @@ test('送るのは 3〜200 字で、名前とぴったり一致しないとき�
   assert.equal(api.pathOf('../seido-keisan/iryohi/'), '/seido-keisan/iryohi/');
 });
 
-test('語で当たっても送り、待ってから 1 回 POST、近い道具を渡す。件数は find_used だけ（0 件でない）', async () => {
+test('押した時に語で当たっても送り、1 回 POST、近い道具を渡す。件数は find_used だけ（0 件でない）', async () => {
   const t = run(ok({ ok: true, results: [{ url: '/toban/', title: '当番表', line: '公平に回す' }] }));
   let shown = null;
-  t.fire('yt-query', { q: '当番を公平に', hits: 2, exact: false, show: (rows) => { shown = rows; } });
-  assert.equal(t.calls.length, 0, '打った直後は送らない');
-  t.flush();
+  assert.equal(t.fire('yt-go', { q: '当番を公平に', hits: 2, exact: false, show: (rows) => { shown = rows; } }), true, '送ったら top.js に候補を開かせない');
   await settle();
   assert.equal(t.calls.length, 1);
   assert.equal(t.calls[0][1].method, 'POST');
@@ -59,8 +57,7 @@ test('語で当たっても送り、待ってから 1 回 POST、近い道具を
 
 test('語が 0 件なら find_zero も数える。近い道具から進めば find_click（行き先の道だけ）。文は件数に入らない', async () => {
   const t = run(ok({ ok: true, results: [{ url: '/x/', title: 'x' }] }));
-  t.fire('yt-query', { q: '親の医療費が高い', hits: 0, exact: false, show: () => {} });
-  t.flush();
+  t.fire('yt-go', { q: '親の医療費が高い', hits: 0, exact: false, show: () => {} });
   await settle();
   t.fire('yt-pick', { near: true, href: './seido-keisan/kogaku-ryoyohi/' });
   t.fire('yt-pick', { near: false, href: './toban/' });
@@ -69,20 +66,17 @@ test('語が 0 件なら find_zero も数える。近い道具から進めば fi
   assert.ok(!JSON.stringify(ev).includes('医療費が高い'), '文を送らない');
 });
 
-test('ぴったり一致・短い文・打ち続けたら送らない。届かなければ何も足さない', async () => {
+test('ぴったり一致・短い文は押しても送らず、top.js に候補を開かせる（preventDefault しない）。届かなければ何も足さない', async () => {
   const t = run(ok({ ok: true, results: [{ url: '/x/', title: 'x' }] }));
-  t.fire('yt-query', { q: '年末調整', hits: 1, exact: true, show: () => assert.fail('出さない') });
-  t.fire('yt-query', { q: 'ab', hits: 0, exact: false, show: () => assert.fail('出さない') });
-  t.fire('yt-query', { q: '親の医療費', hits: 0, exact: false, show: () => assert.fail('出さない') });
-  t.fire('input', {});
+  assert.equal(t.fire('yt-go', { q: '年末調整', hits: 1, exact: true, show: () => assert.fail('出さない') }), false);
+  assert.equal(t.fire('yt-go', { q: 'ab', hits: 0, exact: false, show: () => assert.fail('出さない') }), false);
   t.flush();
   await settle();
   assert.equal(t.calls.length, 0);
   assert.equal(t.events().length, 0);
   for (const f of [() => Promise.reject(new Error('x')), () => Promise.resolve({ ok: false }), ok({ ok: true, results: [] })]) {
     const u = run(f);
-    u.fire('yt-query', { q: '親の医療費が高い', hits: 0, exact: false, show: () => assert.fail('出さない') });
-    u.flush();
+    u.fire('yt-go', { q: '親の医療費が高い', hits: 0, exact: false, show: () => assert.fail('出さない') });
     await settle();
   }
 });
@@ -90,7 +84,8 @@ test('ぴったり一致・短い文・打ち続けたら送らない。届か�
 test('top.js は通信しないまま、打った語と件数・ぴったりかを合図し、近い道具は区切りの下に足す。読むのはトップ（日英）だけ', () => {
   const top = read('top.js');
   assert.doesNotMatch(top, /fetch\(|sendBeacon|XMLHttpRequest/);
-  assert.match(top, /new CustomEvent\('yt-query', \{ detail: \{ q: q, hits: results\.length, exact: exact/);
+  assert.match(top, /new CustomEvent\('yt-go', \{ cancelable: true, detail: \{ q: q, hits: results\.length, exact: exact/);
+  assert.doesNotMatch(top, /yt-query/, '打つたびの合図は出さない（D604）');
   assert.match(top, /class="yt-near-h">' \+ \(en \? 'Closest tools' : '近い道具'\)/);
   assert.match(top, /new CustomEvent\('yt-pick'/);
   assert.match(read('index.html'), /<script src="\.\/top-find\.js" defer><\/script>/);
@@ -106,4 +101,38 @@ test('accessibility-review の 3 点: 近い道具に読み上げの印、描き
   assert.match(top, /r\.near \? '<span class="visually-hidden">' \+ \(en \? '\(closest tool\)' : '（近い道具）'\)/);
   assert.match(top, /paint\(\);\s*if \(active >= 0\) setActive\(active\);/);
   assert.match(read('top.css'), /\[role="option"\]\[aria-selected="true"\] \{ border-left: 4px solid var\(--text\); padding-left: calc\(var\(--sp-3\) - 4px\); \}/);
+});
+
+test('D604: 打つだけでは送らない（待ちのタイマーも打つたびの合図も無い）。続けて同じ文を押したら送らず、top.js に最初の候補を開かせる', async () => {
+  const t = run(ok({ ok: true, results: [{ url: '/x/', title: 'x' }] }));
+  t.fire('yt-query', { q: '親の医療費が高い', hits: 0, exact: false, show: () => assert.fail('出さない') });
+  t.fire('input', {});
+  t.flush();
+  await settle();
+  assert.equal(t.calls.length, 0, '打っただけでは 0');
+  assert.doesNotMatch(src, /setTimeout\([^)]*WAIT_MS|addEventListener\('yt-query'|addEventListener\('input'/);
+  assert.equal(t.fire('yt-go', { q: '親の医療費が高い', hits: 0, exact: false, show: () => {} }), true);
+  await settle();
+  assert.equal(t.calls.length, 1, '押すと 1');
+  assert.equal(t.fire('yt-go', { q: '親の医療費が高い', hits: 0, exact: false, show: () => {} }), false, '同じ文の 2 度目は送らない');
+  assert.equal(t.fire('yt-go', { q: '親の医療費が高くて困る', hits: 0, exact: false, show: () => {} }), true, '文を変えたら送る');
+  await settle();
+  assert.equal(t.calls.length, 2);
+});
+
+test('D604: トップの箱は「探す」のボタンと送ることの 1 行を持つ（英語・すべての道具・使う人からの箱は今のまま）', () => {
+  const top = read('index.html');
+  assert.match(top, /<div class="yt-row"><input id="yt-q"[^>]*aria-describedby="yt-q-hint yt-q-send"[^>]*><button type="button" class="yt-go">探す<\/button><\/div>/);
+  assert.match(top, /<p class="yt-send" id="yt-q-send">入れた文は、探すためにサーバーへ送ります。保存しません。<\/p>/);
+  assert.match(top, /\.yt-search \.yt-go \{[^}]*min-height: 52px; min-width: var\(--tap\);/);
+  assert.match(read('top.js'), /goBtn\.addEventListener\('click'/);
+  for (const f of ['en/index.html', 'all/index.html', 'for/it/index.html']) assert.doesNotMatch(read(f), /yt-go|yt-send/, f);
+});
+
+test('D604・D595: privacy-policy の 7.11 は押した時に送ると書き、トップの lead は全体を言い切らない', () => {
+  assert.match(read('privacy-policy.html'), /3〜200 字を入れて、Enter か「探す」を押すと、その文を/);
+  assert.match(read('en/privacy-policy.html'), /on the top page and press Enter or the search button, we send that text/);
+  assert.doesNotMatch(read('privacy-policy.html') + read('en/privacy-policy.html'), /入力が止まってから|stop typing/);
+  assert.match(read('index.html'), /登録なし。多くの道具は、入力を端末の外に出しません。<\/p>/);
+  assert.doesNotMatch(read('index.html'), /入力は端末の外に出ません/);
 });

@@ -126,7 +126,7 @@ test('トップの窓（D366）: 問いの見出し・例の一行を aria-descr
   const top = read('index.html');
   assert.match(top, /<label for="yt-q" class="yt-ask">何に困っていますか<\/label>/);
   assert.match(top, /<p class="yt-hint" id="yt-q-hint">例: /);
-  assert.match(top, /aria-describedby="yt-q-hint"/);
+  assert.match(top, /aria-describedby="yt-q-hint yt-q-send"/);
   assert.match(read('all/index.html'), /<label for="yt-q">道具を探す<\/label>/);
 });
 

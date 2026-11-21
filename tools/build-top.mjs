@@ -202,8 +202,9 @@ const TEXT = {
   en: { label: 'Find a tool', ph: 'Tax, furigana, bingo…', empty: 'No match.', all: 'See the Japanese tool list', allHref: 'all/' },
 };
 // トップの窓（7.96 D366・K192 段 3 の 1）: 日本語のトップだけ、問いの形の見出しと例の一行。/all/・/for/・英語は「道具を探す」のまま
-const ASK = { label: '何に困っていますか', hint: '例: 親の医療費が高い、年末調整', ph: 'ここに書く', list: '道具の候補' };
-// 検索欄。送信しない: <form> を使わず、Enter は top.js が候補を開くだけ。ask: トップの窓の形
+const ASK = { label: '何に困っていますか', hint: '例: 親の医療費が高い、年末調整', ph: 'ここに書く', list: '道具の候補', go: '探す', send: '入れた文は、探すためにサーバーへ送ります。保存しません。' };
+// 検索欄。<form> を使わない。Enter は top.js が候補を開く。ask: トップの窓の形 —— 「探す」のボタンと、送ることの 1 行（D604）。
+//   トップは Enter か「探す」を押した時だけ top-find.js が文を送る（押す前に自動で送らない）。「保存しません」は yorozu-ai の main で確かめた事実（Q-774）
 function searchHtml(lang = 'ja', base = './', id = 'yt-q', ask = false) {
   const t = TEXT[lang];
   const w = ask && lang === 'ja' ? ASK : null;
@@ -211,7 +212,8 @@ function searchHtml(lang = 'ja', base = './', id = 'yt-q', ask = false) {
         <p class="yt-hint" id="${id}-hint">${w.hint}</p>` : `<label for="${id}">${t.label}</label>`;
   return `<div class="yt-search" role="search" data-base="${base}">
         ${label}
-        <input id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list"${w ? ` aria-describedby="${id}-hint"` : ''} autocomplete="off" enterkeyhint="go" placeholder="${w ? w.ph : t.ph}">
+        ${w ? '<div class="yt-row">' : ''}<input id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list"${w ? ` aria-describedby="${id}-hint ${id}-send"` : ''} autocomplete="off" enterkeyhint="go" placeholder="${w ? w.ph : t.ph}">${w ? `<button type="button" class="yt-go">${w.go}</button></div>
+        <p class="yt-send" id="${id}-send">${w.send}</p>` : ''}
         <ul id="${id}-list" role="listbox" aria-label="${w ? w.list : t.label + 'の候補'}" hidden></ul>
         <p class="yt-status visually-hidden" aria-live="polite"></p>
         <p class="yt-empty" hidden>${t.empty}<a href="${base}${t.allHref}">${t.all}</a></p>
