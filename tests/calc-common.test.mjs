@@ -151,3 +151,10 @@ test('infra-dashboard（枠を持たない repo。Q-799）: --calc が src/calc/
     assert.equal(run('--check', other).status, 1);
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
+
+test('check-site の計算の写しの突き合わせは、本館に乗らない repo（FRAMELESS）を数えない（yorozu-plans D649）', () => {
+  const src = readFileSync(join(ROOT, 'tools', 'check-site.mjs'), 'utf8');
+  const block = src.slice(src.indexOf("await import('./sync-common.mjs')") - 200, src.indexOf('計算の写し: ${CALC.length}'));
+  assert.match(block, /FRAMELESS/);
+  assert.match(block, /\.filter\(\(c\) => !FRAMELESS\.includes\(c\.repo\)\)/);
+});
