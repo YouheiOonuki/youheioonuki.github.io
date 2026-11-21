@@ -120,13 +120,24 @@ test('D604: 打つだけでは送らない（待ちのタイマーも打つた�
   assert.equal(t.calls.length, 2);
 });
 
-test('D604: トップの箱は「探す」のボタンと送ることの 1 行を持つ（英語・すべての道具・使う人からの箱は今のまま）', () => {
+test('D604: トップの箱は「探す」のボタンと送ることの 1 行を持つ（すべての道具・使う人からの箱は今のまま）', () => {
   const top = read('index.html');
   assert.match(top, /<div class="yt-row"><input id="yt-q"[^>]*aria-describedby="yt-q-hint yt-q-send"[^>]*><button type="button" class="yt-go">探す<\/button><\/div>/);
   assert.match(top, /<p class="yt-send" id="yt-q-send">入れた文は、探すためにサーバーへ送ります。保存しません。<\/p>/);
-  assert.match(top, /\.yt-search \.yt-go \{[^}]*min-height: 52px; min-width: var\(--tap\);/);
+  assert.match(read('top.css'), /\.yt-search \.yt-go \{[^}]*min-height: 52px; min-width: var\(--tap\);/);
+  assert.doesNotMatch(top, /\.yt-search \.yt-go \{/, '押す所の形は top.css の 1 か所だけ');
   assert.match(read('top.js'), /goBtn\.addEventListener\('click'/);
-  for (const f of ['en/index.html', 'all/index.html', 'for/it/index.html']) assert.doesNotMatch(read(f), /yt-go|yt-send/, f);
+  for (const f of ['all/index.html', 'for/it/index.html']) assert.doesNotMatch(read(f), /yt-go|yt-send/, f);
+});
+
+test('D625: 英語のトップの箱も Search のボタンと送ることの 1 行を持ち、押した時だけ送る（lead は今のまま）', () => {
+  const en = read('en/index.html');
+  assert.match(en, /<label for="yt-q">Find a tool<\/label>/);
+  assert.match(en, /<div class="yt-row"><input id="yt-q"[^>]*aria-describedby="yt-q-send"[^>]*><button type="button" class="yt-go">Search<\/button><\/div>/);
+  assert.match(en, /<p class="yt-send" id="yt-q-send">The text you enter is sent to a server to find tools\. It is not stored\.<\/p>/);
+  assert.match(en, /<script src="\.\.\/top-find\.js" defer><\/script>/);
+  assert.match(en, /<p class="lead">Small, free tools\. No sign-up\. The browser tools keep what you enter in your browser\.<\/p>/);
+  assert.match(en, /<link rel="stylesheet" href="\.\.\/top\.css">/);
 });
 
 test('D604・D595: privacy-policy の 7.11 は押した時に送ると書き、トップの lead は全体を言い切らない', () => {
