@@ -677,7 +677,9 @@ const NOT_TOOL_SCREENS = {
 // 道具をまたいで使う計算の写しの同一性（yorozu-plans D484・企画書 102 の 4 章）: 公開されている写し（/<repo>/<場所>）が「生成物の印の 1 行＋正本（root の tools/common/calc）」と同じ。
 // 違えば `node tools/sync-common.mjs --calc <リポジトリ>` で配り直して、その repo を上げる（root の正本だけを直して上げると、配り先を上げるまでここが落ちる）
 {
-  const { CALC, calcCopy } = await import('./sync-common.mjs');
+  // 本館に乗らない repo（FRAMELESS。独立したサブドメイン）の写しは yorozu-craft.com に無いので数えない（yorozu-plans D649）
+  const { CALC: ALL, FRAMELESS, calcCopy } = await import('./sync-common.mjs');
+  const CALC = ALL.filter((c) => !FRAMELESS.includes(c.repo));
   let same = 0;
   for (const c of CALC) {
     const u = BASE + c.repo + '/' + c.to, r = await get(u);
