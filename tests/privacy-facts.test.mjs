@@ -34,3 +34,16 @@ test('about の文は privacy-policy の 7 章へリンクし、7 章の見出�
     assert.match(read(policy), /<h2 id="third-party">7\. /, policy);
   }
 });
+
+// メールの記録（yorozu-plans Q-802、D624）: Cloudflare Email Routing は差出人・宛先・件名・Message-ID を約 31 日残すので、
+// 「転送するだけで保存しません」と言い切らず、7.8 と 7.10 に記録の 4 つと期間を書く。
+test('privacy-policy の 7.8・7.10 に、メールを保存しないと言い切る文が無く、記録の 4 つと期間が在る', () => {
+  const ja = read('privacy-policy.html');
+  assert.ok(!ja.includes('転送するだけで保存しません'), 'privacy-policy.html に「転送するだけで保存しません」');
+  assert.equal(ja.split('差出人・宛先・件名・Message-ID').length - 1, 2, 'privacy-policy.html の 7.8・7.10 に記録の 4 つ');
+  assert.ok(ja.includes('約 31 日'), 'privacy-policy.html に期間');
+  const en = read('en/privacy-policy.html');
+  assert.ok(!en.includes('does not store it'), 'en/privacy-policy.html に「does not store it」');
+  assert.ok(en.includes('(sender, recipient, subject and Message-ID) for about 31 days'), 'en 7.8');
+  assert.ok(en.includes('keeps the sender, recipient, subject and Message-ID for about 31 days'), 'en 7.10');
+});
