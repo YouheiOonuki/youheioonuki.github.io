@@ -241,18 +241,19 @@
       .map(function (p) { return spanOut(p.row, p.a); });
   }
 
-  // (c) 相手ごとの「次に止まる」（from より後に始まる最初の区間。days 日の中に無ければ null）。台帳の行の順。止まる物の無い相手は並べない
+  // (c) 相手ごとの「次に止まる」（from より後に始まる最初の区間。days 日の中に無ければ null）。台帳の行の順
+  //     規則か臨時の区間を持つ相手は、stops が 0 でも並べる（止まる物の名前は空で、next は null）。規則も臨時の区間も無い相手は並べない（D642）
   function nextStops(ledger, from, opts) {
     var f = toMs(from); if (f === null) throw new Error('日時が読めない: ' + from);
     var days = opts && opts.days !== undefined ? opts.days : DAYS;
-    return split(ledger, nowOf(opts, from)).shown.filter(function (row) { return stopsOf(row).length; }).map(function (row) {
+    return split(ledger, nowOf(opts, from)).shown.filter(function (row) { return (row.rules || []).length || (row.extra || []).length; }).map(function (row) {
       var n = collect([row], f, f + days * DAY).filter(function (p) { return p.a.s > f; })[0];
       return { id: row.id, name: row.name, next: n ? spanOut(row, n.a) : null };
     });
   }
 
-  // (d) 予定を出さない相手（link・古い）と、確かめた 'ledger' の相手のうち now から days 日に区間が 1 つも無い相手（予定なし）。名前は台帳の行の順
-  //     'auto' の相手は「予定なし」に数えない（確かめられているかは読めた時刻で決まり、ここでは見ない。配る側〈infra-board.js〉が数える）
+  // (d) 予定を出さない相手（link・古い）と、確かめた 'ledger' の相手のうち now から days 日に区間が 1 つも無い相手（発表なし）。名前は台帳の行の順
+  //     'auto' の相手は「発表なし」に数えない（更新できているかは読めた時刻で決まり、ここでは見ない。配る側〈infra-board.js〉が数える）
   function summary(ledger, now, opts) {
     var n = toMs(now); if (n === null) throw new Error('日時が読めない: ' + now);
     var days = opts && opts.days !== undefined ? opts.days : DAYS;
