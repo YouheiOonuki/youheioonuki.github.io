@@ -284,3 +284,12 @@ test('英語の欄（Q-944・D725）: 台帳に在る時だけ行の末に通す
   const short = build(SPANS_BUSY, { partners: [SA, SB, SC, SM, { ...KA, stops_en: ['Online banking'] }, KN, KO, KL] }).now;
   assert.ok(!('service_en' in short.stopped.find(x => x.id === 'ka')));
 });
+
+test('止まる予定の行き先は teishi.js が決めた url のまま（deeplink。D752・Q-989）。http(s) でなければ page', () => {
+  const KD = kurashi({ id: 'kd', name: '相手 D', deeplink: true, stops: ['ATM'],
+    extra: [{ service: 'ATM', start: '2026-11-28T00:00', end: '2026-11-28T06:00', url: 'https://example.invalid/kd/notice' }] });
+  const { ahead } = B.build([KD], T.upcoming([KD], NOW), NOW, READ);
+  assert.equal(ahead.items[0].url, 'https://example.invalid/kd/notice');
+  const s = { ...T.upcoming([KD], NOW)[0], url: 'javascript:alert(1)' };
+  assert.equal(B.build([KD], [s], NOW, READ).ahead.items[0].url, 'https://example.invalid/kd');
+});

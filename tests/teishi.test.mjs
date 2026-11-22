@@ -214,3 +214,28 @@ test('口に要求を出さない: 正本に fetch・XMLHttpRequest・sendBeacon
   const src = readFileSync(SRC, 'utf8');
   for (const w of ['fetch(', 'XMLHttpRequest', 'sendBeacon', 'WebSocket', 'EventSource', 'require(', 'import ']) assert.ok(!src.includes(w), w);
 });
+
+test('行き先（D752・Q-989）: deeplink が true の相手は臨時の区間の url、欄の無い相手と .csv・.pdf・http(s) でない url は page', () => {
+  const ex = (url) => ({ service: 'ATM', start: '2026-11-24T01:00', end: '2026-11-24T02:00', url });
+  const urlOf = (o) => T.upcoming([row({ id: 'x', name: '架空の行き先', stops: ['ATM'], ...o })], NOW)[0].url;
+  const NOTICE = 'https://example.invalid/notice/1';
+  assert.equal(urlOf({ deeplink: true, extra: [ex(NOTICE)] }), NOTICE);                                    // 有り
+  assert.equal(urlOf({ extra: [ex(NOTICE)] }), 'https://example.invalid/maint');                           // 無し
+  assert.equal(urlOf({ deeplink: true, extra: [ex('https://example.invalid/schedule.csv')] }), 'https://example.invalid/maint');
+  assert.equal(urlOf({ deeplink: true, extra: [ex('https://example.invalid/a.PDF')] }), 'https://example.invalid/maint');
+  assert.equal(urlOf({ deeplink: true, extra: [ex('javascript:alert(1)')] }), 'https://example.invalid/maint');
+  assert.equal(urlOf({ deeplink: true, extra: [ex(undefined)] }), 'https://example.invalid/maint');
+  // まとめた区間: 同じ url だけならその url、違えば page。規則とまとまれば page
+  const two = (u2) => [ex(NOTICE), { service: 'ATM', start: '2026-11-24T02:00', end: '2026-11-24T03:00', url: u2 }];
+  assert.equal(urlOf({ deeplink: true, extra: two(NOTICE) }), NOTICE);
+  assert.equal(urlOf({ deeplink: true, extra: two('https://example.invalid/notice/2') }), 'https://example.invalid/maint');
+  assert.equal(urlOf({ deeplink: true, extra: [ex(NOTICE)], rules: [{ service: 'ATM', every: 'day', from: '00:30', to: '01:30' }] }), 'https://example.invalid/maint');
+});
+
+test('検査（Q-989）: deeplink は ledger の相手だけで、値は true だけ', () => {
+  const bad = (o) => T.validate([row({ id: 'x', name: '架空', stops: [], ...o })]).map(p => p.problem);
+  assert.deepEqual(bad({ deeplink: true }), []);
+  assert.deepEqual(bad({}), []);
+  for (const o of [{ deeplink: false }, { deeplink: 'true' }, { deeplink: 1 }, { deeplink: true, mode: 'link', checked: null }, { deeplink: true, mode: 'auto' }])
+    assert.ok(bad(o).includes('deeplink は ledger の相手だけで、値は true だけ'), JSON.stringify(o));
+});

@@ -11,6 +11,7 @@
 //             'ledger' は最後に確かめた日 'YYYY-MM-DD'、'link' はその日か null
 // 区間の並び: 2 つの形を同じ並びで受ける
 //   止まる予定（teishi.js の upcoming の出力）… { id: 相手, name, column, service: 止まる物, start, end, kind: 'rule'|'extra'|'mixed', limited, url, checked }
+//     url は teishi.js が決めた行き先（台帳の deeplink。D752・Q-989）で、そのまま出す。http(s) でなければ相手の page
 //   障害と予定メンテナンス（D618 の形）… { service: 相手, id: 障害の id, start, end|null, impact, title, url, kind? }
 //     kind は 'incident' か 'planned'。欄が無い物は 'incident' と読む
 //   形は kind で分ける（'rule'・'extra'・'mixed' なら止まる予定、ほかは障害と予定メンテナンス）
@@ -98,7 +99,7 @@
       impact: impact,
       color: kind === 'planned' ? 'blue' : IMPACT_RANK[impact] >= IMPACT_RANK.major ? 'red' : 'amber',
       limited: teishi && s.limited === true,
-      url: (!teishi && httpUrl(s.url)) || pageOf(p.row),
+      url: httpUrl(s.url) || pageOf(p.row),
       lastRead: p.lastRead,
       sid: teishi ? '' : String(s.id === undefined ? '' : s.id)
     };
