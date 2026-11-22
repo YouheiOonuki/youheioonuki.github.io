@@ -233,3 +233,10 @@ test('検査（Q-989）: deeplink は ledger の相手だけで、値は true �
   for (const o of [{ deeplink: false }, { deeplink: 'true' }, { deeplink: 1 }, { deeplink: true, mode: 'link', checked: null }, { deeplink: true, mode: 'auto' }])
     assert.ok(bad(o).includes('deeplink は ledger の相手だけで、値は true だけ'), JSON.stringify(o));
 });
+
+test('検査（Q-1000・D830）: page_top は ledger の相手だけで、値は true だけ', () => {
+  const bad = (o) => T.validate([row({ id: 'x', name: '架空', stops: [], ...o })]).map(p => p.problem);
+  assert.deepEqual(bad({ page_top: true }), []);
+  for (const o of [{ page_top: false }, { page_top: 'true' }, { page_top: true, mode: 'link', checked: null }, { page_top: true, mode: 'auto' }])
+    assert.ok(bad(o).includes('page_top は ledger の相手だけで、値は true だけ'), JSON.stringify(o));
+});

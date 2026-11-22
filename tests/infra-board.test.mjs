@@ -69,7 +69,7 @@ test('同時に 3 つ: 重い順（major → minor → 欄の無い止まる予�
   assert.deepEqual(now.stopped[0], { id: 'sa', name: '相手 A', column: 'shigoto', service: null, title: '作った題', kind: 'incident', impact: 'major',
     color: 'red', limited: false, start: '2026-11-24T02:00+09:00', end: null, url: 'https://status.example.com/i/1', checked: null, lastRead: null });
   assert.deepEqual(now.stopped[2], { id: 'ka', name: '相手 K', column: 'kurashi', service: 'ATM', title: null, kind: 'planned', impact: 'unknown',
-    color: 'blue', limited: false, start: '2026-11-23T23:30+09:00', end: '2026-11-24T05:00+09:00', url: 'https://example.invalid/ka', checked: '2026-11-19', lastRead: null, url_lang: 'ja' });
+    color: 'blue', limited: false, start: '2026-11-23T23:30+09:00', end: '2026-11-24T05:00+09:00', url: 'https://example.invalid/ka', checked: '2026-11-19', lastRead: null, go: 'list', url_lang: 'ja' });
   // 同じ重さ（minor）: sc の障害は 0 時から、sb の予定メンテナンスは 1 時から → sc が先
   const more = build([...SPANS_BUSY, inc({ service: 'sc', id: 'c1', start: '2026-11-23T15:00:00Z', impact: 'minor' })]).now;
   assert.deepEqual(more.stopped.map(x => x.id), ['sa', 'sc', 'sb', 'ka']);
@@ -297,4 +297,20 @@ test('止まる予定の行き先は teishi.js が決めた url のまま（deep
   assert.equal(ahead.items[0].url, 'https://example.invalid/kd/notice');
   const s = { ...T.upcoming([KD], NOW)[0], url: 'javascript:alert(1)' };
   assert.equal(B.build([KD], [s], NOW, READ).ahead.items[0].url, 'https://example.invalid/kd');
+});
+
+test('行き先の種類 go（Q-1000・D761・D830）: ledger の行だけ。告知の個別のページは notice、一覧は list、page_top の相手は page。しごとの行には付けない', () => {
+  const one = (o) => kurashi({ id: 'kx', name: '相手 X', stops: ['ATM'], extra: [ex('ATM', '2026-11-24T23:30', '2026-11-25T05:00')], ...o });
+  const goOf = (o) => {
+    const p = one(o);
+    const stops = T.upcoming([p], NOW);
+    return B.build([SA, p], stops, NOW, NOW_Z).ahead.items.find((x) => x.id === 'kx');
+  };
+  assert.equal(goOf({ deeplink: true }).go, 'notice');                        // 行き先が区間の url（個別のページ）
+  assert.equal(goOf({}).go, 'list');                                          // deeplink が無い → page（お知らせの一覧）
+  assert.equal(goOf({ page_top: true }).go, 'page');                          // page がトップ（ゆうちょ銀行の形。D830）
+  assert.equal(goOf({ deeplink: true, page_top: true }).go, 'notice');
+  assert.equal(goOf({ deeplink: true, page_top: true, extra: [ex('ATM', '2026-11-24T23:30', '2026-11-25T05:00', { url: 'https://example.invalid/a.pdf' })] }).go, 'page');
+  const { now } = build(SPANS_BUSY);
+  assert.ok(!('go' in now.stopped[0]));                                       // しごと（auto）の行
 });
