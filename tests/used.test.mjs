@@ -159,6 +159,9 @@ test('送る画面の集合 ＝ content-classes.csv の「計算・制度」「�
 test('逆向き: used.js を読むページは、送る画面の集合の中だけ（見せる・遊ぶ・読み物・案内・使い方・lab は送らない）', { skip: !existsSync(CSV) && 'content-classes.csv が無い' }, () => {
   const rows = readCsv(readFileSync(CSV, 'utf8'));
   const allowed = new Set(rows.filter(isTarget).map((r) => r['ファイル']));
+  // 母数は csv と同じ「sitemap に在るページ」（csv は dist の sitemap から作る表。条件 90 で sitemap の外に置いた公開前のページ〈taishoku など〉は数えない）。
+  // 送らない repo（lab）は csv に行が無いので、その repo のページは全部数える（yorozu-plans 続き 55 の統制役の判断 (a)、Q-1118）
+  const listed = new Set(rows.map((r) => r['ファイル']));
   const repos = new Set(rows.map((r) => locate(r['ファイル'])[0]));
   for (const name of Object.keys(EXCLUDED.repos)) if (isRepo(name)) repos.add(join(P, name));
   const extra = [];
@@ -176,6 +179,7 @@ test('逆向き: used.js を読むページは、送る画面の集合の中だ�
       if (!usedSrc(readFileSync(f, 'utf8'))) continue;
       const rel = relative(repo, f).split(sep).join('/');
       const file = name === 'youheioonuki.github.io' ? rel : name + '/' + rel;
+      if (!listed.has(file) && !EXCLUDED.repos[name]) continue;   // sitemap の外（公開前）
       if (!allowed.has(file)) extra.push(file);
     }
   }
