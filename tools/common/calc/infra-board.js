@@ -27,7 +27,7 @@
 //     'ledger' の古い相手の区間は出さない（D602）
 //   リンクだけ（link）… 区間を出さず、名前と公式のページだけを別の並びに。数も別
 //   「発表なし」（none）… 'auto'・'ledger' で更新できていて、いまにも 60 日の中にも区間が無い相手
-// 出す字は、相手の名前・止まる物の名前・公式の題（しごとの列だけ）・URL・日時だけ。日時は 'YYYY-MM-DDTHH:MM+09:00'
+// 出す字は、相手の名前・止まる物の名前（台帳に在れば英語の名前も。Q-944）・公式の題（しごとの列だけ）・URL・日時だけ。日時は 'YYYY-MM-DDTHH:MM+09:00'
 // 同じ入力から同じ JSON（バイトまで）: 欄の順は固定、並びは 時刻 → 一覧の行の順 → 止まる物 → id の順
 // ===========================
 (function (root) {
@@ -106,19 +106,32 @@
 
   var order = function (a, b) { return a.s - b.s || a.ri - b.ri || a.si - b.si || cmp(a.sid, b.sid); };
 
-  // 出す 1 行（欄の順は固定）
+  // 英語の画面が読む欄を、行の末に足す（企画書 113 の 14.8・15.2、D725。日本語の画面は読まない）。台帳に在る欄だけを、在る時だけ通す:
+  //   name_en・field_en はそのまま、page_en は url_en（page → url と同じ読み替え）、止まる物の英語の名前は stops と同じ順の stops_en から service_en
+  //   くらしの相手の公式のページは日本語なので url_lang: 'ja'（英語の画面のリンクの字が "Official page (Japanese)" になる。url_en が在れば英語の側へ）
+  function enFields(o, p, service) {
+    if (p.name_en) o.name_en = p.name_en;
+    if (p.field_en) o.field_en = p.field_en;
+    var i = typeof service === 'string' && Array.isArray(p.stops_en) && Array.isArray(p.stops) ? p.stops.indexOf(service) : -1;
+    if (i >= 0 && p.stops_en[i] !== undefined) o.service_en = p.stops_en[i];
+    if (p.page_en) o.url_en = p.page_en;
+    if (p.column === 'kurashi') o.url_lang = 'ja';
+    return o;
+  }
+
+  // 出す 1 行（欄の順は固定。英語の欄は末）
   function itemOut(a) {
     var p = a.partner;
-    return { id: p.id, name: p.name, column: p.column, service: a.service, title: a.title, kind: a.kind, impact: a.impact,
+    return enFields({ id: p.id, name: p.name, column: p.column, service: a.service, title: a.title, kind: a.kind, impact: a.impact,
       color: a.color, limited: a.limited, start: T.toJst(a.s), end: a.e === null ? null : T.toJst(a.e), url: a.url,
-      checked: p.mode === 'ledger' ? p.checked : null, lastRead: a.lastRead };
+      checked: p.mode === 'ledger' ? p.checked : null, lastRead: a.lastRead }, p, a.service);
   }
   // 相手の 1 行。checked は渡された値をそのまま（'auto' は最後に読めた時刻、'ledger'・'link' は最後に確かめた日。欄が無ければ null。D660）
   var partnerOut = function (p) {
-    return { id: p.id, name: p.name, column: p.column, url: pageOf(p), checked: p.checked === undefined ? null : p.checked };
+    return enFields({ id: p.id, name: p.name, column: p.column, url: pageOf(p), checked: p.checked === undefined ? null : p.checked }, p);
   };
   var linkOut = function (list) {
-    var ps = list.map(function (p) { return { id: p.id, name: p.name, column: p.column, url: pageOf(p) }; });
+    var ps = list.map(function (p) { return enFields({ id: p.id, name: p.name, column: p.column, url: pageOf(p) }, p); });
     return { count: ps.length, partners: ps };
   };
 
