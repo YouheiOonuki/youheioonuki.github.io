@@ -31,6 +31,7 @@
 //   リンクだけ（link）… 区間を出さず、名前と公式のページだけを別の並びに。数も別
 //   「発表なし」（none）… 'auto'・'ledger' で更新できていて、いまにも 60 日の中にも区間が無い相手
 // 出す字は、相手の名前・止まる物の名前（台帳に在れば英語の名前も。Q-944）・公式の題（しごとの列だけ）・URL・日時だけ。日時は 'YYYY-MM-DDTHH:MM+09:00'
+// 行と相手の 1 行には、台帳の分野 field をそのまま通す（column の次。画面のジャンルの切り替えが読む。企画書 113 の 14.2・D768・Q-1001）
 // 同じ入力から同じ JSON（バイトまで）: 欄の順は固定、並びは 時刻 → 一覧の行の順 → 止まる物 → id の順
 // ===========================
 (function (root) {
@@ -131,7 +132,7 @@
   // 出す 1 行（欄の順は固定。英語の欄は末）
   function itemOut(a) {
     var p = a.partner;
-    var o = { id: p.id, name: p.name, column: p.column, service: a.service, title: a.title, kind: a.kind, impact: a.impact,
+    var o = { id: p.id, name: p.name, column: p.column, field: p.field, service: a.service, title: a.title, kind: a.kind, impact: a.impact,
       color: a.color, limited: a.limited, start: T.toJst(a.s), end: a.e === null ? null : T.toJst(a.e), url: a.url,
       checked: p.mode === 'ledger' ? p.checked : null, lastRead: a.lastRead };
     var go = goOf(p, a.url);
@@ -140,10 +141,10 @@
   }
   // 相手の 1 行。checked は渡された値をそのまま（'auto' は最後に読めた時刻、'ledger'・'link' は最後に確かめた日。欄が無ければ null。D660）
   var partnerOut = function (p) {
-    return enFields({ id: p.id, name: p.name, column: p.column, url: pageOf(p), checked: p.checked === undefined ? null : p.checked }, p);
+    return enFields({ id: p.id, name: p.name, column: p.column, field: p.field, url: pageOf(p), checked: p.checked === undefined ? null : p.checked }, p);
   };
   var linkOut = function (list) {
-    var ps = list.map(function (p) { return enFields({ id: p.id, name: p.name, column: p.column, url: pageOf(p) }, p); });
+    var ps = list.map(function (p) { return enFields({ id: p.id, name: p.name, column: p.column, field: p.field, url: pageOf(p) }, p); });
     return { count: ps.length, partners: ps };
   };
 
