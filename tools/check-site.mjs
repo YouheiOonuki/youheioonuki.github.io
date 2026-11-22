@@ -324,7 +324,7 @@ await pool([...pages], 6, async (url) => {
     if (isMetaOnly(p)) reasons.push('広告なしの画面（META_ONLY）');
     adFacts.push({ p, chars, reasons });
   }
-  if (isMetaOnly(p)) { if (script !== 0) fail(p, '広告なしのページ（全画面の本体・高齢者向け）に広告スクリプトがある'); }
+  if (isMetaOnly(p)) { if (script !== 0) fail(p, '広告なしのページ（META_ONLY。tools/ad-lists.mjs）に広告スクリプトがある'); }
   else if (REVIEW_NO_AD_PAGES.has(p)) { if (script !== 0) fail(p, 'AdSense 審査中は広告 script を外すページ（REVIEW_NO_AD_PAGES）に広告スクリプトがある'); }
   else if (script !== 1) fail(p, `AdSense のスクリプトが ${script} 個（1 個のはず）`);
   if (/class="adsbygoogle"|広告スペース|ad-placeholder/.test(html)) fail(p, '手動の広告枠・空の広告枠がある');
