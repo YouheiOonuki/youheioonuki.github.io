@@ -49,7 +49,7 @@ const NO_AD_SCREENS = [
   '/updates/',             // 更新情報（案内のページ。about と同じ扱いで道具の 4 つは求めない: yorozu-plans D411）
 ];
 // 審査員の目で広告を外した 16 枚。子どもの画面ではない（下の CHILD_SCREEN_PAGES に入れない。D882・Q-1119）
-const REVIEW_NO_AD_PAGES = [
+const AUDIT_NO_AD_PAGES = [
   // AdSense の審査員の目でページごとに判定し、広告を外した 16 枚（yorozu-plans ROADMAP 7.269・D863・Q-1093）。道具の画面 9 枚
   '/sekigae/', '/shaho-check/', '/gakushu-print/', '/toban/en/',
   '/seido-keisan/en/childcare-leave/', '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/pension-refund/', '/seido-keisan/en/residence-tax/', '/seido-keisan/en/take-home-pay/',
@@ -59,7 +59,7 @@ const REVIEW_NO_AD_PAGES = [
   '/web-roulette/odai/', '/tameshite/kioku/guide.html',
 ];
 // 広告の script を置かない画面（所有確認の meta だけ）。この集合の意味はそれだけ（D882）
-export const META_ONLY_PAGES = new Set([...NO_AD_SCREENS, ...REVIEW_NO_AD_PAGES]);
+export const META_ONLY_PAGES = new Set([...NO_AD_SCREENS, ...AUDIT_NO_AD_PAGES]);
 // 子どもが使う画面（遊ぶ画面）。check-site の「外部リンク〈GitHub・X・note〉を置かない」（REVIEW C7 R7）はこの集合に掛ける。
 // Q-1093 の前に META_ONLY_PAGES の使い方ページ以外へ掛けていた範囲のまま（16 枚を足す前の上の一覧）。D882・Q-1119
 export const CHILD_SCREEN_PAGES = new Set(NO_AD_SCREENS.filter((p) => !p.endsWith('guide.html')));
