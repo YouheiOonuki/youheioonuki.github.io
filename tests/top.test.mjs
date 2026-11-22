@@ -262,3 +262,11 @@ test('D849・Q-1081: トップの名乗りは柱（出典つきの制度の計�
   for (const href of ['./about.html#kakunin', './api/', './seido-keisan/kaitei/']) assert.ok(trust.includes(`href="${href}"`), href);
   assert.match(read('about.html'), /<h2 id="kakunin">道具の作り方と確かめ方<\/h2>/);
 });
+
+test('D849・Q-1082: about の「内容」は柱を言い、入力の扱いは「入力したデータの扱い」の節の 1 か所だけが書く（著作権の節の「ブラウザ内でのみ」は無い）', () => {
+  const about = read('about.html');
+  assert.match(about, /<dt>内容<\/dt>\s*<dd>税・社会保険・学校の制度の計算機と、暮らし・学校・仕事で使う道具の制作・公開。/);
+  assert.ok(!about.includes('ちょっと便利なツール'));
+  assert.ok(!about.includes('ブラウザ内でのみ扱われ'));
+  assert.match(about, /<h2>入力したデータの扱い<\/h2>\s*<p>多くの道具は、入力した内容をお使いのブラウザの中だけで計算します。/);
+});
