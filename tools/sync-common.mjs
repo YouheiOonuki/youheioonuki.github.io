@@ -12,7 +12,8 @@
 // 段 3 の 2〜4 で各ページを v2 のトークンに載せ替えるときに消す。--status が残りの数を出す
 // ファイルまるごとが正本の写し（WHOLE の表: used.js〈道具が使われた回数。yorozu-plans D468〉・share-card.js〈結果カード。K124・Q-464〉・reset-storage.js〈保存した内容をすべて消す。K123・Q-506〉・
 // share-stub.mjs と make-share-og.mjs〈共有される結果の着地ページと OG 画像。各 repo の tools/ に置く。K124・D667・Q-867〉・zip.js〈zip の読み書き。ai-log・fitbit-export。D685・Q-887〉・
-// reset-storage.test.js〈reset-storage.js のテストの本体。各 repo の tests/ に置き、repo の値は同じフォルダの reset-storage.values.json だけが持つ。D683・D706・Q-918〉）。
+// reset-storage.test.js〈reset-storage.js のテストの本体。各 repo の tests/ に置き、repo の値は同じフォルダの reset-storage.values.json だけが持つ。D683・D706・Q-918〉・
+// screen.js〈上端の固定バーと折りたたみの状態。D667・D682〉）。
 // --check と --write はフォルダの下（tools/ などの下も）のその名のファイルも正本 tools/common/<名> と比べる・置き換える
 //   node tools/sync-common.mjs --calc <リポジトリのフォルダ ...>    … 道具をまたいで使う計算（正本 tools/common/calc/、yorozu-plans D484）の写しを CALC の表の場所に置く・同じにする
 // 計算の写しは「先頭の 1 行（生成物の印）＋ 正本のまま」。--check と --write はリポジトリのフォルダ（git の最上位）を渡すと、その repo の CALC の行も比べる・置き換える。
@@ -27,7 +28,7 @@ const BEGIN = '/* yorozu-common:begin';
 const END = '/* yorozu-common:end */';
 const CARRY = '/* yorozu-v1-carry';
 // ファイルまるごとが正本の写し: 配り先のファイル名（正本は tools/common/<名>）。写しは印の行を持たない
-export const WHOLE = ['used.js', 'share-card.js', 'reset-storage.js', 'share-stub.mjs', 'make-share-og.mjs', 'zip.js', 'reset-storage.test.js'];
+export const WHOLE = ['used.js', 'share-card.js', 'reset-storage.js', 'share-stub.mjs', 'make-share-og.mjs', 'zip.js', 'reset-storage.test.js', 'screen.js'];
 const wholeMaster = (name) => readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'common', name), 'utf8');
 const lf = (t) => t.replace(/\r\n/g, '\n');   // 枠・まるごとの写し・計算の写しは、改行の形（git の autocrlf）を問わず中身で比べる
 const CALC_DIR = join(dirname(fileURLToPath(import.meta.url)), 'common', 'calc');
