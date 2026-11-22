@@ -16,41 +16,12 @@ const ADSENSE_ID = 'ca-pub-5375267956079717';
 const BEACON_TOKEN = 'b79bf821e1fd4b6683866d493b1de426';
 
 // 決まりの例外（理由つき）
-import { META_ONLY_PAGES, META_ONLY_PREFIXES, isMetaOnly } from './ad-lists.mjs';   // 広告なしの画面の一覧（正本は ad-lists.mjs）
+import { META_ONLY_PAGES, META_ONLY_PREFIXES, isMetaOnly, CHILD_SCREEN_PAGES } from './ad-lists.mjs';   // 広告なしの画面の一覧（正本は ad-lists.mjs）
 import { ldBlocks, nameMismatches, faqDiff } from './jsonld.mjs';                     // JSON-LD と画面の突き合わせ（Q-074）
+import { REVIEW_HOLD_PAGES } from './ad-lists.mjs';   // 審査の間 広告 script を外すページ（正本は ad-lists.mjs。yorozu-plans の content-classes.csv も読む。Q-1118）
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
 const EN_ONLY_PAGES = new Set([
   '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
-]);
-// AdSense 審査が通るまで本文の薄いページは広告 script を外す（2026-10-04）。通ったら本文を足したページから戻す
-// 広告 script の数（下の「script が 0 か 1 か」）だけでこの集合を「script 0」とみなす。「広告なし」の定型文・高齢者・子どもの外部リンクの判定には混ぜない
-const REVIEW_NO_AD_PAGES = new Set([
-  '/for/teachers/', '/for/it/',
-  '/web-roulette/', '/web-roulette/amida/', '/web-roulette/dice/',
-  '/easy-split/', '/easy-split/kakeibo/',
-  '/web-metronome/', '/web-metronome/capo/',
-  '/hoshizora-sanpo/zukan/', '/hoshizora-sanpo/zukan/leo.html', '/hoshizora-sanpo/zukan/vir.html', '/hoshizora-sanpo/zukan/uma.html', '/hoshizora-sanpo/zukan/boo.html', '/hoshizora-sanpo/zukan/lib.html', '/hoshizora-sanpo/zukan/sco.html', '/hoshizora-sanpo/zukan/sgr.html', '/hoshizora-sanpo/zukan/cyg.html', '/hoshizora-sanpo/zukan/lyr.html', '/hoshizora-sanpo/zukan/aql.html', '/hoshizora-sanpo/zukan/oph.html', '/hoshizora-sanpo/zukan/crb.html', '/hoshizora-sanpo/zukan/her.html', '/hoshizora-sanpo/zukan/dra.html', '/hoshizora-sanpo/zukan/cap.html', '/hoshizora-sanpo/zukan/aqr.html', '/hoshizora-sanpo/zukan/psc.html', '/hoshizora-sanpo/zukan/ari.html', '/hoshizora-sanpo/zukan/peg.html', '/hoshizora-sanpo/zukan/and.html', '/hoshizora-sanpo/zukan/per.html', '/hoshizora-sanpo/zukan/ori.html', '/hoshizora-sanpo/zukan/tau.html', '/hoshizora-sanpo/zukan/gem.html', '/hoshizora-sanpo/zukan/cnc.html', '/hoshizora-sanpo/zukan/cma.html', '/hoshizora-sanpo/zukan/cmi.html', '/hoshizora-sanpo/zukan/aur.html', '/hoshizora-sanpo/zukan/umi.html', '/hoshizora-sanpo/zukan/cas.html', '/hoshizora-sanpo/zukan/cru.html', '/hoshizora-sanpo/zukan/cen.html', '/hoshizora-sanpo/shinwa/seiza/', '/hoshizora-sanpo/hayamiban/', '/hoshizora-sanpo/tsuki/', '/hoshizora-sanpo/en/planisphere/',
-  '/loan-sim/', '/loan-sim/kinri/',
-  '/nittei-kouho/',
-  '/denki-dai/',
-  '/seido-keisan/nenmatsu/', '/seido-keisan/nenmatsu/hoken/', '/seido-keisan/gensen/', '/seido-keisan/juminzei/', '/seido-keisan/ikukyu/', '/seido-keisan/shobyo/', '/seido-keisan/iryohi/', '/seido-keisan/iryohi/meisai/', '/seido-keisan/koko-mushoka/', '/seido-keisan/lifeplan/', '/seido-keisan/dattai-ichiji/', '/seido-keisan/en/', '/seido-keisan/invoice/', '/seido-keisan/shienkin/', '/seido-keisan/yobosesshu/', '/seido-keisan/hikkoshi/',
-  '/tabi-shiori/',
-  '/gakushu-print/en/', '/gakushu-print/booklet/', '/gakushu-print/angou/',
-  '/bingo/cards.html', '/bingo/en/cards.html',
-  '/filetime/', '/filetime/en/',
-  '/gengo/', '/gengo/en/', '/gengo/gakunen/', '/gengo/gakunen/rireki.html', '/gengo/yakudoshi/', '/gengo/en/school-grades/', '/gengo/nenpyo/',
-  '/furigana/', '/furigana/en/',
-  '/toban/', '/toban/group/', '/toban/kondate/',
-  '/gakko-keisan/', '/gakko-keisan/naishin/', '/gakko-keisan/hensachi/', '/gakko-keisan/shusseki/',
-  '/quiz-hiroba/mainichi/guide.html',
-  '/fitbit-export/', '/fitbit-export/en/',
-  '/tameshite/',
-  '/unplugged/', '/unplugged/en/',
-  '/henkan/', '/henkan/diff/', '/henkan/json/', '/henkan/csv/', '/henkan/zenkaku/', '/henkan/pdf/',
-  '/ai-log/', '/ai-log/en/',
-  '/print/',               // 無料の印刷物のセット（K173）。介護施設に配る案内のページで、広告を置かない
-  // ナビゲーション・運営情報の画面（Google のポリシー「ナビゲーション・アラート目的の画面には広告を置かない」に合わせる。2026-10-04）
-  '/', '/all/', '/en/', '/about.html', '/privacy-policy.html', '/en/about.html', '/en/privacy-policy.html',
 ]);
 // 高齢者向け（D118）の広告なしページ。先頭に「広告なし」の定型文が要る（下の R12 の突き合わせ）
 const ELDERLY_PAGES = new Set([
@@ -84,7 +55,7 @@ const MEDICAL_ALLOWED = {
   '/otasuke/notore/guide.html': ['脳トレプリントで認知症は予防できますか？', 'このプリントは楽しむための問題で、病気の予防や改善を確かめたものではありません。'],
   '/quiz-hiroba/showa/guide.html': ['医療やリハビリの効果をうたうものではありません。'],
 };
-// 子どもが遊ぶ画面（META_ONLY_PAGES の使い方ページ以外）に置かない外部リンク（README「ツールを追加するとき」・REVIEW C7 R7）
+// 子どもが遊ぶ画面（ad-lists.mjs の CHILD_SCREEN_PAGES）に置かない外部リンク（README「ツールを追加するとき」・REVIEW C7 R7）
 const CHILD_NG_LINK = /^https?:\/\/(?:[\w-]+\.)*(?:github\.com|x\.com|twitter\.com|note\.com)(?:[/:?#]|$)/i;
 // 画面に見える文字（script・style・コメント・タグを除いた <body>）
 const visibleText = html => html.replace(/^[\s\S]*?<body\b[^>]*>/i, '').replace(/<script\b[\s\S]*?<\/script>/gi, '').replace(/<style\b[\s\S]*?<\/style>/gi, '')
@@ -98,7 +69,7 @@ const fail = (where, what) => failures.push(`${where}: ${what}`);
 // 警告（失敗にしない。終了コードに影響しない）。title・description の長さの上限（yorozu-plans ROADMAP 7.181 D472）。既存ページは 12-20 の判定の後まで直さない
 const warnings = [];
 const warn = (where, what) => warnings.push(`${where}: ${what}`);
-// 広告を出してよいかの条件（yorozu-plans QUEUE Q-019。REVIEW_NO_AD_PAGES を手で持つ表から条件の計算に置き換える準備）。
+// 広告を出してよいかの条件（yorozu-plans QUEUE Q-019。REVIEW_HOLD_PAGES を手で持つ表から条件の計算に置き換える準備）。
 // 不可: 本文 600 字未満（details を含む）・読み物で 800 字未満・案内と法的ページ・高齢者向け（D118 の ELDERLY）・/for/kaigo/ に載る道具・全画面などの META_ONLY。
 // **いまは AdSense の審査中なので、計算の結果にかかわらず全部「不可」として扱う**（広告の script は戻さない）。結果はメモに内訳だけ出す
 const AD_MIN_CHARS = 600, AD_MIN_CHARS_READ = 800;
@@ -324,7 +295,7 @@ await pool([...pages], 6, async (url) => {
     adFacts.push({ p, chars, reasons });
   }
   if (isMetaOnly(p)) { if (script !== 0) fail(p, '広告なしのページ（META_ONLY。tools/ad-lists.mjs）に広告スクリプトがある'); }
-  else if (REVIEW_NO_AD_PAGES.has(p)) { if (script !== 0) fail(p, 'AdSense 審査中は広告 script を外すページ（REVIEW_NO_AD_PAGES）に広告スクリプトがある'); }
+  else if (REVIEW_HOLD_PAGES.has(p)) { if (script !== 0) fail(p, 'AdSense 審査中は広告 script を外すページ（REVIEW_HOLD_PAGES）に広告スクリプトがある'); }
   else if (script !== 1) fail(p, `AdSense のスクリプトが ${script} 個（1 個のはず）`);
   if (/class="adsbygoogle"|広告スペース|ad-placeholder/.test(html)) fail(p, '手動の広告枠・空の広告枠がある');
 
@@ -417,7 +388,7 @@ await pool([...pages], 6, async (url) => {
   }
 
   // 子どもが遊ぶ画面に外部リンク（GitHub・X・note）を置かない（REVIEW C7 R7）
-  if (META_ONLY_PAGES.has(p) && !p.endsWith('guide.html')) {
+  if (CHILD_SCREEN_PAGES.has(p)) {
     const bad = [...new Set(links.filter(h => CHILD_NG_LINK.test(h)))];
     if (bad.length) fail(p, `遊ぶ画面に外部リンク（${bad.join(', ')}）がある`);
   }
@@ -672,7 +643,9 @@ const NOT_TOOL_SCREENS = {
     marked.set(toolOf(u), (marked.get(toolOf(u)) || 0) + 1);
     if (x.body === want) same++; else fail(path(u), '共通の土台と皮（yorozu-common:begin〜end）が正本（root の tools/common/v2）と違う。sync-common.mjs --write で配り直す');
   }
-  for (const t of [...toolsInRobots, '(トップ)']) if (!marked.has(t)) fail(t, '共通の土台と皮（yorozu-common:begin〜end）が配られていない');
+  // sitemap に 1 ページも無いツール（全ページ noindex。/hade/ は yorozu-plans D877・Q-1099）は、巡回するページが無いので数えない
+  const withPages = new Set([...pages].map(toolOf));
+  for (const t of [...toolsInRobots, '(トップ)']) if (withPages.has(t) && !marked.has(t)) fail(t, '共通の土台と皮（yorozu-common:begin〜end）が配られていない');
   notes.push(`共通の土台と皮: 印のあるファイル ${total} 件のうち正本と同じ ${same} 件（${marked.size} 個のツールとトップ）`);
 }
 // 道具をまたいで使う計算の写しの同一性（yorozu-plans D484・企画書 102 の 4 章）: 公開されている写し（/<repo>/<場所>）が「生成物の印の 1 行＋正本（root の tools/common/calc）」と同じ。
