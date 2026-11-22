@@ -1,6 +1,9 @@
-// 広告なしの画面の一覧（META_ONLY）。正本はここ 1 か所で、check-site.mjs と yorozu-plans の tools/content/classes.mjs（content-classes.csv の「広告」列、D459）が import する。
+// 広告の script を置かない集合の正本はここ 1 か所で、check-site.mjs と yorozu-plans の tools/content/classes.mjs（content-classes.csv の「広告」列、D459）が import する。
 // check-site.mjs から切り出した（2026-11-03。check-site は読み込むだけで本番の巡回が走るため、ほかから import できない）
-// ここに載る画面は、広告スクリプトを入れず所有確認の meta だけ（README「ツールを追加するとき」5）。理由は行ごと: 全画面の本体・子どもが遊ぶ画面・高齢者向け・審査員の目で外した画面（D863）
+// 集合は 2 つで、意味が違う（yorozu-plans D898）。どちらのページも広告スクリプトを入れず所有確認の meta だけ（README「ツールを追加するとき」5）
+//   META_ONLY_PAGES・META_ONLY_PREFIXES … 約束。広告を置かないと決めている画面（全画面の本体・子ども・高齢者・親と家族向け・ド派手版）。ページが「広告なし」と名乗れる。承認の後も変わらない
+//   REVIEW_HOLD_PAGES                    … 待ち。今は script を外しているだけ（道具の画面・文の薄いページ・審査員の目で外したページ・入口と案内）。「広告なし」と名乗れない（check-site が止める）。
+//                                          承認の後に戻すかは、その時に決める。入口・案内・/print/ は戻さない
 const NO_AD_SCREENS = [
   '/hoshizora-sanpo/',     // プラネタリウムの全画面の本体
   '/todofuken-quiz/',      // こどもが遊ぶ画面（決定 D18: 広告は保護者向けの guide.html だけ）
@@ -48,20 +51,10 @@ const NO_AD_SCREENS = [
   '/post/',                // 要望の投書箱（yorozu-plans 企画書 77）
   '/updates/',             // 更新情報（案内のページ。about と同じ扱いで道具の 4 つは求めない: yorozu-plans D411）
 ];
-// 審査員の目で広告を外した 16 枚。子どもの画面ではない（下の CHILD_SCREEN_PAGES に入れない。D882・Q-1119）
-const AUDIT_NO_AD_PAGES = [
-  // AdSense の審査員の目でページごとに判定し、広告を外した 16 枚（yorozu-plans ROADMAP 7.269・D863・Q-1093）。道具の画面 9 枚
-  '/sekigae/', '/shaho-check/', '/gakushu-print/', '/toban/en/',
-  '/seido-keisan/en/childcare-leave/', '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/pension-refund/', '/seido-keisan/en/residence-tax/', '/seido-keisan/en/take-home-pay/',
-  // 同じく読み物と使い方 7 枚
-  '/hoshizora-sanpo/shinwa/', '/hoshizora-sanpo/shinwa/keizu.html', '/hoshizora-sanpo/shinwa/hyoki.html',
-  '/hoshizora-sanpo/calendar/new-moon.html', '/hoshizora-sanpo/en/calendar/new-moon.html',
-  '/web-roulette/odai/', '/tameshite/kioku/guide.html',
-];
-// 広告の script を置かない画面（所有確認の meta だけ）。この集合の意味はそれだけ（D882）
-export const META_ONLY_PAGES = new Set([...NO_AD_SCREENS, ...AUDIT_NO_AD_PAGES]);
+// 約束の集合（D898）。広告を置かないと決めている画面で、ページが「広告なし」と名乗れる
+export const META_ONLY_PAGES = new Set(NO_AD_SCREENS);
 // 子どもが使う画面（遊ぶ画面）。check-site の「外部リンク〈GitHub・X・note〉を置かない」（REVIEW C7 R7）はこの集合に掛ける。
-// Q-1093 の前に META_ONLY_PAGES の使い方ページ以外へ掛けていた範囲のまま（16 枚を足す前の上の一覧）。D882・Q-1119
+// 上の一覧の使い方ページ以外（D882・Q-1119）
 export const CHILD_SCREEN_PAGES = new Set(NO_AD_SCREENS.filter((p) => !p.endsWith('guide.html')));
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 export const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/', '/hade/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）。hade はド派手版で、偽の警告の演出は AdSense の規約に触れるので全ページ広告なし（D303）
@@ -69,7 +62,7 @@ export const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.so
 
 // 下は check-site.mjs から移した（Q-1118。yorozu-plans の content-classes.csv の「広告」列が、check-site と同じ集合の全部を読むため。D882）。
 // 前の名前は REVIEW_NO_AD_PAGES（check-site の中だけの名前）
-// AdSense 審査が通るまで本文の薄いページは広告 script を外す（2026-10-04）。通ったら本文を足したページから戻す
+// 待ちの集合（D898）。AdSense 審査が通るまで本文の薄いページは広告 script を外す（2026-10-04）。通ったら本文を足したページから戻す
 // 広告 script の数（下の「script が 0 か 1 か」）だけでこの集合を「script 0」とみなす。「広告なし」の定型文・高齢者・子どもの外部リンクの判定には混ぜない
 export const REVIEW_HOLD_PAGES = new Set([
   '/for/teachers/', '/for/it/',
@@ -95,6 +88,14 @@ export const REVIEW_HOLD_PAGES = new Set([
   '/unplugged/', '/unplugged/en/',
   '/henkan/', '/henkan/diff/', '/henkan/json/', '/henkan/csv/', '/henkan/zenkaku/', '/henkan/pdf/',
   '/ai-log/', '/ai-log/en/',
+  // AdSense の審査員の目でページごとに判定し、広告を外した 16 枚（yorozu-plans ROADMAP 7.269・D863・Q-1093）。子どもの画面ではない（D882）。
+  // 約束（META_ONLY）の側に置いていたが、D863 は「承認の後に戻すかは、その時に決める」なので待ちの側（D898・Q-1137。どのページも「広告なし」と名乗っていない）。道具の画面 9 枚
+  '/sekigae/', '/shaho-check/', '/gakushu-print/', '/toban/en/',
+  '/seido-keisan/en/childcare-leave/', '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/pension-refund/', '/seido-keisan/en/residence-tax/', '/seido-keisan/en/take-home-pay/',
+  // 同じく読み物と使い方 7 枚
+  '/hoshizora-sanpo/shinwa/', '/hoshizora-sanpo/shinwa/keizu.html', '/hoshizora-sanpo/shinwa/hyoki.html',
+  '/hoshizora-sanpo/calendar/new-moon.html', '/hoshizora-sanpo/en/calendar/new-moon.html',
+  '/web-roulette/odai/', '/tameshite/kioku/guide.html',
   '/print/',               // 無料の印刷物のセット（K173）。介護施設に配る案内のページで、広告を置かない
   // ナビゲーション・運営情報の画面（Google のポリシー「ナビゲーション・アラート目的の画面には広告を置かない」に合わせる。2026-10-04）
   '/', '/all/', '/en/', '/about.html', '/privacy-policy.html', '/en/about.html', '/en/privacy-policy.html',
