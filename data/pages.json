@@ -108,6 +108,7 @@
     {"path": "/shaho-check/", "date": "2026-09-23", "title": "社会保険 加入チェッカー", "section": "kurashi", "priority": 4, "aliases": ["106万円", "扶養", "年収の壁", "パート"], "chip": "社保の加入", "name": "社会保険 加入チェック", "note": "パートの加入を質問で"},
     {"path": "/nittei-kouho/", "date": "2026-09-23", "title": "日程調整 候補日ジェネレーター", "section": "atsumari", "priority": 4, "aliases": ["日程調整", "候補日", "忘年会"], "chip": "日程調整", "name": "日程調整 候補日", "note": "祝日を外した候補と文面"},
     {"path": "/loan-sim/", "date": "2026-09-23", "title": "住宅ローン 返済シミュレーター", "section": "kurashi", "priority": 5, "aliases": ["繰上返済", "金利", "住宅ローン"], "chip": "住宅ローン", "name": "住宅ローン 返済", "note": "金利の上昇と繰上返済"},
+    {"path": "/loan-sim/kinri/", "date": "2026-11-22", "title": "金利の今と昔 国債金利と物価の推移", "short": "金利の今と昔", "section": "kurashi", "priority": 5, "aliases": ["国債金利", "長期金利", "消費者物価指数", "物価上昇率"], "chip": "金利の今と昔", "name": "金利の今と昔", "note": "国債金利と物価の推移"},
     {"path": "/hoshizora-sanpo/zukan/", "date": "2026-09-23", "title": "星座図鑑", "section": "asobu", "priority": 9, "aliases": ["星座の一覧"], "chip": "星座図鑑"},
     {"path": "/hoshizora-sanpo/calendar/", "date": "2026-09-23", "title": "天文カレンダー 2026–2027", "section": "asobu", "priority": 9, "aliases": ["流星群", "月食", "天体"], "name": "天文カレンダー", "note": "流星群と月食の日"},
     {"path": "/hoshizora-sanpo/", "date": "2026-07-11", "title": "ほしぞらさんぽ", "section": "asobu", "priority": 9, "aliases": ["星座", "プラネタリウム", "星空"], "chip": "星空さんぽ", "name": "ほしぞらさんぽ", "note": "今夜の星空と星座"},
