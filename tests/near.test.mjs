@@ -1,8 +1,10 @@
 // 道具のページの「近い道具」（yorozu-plans ROADMAP 7.98 D368 の改）: 0 個は欄なし・置き場・2 度差し込まない・near_click は道と event だけ
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { nearBlock, injectNear, injectScreen, NEAR_STYLE, GUIDE_ANCHORS } from '../tools/build-near.mjs';
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { nearBlock, injectNear, injectScreen, NEAR_STYLE, GUIDE_ANCHORS, isGuideFile, sectionFallback, buildNear } from '../tools/build-near.mjs';
 
 const items = [{ url: '/seido-keisan/iryohi/', title: '医療費控除の計算', note: 'いくら戻るかの目安' }, { url: '/otasuke/kenshin/', title: '健診グラフ<b>', note: '' }];
 
@@ -84,4 +86,59 @@ test('見た目の <style> は <section> の中でなく </head> の直前に 1 
   assert.ok(out.indexOf('</head>') < out.indexOf('data-near-block'));
   assert.ok(!/<section[^>]*data-near-block[\s\S]*<style[\s\S]*<\/section>/.test(out));
   assert.equal(injectNear('<main><p>x</p></main>', items), '<main><p>x</p></main>', '<head> が無いページはそのまま');
+});
+
+// D897・Q-1139: 同じフォルダの guide-*.html にも入れる。0 個の行だけ、同じ節・同じ言語から priority の順に 2 つ
+const PAGES = {
+  pages: [
+    { path: '/a/', title: 'A', section: 'it', priority: 5, note: 'a の道具' },
+    { path: '/b/', title: 'B', section: 'it', priority: 7 },
+    { path: '/d/', title: 'D', section: 'it', priority: 5, note: 'd' },
+    { path: '/c/', title: 'C', section: 'it', priority: 5, note: 'c' },
+    { path: '/easy-split/quick/', title: 'Q', section: 'it', priority: 9 },
+    { path: '/hade/', title: 'H', section: 'it', priority: 9 },
+    { path: '/z/', title: 'Z', section: 'oya', priority: 9 },
+    { path: '/k/', title: 'K', section: 'kurashi', priority: 3 },
+  ],
+  en: { pages: [{ path: '/a/en/', title: 'A en' }, { path: '/b/en/', title: 'B en' }] },
+};
+
+test('使い方のファイルは同じフォルダの guide.html と guide-*.html', () => {
+  for (const f of ['guide.html', 'guide-hasuu.html', 'guide-keisha.html']) assert.ok(isGuideFile(f), f);
+  for (const f of ['index.html', 'guidebook.html', 'guide-.html', 'my-guide.html', 'guide.htm']) assert.ok(!isGuideFile(f), f);
+});
+
+test('0 個の行には同じ節・同じ言語の道具を priority の高い順に 2 つ（同点は path の順）。自分・NOINDEX_ON_TOP・NOT_ON_TOP は入れない', () => {
+  assert.deepEqual(sectionFallback('/a/', PAGES), [{ url: '/b/', title: 'B', note: '' }, { url: '/c/', title: 'C', note: 'c' }]);
+  assert.deepEqual(sectionFallback('/b/', PAGES).map((n) => n.url), ['/a/', '/c/']);
+});
+
+test('同じ節に当たる道具が無い・節の欄が無い（英語）・一覧に無い道具は 0 個のまま', () => {
+  assert.deepEqual(sectionFallback('/z/', PAGES), []);
+  assert.deepEqual(sectionFallback('/a/en/', PAGES), []);
+  assert.deepEqual(sectionFallback('/nai/', PAGES), []);
+});
+
+test('配信フォルダに差し込む: guide-*.html にも入り、0 個の行は同じ節の 2 つ、1 個以上の行は near.json のまま、同じ節に無ければ欄を出さない', () => {
+  const site = mkdtempSync(join(tmpdir(), 'near-'));
+  try {
+    const page = (t) => `<html><head></head><body><main><p>${t}</p></main></body></html>`;
+    for (const d of ['a', 'b', 'z']) mkdirSync(join(site, d));
+    for (const f of ['index.html', 'guide.html', 'guide-hasuu.html', 'other.html']) writeFileSync(join(site, 'a', f), page(f));
+    writeFileSync(join(site, 'b', 'index.html'), page('b'));
+    writeFileSync(join(site, 'z', 'index.html'), page('z'));
+    writeFileSync(join(site, 'z', 'guide.html'), page('zg'));
+    const near = { '/a/': [], '/b/': [{ url: '/k/', title: 'K', note: '' }], '/z/': [] };
+    const r = buildNear(site, near, PAGES);
+    const read = (...f) => readFileSync(join(site, ...f), 'utf8');
+    for (const f of ['index.html', 'guide.html', 'guide-hasuu.html']) {
+      const h = read('a', f);
+      assert.deepEqual([...h.matchAll(/<a href="([^"]+)" data-near-link>/g)].map((m) => m[1]), ['/b/', '/c/'], f);
+    }
+    assert.ok(!read('a', 'other.html').includes('data-near-block'), 'guide 以外の名前には入れない');
+    assert.equal(read('b', 'index.html'), injectNear(page('b'), near['/b/']), '1 個以上の行は near.json のまま');
+    assert.ok(!read('z', 'index.html').includes('data-near-block'));
+    assert.ok(!read('z', 'guide.html').includes('data-near-block'));
+    assert.deepEqual([r.done, r.guides, r.filled, r.empty], [2, 2, 1, 1]);
+  } finally { rmSync(site, { recursive: true, force: true }); }
 });
