@@ -55,10 +55,10 @@ test('何も止まっていない: stopped は空で nothing が真。区間の�
   // sa・sb・sc は 5 分前でなく 12 時から見て 9 時間前に読めた → 確かめられていない
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['sa', 'sb', 'sc', 'ko']);
   assert.deepEqual(now.link, { count: 2, partners: [
-    { id: 'sm', name: '相手 M', column: 'shigoto', url: 'https://status.example.com/sm' },
-    { id: 'kl', name: '相手 L', column: 'kurashi', url: 'https://example.invalid/kl', url_lang: 'ja' }] });
+    { id: 'sm', name: '相手 M', column: 'shigoto', field: '業務の SaaS', url: 'https://status.example.com/sm' },
+    { id: 'kl', name: '相手 L', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kl', url_lang: 'ja' }] });
   assert.deepEqual(ahead.link, now.link);
-  assert.deepEqual(now.none, { count: 1, partners: [{ id: 'kn', name: '相手 N', column: 'kurashi', url: 'https://example.invalid/kn', checked: '2026-11-19', url_lang: 'ja' }] });
+  assert.deepEqual(now.none, { count: 1, partners: [{ id: 'kn', name: '相手 N', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kn', checked: '2026-11-19', url_lang: 'ja' }] });
   assert.equal(ahead.items[0].start, '2026-11-24T23:30+09:00');
 });
 
@@ -66,9 +66,9 @@ test('同時に 3 つ: 重い順（major → minor → 欄の無い止まる予�
   const { now } = build(SPANS_BUSY);
   assert.equal(now.nothing, false);
   assert.deepEqual(now.stopped.map(x => [x.id, x.kind, x.impact]), [['sa', 'incident', 'major'], ['sb', 'planned', 'minor'], ['ka', 'planned', 'unknown']]);
-  assert.deepEqual(now.stopped[0], { id: 'sa', name: '相手 A', column: 'shigoto', service: null, title: '作った題', kind: 'incident', impact: 'major',
+  assert.deepEqual(now.stopped[0], { id: 'sa', name: '相手 A', column: 'shigoto', field: '業務の SaaS', service: null, title: '作った題', kind: 'incident', impact: 'major',
     color: 'red', limited: false, start: '2026-11-24T02:00+09:00', end: null, url: 'https://status.example.com/i/1', checked: null, lastRead: null });
-  assert.deepEqual(now.stopped[2], { id: 'ka', name: '相手 K', column: 'kurashi', service: 'ATM', title: null, kind: 'planned', impact: 'unknown',
+  assert.deepEqual(now.stopped[2], { id: 'ka', name: '相手 K', column: 'kurashi', field: '銀行', service: 'ATM', title: null, kind: 'planned', impact: 'unknown',
     color: 'blue', limited: false, start: '2026-11-23T23:30+09:00', end: '2026-11-24T05:00+09:00', url: 'https://example.invalid/ka', checked: '2026-11-19', lastRead: null, go: 'list', url_lang: 'ja' });
   // 同じ重さ（minor）: sc の障害は 0 時から、sb の予定メンテナンスは 1 時から → sc が先
   const more = build([...SPANS_BUSY, inc({ service: 'sc', id: 'c1', start: '2026-11-23T15:00:00Z', impact: 'minor' })]).now;
@@ -236,7 +236,7 @@ test('台帳の形をそのまま受ける: { targets }・region null・stops �
   const { now, ahead } = B.build(ledger, spans, '2026-11-29T22:00', '2026-11-29T21:58');   // 日曜 22 時
   assert.deepEqual(now.stopped.map(x => [x.id, x.limited, x.color]), [['kx', true, 'blue']]);
   assert.ok(ahead.items.every(x => x.limited === true));
-  assert.deepEqual(now.link.partners, [{ id: 'kz', name: '相手 Z', column: 'kurashi', url: 'https://example.invalid/kz', url_lang: 'ja' }]);
+  assert.deepEqual(now.link.partners, [{ id: 'kz', name: '相手 Z', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kz', url_lang: 'ja' }]);
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['g']);       // 11-29 から見て読めた時刻は古い
   assert.deepEqual(now.none.partners.map(p => p.id), ['ke']);    // stops の無い ledger の相手も「予定なし」
 });
@@ -275,9 +275,9 @@ test('英語の欄（Q-944・D725）: 台帳に在る時だけ行の末に通す
   assert.equal(ka.url_en, 'https://example.invalid/ka/en');
   assert.ok(ahead.items.filter(x => x.id === 'ka' && x.service === 'ネットバンキング').every(x => x.service_en === 'Online banking'));
   assert.deepEqual(now.none.partners.find(p => p.id === 'kn'),
-    { id: 'kn', name: '相手 N', column: 'kurashi', url: 'https://example.invalid/kn', checked: '2026-11-19', field_en: 'bank', url_lang: 'ja' });
+    { id: 'kn', name: '相手 N', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kn', checked: '2026-11-19', field_en: 'bank', url_lang: 'ja' });
   assert.deepEqual(now.link.partners.find(p => p.id === 'kl'),
-    { id: 'kl', name: '相手 L', column: 'kurashi', url: 'https://example.invalid/kl', name_en: 'L Bank', url_lang: 'ja' });
+    { id: 'kl', name: '相手 L', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kl', name_en: 'L Bank', url_lang: 'ja' });
   assert.ok(ahead.partners.some(p => p.id === 'ka' && p.name_en === 'K Bank' && !('service_en' in p)));
   // しごとの行と、英語の欄を持たないくらしの行（url_lang だけ）
   const sa = now.stopped.find(x => x.id === 'sa');
@@ -313,4 +313,17 @@ test('行き先の種類 go（Q-1000・D761・D830）: ledger の行だけ。告
   assert.equal(goOf({ deeplink: true, page_top: true, extra: [ex('ATM', '2026-11-24T23:30', '2026-11-25T05:00', { url: 'https://example.invalid/a.pdf' })] }).go, 'page');
   const { now } = build(SPANS_BUSY);
   assert.ok(!('go' in now.stopped[0]));                                       // しごと（auto）の行
+});
+
+// 台帳の分野 field を、行・相手・確かめられていない相手・リンクだけの相手の全部に通す（画面のジャンルの切り替えが読む。D768・yorozu-plans QUEUE Q-1001）
+test('field: 行と相手の 1 行の全部に、台帳の分野がそのまま入る（column の次）', () => {
+  const KS = { ...KN, id: 'ks', name: '相手 S', field: '証券' };
+  const { now, ahead } = build(SPANS_BUSY, { partners: [...PARTNERS, KS] });
+  const fieldOf = Object.fromEntries([...PARTNERS, KS].map((p) => [p.id, p.field]));
+  const rows = [...now.stopped, ...ahead.items, ...ahead.partners, ...now.none.partners, ...now.unconfirmed, ...now.link.partners];
+  assert.ok(rows.length > 10 && rows.some((x) => x.field === '証券'));
+  for (const x of rows) {
+    assert.equal(x.field, fieldOf[x.id], x.id);
+    assert.deepEqual(Object.keys(x).slice(0, 4), ['id', 'name', 'column', 'field'], x.id);
+  }
 });
