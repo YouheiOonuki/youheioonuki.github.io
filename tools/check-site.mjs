@@ -21,7 +21,6 @@ import { ldBlocks, nameMismatches, faqDiff } from './jsonld.mjs';               
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
 const EN_ONLY_PAGES = new Set([
   '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
-  '/tameshite/en/sleep-calculator/', '/tameshite/en/sleep-calculator/guide.html',
 ]);
 // AdSense 審査が通るまで本文の薄いページは広告 script を外す（2026-10-04）。通ったら本文を足したページから戻す
 // 広告 script の数（下の「script が 0 か 1 か」）だけでこの集合を「script 0」とみなす。「広告なし」の定型文・高齢者・子どもの外部リンクの判定には混ぜない
@@ -45,7 +44,7 @@ const REVIEW_NO_AD_PAGES = new Set([
   '/gakko-keisan/', '/gakko-keisan/naishin/', '/gakko-keisan/hensachi/', '/gakko-keisan/shusseki/',
   '/quiz-hiroba/mainichi/guide.html',
   '/fitbit-export/', '/fitbit-export/en/',
-  '/tameshite/', '/tameshite/en/sleep-calculator/',
+  '/tameshite/',
   '/unplugged/', '/unplugged/en/',
   '/henkan/', '/henkan/diff/', '/henkan/json/', '/henkan/csv/', '/henkan/zenkaku/', '/henkan/pdf/',
   '/ai-log/', '/ai-log/en/',

@@ -141,7 +141,6 @@
       {"path": "/hoshizora-sanpo/en/planisphere/", "date": "2026-09-25", "title": "Printable Planisphere", "note": "Star wheel for your latitude", "aliases": ["star wheel", "star finder", "planisphere PDF"]},
       {"path": "/hoshizora-sanpo/en/calendar/", "date": "2026-09-24", "title": "Astronomy Calendar 2026–2027", "note": "Full moons, meteors, eclipses", "aliases": ["meteor shower", "full moon", "eclipse"]},
       {"path": "/hoshizora-night/en/", "date": "2026-10-03", "title": "Night Sky Tonight, Full Version", "note": "Tonight’s sky, drawn large", "aliases": ["stars"]},
-      {"path": "/tameshite/en/sleep-calculator/", "date": "2026-10-03", "title": "Sleep Calculator", "note": "When to go to bed or wake up", "aliases": ["bedtime", "sleep cycle"]},
       {"path": "/gakushu-print/en/", "date": "2026-09-24", "title": "Hiragana & Katakana Practice Sheets", "note": "Printable kana tracing sheets", "aliases": ["kana", "worksheet", "JLPT", "genkouyoushi"]},
       {"path": "/furigana/en/", "date": "2026-09-24", "title": "Furigana Generator", "note": "Readings above kanji", "aliases": ["ruby", "kanji reading"]},
       {"path": "/bingo/en/", "date": "2026-09-24", "title": "Bingo Caller", "note": "Big-screen draws and cards", "aliases": ["bingo cards"]},
@@ -154,7 +153,7 @@
       {"path": "/ai-log/en/", "date": "2026-10-01", "title": "AI Chat Log to Markdown", "note": "Chat exports to Markdown", "aliases": ["ChatGPT", "Claude", "Obsidian"]}
     ],
     "sections": [
-      {"id": "life", "name": "Living in Japan", "rows": ["/seido-keisan/en/", "/seido-keisan/en/take-home-pay/", "/seido-keisan/en/residence-tax/", "/seido-keisan/en/pension-refund/", "/seido-keisan/en/childcare-leave/", "/seido-keisan/en/high-cost-medical/", "/seido-keisan/en/moving-checklist/", "/gengo/en/", "/gengo/en/school-grades/", "/hoshizora-night/en/", "/hoshizora-sanpo/en/", "/hoshizora-sanpo/en/planisphere/", "/hoshizora-sanpo/en/calendar/", "/tameshite/en/sleep-calculator/"]},
+      {"id": "life", "name": "Living in Japan", "rows": ["/seido-keisan/en/", "/seido-keisan/en/take-home-pay/", "/seido-keisan/en/residence-tax/", "/seido-keisan/en/pension-refund/", "/seido-keisan/en/childcare-leave/", "/seido-keisan/en/high-cost-medical/", "/seido-keisan/en/moving-checklist/", "/gengo/en/", "/gengo/en/school-grades/", "/hoshizora-night/en/", "/hoshizora-sanpo/en/", "/hoshizora-sanpo/en/planisphere/", "/hoshizora-sanpo/en/calendar/"]},
       {"id": "learn", "name": "Learning Japanese", "rows": ["/gakushu-print/en/", "/furigana/en/", "/bingo/en/", "/toban/en/", "/unplugged/en/"]},
       {"id": "it", "name": "Sysadmin tools", "rows": ["/pac-tester/en/", "/ADSearch/en/", "/filetime/en/", "/fitbit-export/en/", "/ai-log/en/"]}
     ]
