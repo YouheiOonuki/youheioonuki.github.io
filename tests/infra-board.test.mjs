@@ -17,18 +17,20 @@ const READ = '2026-11-23T17:55:00.000Z';   // 5 分前に読めた
 const base = { scope: 'world', country: 'global', field: '業務の SaaS', column: 'shigoto', mode: 'auto', checked: READ };
 const auto = (id, name) => ({ ...base, id, name, stops: ['全体'], page: `https://status.example.com/${id}`, source: { method: 'statuspage', urls: [`https://status.example.com/${id}/api`] } });
 const kurashi = (o) => ({ column: 'kurashi', field: '銀行', scope: 'national', country: 'JP', mode: 'ledger', checked: '2026-11-19',
-  page: `https://example.invalid/${o.id}`, source: { method: 'page', urls: [] }, rules: [], extra: [], ...o });
+  page: `https://example.invalid/${o.id}`, source: { method: 'page', urls: [] }, extra: [], ...o });
+// 臨時の区間（お知らせの URL つき。決まった休止の規則は台帳に書かない。D757・Q-996）
+const ex = (service, start, end, o = {}) => ({ service, start, end, url: `https://example.invalid/notice/${start}`, ...o });
 
 const SA = auto('sa', '相手 A');
 const SB = auto('sb', '相手 B');
 const SC = auto('sc', '相手 C');
 const SM = { ...auto('sm', '相手 M'), mode: 'link', checked: '2026-11-20' };            // しごとのリンクだけ
 const KA = kurashi({ id: 'ka', name: '相手 K', stops: ['ネットバンキング', 'ATM'],
-  rules: [{ service: 'ATM', every: 'day', from: '23:30', to: '05:00' }],
-  extra: [{ service: 'ネットバンキング', start: '2026-11-28T00:00', end: '2026-11-28T06:00' }] });
+  extra: [ex('ATM', '2026-11-23T23:30', '2026-11-24T05:00'), ex('ATM', '2026-11-24T23:30', '2026-11-25T05:00'),
+          ex('ATM', '2026-11-27T23:30', '2026-11-28T05:00'), ex('ネットバンキング', '2026-11-28T00:00', '2026-11-28T06:00')] });
 const KN = kurashi({ id: 'kn', name: '相手 N', stops: ['ATM'] });                    // 予定なし
 const KO = kurashi({ id: 'ko', name: '相手 O', checked: '2026-11-15', stops: ['ATM'],  // 9 日前 → 古い
-  rules: [{ service: 'ATM', every: 'day', from: '00:00', to: '06:00' }] });
+  extra: [ex('ATM', '2026-11-24T00:00', '2026-11-24T06:00')] });
 const KL = kurashi({ id: 'kl', name: '相手 L', mode: 'link', stops: ['ATM'] });
 const PARTNERS = [SA, SB, SC, SM, KA, KN, KO, KL];
 
@@ -75,7 +77,7 @@ test('同時に 3 つ: 重い順（major → minor → 欄の無い止まる予�
   assert.ok(!more.stopped.some(x => x.id === 'ko' || x.id === 'kl'));
 });
 
-test('日またぎ: 23:30〜翌 5:00 の区間は、3 時のいまに出て、ahead の並びでも夜 23:30 に始まる回が続く', () => {
+test('日またぎ: 23:30〜翌 5:00 の区間は、3 時のいまに出て、ahead の並びでも次の夜 23:30 に始まる回が続く', () => {
   const { now, ahead } = build(teishi);
   assert.ok(now.stopped.some(x => x.id === 'ka' && x.start === '2026-11-23T23:30+09:00' && x.end === '2026-11-24T05:00+09:00'));
   const ka = ahead.items.filter(x => x.id === 'ka' && x.service === 'ATM');
@@ -97,7 +99,7 @@ test('t が先の日時: その時点に止まっている物、「ほか N 件�
   // 確かめた相手は sa・sb・sc（5 分前に読めた）と ka・kn。23:45 に止まっているのは ka だけ → N は 4
   assert.equal(night.none.count, 4);
   assert.deepEqual(night.none.partners.map(p => p.id), ['sa', 'sb', 'sc', 'kn']);
-  const sat = B.at(ahead, '2026-11-28T00:00');                         // 土曜 0 時: ネットバンキング（臨時）と ATM（毎日）
+  const sat = B.at(ahead, '2026-11-28T00:00');                         // 土曜 0 時: ネットバンキングと ATM
   assert.deepEqual(sat.stopped.map(x => x.service), ['ATM', 'ネットバンキング']);
   const nine = B.at(ahead, '2026-11-25T09:00');                         // あすの朝 9 時: 何も止まっていない
   assert.deepEqual(nine.stopped, []);
@@ -218,10 +220,10 @@ test('線は相手ごと: source.every の 3 回ぶん（15 分おきなら 45 �
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['r46', 's16', 'd16']);
 });
 
-test('台帳の形をそのまま受ける: { targets }・region null・stops 空・link の checked null・規則の limited を区間まで運ぶ', () => {
+test('台帳の形をそのまま受ける: { targets }・region null・stops 空・link の checked null・区間の limited を運ぶ', () => {
   const ledger = { version: 1, targets: [
     { ...auto('g', '相手 G'), region: null, stops: [] },
-    { ...kurashi({ id: 'kx', name: '相手 X', checked: '2026-11-25', stops: ['ネットバンキング'], rules: [{ service: 'ネットバンキング', every: 'week', dow: 0, from: '21:00', to: '07:00', limited: true }] }), region: null },
+    { ...kurashi({ id: 'kx', name: '相手 X', checked: '2026-11-25', stops: ['ネットバンキング'], extra: [ex('ネットバンキング', '2026-11-29T21:00', '2026-11-30T07:00', { limited: true })] }), region: null },
     { ...kurashi({ id: 'ke', name: '相手 E', checked: '2026-11-25', stops: [] }), region: null },
     { ...kurashi({ id: 'kz', name: '相手 Z', mode: 'link', stops: [] }), region: null, checked: null },
   ] };

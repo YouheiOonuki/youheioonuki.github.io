@@ -1,5 +1,6 @@
-// 止まる予定の暦（K248）の芯 tools/common/calc/teishi.js のテスト（yorozu-plans QUEUE Q-770）
+// 止まる予定の暦（K248）の芯 tools/common/calc/teishi.js のテスト（yorozu-plans QUEUE Q-770・Q-989・Q-996）
 // 台帳は合成（相手の名前も区間も作った物。実在の相手の値ではない）。外の口に要求を出さない
+// 決まった休止の規則（rules）は台帳に書かない（D757・Q-996）。区間はどれも、お知らせの URL を持つ臨時の区間
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -10,125 +11,123 @@ const require = createRequire(import.meta.url);
 const SRC = fileURLToPath(new URL('../tools/common/calc/teishi.js', import.meta.url));
 const T = require(SRC);
 
-// 2026-11-21 は土曜。11 月の日曜は 1・8・15・22・29（第 5 あり）、12 月は 6・13・20・27（第 5 なし）、2027 年 1 月は 3〜31（第 5 あり）
+const PAGE = 'https://example.invalid/maint';
 const row = (o) => ({ column: 'kurashi', field: '銀行', scope: 'national', country: 'JP', mode: 'ledger',
-  page: 'https://example.invalid/maint', source: { method: 'page', urls: [] }, checked: '2026-11-19', rules: [], extra: [], ...o });
+  page: PAGE, source: { method: 'page', urls: [] }, checked: '2026-11-19', extra: [], ...o });
+// 臨時の区間。url は区間ごとのお知らせ（作った URL）
+const x = (service, start, end, o = {}) => ({ service, start, end, url: `https://example.invalid/notice/${start}`, ...o });
 
+// 2026-11-23 は月曜
 const A = row({ id: 'a', name: '架空銀行あ', stops: ['ネットバンキング', 'ATM'],
-  rules: [{ service: 'ATM', every: 'day', from: '23:30', to: '05:00' }] });
+  extra: [x('ATM', '2026-11-22T23:30', '2026-11-23T05:00'), x('ATM', '2026-11-23T23:30', '2026-11-24T05:00')] });
 const B = row({ id: 'b', name: '架空銀行い', stops: ['ネットバンキング'],
-  rules: [{ service: 'ネットバンキング', every: 'month', nth: 5, dow: 0, from: '01:00', to: '06:00' }] });
+  extra: [x('ネットバンキング', '2026-11-29T01:00', '2026-11-29T06:00'), x('ネットバンキング', '2027-01-31T01:00', '2027-01-31T06:00')] });
 const C = row({ id: 'c', name: '架空の申告', field: '行政の電子サービス', stops: ['申告の受付'],
-  rules: [{ service: '申告の受付', every: 'month', day: 30, from: '21:00', to: '03:00' }] });
+  extra: [x('申告の受付', '2026-11-30T21:00', '2026-12-01T03:00'), x('申告の受付', '2026-12-30T21:00', '2026-12-31T03:00')] });
 const D = row({ id: 'd', name: '架空の予約', field: '交通の予約・IC', stops: ['予約'],
-  rules: [{ service: '予約', every: 'week', dow: 0, from: '00:00', to: '06:00' }],
-  extra: [{ service: '予約', start: '2026-11-29T05:00', end: '2026-11-29T08:00' },
-          { service: '予約', start: '2026-12-06T06:00', end: '2026-12-06T07:00' }] });
+  extra: [x('予約', '2026-11-29T00:00', '2026-11-29T06:00'), x('予約', '2026-11-29T05:00', '2026-11-29T08:00'),   // 重なる
+          x('予約', '2026-12-06T00:00', '2026-12-06T06:00'), x('予約', '2026-12-06T06:00', '2026-12-06T07:00'),   // 接する
+          x('予約', '2026-12-13T00:00', '2026-12-13T06:00')] });
 const L = row({ id: 'l', name: '架空のリンクだけ', mode: 'link', stops: ['ネットバンキング'] });
-const OLD = row({ id: 'o', name: '架空の古い', checked: '2026-11-14', stops: ['ATM'],
-  rules: [{ service: 'ATM', every: 'day', from: '00:00', to: '01:00' }] });
+const OLD = row({ id: 'o', name: '架空の古い', checked: '2026-11-14', stops: ['ATM'], extra: [x('ATM', '2026-11-23T00:00', '2026-11-23T01:00')] });
 const NONE = row({ id: 'n', name: '架空の予定なし', stops: ['ATM'] });
 const LEDGER = [A, B, C, D, L, OLD, NONE];
 const NOW = '2026-11-23T00:00';   // 月曜 0 時
 
 const pick = (list, id, service) => list.filter(s => s.id === id && (!service || s.service === service)).map(s => [s.start, s.end]);
 
-test('合成の台帳は検査を通る。読めない規則・区間は検査が名指しし、ほかの関数は飛ばす', () => {
+test('合成の台帳は検査を通る。読めない区間は検査が名指しし、ほかの関数は飛ばす', () => {
   assert.deepEqual(T.validate(LEDGER), []);
   const bad = row({ id: 'x', name: '架空の誤り', stops: ['ATM', '窓口', '電話'], checked: '11/19',
-    rules: [{ service: 'ATM', every: 'day', from: '10:00', to: '10:00' }, { service: 'ATM', every: 'month', nth: 6, dow: 0, from: '01:00', to: '02:00' },
-            { service: 'ATM', every: 'week', dow: 7, from: '01:00', to: '02:00' }, { service: 'ATM', every: 'year', from: '01:00', to: '02:00' },
-            { service: 'ATM', every: 'day', from: '24:00', to: '02:00' }, { service: '無い物', every: 'day', from: '01:00', to: '02:00' }],
-    extra: [{ service: 'ATM', start: '2027-02-29T00:00', end: '2027-03-01T00:00' }, { service: 'ATM', start: '2026-11-24T05:00', end: '2026-11-24T05:00' }] });
-  const p = T.validate([bad, A, { ...A }, row({ id: 'y', name: '', mode: 'link', stops: ['ATM'], rules: [{ service: 'ATM', every: 'day', from: '01:00', to: '02:00' }] })]);
-  const of = (id) => p.filter(x => x.id === id).map(x => x.problem);
-  assert.equal(of('x').length, 10);
-  assert.ok(of('x').includes('stops は 0〜2 つ'));
-  assert.ok(of('x').includes('checked が YYYY-MM-DD でない'));
-  assert.ok(of('x').includes('規則の始まりと終わりが同じ'));
-  assert.ok(of('x').includes('臨時の区間の日時が読めない'));   // 2027 年 2 月 29 日は無い
-  assert.ok(of('x').includes('臨時の区間の終わりが始まり以前'));
+    extra: [x('ATM', '2027-02-29T00:00', '2027-03-01T00:00'), x('ATM', '2026-11-24T05:00', '2026-11-24T05:00'),
+            x('無い物', '2026-11-24T01:00', '2026-11-24T02:00'), x('ATM', '2026-11-24T01:00', '2026-11-24T02:00', { limited: 'yes' })] });
+  const p = T.validate([bad, A, { ...A }, row({ id: 'y', name: '', mode: 'link', stops: ['ATM'], extra: [x('ATM', '2026-11-24T01:00', '2026-11-24T02:00')] })]);
+  const of = (id) => p.filter(q => q.id === id).map(q => q.problem);
+  assert.deepEqual(of('x'), ['stops は 0〜2 つ', 'checked が YYYY-MM-DD でない', '臨時の区間の日時が読めない',   // 2027 年 2 月 29 日は無い
+    '臨時の区間の終わりが始まり以前', '臨時の区間の止まる物が stops に無い: 無い物', 'limited が true・false でない']);
   assert.deepEqual(of('a'), ['id が重なる']);
-  assert.deepEqual(of('y'), ['name が無い', 'link の相手が規則か区間を持つ']);
-  // 誤りの規則・区間は出ない（stops の 3 つ目も、規則が無いので区間は出ない）
+  assert.deepEqual(of('y'), ['name が無い', 'link の相手が区間を持つ']);
+  // 誤りの区間は出ない
   const ok = row({ ...bad, checked: '2026-11-19', stops: ['ATM'] });
   assert.deepEqual(T.upcoming([ok], NOW), []);
 });
 
-test('日またぎ: 毎日 23:30〜翌 5:00。from の時点で続いている区間も入り、60 日ぶん出る', () => {
-  const s = pick(T.upcoming(LEDGER, NOW), 'a', 'ATM');
-  assert.deepEqual(s[0], ['2026-11-22T23:30+09:00', '2026-11-23T05:00+09:00']);
-  assert.deepEqual(s[1], ['2026-11-23T23:30+09:00', '2026-11-24T05:00+09:00']);
-  assert.equal(s.length, 61);   // 11-22 夜の回（続いている）＋ 11-23〜2027-01-21 の 60 回
-  assert.deepEqual(s[60], ['2027-01-21T23:30+09:00', '2027-01-22T05:00+09:00']);
+test('検査（Q-996）: 区間は、お知らせの URL を https で必ず持つ。無い・空・http の区間は誤りで、出さない', () => {
+  const one = (o) => row({ id: 'u', name: '架空の URL', stops: ['ATM'], extra: [{ service: 'ATM', start: '2026-11-24T01:00', end: '2026-11-24T02:00', ...o }] });
+  for (const o of [{}, { url: '' }, { url: 'http://example.invalid/notice' }, { url: 'javascript:alert(1)' }, { url: 1 }]) {
+    assert.deepEqual(T.validate([one(o)]).map(q => q.problem), ['臨時の区間の url が https でない'], JSON.stringify(o));
+    assert.deepEqual(T.upcoming([one(o)], NOW), [], JSON.stringify(o));
+  }
+  assert.deepEqual(T.validate([one({ url: 'https://example.invalid/notice' })]), []);
+});
+
+test('検査（Q-996・D757）: 決まった休止の規則 rules は、空の並びでも欄が在れば誤り。規則から区間は作らない', () => {
+  const R = (rules) => row({ id: 'r', name: '架空の規則', stops: ['ATM'], rules });
+  for (const rules of [[], [{ service: 'ATM', every: 'day', from: '23:30', to: '05:00' }]]) {
+    assert.deepEqual(T.validate([R(rules)]).map(q => q.problem), ['rules は持たない（決まった休止の規則は台帳に書かない。D757）']);
+    assert.deepEqual(T.upcoming([R(rules)], NOW), []);
+  }
+  assert.deepEqual(T.nextStops([R([{ service: 'ATM', every: 'day', from: '23:30', to: '05:00' }])], NOW), []);   // 区間の無い相手は並べない
+});
+
+test('日またぎ: 23:30〜翌 5:00。from の時点で続いている区間も入る', () => {
+  assert.deepEqual(pick(T.upcoming(LEDGER, NOW), 'a', 'ATM'), [
+    ['2026-11-22T23:30+09:00', '2026-11-23T05:00+09:00'],
+    ['2026-11-23T23:30+09:00', '2026-11-24T05:00+09:00'],
+  ]);
   assert.deepEqual(pick(T.stoppedAt(LEDGER, '2026-11-24T03:00'), 'a'), [['2026-11-23T23:30+09:00', '2026-11-24T05:00+09:00']]);
 });
 
-test('月またぎ: 毎月 30 日 21:00〜翌 3:00 は 11/30 → 12/1。2 月（30 日が無い）は出ない', () => {
+test('月またぎ: 11/30 21:00〜12/1 3:00。終わりの前は止まっている', () => {
   assert.deepEqual(pick(T.upcoming(LEDGER, NOW), 'c'), [
     ['2026-11-30T21:00+09:00', '2026-12-01T03:00+09:00'],
     ['2026-12-30T21:00+09:00', '2026-12-31T03:00+09:00'],
   ]);
-  assert.deepEqual(pick(T.upcoming(LEDGER, '2027-01-25T00:00', { now: NOW, days: 70 }), 'c'), [
-    ['2027-01-30T21:00+09:00', '2027-01-31T03:00+09:00'],
-    ['2027-03-30T21:00+09:00', '2027-03-31T03:00+09:00'],
-  ]);
   assert.equal(T.stoppedAt(LEDGER, '2026-12-01T02:59', { now: NOW }).filter(s => s.id === 'c').length, 1);
 });
 
-test('第 5 日曜の無い月: 70 日で 11 月 29 日と 2027 年 1 月 31 日だけで、12 月は出ない', () => {
+test('長さ: 既定の 60 日に入らない区間は、days を広げると出る', () => {
+  assert.deepEqual(pick(T.upcoming(LEDGER, NOW), 'b'), [['2026-11-29T01:00+09:00', '2026-11-29T06:00+09:00']]);
   assert.deepEqual(pick(T.upcoming(LEDGER, NOW, { days: 70 }), 'b'), [
     ['2026-11-29T01:00+09:00', '2026-11-29T06:00+09:00'],
     ['2027-01-31T01:00+09:00', '2027-01-31T06:00+09:00'],
   ]);
 });
 
-test('うるう日: 毎月 29 日は 2028 年 2 月に出て、2027 年 2 月には出ない。臨時の区間も 2/29 をまたげる', () => {
-  const R = row({ id: 'r', name: '架空の月末', checked: '2028-02-01', stops: ['ATM'],
-    rules: [{ service: 'ATM', every: 'month', day: 29, from: '22:00', to: '24:00' }],
-    extra: [{ service: 'ATM', start: '2028-02-28T23:00', end: '2028-03-01T01:00' }] });
-  assert.deepEqual(pick(T.upcoming([R], '2028-02-01T00:00', { days: 60 }), 'r'), [
-    ['2028-02-28T23:00+09:00', '2028-03-01T01:00+09:00'],   // 臨時が 2/29 22:00〜24:00 の規則を含むので 1 つに
-    ['2028-03-29T22:00+09:00', '2028-03-30T00:00+09:00'],
-  ]);
-  assert.equal(T.upcoming([R], '2028-02-01T00:00', { days: 60 })[0].kind, 'mixed');
-  const R27 = { ...R, checked: '2027-02-01', extra: [] };
-  assert.deepEqual(pick(T.upcoming([R27], '2027-02-01T00:00', { days: 60 }), 'r'), [['2027-03-29T22:00+09:00', '2027-03-30T00:00+09:00']]);
+test('うるう日: 臨時の区間は 2028 年 2/29 をまたげる', () => {
+  const R = row({ id: 'r', name: '架空の月末', checked: '2028-02-01', stops: ['ATM'], extra: [x('ATM', '2028-02-28T23:00', '2028-03-01T01:00')] });
+  assert.deepEqual(pick(T.upcoming([R], '2028-02-01T00:00'), 'r'), [['2028-02-28T23:00+09:00', '2028-03-01T01:00+09:00']]);
+  assert.equal(T.stoppedAt([R], '2028-02-29T12:00', { now: '2028-02-01T00:00' }).length, 1);
 });
 
-test('規則と臨時が重なる・接する時は、同じ相手・同じ止まる物で 1 つにまとめる', () => {
-  const s = T.upcoming(LEDGER, NOW).filter(x => x.id === 'd');
-  const at = (d) => s.filter(x => x.start.startsWith(d)).map(x => [x.start, x.end, x.kind]);
-  assert.deepEqual(at('2026-11-29'), [['2026-11-29T00:00+09:00', '2026-11-29T08:00+09:00', 'mixed']]);   // 重なる
-  assert.deepEqual(at('2026-12-06'), [['2026-12-06T00:00+09:00', '2026-12-06T07:00+09:00', 'mixed']]);   // 接する
-  assert.deepEqual(at('2026-12-13'), [['2026-12-13T00:00+09:00', '2026-12-13T06:00+09:00', 'rule']]);
+test('区間が重なる・接する時は、同じ相手・同じ止まる物で 1 つにまとめる', () => {
+  const s = T.upcoming(LEDGER, NOW).filter(q => q.id === 'd');
+  const at = (d) => s.filter(q => q.start.startsWith(d)).map(q => [q.start, q.end, q.kind]);
+  assert.deepEqual(at('2026-11-29'), [['2026-11-29T00:00+09:00', '2026-11-29T08:00+09:00', 'extra']]);   // 重なる
+  assert.deepEqual(at('2026-12-06'), [['2026-12-06T00:00+09:00', '2026-12-06T07:00+09:00', 'extra']]);   // 接する
+  assert.deepEqual(at('2026-12-13'), [['2026-12-13T00:00+09:00', '2026-12-13T06:00+09:00', 'extra']]);
   // 止まる物が違えば、まとめない
   const both = T.stoppedAt(LEDGER, '2026-11-24T00:00');
-  assert.deepEqual(both.map(x => x.id + '/' + x.service), ['a/ATM']);
+  assert.deepEqual(both.map(q => q.id + '/' + q.service), ['a/ATM']);
 });
 
 test('t が区間の始まりちょうどは止まっている側、終わりちょうどは止まっていない側', () => {
-  const ids = (t) => T.stoppedAt(LEDGER, t, { now: NOW }).map(x => x.id);
-  assert.deepEqual(ids('2026-11-29T01:00'), ['a', 'd', 'b']);   // b は 1:00 に始まる（並びは始まる順）
-  assert.deepEqual(ids('2026-11-29T00:59'), ['a', 'd']);
-  assert.deepEqual(ids('2026-11-29T06:00'), ['d']);             // b は 6:00 に終わる。a は 5:00 に終わった
-  assert.deepEqual(ids('2026-11-29T08:00'), []);                // d（まとめた区間）も 8:00 に終わる
+  const ids = (t) => T.stoppedAt(LEDGER, t, { now: NOW }).map(q => q.id);
+  assert.deepEqual(ids('2026-11-29T01:00'), ['d', 'b']);   // b は 1:00 に始まる（並びは始まる順）
+  assert.deepEqual(ids('2026-11-29T00:59'), ['d']);
+  assert.deepEqual(ids('2026-11-29T06:00'), ['d']);        // b は 6:00 に終わる
+  assert.deepEqual(ids('2026-11-29T08:00'), []);           // d（まとめた区間）も 8:00 に終わる
   assert.deepEqual(ids('2026-11-29T07:59'), ['d']);
   // 時差つきの文字列・ミリ秒・Date でも同じ
-  assert.deepEqual(T.stoppedAt(LEDGER, '2026-11-28T16:00Z', { now: NOW }).map(x => x.id), ['a', 'd', 'b']);
-  assert.deepEqual(T.stoppedAt(LEDGER, new Date('2026-11-29T01:00+09:00'), { now: NOW }).map(x => x.id), ['a', 'd', 'b']);
+  assert.deepEqual(T.stoppedAt(LEDGER, '2026-11-28T16:00Z', { now: NOW }).map(q => q.id), ['d', 'b']);
+  assert.deepEqual(T.stoppedAt(LEDGER, new Date('2026-11-29T01:00+09:00'), { now: NOW }).map(q => q.id), ['d', 'b']);
 });
 
 test('t が先の日時: 古さは opts.now で測り、並びは始まる順・台帳の行の順', () => {
   const s = T.stoppedAt(LEDGER, '2027-01-31T02:00', { now: NOW });
-  assert.deepEqual(s.map(x => [x.id, x.service, x.start, x.end]), [
-    ['c', '申告の受付', '2027-01-30T21:00+09:00', '2027-01-31T03:00+09:00'],
-    ['a', 'ATM', '2027-01-30T23:30+09:00', '2027-01-31T05:00+09:00'],
-    ['d', '予約', '2027-01-31T00:00+09:00', '2027-01-31T06:00+09:00'],
-    ['b', 'ネットバンキング', '2027-01-31T01:00+09:00', '2027-01-31T06:00+09:00'],
-  ]);
+  assert.deepEqual(s.map(q => [q.id, q.service, q.start, q.end]), [['b', 'ネットバンキング', '2027-01-31T01:00+09:00', '2027-01-31T06:00+09:00']]);
   assert.deepEqual(Object.keys(s[0]), ['id', 'name', 'column', 'service', 'start', 'end', 'kind', 'limited', 'url', 'checked']);
-  assert.equal(s[0].url, 'https://example.invalid/maint');
+  assert.equal(s[0].url, PAGE);   // deeplink の無い相手の行き先は page
   // now を渡さないと t で測る: 2027-01-31 から見ると確かめた日 11-19 は 8 日より古いので、どれも出さない
   assert.deepEqual(T.stoppedAt(LEDGER, '2027-01-31T02:00'), []);
   // (a) の並びも始まる順
@@ -138,13 +137,13 @@ test('t が先の日時: 古さは opts.now で測り、並びは始まる順・
 
 test('相手ごとの「次に止まる」: from より後に始まる最初の区間。続いている区間は「次」に数えない', () => {
   const n = T.nextStops(LEDGER, '2026-11-23T02:00');
-  assert.deepEqual(n.map(x => [x.id, x.next && x.next.start]), [
+  assert.deepEqual(n.map(q => [q.id, q.next && q.next.start]), [
     ['a', '2026-11-23T23:30+09:00'],
     ['b', '2026-11-29T01:00+09:00'],
     ['c', '2026-11-30T21:00+09:00'],
     ['d', '2026-11-29T00:00+09:00'],
-  ]);   // n は止まる物を持つが、規則も臨時の区間も無いので並べない（D642）
-  assert.equal(T.nextStops(LEDGER, '2026-11-29T00:00', { now: NOW }).find(x => x.id === 'd').next.start, '2026-12-06T00:00+09:00');
+  ]);   // n は止まる物を持つが、臨時の区間が無いので並べない（D642）
+  assert.equal(T.nextStops(LEDGER, '2026-11-29T00:00', { now: NOW }).find(q => q.id === 'd').next.start, '2026-12-06T00:00+09:00');
 });
 
 test('8 日の境目: 確かめた日から 8 日は予定を出し、9 日で出さない側に移る。link は出さない側。残りの区間なしは「予定なし」', () => {
@@ -154,15 +153,15 @@ test('8 日の境目: 確かめた日から 8 日は予定を出し、9 日で�
     stale: { count: 1, names: ['架空の古い'] },                 // 11-14 から 11-23 は 9 日
     none: { count: 1, names: ['架空の予定なし'] },
   });
-  const edge = { ...OLD, checked: '2026-11-15' };                // 8 日
+  const edge = { ...OLD, checked: '2026-11-15', extra: [x('ATM', '2026-11-23T00:00', '2026-11-24T01:00')] };   // 8 日
   assert.equal(T.summary([edge], '2026-11-23T23:59').stale.count, 0);
   assert.equal(T.summary([edge], '2026-11-24T00:00').stale.count, 1);
   assert.equal(T.stoppedAt([edge], '2026-11-23T00:30').length, 1);
-  assert.equal(T.stoppedAt([edge], '2026-11-24T00:30').length, 0);
+  assert.equal(T.stoppedAt([edge], '2026-11-24T00:30').length, 0);   // 区間の中でも、古くなったので出さない
   // link・古い相手の区間は (a)〜(c) に出ない
-  const ids = new Set(T.upcoming(LEDGER, NOW).map(x => x.id));
+  const ids = new Set(T.upcoming(LEDGER, NOW).map(q => q.id));
   assert.ok(!ids.has('l') && !ids.has('o'));
-  assert.ok(!T.nextStops(LEDGER, NOW).some(x => x.id === 'l' || x.id === 'o'));
+  assert.ok(!T.nextStops(LEDGER, NOW).some(q => q.id === 'l' || q.id === 'o'));
   // 確かめた日の無い ledger の相手も出さない側
   assert.equal(T.summary([{ ...NONE, checked: undefined }], NOW).stale.count, 1);
 });
@@ -184,28 +183,25 @@ test('台帳の名前（D630）: region null・stops 空・link の checked null
   const E = { ...row({ id: 'e', name: '架空の止まる物なし', stops: [] }), region: null };
   const Z = { ...row({ id: 'z', name: '架空のリンク', mode: 'link', stops: [] }), region: null, checked: null };
   const H = row({ id: 'h', name: '架空の一部制限', stops: ['ネットバンキング', 'ATM'],
-    rules: [{ service: 'ネットバンキング', every: 'week', dow: 0, from: '21:00', to: '23:00', limited: true },
-            { service: 'ATM', every: 'week', dow: 0, from: '21:00', to: '22:00', limited: true }],
-    extra: [{ service: 'ATM', start: '2026-11-29T22:00', end: '2026-11-29T23:00' }] });
+    extra: [x('ネットバンキング', '2026-11-29T21:00', '2026-11-29T23:00', { limited: true }),
+            x('ATM', '2026-11-29T21:00', '2026-11-29T22:00', { limited: true }), x('ATM', '2026-11-29T22:00', '2026-11-29T23:00')] });
   assert.deepEqual(T.validate({ targets: [G, E, Z, H] }), []);
-  const p = T.validate([{ ...H, rules: [{ ...H.rules[0], limited: 'yes' }] }, { ...E, region: '関東' }, { ...Z, checked: '11/19' }]);
-  assert.deepEqual(p.map(x => x.problem), ['limited が true・false でない', 'region は scope が regional の時だけ', 'checked が YYYY-MM-DD でない']);
-  const s = T.upcoming([H], NOW, { days: 7 }).map(x => [x.service, x.start, x.end, x.kind, x.limited]);
+  const p = T.validate([{ ...E, region: '関東' }, { ...Z, checked: '11/19' }]);
+  assert.deepEqual(p.map(q => q.problem), ['region は scope が regional の時だけ', 'checked が YYYY-MM-DD でない']);
+  const s = T.upcoming([H], NOW, { days: 7 }).map(q => [q.service, q.start, q.end, q.kind, q.limited]);
   assert.deepEqual(s, [
-    ['ネットバンキング', '2026-11-29T21:00+09:00', '2026-11-29T23:00+09:00', 'rule', true],
-    ['ATM', '2026-11-29T21:00+09:00', '2026-11-29T23:00+09:00', 'mixed', false],   // limited の規則と limited でない臨時が接する → 止まる側
+    ['ネットバンキング', '2026-11-29T21:00+09:00', '2026-11-29T23:00+09:00', 'extra', true],
+    ['ATM', '2026-11-29T21:00+09:00', '2026-11-29T23:00+09:00', 'extra', false],   // limited の区間と limited でない区間が接する → 止まる側
   ]);
   assert.deepEqual(T.summary([G, E, Z], NOW), { link: { count: 1, names: ['架空のリンク'] }, stale: { count: 0, names: [] }, none: { count: 1, names: ['架空の止まる物なし'] } });
-  assert.deepEqual(T.nextStops([G, E, H], NOW).map(x => x.id), ['h']);   // 規則も臨時の区間も無い相手は「次に止まる」を並べない
+  assert.deepEqual(T.nextStops([G, E, H], NOW).map(q => q.id), ['h']);   // 臨時の区間の無い相手は「次に止まる」を並べない
 });
 
-test('「次に止まる」の並べ方（D642）: 規則か臨時の区間を持つ相手は stops が 0 でも並べ、規則も区間も無い相手は止まる物があっても並べない', () => {
-  const R0 = row({ id: 'r0', name: '架空の規則だけ', stops: [], rules: [{ service: 'ATM', every: 'day', from: '01:00', to: '02:00' }] });
-  const X0 = row({ id: 'x0', name: '架空の臨時だけ', stops: [], extra: [{ service: 'ATM', start: '2026-11-24T01:00', end: '2026-11-24T02:00' }] });
+test('「次に止まる」の並べ方（D642）: 臨時の区間を持つ相手は stops が 0 でも並べ、区間の無い相手は止まる物があっても並べない', () => {
+  const X0 = row({ id: 'x0', name: '架空の臨時だけ', stops: [], extra: [x('ATM', '2026-11-24T01:00', '2026-11-24T02:00')] });
   const S0 = row({ id: 's0', name: '架空の止まる物だけ', stops: ['ATM'] });
-  assert.deepEqual(T.nextStops([R0, S0, X0, A], NOW), [
-    { id: 'r0', name: '架空の規則だけ', next: null },   // 止まる物の名前は空（stops に無い物の区間は作らない）
-    { id: 'x0', name: '架空の臨時だけ', next: null },
+  assert.deepEqual(T.nextStops([S0, X0, A], NOW), [
+    { id: 'x0', name: '架空の臨時だけ', next: null },   // 止まる物の名前は空（stops に無い物の区間は作らない）
     { id: 'a', name: '架空銀行あ', next: T.upcoming([A], NOW).find(s => T.toMs(s.start) > T.toMs(NOW)) },
   ]);
 });
@@ -215,21 +211,19 @@ test('口に要求を出さない: 正本に fetch・XMLHttpRequest・sendBeacon
   for (const w of ['fetch(', 'XMLHttpRequest', 'sendBeacon', 'WebSocket', 'EventSource', 'require(', 'import ']) assert.ok(!src.includes(w), w);
 });
 
-test('行き先（D752・Q-989）: deeplink が true の相手は臨時の区間の url、欄の無い相手と .csv・.pdf・http(s) でない url は page', () => {
+test('行き先（D752・Q-989）: deeplink が true の相手は臨時の区間の url、欄の無い相手と .csv・.pdf で終わる url は page', () => {
   const ex = (url) => ({ service: 'ATM', start: '2026-11-24T01:00', end: '2026-11-24T02:00', url });
   const urlOf = (o) => T.upcoming([row({ id: 'x', name: '架空の行き先', stops: ['ATM'], ...o })], NOW)[0].url;
   const NOTICE = 'https://example.invalid/notice/1';
   assert.equal(urlOf({ deeplink: true, extra: [ex(NOTICE)] }), NOTICE);                                    // 有り
-  assert.equal(urlOf({ extra: [ex(NOTICE)] }), 'https://example.invalid/maint');                           // 無し
-  assert.equal(urlOf({ deeplink: true, extra: [ex('https://example.invalid/schedule.csv')] }), 'https://example.invalid/maint');
-  assert.equal(urlOf({ deeplink: true, extra: [ex('https://example.invalid/a.PDF')] }), 'https://example.invalid/maint');
-  assert.equal(urlOf({ deeplink: true, extra: [ex('javascript:alert(1)')] }), 'https://example.invalid/maint');
-  assert.equal(urlOf({ deeplink: true, extra: [ex(undefined)] }), 'https://example.invalid/maint');
-  // まとめた区間: 同じ url だけならその url、違えば page。規則とまとまれば page
+  assert.equal(urlOf({ extra: [ex(NOTICE)] }), PAGE);                                                      // 無し
+  assert.equal(urlOf({ deeplink: true, extra: [ex('https://example.invalid/schedule.csv')] }), PAGE);
+  assert.equal(urlOf({ deeplink: true, extra: [ex('https://example.invalid/a.PDF')] }), PAGE);
+  assert.equal(urlOf({ deeplink: true, extra: [ex('https://example.invalid/schedule.csv?d=1')] }), PAGE);
+  // まとめた区間: 同じ url だけならその url、違えば page
   const two = (u2) => [ex(NOTICE), { service: 'ATM', start: '2026-11-24T02:00', end: '2026-11-24T03:00', url: u2 }];
   assert.equal(urlOf({ deeplink: true, extra: two(NOTICE) }), NOTICE);
-  assert.equal(urlOf({ deeplink: true, extra: two('https://example.invalid/notice/2') }), 'https://example.invalid/maint');
-  assert.equal(urlOf({ deeplink: true, extra: [ex(NOTICE)], rules: [{ service: 'ATM', every: 'day', from: '00:30', to: '01:30' }] }), 'https://example.invalid/maint');
+  assert.equal(urlOf({ deeplink: true, extra: two('https://example.invalid/notice/2') }), PAGE);
 });
 
 test('検査（Q-989）: deeplink は ledger の相手だけで、値は true だけ', () => {
