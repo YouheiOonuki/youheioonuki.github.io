@@ -135,16 +135,19 @@ test('確かめられていない相手は「予定なし」に入らない（au
   assert.deepEqual(r.now.none.partners.map(p => p.id), ['kn']);
 });
 
-test('取り込みが 15 分より古い: いまの並びを出さず nothing も立てない。ちょうど 15 分は古くない', () => {
+test('取り込みが 15 分より古い: 機械で取る相手の行を出さず nothing も立てない。台帳の最中の休止は出す。ちょうど 15 分は古くない', () => {
   const old = build(SPANS_BUSY, { ing: '2026-11-24T02:44:59' }).now;
   assert.equal(old.ingestOld, true);
-  assert.deepEqual(old.stopped, []);
+  assert.deepEqual(old.stopped.map(x => [x.id, x.service]), [['ka', 'ATM']]);   // 台帳の最中の休止だけ（D766）
   assert.equal(old.nothing, false);
   assert.equal(old.ingestedAt, '2026-11-24T02:44+09:00');
   const edge = build(SPANS_BUSY, { ing: '2026-11-24T02:45' }).now;
   assert.equal(edge.ingestOld, false);
   assert.equal(edge.stopped.length, 3);
-  assert.equal(build(SPANS_BUSY, { ing: null }).now.ingestOld, true);   // 取り込みの時刻が無い
+  const never = build(SPANS_BUSY, { ing: null }).now;   // 取り込みの時刻が無い
+  assert.equal(never.ingestOld, true);
+  assert.deepEqual(never.stopped.map(x => x.id), ['ka']);
+  assert.equal(build(teishi.filter(x => x.id !== 'ka').concat(SPANS_BUSY.slice(0, 2)), { ing: null }).now.stopped.length, 0);   // 台帳の最中が無ければ空
   assert.equal(B.isOld('2026-11-24T02:45+09:00', '2026-11-24T03:00'), false);
   assert.equal(B.isOld('2026-11-24T02:45+09:00', '2026-11-24T03:01'), true);
 });
