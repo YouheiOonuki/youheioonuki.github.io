@@ -12,8 +12,8 @@ import { WHOLE } from '../tools/sync-common.mjs';
 
 const MASTER = readFileSync(new URL('../tools/common/share-card.js', import.meta.url), 'utf8');
 
-test('WHOLE の表: まるごとの写しは used.js と share-card.js と reset-storage.js と share-stub.mjs と make-share-og.mjs と screen.js で、どれも正本が tools/common に在る', () => {
-  assert.deepEqual(WHOLE, ['used.js', 'share-card.js', 'reset-storage.js', 'share-stub.mjs', 'make-share-og.mjs', 'screen.js']);
+test('WHOLE の表: まるごとの写しは used.js と share-card.js と reset-storage.js と share-stub.mjs と make-share-og.mjs と zip.js と reset-storage.test.js と screen.js で、どれも正本が tools/common に在る', () => {
+  assert.deepEqual(WHOLE, ['used.js', 'share-card.js', 'reset-storage.js', 'share-stub.mjs', 'make-share-og.mjs', 'zip.js', 'reset-storage.test.js', 'screen.js']);
   for (const n of WHOLE) assert.ok(existsSync(new URL('../tools/common/' + n, import.meta.url)), n);
 });
 
