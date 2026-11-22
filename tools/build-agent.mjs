@@ -29,14 +29,14 @@ export const API = 'https://yorozu-api.oonuki-youhei.workers.dev';
 export const EXTRA_TOOLS = { 'kogaku/categories': 'list_high_cost_medical_categories' };
 
 // 公開データ（どれも CC0。ファイルの中に license・checked・generated・source がある。ACCEPTANCE 7.10.3 e）
-const DATASETS = [
+export const DATASETS = [
   { path: 'seido-keisan/data/kaitei.json', name: '制度の改定カレンダー', what: '税・社会保険・給付の施行日と出典' },
   { path: 'seido-keisan/data/kaitei.ics', name: '制度の改定カレンダー（iCalendar）', what: '同じ施行日の購読用カレンダー' },
   { path: 'gakko-keisan/data/naishin.json', name: '都道府県別の内申点の計算式', what: '公立高校入試の調査書点の式と値、計算例' },
   { path: 'hoshizora-sanpo/data/tenmon.json', name: '天文カレンダー', what: '新月・上弦・満月・下弦、流星群の極大、日食・月食（国立天文台の発表）' },
   { path: 'hoshizora-sanpo/data/tenmon.ics', name: '天文カレンダー（iCalendar）', what: '同じ予定の購読用カレンダー' },
-  { path: 'quiz-hiroba/data/genso.json', name: '元素の「おお」の一言', what: '118 元素の名前の由来・発見・周期表の位置（1 文ずつ出典つき）' },
-  { path: 'quiz-hiroba/data/shuto.json', name: '世界の首都の「おお」の一言', what: '首都の名前の由来・創設の年・そばの水域（Wikidata から）' },
+  { path: 'quiz-hiroba/data/genso.json', name: '元素のまめちしき', what: '118 元素の名前の由来・発見・周期表の位置（1 文ずつ出典つき）' },
+  { path: 'quiz-hiroba/data/shuto.json', name: '世界の首都のまめちしき', what: '首都の名前の由来・創設の年・そばの水域（Wikidata から）' },
   { path: 'gengo/data/gengo.json', name: '元号表', what: '明治〜令和の始まりと終わりの日と出典' },
   { path: 'gengo/data/gakunen.json', name: '学年早見表', what: '2020〜2035 年度の生年月日と学年の対応' },
 ];

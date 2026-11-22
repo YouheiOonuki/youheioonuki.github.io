@@ -8,7 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { projectsOf } from '../tools/sync-common.mjs';
-import { API, SITE, EXTRA_TOOLS, FIXTURE, buildOpenApi, bodySchema, buildLlms, buildApiJson, buildApiHtml, pageInfo, apiFixture, fixtureOf, readApiDir, openApiSignature } from '../tools/build-agent.mjs';
+import { API, SITE, EXTRA_TOOLS, FIXTURE, DATASETS, buildOpenApi, bodySchema, buildLlms, buildApiJson, buildApiHtml, pageInfo, apiFixture, fixtureOf, readApiDir, openApiSignature } from '../tools/build-agent.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const fx = JSON.parse(readFileSync(FIXTURE, 'utf8'));
@@ -210,4 +210,11 @@ test('写し（fixtures/agent-api.json）＝ yorozu-api の今のコード。書
   }
   // check-site の突き合わせに使う要約は、同じ定義なら同じ
   assert.deepEqual(openApiSignature(buildOpenApi(local)), openApiSignature(doc));
+});
+
+test('公開データの名前: クイズの 2 つは「まめちしき」（画面の字と同じ。「おお」の一言は使わない。D861）', () => {
+  const name = (p) => DATASETS.find((d) => d.path === p).name;
+  assert.equal(name('quiz-hiroba/data/genso.json'), '元素のまめちしき');
+  assert.equal(name('quiz-hiroba/data/shuto.json'), '世界の首都のまめちしき');
+  for (const d of DATASETS) assert.doesNotMatch(d.name + d.what, /「おお」の一言/, d.path);
 });
