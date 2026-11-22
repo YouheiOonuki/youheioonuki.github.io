@@ -278,3 +278,15 @@ test('節の頭の 1 文（D865）: 柱の 4 節だけに lead、HTML に 1 回�
   for (const s of data.sections.filter((x) => x.lead)) assert.equal(html.split(`<p class="yt-lead">${s.lead}</p>`).length - 1, 1, s.id);
   assert.match(html, /<h2 id="new-h">新しいツール<\/h2><span class="yt-links"><a href="\.\/updates\/">更新情報<\/a>/);
 });
+
+test('D874・Q-1116: about の「このサイトについて」は節の名前を並べない。英語に確かめ方の節（日本語と同じ事実の 5 行）と、運営者の紹介の 4 文目', () => {
+  const ja = read('about.html'), en = read('en/about.html');
+  assert.match(ja, /<p>道具は使う人ごとに分けて並べています。子どもが遊ぶ画面と、親・家族向けのページには広告を出していません。<\/p>/);
+  assert.match(en, /<dt>What we do<\/dt>\s*<dd>Calculators for Japan's tax and benefit rules with official sources, /);
+  assert.ok(!en.includes('Small, useful tools'));
+  const sec = en.slice(en.indexOf('<h2 id="check">How the tools are made and checked</h2>'), en.indexOf('<h2>Disclaimer</h2>'));
+  assert.ok(sec.length > 0 && en.indexOf('</dl>') < en.indexOf('<h2 id="check">'));
+  assert.equal(sec.split('<li>').length - 1, 5);
+  for (const href of ['../seido-keisan/kaitei/', '../api/']) assert.ok(sec.includes(`href="${href}"`), href);
+  assert.match(en, /How the figures are checked is described <a href="#check">below<\/a>\.<\/p>/);
+});
