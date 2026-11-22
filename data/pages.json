@@ -117,13 +117,13 @@
     {"path": "/easy-split/", "date": "2026-03-22", "title": "easy-split", "section": "atsumari", "priority": 5, "aliases": ["割り勘", "精算", "飲み会"], "chip": "割り勘", "name": "傾斜割り勘・清算", "note": "係数つきの割り勘"}
   ],
   "sections": [
-    {"id": "kurashi", "name": "くらし・お金"},
-    {"id": "manabi", "name": "子どもの学び"},
+    {"id": "kurashi", "name": "くらし・お金", "lead": "年末調整は令和 8 年分、住民税は令和 9 年度の制度で計算します。"},
+    {"id": "manabi", "name": "子どもの学び", "lead": "内申点は、東京・神奈川・埼玉・千葉・大阪・兵庫の入試の式で計算します。"},
+    {"id": "asobu", "name": "星空・あそぶ・ためす", "lead": "星の位置と月の出入りはこのサイトの天文計算で、流星群と日食・月食の日時は国立天文台の発表で載せています。"},
+    {"id": "it", "name": "情シス・IT", "lead": "ADSearch は、RSAT を入れられない端末で Active Directory を読む PowerShell モジュールで、ここで配っています。"},
     {"id": "oya", "name": "親・家族のために（広告なし）"},
-    {"id": "atsumari", "name": "集まり・イベント"},
-    {"id": "asobu", "name": "あそぶ・ためす・星空"},
     {"id": "henkan", "name": "変換・データ"},
-    {"id": "it", "name": "情シス・IT"}
+    {"id": "atsumari", "name": "集まり・イベント"}
   ],
   "en": {
     "about": "英語トップ（/en/）の行。英語ページのある道具だけ。date はその英語ページを初めてコミットした日",

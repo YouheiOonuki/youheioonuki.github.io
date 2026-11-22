@@ -38,6 +38,9 @@
 
 /* 用途の節: 1 行 1 入口（名前・一言・子ページのチップ最大 3） */
 .yt-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+#new .yt-head { flex-wrap: wrap; }   /* 新しいツールはリンクが 2 つ。幅が足りない時はリンクを見出しの下の行へ（見出しを折らない。D865） */
+.yt-links { display: flex; column-gap: var(--sp-3); margin-left: auto; }
+.yt-lead { font-size: var(--fs-s); color: var(--muted); margin-block: var(--sp-1); }
 .yt-head a { flex: none; display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); color: var(--text); }
 .yt-rows, .yt-all { list-style: none; }
 .yt-rows > li { border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--sp-2); }

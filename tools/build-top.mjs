@@ -4,7 +4,7 @@
 // データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 最大 3 ページと理由。日付の窓 windows はその間だけ 1 行を入れ替える）
 // 欄:
 //   search   … 検索欄（端末の中だけで絞る。top.js）       season … いまの時期（作った日の月。ページを開いた月が違えば top.js が入れ替える）
-//   sections … 用途の節（各節 priority の上位 VISIBLE 行、残りは <details>。新しいツールの節を NEW_TOOLS_BEFORE の前に。7.24.1・D323）   all … すべての道具（/all/）
+//   sections … 用途の節（各節 priority の上位 VISIBLE 行、残りは <details>。節の頭に lead の 1 文。新しいツールの節は最後の節の後。7.24.1・D323・D865）   all … すべての道具（/all/）
 //   data     … 検索の一覧と季節表の JSON（top.js が読む）  new-tools … 新しいツール（公開日の新しい順に newCount 件）
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -108,7 +108,7 @@ export function sectionsJa(data) {
     const mk = (p, chips) => ({ path: p.path, name: rowName(p), note: p.note, date: p.date, priority: p.priority, pin: !!p.pin, i: p.i,
       chips: chips.map((c) => ({ path: c, name: map.get(c).chip || rowName(map.get(c)) })) });
     const rows = [...top.map((p, n) => mk(p, topChips[n])), ...rest.map((p, n) => mk(p, restChips[n]))];
-    return { id: s.id, name: s.name, rows };
+    return { id: s.id, name: s.name, lead: s.lead, rows };
   });
 }
 // どのページがどの節か（pages.json の section）
@@ -131,22 +131,22 @@ function sectionBlock(s, base, allHref, more) {
   const det = rest.length
     ? `\n      <details>\n        <summary>${more.other(rest.length)}</summary>\n        <ul class="yt-rows">\n${rest.map((r) => rowHtml(r, base, pad + '  ', more.icon)).join('\n')}\n        </ul>\n      </details>`
     : '';
-  return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n${head}\n      <ul class="yt-rows">\n${shown.map((r) => rowHtml(r, base, pad, more.icon)).join('\n')}\n      </ul>${det}\n    </section>`;
+  const lead = s.lead ? `\n      <p class="yt-lead">${esc(s.lead)}</p>` : '';   // 節の頭の 1 文（pages.json の sections の lead。柱の 4 節だけ。D865）
+  return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n${head}${lead}\n      <ul class="yt-rows">\n${shown.map((r) => rowHtml(r, base, pad, more.icon)).join('\n')}\n      </ul>${det}\n    </section>`;
 }
 // restLink: スマホでは「ほかに」の折りたたみを出さず、見出しのリンク（/all/ のその節）を「ほかに N 件 →」と読ませる（第 2 版 D323。2.5 画面に収める）
 const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件`, restLink: (n) => `ほかに ${n} 件 →` };
 const EN = { icon: false, all: 'See all', other: (n) => `${n} more` };
-// 新しいツールの節は「親・家族」の前に置く（第 2 版 D323: 戻ってきた人が増えたものをすぐ見る）。中に new-tools の印を持つので apply が中身を入れ直せる
-const NEW_TOOLS_BEFORE = 'oya';
+// 新しいツールの節は最後の節の後に置く（D865: 上から柱の 4 節が読めるように。D323 の「親・家族の前」から移した）。中に new-tools の印を持つので apply が中身を入れ直せる
 function newToolsSection(data, base = './') {
   return `    <section class="yt-sec" id="new" aria-labelledby="new-h">
-      <div class="yt-head"><h2 id="new-h">新しいツール</h2><a href="${base}all/">すべての道具（一覧・印刷）</a></div>
+      <div class="yt-head"><h2 id="new-h">新しいツール</h2><span class="yt-links"><a href="${base}updates/">更新情報</a><a href="${base}all/">すべての道具（一覧・印刷）</a></span></div>
       <!-- 公開日の新しい順に newCount 件（data/pages.json から。check-site が最新かを確かめる） -->
       ${newToolsHtml(data, base)}
     </section>`;
 }
 export function sectionsHtml(data, base = './') {
-  return sectionsJa(data).map((s) => (s.id === NEW_TOOLS_BEFORE ? newToolsSection(data, base) + '\n' : '') + sectionBlock(s, base, `${base}all/`, JA)).join('\n');
+  return [...sectionsJa(data).map((s) => sectionBlock(s, base, `${base}all/`, JA)), newToolsSection(data, base)].join('\n');
 }
 
 // 英語トップの節（行は英語ページ。チップなし）
