@@ -158,7 +158,7 @@
 
   var isOldMs = function (ingMs, tMs) { return ingMs === null || tMs - ingMs > STALE_MIN * MIN; };
 
-  // 更新の時刻 ingestedAt が、日時 t から見て 15 分より古いか（画面が「いま」を出さない線。D609）
+  // 更新の時刻 ingestedAt が、日時 t から見て 15 分より古いか（画面が機械で取る障害の行を出さない線。D609・D766）
   function isOld(ingestedAt, t) { return isOldMs(toMs(ingestedAt), mustMs(t, '日時')); }
 
   // 更新できている相手のうち、区間を 1 つも持たない相手（発表なし）
@@ -181,7 +181,8 @@
     var un = pre.parts.un.map(partnerOut);
     var link = linkOut(pre.parts.link);
     var ingOut = ing === null ? null : T.toJst(ing);
-    var stopped = old ? [] : current.map(itemOut);
+    // 取り込みが古い（か一度も無い）間は、機械で取る相手（'auto'）の行だけを出さない。台帳から来る最中の休止は、取り込みの時刻と関わりが無いので出す（D766）
+    var stopped = (old ? current.filter(function (a) { return a.partner.mode !== 'auto'; }) : current).map(itemOut);
     return {
       now: { version: 1, at: T.toJst(n), ingestedAt: ingOut, ingestOld: old, stopped: stopped, nothing: !old && !stopped.length,
         none: noneOf(pre.parts.ok, busy), unconfirmed: un, link: link, unplaced: pre.unplaced },
