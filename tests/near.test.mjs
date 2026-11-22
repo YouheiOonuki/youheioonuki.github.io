@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { nearBlock, injectNear, injectScreen, NEAR_STYLE, GUIDE_ANCHORS, isGuideFile, sectionFallback, buildNear } from '../tools/build-near.mjs';
+import { nearBlock, injectNear, injectScreen, NEAR_STYLE, GUIDE_ANCHORS, isGuideFile, sectionFallback, buildNear, NO_SECTION_FALLBACK, jaPairOf } from '../tools/build-near.mjs';
 
 const items = [{ url: '/seido-keisan/iryohi/', title: '医療費控除の計算', note: 'いくら戻るかの目安' }, { url: '/otasuke/kenshin/', title: '健診グラフ<b>', note: '' }];
 
@@ -88,7 +88,8 @@ test('見た目の <style> は <section> の中でなく </head> の直前に 1 
   assert.equal(injectNear('<main><p>x</p></main>', items), '<main><p>x</p></main>', '<head> が無いページはそのまま');
 });
 
-// D897・Q-1139: 同じフォルダの guide-*.html にも入れる。0 個の行だけ、同じ節・同じ言語から priority の順に 2 つ
+// D897・Q-1139: 同じフォルダの guide-*.html にも入れる。0 個の行だけ、同じ節・同じ言語から 2 つまで
+// D905・Q-1144: 同じ repo（path の最初の区切り）の道具が在れば同じ repo だけから。名前で外す 3 行。キーの無い道具。英語は日本語の対の節と priority を借りる
 const PAGES = {
   pages: [
     { path: '/a/', title: 'A', section: 'it', priority: 5, note: 'a の道具' },
@@ -99,46 +100,100 @@ const PAGES = {
     { path: '/hade/', title: 'H', section: 'it', priority: 9 },
     { path: '/z/', title: 'Z', section: 'oya', priority: 9 },
     { path: '/k/', title: 'K', section: 'kurashi', priority: 3 },
+    { path: '/r/', title: 'R', section: 'it', priority: 1 },
+    { path: '/r/x/', title: 'RX', section: 'it', priority: 2 },
+    { path: '/r/y/', title: 'RY', section: 'it', priority: 4 },
+    { path: '/r/w/', title: 'RW', section: 'it', priority: 4 },
+    { path: '/r/other/', title: 'RO', section: 'kodomo', priority: 9 },
+    { path: '/s/', title: 'S', section: 'kurashi', priority: 1 },
+    { path: '/s/one/', title: 'S1', section: 'kurashi', priority: 2 },
+    { path: '/post/', title: 'P', section: 'it', priority: 3 },
+    { path: '/todofuken-quiz/', title: 'TQ', section: 'it', priority: 3 },
+    { path: '/shaho-check/', title: 'SC', section: 'kurashi', priority: 3 },
   ],
-  en: { pages: [{ path: '/a/en/', title: 'A en' }, { path: '/b/en/', title: 'B en' }] },
+  en: { pages: [
+    { path: '/a/en/', title: 'A en' },
+    { path: '/b/en/', title: 'B en', note: 'b en' },
+    { path: '/r/en/', title: 'R en' },
+    { path: '/r/en/x/', title: 'RX en' },
+    { path: '/r/en/y/', title: 'RY en' },
+    { path: '/solo/en/', title: 'Solo en' },
+  ] },
 };
+const urls = (l) => l.map((n) => n.url);
 
 test('使い方のファイルは同じフォルダの guide.html と guide-*.html', () => {
   for (const f of ['guide.html', 'guide-hasuu.html', 'guide-keisha.html']) assert.ok(isGuideFile(f), f);
   for (const f of ['index.html', 'guidebook.html', 'guide-.html', 'my-guide.html', 'guide.htm']) assert.ok(!isGuideFile(f), f);
 });
 
-test('0 個の行には同じ節・同じ言語の道具を priority の高い順に 2 つ（同点は path の順）。自分・NOINDEX_ON_TOP・NOT_ON_TOP は入れない', () => {
+test('同じ repo の道具が無ければ、同じ節・同じ言語の道具を priority の高い順に 2 つ（同点は path の順）。自分・NOINDEX_ON_TOP・NOT_ON_TOP は入れない', () => {
   assert.deepEqual(sectionFallback('/a/', PAGES), [{ url: '/b/', title: 'B', note: '' }, { url: '/c/', title: 'C', note: 'c' }]);
-  assert.deepEqual(sectionFallback('/b/', PAGES).map((n) => n.url), ['/a/', '/c/']);
+  assert.deepEqual(urls(sectionFallback('/b/', PAGES)), ['/a/', '/c/']);
 });
 
-test('同じ節に当たる道具が無い・節の欄が無い（英語）・一覧に無い道具は 0 個のまま', () => {
+test('同じ repo の道具が同じ節に在れば、同じ repo だけから priority の順に 2 つまで（節の上の道具より先）。別の節の同じ repo は入れない', () => {
+  assert.deepEqual(urls(sectionFallback('/r/', PAGES)), ['/r/w/', '/r/y/']);
+  assert.deepEqual(urls(sectionFallback('/r/y/', PAGES)), ['/r/w/', '/r/x/']);
+});
+
+test('同じ repo の道具が 1 つしか無ければ 1 つだけ（節の道具で埋めない）', () => {
+  assert.deepEqual(urls(sectionFallback('/s/', PAGES)), ['/s/one/']);
+  assert.deepEqual(urls(sectionFallback('/s/one/', PAGES)), ['/s/']);
+});
+
+test('名前で外す 3 行は、同じ節に道具が在っても欄なし（D905）', () => {
+  assert.deepEqual(NO_SECTION_FALLBACK, ['/post/', '/todofuken-quiz/', '/shaho-check/']);
+  for (const p of NO_SECTION_FALLBACK) assert.deepEqual(sectionFallback(p, PAGES), [], p);
+});
+
+test('英語は日本語の対（/en/ を 1 つ除いた path）の節と priority を借り、en.pages の中で同じ決まり。対の無い英語は欄なし', () => {
+  assert.equal(jaPairOf('/hoshizora-sanpo/en/calendar/'), '/hoshizora-sanpo/calendar/');
+  assert.equal(jaPairOf('/pac-tester/en/'), '/pac-tester/');
+  assert.deepEqual(sectionFallback('/r/en/', PAGES), [{ url: '/r/en/y/', title: 'RY en', note: '' }, { url: '/r/en/x/', title: 'RX en', note: '' }]);
+  assert.deepEqual(urls(sectionFallback('/a/en/', PAGES)), ['/b/en/', '/r/en/y/']);
+  assert.deepEqual(sectionFallback('/b/en/', PAGES)[0], { url: '/a/en/', title: 'A en', note: '' });
+  assert.deepEqual(sectionFallback('/solo/en/', PAGES), []);
+});
+
+test('同じ節に当たる道具が無い・一覧に無い道具は 0 個のまま', () => {
   assert.deepEqual(sectionFallback('/z/', PAGES), []);
-  assert.deepEqual(sectionFallback('/a/en/', PAGES), []);
   assert.deepEqual(sectionFallback('/nai/', PAGES), []);
+  assert.deepEqual(sectionFallback('/nai/en/', PAGES), []);
 });
 
-test('配信フォルダに差し込む: guide-*.html にも入り、0 個の行は同じ節の 2 つ、1 個以上の行は near.json のまま、同じ節に無ければ欄を出さない', () => {
+test('配信フォルダに差し込む: guide-*.html にも入り、0 個の行は同じ節から、near.json にキーの無い道具も同じ、1 個以上の行は near.json のまま、当たらなければ欄を出さない', () => {
   const site = mkdtempSync(join(tmpdir(), 'near-'));
+  const BN = {
+    pages: [
+      { path: '/a/', title: 'A', section: 'it', priority: 5 },
+      { path: '/b/', title: 'B', section: 'it', priority: 7 },
+      { path: '/c/', title: 'C', section: 'it', priority: 5, note: 'c' },
+      { path: '/z/', title: 'Z', section: 'oya', priority: 9 },
+      { path: '/loan/', title: 'L', section: 'kurashi', priority: 6 },
+      { path: '/loan/x/', title: 'LX', section: 'kurashi', priority: 3 },
+    ],
+    en: { pages: [{ path: '/b/en/', title: 'B en' }] },
+  };
   try {
     const page = (t) => `<html><head></head><body><main><p>${t}</p></main></body></html>`;
-    for (const d of ['a', 'b', 'z']) mkdirSync(join(site, d));
+    for (const d of ['a', 'b', 'z', 'loan']) mkdirSync(join(site, d));
     for (const f of ['index.html', 'guide.html', 'guide-hasuu.html', 'other.html']) writeFileSync(join(site, 'a', f), page(f));
     writeFileSync(join(site, 'b', 'index.html'), page('b'));
     writeFileSync(join(site, 'z', 'index.html'), page('z'));
     writeFileSync(join(site, 'z', 'guide.html'), page('zg'));
-    const near = { '/a/': [], '/b/': [{ url: '/k/', title: 'K', note: '' }], '/z/': [] };
-    const r = buildNear(site, near, PAGES);
+    writeFileSync(join(site, 'loan', 'index.html'), page('loan'));
+    const near = { '/a/': [], '/b/': [{ url: '/k/', title: 'K', note: '' }], '/z/': [] };   // /c/・/loan/・/loan/x/・/b/en/ はキーが無い
+    const r = buildNear(site, near, BN);
     const read = (...f) => readFileSync(join(site, ...f), 'utf8');
-    for (const f of ['index.html', 'guide.html', 'guide-hasuu.html']) {
-      const h = read('a', f);
-      assert.deepEqual([...h.matchAll(/<a href="([^"]+)" data-near-link>/g)].map((m) => m[1]), ['/b/', '/c/'], f);
-    }
+    const links = (h) => [...h.matchAll(/<a href="([^"]+)" data-near-link>/g)].map((m) => m[1]);
+    for (const f of ['index.html', 'guide.html', 'guide-hasuu.html']) assert.deepEqual(links(read('a', f)), ['/b/', '/c/'], f);
     assert.ok(!read('a', 'other.html').includes('data-near-block'), 'guide 以外の名前には入れない');
     assert.equal(read('b', 'index.html'), injectNear(page('b'), near['/b/']), '1 個以上の行は near.json のまま');
     assert.ok(!read('z', 'index.html').includes('data-near-block'));
     assert.ok(!read('z', 'guide.html').includes('data-near-block'));
-    assert.deepEqual([r.done, r.guides, r.filled, r.empty], [2, 2, 1, 1]);
+    assert.deepEqual(links(read('loan', 'index.html')), ['/loan/x/'], 'キーの無い道具にも入る（同じ repo の 1 つ）');
+    // done: a・b・loan / filled: a・c・loan・loan/x（c と loan/x はファイルが無い）/ empty: z・/b/en/（en.pages に同じ節の対が無い）
+    assert.deepEqual([r.done, r.guides, r.filled, r.empty, r.missing], [3, 2, 4, 2, 2]);
   } finally { rmSync(site, { recursive: true, force: true }); }
 });

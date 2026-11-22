@@ -3,7 +3,8 @@
 // 置き場は「この道具について」の直前（無ければ </main> の直前）。押した数は near.js が near_click で数える（文は送らない）。
 // 下へ送れない全画面のページ（<body> に data-fullscreen。そのページが名乗る）の画面には入れない（yorozu-plans QUEUE Q-564）。使い方には入れる。
 // 同じ 3 つを、その道具の使い方（同じフォルダの guide.html と guide-*.html の全部）にも本文の末尾（</main> の直前、フッターの前）に差し込む（ROADMAP 7.170 D460・D897）。
-// near.json の行が 0 個の道具だけ、pages.json の同じ節・同じ言語の道具から priority の高い順に 2 つを出す（D897）。英語は en.pages に節の欄が在る時だけ（今は無いので 0 個のまま）。
+// near.json の行が 0 個の道具（near.json にキーの無い道具も同じ）だけ、pages.json の同じ節・同じ言語の道具から 2 つまでを出す。同じ repo の道具が在れば同じ repo だけから（D897・D905）。
+// 英語は、path から /en/ の区切りを 1 つ除いた日本語の対が pages.json に在る時、対の節と priority を借りて en.pages の中で同じ決まりを当てる。対の無い英語は 0 個のまま（D905）。
 // build.ps1 が build-agent.mjs と同じように呼ぶ: NEAR_SITE_DIR=<dist> node tools/build-near.mjs
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -46,18 +47,43 @@ export function injectNear(html, items, lang = 'ja', anchors = SCREEN_ANCHORS) {
 /** 使い方のファイルか（同じフォルダの guide.html と guide-*.html。D897） */
 export const isGuideFile = (name) => /^guide(?:-[^/]+)?\.html$/.test(name);
 
+// 0 個の行でも同じ節から入れない道具（D905）。この 3 行は欄を出さない
+export const NO_SECTION_FALLBACK = [
+  '/post/',            // 投書の口で、道具でない
+  '/todofuken-quiz/',  // 同じ repo の道具が無く、節の上の 2 つ（内申点・偏差値）がこどもの画面に合わない
+  '/shaho-check/',     // 同じ repo の道具が無く、節の上の 2 つのうち 1 つ（高校無償化）が合わない
+];
+
+/** 英語の path の日本語の対（/en/ の区切りを 1 つ除く。D905） */
+export const jaPairOf = (path) => path.replace('/en/', '/');
+
+/** path と同じ言語の候補の一覧。英語は日本語の対の section と priority を借りる（対の無い行は節なし）。一覧に無い path は null */
+function sectionPool(path, pages) {
+  const ja = pages.pages || [], en = (pages.en && pages.en.pages) || [];
+  if (ja.some((p) => p.path === path)) return ja;
+  if (!en.some((p) => p.path === path)) return null;
+  const byPath = new Map(ja.map((p) => [p.path, p]));
+  return en.map((p) => {
+    const pair = byPath.get(jaPairOf(p.path));
+    return { ...p, section: pair ? pair.section : undefined, priority: pair ? pair.priority : undefined };
+  });
+}
+
 /**
- * near.json の行が 0 個の道具に出す 2 つ（D897）: 同じ節（section）・同じ言語の道具から、自分と NOT_ON_TOP・NOINDEX_ON_TOP を除き、
- * priority の高い順に 2 つ（同じ priority は path の順）。節の欄が無い行（今の英語の en.pages）と、同じ節に当たる道具が無い時は []
+ * near.json の行が 0 個の道具に出す 2 つまで（D897・D905）: 同じ節（section）・同じ言語の道具から、自分と NOT_ON_TOP・NOINDEX_ON_TOP を除いた候補のうち、
+ * 自分と同じ repo（path の最初の区切り）の道具が 1 つでも在れば同じ repo だけから、無ければ節の全部から、priority の高い順に 2 つまで（同じ priority は path の順）。
+ * NO_SECTION_FALLBACK の 3 行・節の無い行（対の無い英語）・同じ節に当たる道具が無い時・一覧に無い道具は []
  */
 export function sectionFallback(path, pages, n = 2) {
-  const list = [...(pages.pages || []), ...((pages.en && pages.en.pages) || [])];
-  const self = list.find((p) => p.path === path);
+  if (NO_SECTION_FALLBACK.includes(path)) return [];
+  const pool = sectionPool(path, pages);
+  const self = pool && pool.find((p) => p.path === path);
   if (!self || !self.section) return [];
-  const pool = (pages.pages || []).some((p) => p.path === path) ? pages.pages : pages.en.pages;
   const off = new Set(NOINDEX_ON_TOP), offTool = new Set(NOT_ON_TOP);
-  return pool
-    .filter((p) => p.section === self.section && p.path !== path && !off.has(p.path) && !offTool.has(p.path.split('/')[1]) && Number.isInteger(p.priority))
+  const repo = (p) => p.split('/')[1];
+  const cand = pool.filter((p) => p.section === self.section && p.path !== path && !off.has(p.path) && !offTool.has(repo(p.path)) && Number.isInteger(p.priority));
+  const same = cand.filter((p) => repo(p.path) === repo(path));
+  return (same.length ? same : cand)
     .sort((a, b) => (b.priority - a.priority) || (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))
     .slice(0, n)
     .map((p) => ({ url: p.path, title: p.title, note: p.note || '' }));
@@ -71,11 +97,12 @@ export function injectScreen(html, items, lang = 'ja') {
   return isFullscreen(html) ? html : injectNear(html, items, lang, SCREEN_ANCHORS);
 }
 
-/** 配信フォルダ site の各ページに差し込む（near は near.json の near、pages は pages.json）。数を返す */
+/** 配信フォルダ site の各ページに差し込む（near は near.json の near、pages は pages.json）。near.json にキーの無い pages.json・en.pages の道具は 0 個の行と同じ（D905）。数を返す */
 export function buildNear(site, near, pages) {
   const langOf = new Map([...(pages.pages || []).map((p) => [p.path, 'ja']), ...((pages.en && pages.en.pages) || []).map((p) => [p.path, 'en'])]);
+  const rows = [...Object.entries(near), ...[...langOf.keys()].filter((p) => !Object.hasOwn(near, p)).map((p) => [p, []])];
   let done = 0, empty = 0, missing = 0, noPlace = 0, guides = 0, full = 0, filled = 0;
-  for (const [path, listed] of Object.entries(near)) {
+  for (const [path, listed] of rows) {
     const items = listed.length ? listed : sectionFallback(path, pages);
     if (!items.length) { empty++; continue; }
     if (!listed.length) filled++;
