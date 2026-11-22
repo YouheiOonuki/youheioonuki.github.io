@@ -137,12 +137,12 @@ test('作った欄が data と同じ（node tools/build-top.mjs 済み）', () =
   }
 });
 
-test('トップの構造（第 2 版 D323）: 節 7 の順・各節の表示 5 行まで・残りは details と見出しの「ほかに N 件 →」・新しいツールは「親・家族」の前・行にチップなし', () => {
+test('トップの構造（第 2 版 D323・D865）: 節 7 の順（柱の 4 節が上）・各節の表示 5 行まで・残りは details と見出しの「ほかに N 件 →」・新しいツールは最後・行にチップなし', () => {
   const secs = sectionsJa(data);
-  assert.deepEqual(secs.map((s) => s.id), ['kurashi', 'manabi', 'oya', 'atsumari', 'asobu', 'henkan', 'it']);
+  assert.deepEqual(secs.map((s) => s.id), ['kurashi', 'manabi', 'asobu', 'it', 'oya', 'henkan', 'atsumari']);
   const html = read('index.html');
   const at = (id) => html.indexOf(`<section class="yt-sec" id="${id}"`);
-  assert.ok(at('new') > at('manabi') && at('new') < at('oya'), '新しいツールは「親・家族」の前');
+  assert.ok(at('new') > at('atsumari'), '新しいツールは最後の節の後');
   for (const s of secs) {
     const block = html.slice(at(s.id), html.indexOf('</section>', at(s.id)));
     const shown = block.split('<details>')[0];
@@ -269,4 +269,12 @@ test('D849・Q-1082: about の「内容」は柱を言い、入力の扱いは�
   assert.ok(!about.includes('ちょっと便利なツール'));
   assert.ok(!about.includes('ブラウザ内でのみ扱われ'));
   assert.match(about, /<h2>入力したデータの扱い<\/h2>\s*<p>多くの道具は、入力した内容をお使いのブラウザの中だけで計算します。/);
+});
+
+test('節の頭の 1 文（D865）: 柱の 4 節だけに lead、HTML に 1 回ずつ。新しいツールの見出しの右に更新情報', () => {
+  const html = read('index.html');
+  const leads = data.sections.filter((s) => s.lead).map((s) => s.id);
+  assert.deepEqual(leads, ['kurashi', 'manabi', 'asobu', 'it']);
+  for (const s of data.sections.filter((x) => x.lead)) assert.equal(html.split(`<p class="yt-lead">${s.lead}</p>`).length - 1, 1, s.id);
+  assert.match(html, /<h2 id="new-h">新しいツール<\/h2><span class="yt-links"><a href="\.\/updates\/">更新情報<\/a>/);
 });
