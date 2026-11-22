@@ -249,3 +249,16 @@ test('アイコン: 節・「ほかに」・/all/ の全行と「いまの時期
   const repos = new Set(data.pages.map((p) => p.path.split('/')[1]));
   for (const m of (top + all).matchAll(/class="yt-ico" src="(?:\.\.\/|\.\/)([^/]+)\/favicon\.svg"/g)) assert.ok(repos.has(m[1]), m[1]);
 });
+
+test('D849・Q-1081: トップの名乗りは柱（出典つきの制度の計算）で、title・og:title、description・og:description が食い違わない。最初の段落の後に確かめ方・公開データ・改定カレンダーの 3 本', () => {
+  const top = read('index.html');
+  const meta = (re) => (top.match(re) || [])[1];
+  const title = meta(/<title>([^<]+)<\/title>/), desc = meta(/<meta name="description" content="([^"]+)">/);
+  assert.match(title, /出典つきの制度の計算機/);
+  assert.equal(meta(/<meta property="og:title" content="([^"]+)">/), title);
+  assert.equal(meta(/<meta property="og:description" content="([^"]+)">/), desc);
+  for (const w of ['無料ツール集', 'ちょっと便利', '便利ツール', '少しずつ増やして']) assert.ok(!(title + desc).includes(w), w);
+  const trust = top.slice(top.indexOf('<p class="lead">'), top.indexOf('</header>'));
+  for (const href of ['./about.html#kakunin', './api/', './seido-keisan/kaitei/']) assert.ok(trust.includes(`href="${href}"`), href);
+  assert.match(read('about.html'), /<h2 id="kakunin">道具の作り方と確かめ方<\/h2>/);
+});
