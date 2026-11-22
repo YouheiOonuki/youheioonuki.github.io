@@ -165,7 +165,7 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
     - GitHub Actions は `actions/checkout@v5`・`actions/setup-node@v5` を使う（v4 は Node 20 向けで非推奨。`ubuntu-latest` は 2026-10-19 から Ubuntu 26）
     - **コミットの作者のメールは GitHub の noreply（`136089805+YouheiOonuki@users.noreply.github.com`）**。実メールは公開リポジトリに残るので使わない（yorozu-plans REVIEW C7 R1。2026-09-25 に作業環境の git identity を修正）。GitHub の「Block command line pushes that expose my email」を有効にしておくと、誤った設定の push は止まる
 27. **ブラウザに保存するツールは「保存した内容をすべて消す（初期状態に戻す）」ボタンを置く**（yorozu-plans ROADMAP K123。2026-09-25）。置き場は画面の「データの扱い」の定型文（WRITING.md 2 章「書き出し・読み込み・消去はこの画面のボタンから」）の直下か、「ファイルに書き出す」「ファイルから読み込む」の隣。部品はこのリポジトリの `reset-storage.js`（ツールの直下に同じものを写す）で、`<button type="button" data-reset-storage="<リポジトリ名>_">保存した内容をすべて消す（初期状態に戻す）</button>` と `<script src="./reset-storage.js"></script>` を書くだけ。押すと確認を 1 回出し、その接頭辞で始まるキーだけを消して、ページを開き直す（`#` 以降も外す）。文言は全ツールで同じ（英語ページは `Delete everything saved (reset)`）。1 つのリポジトリに別々の道具があるときは、画面ごとのキー（`gakko-keisan_naishin` など）に絞ってよい。接頭辞の無い旧キーは `data-reset-legacy` に並べる。こどもが遊ぶ画面は `data-reset-hold`（1 秒の長押しで確認を出す）。**新しい接頭辞・旧キーを使うときは、`privacy-policy.html`・`en/privacy-policy.html` 3 章の「このサイトのすべてのツールの保存内容を消す」ボタンの `data-reset-storage`・`data-reset-legacy` にも足す**（check-site が、localStorage を使うページにボタンがあることと、一括消去の一覧に漏れが無いことを確かめる）。テストは `tests/reset-storage.test.js`（bingo などと同じもの。接頭辞の一覧だけ書き換える）
-28. **子どもが使う画面（遊ぶ画面）に外部リンク（GitHub・X・note など）を置かない**（REVIEW C7 R7。外へのリンクは保護者向けの使い方ページに）。check-site が `META_ONLY_PAGES` の使い方ページ以外で見る
+28. **子どもが使う画面（遊ぶ画面）に外部リンク（GitHub・X・note など）を置かない**（REVIEW C7 R7。外へのリンクは保護者向けの使い方ページに）。check-site が `tools/ad-lists.mjs` の `CHILD_SCREEN_PAGES` で見る（`META_ONLY_PAGES` は「広告の script を置かない」だけの集合。D882）
 29. 最後に、このファイル冒頭の **URL 表にもツールの行を足す**
 
 ### トップの行の順（priority）
@@ -267,7 +267,7 @@ node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確�
 - プライバシーポリシー 3 章の「このサイトのすべてのツールの保存内容を消す」: 日英で同じ接頭辞・旧キーの一覧で、トップの全ツールの `<リポジトリ名>_` と、各ページの消すボタンのキーをすべて含む
 - 「広告なし」の定型文（WRITING 2 章「このページは広告なし・登録なし・入力は端末の外に出ません。」）か、title・description の「広告なし」があるページは `META_ONLY_PAGES`・`META_ONLY_PREFIXES` に入っている。高齢者向け（`ELDERLY_PAGES`・`ELDERLY_PREFIXES`）は META_ONLY で、定型文がある（REVIEW C7 R12）
 - 医療・効能の NG 語（診断・改善・予防・効果・治る・若返）が `/tameshite/`・`/otasuke/notore/`・`/otasuke/kenshin/`・`/quiz-hiroba/showa/`・`/seido-keisan/yobosesshu/` の画面の文に無い（法令の名前「予防接種」は除いて数える。D230）。定型文と、ページごとに認めた打ち消しの文（`MEDICAL_ALLOWED`）は除く。ためして の測る画面は、体を測る道具の定型文が `#result-card` より前にある（REVIEW C7 R4）。`/otasuke/kenshin/` は健診版の定型文が `#result-card` より前にある（D196）
-- 子どもが遊ぶ画面（`META_ONLY_PAGES` の使い方ページ以外）に github.com・x.com・twitter.com・note.com へのリンクが無い（「ツールを追加するとき」28）
+- 子どもが遊ぶ画面（`CHILD_SCREEN_PAGES`）に github.com・x.com・twitter.com・note.com へのリンクが無い（「ツールを追加するとき」28）
 - 各ツール: 存在しない URL がツールの `404.html`（ビーコンあり）になる、`manifest.webmanifest` の `id` が `/<リポジトリ名>/`、`sw.js` のキャッシュ名が `<リポジトリ名>-` で始まる
 
 - **確認日の期限**: 全ページの同じオリジンの `<script src>`（重複は 1 回だけ取得）から、法令・公式の値の確認日を読み、ツールごとに 1 行（`確認日 <ツール> <ファイル> <日付>（形、経過月数・期限）`）を出す。経過は画面と同じ暦の月の差で数え、**期限−2 か月（既定 10 か月）以上でメモ**（そろそろ出典を確かめ直す）、**期限（既定 12 か月）以上で NG**（画面がすでに「時間がたっています」を出している）。期限はファイルの `STALE_MONTHS` があればそれ、画面が別の期限で注意を出すツールはスクリプトの `STALE_MONTHS_BY_TOOL`（shaho-check は 6 か月）

@@ -16,7 +16,7 @@ const ADSENSE_ID = 'ca-pub-5375267956079717';
 const BEACON_TOKEN = 'b79bf821e1fd4b6683866d493b1de426';
 
 // 決まりの例外（理由つき）
-import { META_ONLY_PAGES, META_ONLY_PREFIXES, isMetaOnly } from './ad-lists.mjs';   // 広告なしの画面の一覧（正本は ad-lists.mjs）
+import { META_ONLY_PAGES, META_ONLY_PREFIXES, isMetaOnly, CHILD_SCREEN_PAGES } from './ad-lists.mjs';   // 広告なしの画面の一覧（正本は ad-lists.mjs）
 import { ldBlocks, nameMismatches, faqDiff } from './jsonld.mjs';                     // JSON-LD と画面の突き合わせ（Q-074）
 import { REVIEW_HOLD_PAGES } from './ad-lists.mjs';   // 審査の間 広告 script を外すページ（正本は ad-lists.mjs。yorozu-plans の content-classes.csv も読む。Q-1118）
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
@@ -56,7 +56,7 @@ const MEDICAL_ALLOWED = {
   '/otasuke/notore/guide.html': ['脳トレプリントで認知症は予防できますか？', 'このプリントは楽しむための問題で、病気の予防や改善を確かめたものではありません。'],
   '/quiz-hiroba/showa/guide.html': ['医療やリハビリの効果をうたうものではありません。'],
 };
-// 子どもが遊ぶ画面（META_ONLY_PAGES の使い方ページ以外）に置かない外部リンク（README「ツールを追加するとき」・REVIEW C7 R7）
+// 子どもが遊ぶ画面（ad-lists.mjs の CHILD_SCREEN_PAGES）に置かない外部リンク（README「ツールを追加するとき」・REVIEW C7 R7）
 const CHILD_NG_LINK = /^https?:\/\/(?:[\w-]+\.)*(?:github\.com|x\.com|twitter\.com|note\.com)(?:[/:?#]|$)/i;
 // 画面に見える文字（script・style・コメント・タグを除いた <body>）
 const visibleText = html => html.replace(/^[\s\S]*?<body\b[^>]*>/i, '').replace(/<script\b[\s\S]*?<\/script>/gi, '').replace(/<style\b[\s\S]*?<\/style>/gi, '')
@@ -389,7 +389,7 @@ await pool([...pages], 6, async (url) => {
   }
 
   // 子どもが遊ぶ画面に外部リンク（GitHub・X・note）を置かない（REVIEW C7 R7）
-  if (META_ONLY_PAGES.has(p) && !p.endsWith('guide.html')) {
+  if (CHILD_SCREEN_PAGES.has(p)) {
     const bad = [...new Set(links.filter(h => CHILD_NG_LINK.test(h)))];
     if (bad.length) fail(p, `遊ぶ画面に外部リンク（${bad.join(', ')}）がある`);
   }

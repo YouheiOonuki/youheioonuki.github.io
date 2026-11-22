@@ -1,7 +1,7 @@
 // 広告なしの画面の一覧（META_ONLY）。正本はここ 1 か所で、check-site.mjs と yorozu-plans の tools/content/classes.mjs（content-classes.csv の「広告」列、D459）が import する。
 // check-site.mjs から切り出した（2026-11-03。check-site は読み込むだけで本番の巡回が走るため、ほかから import できない）
 // ここに載る画面は、広告スクリプトを入れず所有確認の meta だけ（README「ツールを追加するとき」5）。理由は行ごと: 全画面の本体・子どもが遊ぶ画面・高齢者向け・審査員の目で外した画面（D863）
-export const META_ONLY_PAGES = new Set([
+const NO_AD_SCREENS = [
   '/hoshizora-sanpo/',     // プラネタリウムの全画面の本体
   '/todofuken-quiz/',      // こどもが遊ぶ画面（決定 D18: 広告は保護者向けの guide.html だけ）
   '/bingo/',               // 会場で大画面に映す抽選画面（広告はカード印刷・使い方のページ）
@@ -47,6 +47,9 @@ export const META_ONLY_PAGES = new Set([
   '/line/',                // LINE 版の案内（節「親・家族のために」。/for/kaigo/ と同じ扱い: yorozu-plans 企画書 76）
   '/post/',                // 要望の投書箱（yorozu-plans 企画書 77）
   '/updates/',             // 更新情報（案内のページ。about と同じ扱いで道具の 4 つは求めない: yorozu-plans D411）
+];
+// 審査員の目で広告を外した 16 枚。子どもの画面ではない（下の CHILD_SCREEN_PAGES に入れない。D882・Q-1119）
+const AUDIT_NO_AD_PAGES = [
   // AdSense の審査員の目でページごとに判定し、広告を外した 16 枚（yorozu-plans ROADMAP 7.269・D863・Q-1093）。道具の画面 9 枚
   '/sekigae/', '/shaho-check/', '/gakushu-print/', '/toban/en/',
   '/seido-keisan/en/childcare-leave/', '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/pension-refund/', '/seido-keisan/en/residence-tax/', '/seido-keisan/en/take-home-pay/',
@@ -54,7 +57,12 @@ export const META_ONLY_PAGES = new Set([
   '/hoshizora-sanpo/shinwa/', '/hoshizora-sanpo/shinwa/keizu.html', '/hoshizora-sanpo/shinwa/hyoki.html',
   '/hoshizora-sanpo/calendar/new-moon.html', '/hoshizora-sanpo/en/calendar/new-moon.html',
   '/web-roulette/odai/', '/tameshite/kioku/guide.html',
-]);
+];
+// 広告の script を置かない画面（所有確認の meta だけ）。この集合の意味はそれだけ（D882）
+export const META_ONLY_PAGES = new Set([...NO_AD_SCREENS, ...AUDIT_NO_AD_PAGES]);
+// 子どもが使う画面（遊ぶ画面）。check-site の「外部リンク〈GitHub・X・note〉を置かない」（REVIEW C7 R7）はこの集合に掛ける。
+// Q-1093 の前に META_ONLY_PAGES の使い方ページ以外へ掛けていた範囲のまま（16 枚を足す前の上の一覧）。D882・Q-1119
+export const CHILD_SCREEN_PAGES = new Set(NO_AD_SCREENS.filter((p) => !p.endsWith('guide.html')));
 // 配下のページをすべて meta だけにするパス（高齢者・親向けは広告なし: yorozu-plans D118）
 export const META_ONLY_PREFIXES = ['/otasuke/', '/hoshizora-night/', '/hade/']; // hoshizora-night はフル版で全ページ広告なし（7.15 の 2）。hade はド派手版で、偽の警告の演出は AdSense の規約に触れるので全ページ広告なし（D303）
 export const isMetaOnly = (p) => META_ONLY_PAGES.has(p) || META_ONLY_PREFIXES.some((x) => p.startsWith(x));
