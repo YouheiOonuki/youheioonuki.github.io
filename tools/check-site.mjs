@@ -644,7 +644,9 @@ const NOT_TOOL_SCREENS = {
     marked.set(toolOf(u), (marked.get(toolOf(u)) || 0) + 1);
     if (x.body === want) same++; else fail(path(u), '共通の土台と皮（yorozu-common:begin〜end）が正本（root の tools/common/v2）と違う。sync-common.mjs --write で配り直す');
   }
-  for (const t of [...toolsInRobots, '(トップ)']) if (!marked.has(t)) fail(t, '共通の土台と皮（yorozu-common:begin〜end）が配られていない');
+  // sitemap に 1 ページも無いツール（全ページ noindex。/hade/ は yorozu-plans D877・Q-1099）は、巡回するページが無いので数えない
+  const withPages = new Set([...pages].map(toolOf));
+  for (const t of [...toolsInRobots, '(トップ)']) if (withPages.has(t) && !marked.has(t)) fail(t, '共通の土台と皮（yorozu-common:begin〜end）が配られていない');
   notes.push(`共通の土台と皮: 印のあるファイル ${total} 件のうち正本と同じ ${same} 件（${marked.size} 個のツールとトップ）`);
 }
 // 道具をまたいで使う計算の写しの同一性（yorozu-plans D484・企画書 102 の 4 章）: 公開されている写し（/<repo>/<場所>）が「生成物の印の 1 行＋正本（root の tools/common/calc）」と同じ。
