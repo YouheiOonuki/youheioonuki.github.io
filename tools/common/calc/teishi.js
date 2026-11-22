@@ -20,6 +20,8 @@
 //   extra   臨時の区間 [{ service, start: 'YYYY-MM-DDTHH:MM', end: 'YYYY-MM-DDTHH:MM', url }]（JST。+09:00 を付けてもよい。url はその休止のお知らせで、https で始まる。D761）
 //   deeplink 任意。'ledger' の相手だけで、値は true だけ（D752・Q-989）。true の相手は、臨時の区間の行き先をその区間の url にする
 //            （url が無い・http(s) でない・.csv か .pdf で終わる時は page）。欄の無い相手の行き先は、どの区間も page
+//   page_top 任意。'ledger' の相手だけで、値は true だけ（D830・Q-1000）。true は page がお知らせの一覧でない（トップ）相手の印で、
+//            配る側（infra-board.js）が、行き先が page の区間のリンクの字を「公式ページ」のままにする
 //   臨時の区間は、任意の欄 limited（true は「止まる」でなく「一部が使えない」。D631）を持てる。出す区間まで運ぶ
 //   決まった休止の規則（欄 rules。利用時間）は台帳に書かない（D757）。欄が在れば検査が誤りにする
 // 同じ相手・同じ止まる物の区間が重なるか接する時は 1 つにまとめる（kind は 'extra'。limited は、まとめた全部が limited の時だけ true。
@@ -112,6 +114,7 @@
       if (row.rules !== undefined) add('rules は持たない（決まった休止の規則は台帳に書かない。D757）');
       if (row.mode === 'link' && (row.extra || []).length) add('link の相手が区間を持つ');
       if (row.deeplink !== undefined && (row.mode !== 'ledger' || row.deeplink !== true)) add('deeplink は ledger の相手だけで、値は true だけ');
+      if (row.page_top !== undefined && (row.mode !== 'ledger' || row.page_top !== true)) add('page_top は ledger の相手だけで、値は true だけ');
       (row.extra || []).forEach(function (x) { add(extraProblem(row, x)); });
     });
     return out;

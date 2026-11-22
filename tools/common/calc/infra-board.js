@@ -12,6 +12,8 @@
 // 区間の並び: 2 つの形を同じ並びで受ける
 //   止まる予定（teishi.js の upcoming の出力）… { id: 相手, name, column, service: 止まる物, start, end, kind: 'extra', limited, url, checked }
 //     url は teishi.js が決めた行き先（台帳の deeplink。D752・Q-989）で、そのまま出す。http(s) でなければ相手の page
+//     'ledger' の相手の行には、行き先の種類 go を付ける（企画書 113 の 14.7・14.8。Q-1000）: 'notice'（行き先が page と違う = 告知の個別のページ）、
+//     'page'（行き先が page で、台帳の page_top が true = お知らせの一覧でない。D830）、'list'（ほか = お知らせの一覧）。'ledger' でない相手の行には付けない
 //   障害と予定メンテナンス（D618 の形）… { service: 相手, id: 障害の id, start, end|null, impact, title, url, kind? }
 //     kind は 'incident' か 'planned'。欄が無い物は 'incident' と読む
 //   形は kind で分ける（'extra' なら止まる予定、ほかは障害と予定メンテナンス）
@@ -120,12 +122,21 @@
     return o;
   }
 
+  // 'ledger' の相手の行き先の種類（上の go）。ほかの相手は null（欄を付けない）
+  function goOf(p, url) {
+    if (p.mode !== 'ledger') return null;
+    if (url !== pageOf(p)) return 'notice';
+    return p.page_top === true ? 'page' : 'list';
+  }
   // 出す 1 行（欄の順は固定。英語の欄は末）
   function itemOut(a) {
     var p = a.partner;
-    return enFields({ id: p.id, name: p.name, column: p.column, service: a.service, title: a.title, kind: a.kind, impact: a.impact,
+    var o = { id: p.id, name: p.name, column: p.column, service: a.service, title: a.title, kind: a.kind, impact: a.impact,
       color: a.color, limited: a.limited, start: T.toJst(a.s), end: a.e === null ? null : T.toJst(a.e), url: a.url,
-      checked: p.mode === 'ledger' ? p.checked : null, lastRead: a.lastRead }, p, a.service);
+      checked: p.mode === 'ledger' ? p.checked : null, lastRead: a.lastRead };
+    var go = goOf(p, a.url);
+    if (go) o.go = go;
+    return enFields(o, p, a.service);
   }
   // 相手の 1 行。checked は渡された値をそのまま（'auto' は最後に読めた時刻、'ledger'・'link' は最後に確かめた日。欄が無ければ null。D660）
   var partnerOut = function (p) {
