@@ -614,8 +614,9 @@ const NOT_TOOL_SCREENS = {
     screens.add(p);
   }
   for (const p of screens) if (!rows.has(p)) fail(p, 'sitemap にあるのに pages.json に行が無い（公開した画面は同じ枝で行を起こす。D462）');
-  for (const p of rows) if (!screens.has(p)) fail(p, 'pages.json に行があるのに sitemap で辿れない（または noindex）');
-  notes.push(`道具の画面 ${screens.size} 件 ＝ pages.json ${rows.size} 行（道具でないページ ${Object.keys(NOT_TOOL_SCREENS).length} 件は除く）`);
+  // NOINDEX_ON_TOP（build-top.mjs。一覧に残して索引から外したページ、D899）は sitemap の外・noindex でよい。名前と noindex の突き合わせは tests/reach.test.mjs
+  for (const p of rows) if (!screens.has(p) && !NOINDEX_ON_TOP.has(p)) fail(p, 'pages.json に行があるのに sitemap で辿れない（または noindex）');
+  notes.push(`道具の画面 ${screens.size} 件 ＝ pages.json ${rows.size} 行（道具でないページ ${Object.keys(NOT_TOOL_SCREENS).length} 件と NOINDEX_ON_TOP ${NOINDEX_ON_TOP.size} 件は除く）`);
 }
 
 // 共通の土台と皮の同一性（ROADMAP 7.183 Q-087）: 配った begin〜end（tools/common/v2 の土台＋皮）が、公開されている全ページ・読み込まれる全 CSS で正本と同じ、
