@@ -26,7 +26,7 @@ const diff = (a, b) => [...a].filter((x) => !b.has(x)).sort();
 const same = (name, a, b, an, bn) => assert.deepEqual([diff(a, b), diff(b, a)], [[], []], `${name}: [${an} にだけある, ${bn} にだけある]`);
 // 道具のページ（/<repo>/…/）のファイル。配る repo は隣の作業コピー、サイト本体のフォルダ（/line/ など）はこのリポジトリ
 const pageFile = (p) => { const [r, ...rest] = p.split('/').filter(Boolean); return repos.includes(r) ? join(PROJECTS, r, PAGES_SOURCE[r] || '', ...rest, 'index.html') : join(ROOT, r, ...rest, 'index.html'); };
-const isNoindex = (f) => /<meta[^>]*name="robots"[^>]*noindex/i.test(readFileSync(f, 'utf8'));
+const isNoindex = (f) => /<meta\b[^>]*name="robots"[^>]*noindex/i.test(readFileSync(f, 'utf8'));
 const allLocs = () => new Set([...locs(read('sitemap.xml')), ...repos.flatMap((r) => locs(readFileSync(smFile(r), 'utf8')))]);
 
 test('配る repo・sitemap・/all/・入口の検索の一覧が同じ集合（日本語は pages.json、英語は en.pages。NOT_ON_TOP だけがトップの外）', { skip: missing.length > 0 && `隣の repo が無い（${missing.join(', ')}）` }, () => {
