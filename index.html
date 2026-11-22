@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>yorozu-craft｜ブラウザですぐ使える無料ツール集</title>
-  <meta name="description" content="yorozu-craft（よろずクラフト）は、登録不要・無料でブラウザからすぐ使えるツールを作って公開しているサイトです。ルーレット・くじ引きなど、ちょっと便利なものを少しずつ増やしています。">
+  <title>yorozu-craft｜出典つきの制度の計算機と、学校・星空・情シスの道具</title>
+  <meta name="description" content="年末調整・住民税・医療費控除などの制度の計算を、国税庁などの一次資料と確認日つきで。内申点や学年の早見、今夜の星空、情シス向けの変換も。個人が作り、テストと検算で確かめて公開しています。登録なし・無料。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://yorozu-craft.com/">
   <link rel="alternate" hreflang="ja" href="https://yorozu-craft.com/">
   <link rel="alternate" hreflang="en" href="https://yorozu-craft.com/en/">
   <link rel="alternate" hreflang="x-default" href="https://yorozu-craft.com/">
 
-  <meta property="og:title" content="yorozu-craft｜ブラウザですぐ使える無料ツール集">
-  <meta property="og:description" content="登録不要・無料でブラウザからすぐ使えるツールを公開しています。">
+  <meta property="og:title" content="yorozu-craft｜出典つきの制度の計算機と、学校・星空・情シスの道具">
+  <meta property="og:description" content="年末調整・住民税・医療費控除などの制度の計算を、国税庁などの一次資料と確認日つきで。内申点や学年の早見、今夜の星空、情シス向けの変換も。個人が作り、テストと検算で確かめて公開しています。登録なし・無料。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://yorozu-craft.com/">
   <meta property="og:site_name" content="yorozu-craft">
@@ -129,6 +129,11 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     .site-head .lang { margin-left: auto; display: inline-flex; align-items: center; min-height: var(--tap); }
     /* 説明は屋号の下の行に（max-width で狭めると PC で屋号の行に並んでしまうので、右の余白で 1 行 40 字に） */
     .site-head .lead { flex-basis: 100%; font-size: var(--fs-s); color: var(--muted); line-height: 1.5; padding-right: max(0px, calc(100% - 40em)); }
+    /* 最初の段落の後の 1 文と、確かめ方・公開データ・改定カレンダーへの 3 本（ROADMAP 7.268 D849、Q-1081） */
+    .site-head > .trust { display: block; max-width: 960px; margin: 0 auto; font-size: var(--fs-s); color: var(--muted); line-height: 1.5; }
+    .site-head > .trust > p:first-child { padding-right: max(0px, calc(100% - 40em)); }
+    .trust-links { display: flex; flex-wrap: wrap; gap: 0 var(--sp-4); }
+    .trust-links a { display: inline-flex; align-items: center; min-height: var(--tap); }
     footer p { max-width: 40em; }
     main { padding: 0 var(--sp-4) var(--sp-6); }
     h2 { margin: var(--sp-6) 0 var(--sp-2); }
@@ -180,7 +185,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       .yt-secs { margin-top: var(--sp-4); }
     }
     @media (min-width: 1000px) {
-      .site-head > div, main, footer > div { max-width: 1200px; }
+      .site-head > div, .site-head > .trust, main, footer > div { max-width: 1200px; }
       /* 見出しの帯を 1 段に: 説明を屋号の横へ（ロゴから遠く右端に寄せない。design-critique）。帯が低くなり、節の行が 1 画面目に多く入る（PC の入口 40 以上、ACCEPTANCE K168） */
       .site-head > div { flex-wrap: nowrap; align-items: center; gap: 0 var(--sp-4); }
       .site-head .lead { order: 1; flex: 0 1 40em; padding-right: 0; }
@@ -207,6 +212,10 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       <span class="kana">よろずクラフト</span>
       <a class="lang" href="./en/" hreflang="en" lang="en">English</a>
       <p class="lead">暮らし・学校・仕事の「ちょっと計算したい」「すぐ決めたい」に使う道具を、ブラウザだけで動く形で作っています。登録なし。多くの道具は、入力を端末の外に出しません。</p>
+    </div>
+    <div class="trust">
+      <p>税や社会保険の計算は、法令と国税庁・厚生労働省などの資料で確かめ、出典と確認日を道具ごとに載せています。</p>
+      <p class="trust-links"><a href="./about.html#kakunin">確かめ方</a><a href="./api/">公開データ</a><a href="./seido-keisan/kaitei/">改定カレンダー</a></p>
     </div>
   </header>
 
