@@ -47,6 +47,10 @@ export const CALC = [
   // 置き場は site/calc/ の 1 か所で、画面（calc/）も Worker（../site/calc/）も同じ 1 本を読む（yorozu-plans D661・Q-842）
   { master: 'teishi.js', repo: 'infra-dashboard', to: 'site/calc/teishi.js' },
   { master: 'infra-board.js', repo: 'infra-dashboard', to: 'site/calc/infra-board.js' },
+  // yorozu-cron（Workers。本館の外）: 5 分の回の終わりに、ストップボードの Worker と同じ計算で now.json・ahead.json を作って R2 に書く（yorozu-plans QUEUE Q-1011、D782）。
+  // infra-board.js は require('./teishi.js') なので同じフォルダ。src/calc/package.json が type: commonjs を持つ（yorozu-cron は type: module）
+  { master: 'teishi.js', repo: 'yorozu-cron', to: 'src/calc/teishi.js' },
+  { master: 'infra-board.js', repo: 'yorozu-cron', to: 'src/calc/infra-board.js' },
 ];
 // 本館（yorozu-craft.com）の配信に乗る repo: root の robots.txt の Sitemap 行（yorozu-plans の tools/deploy/sync.ps1 が配信の一覧として読む表。
 // 名前の表をここに 2 つ目として持たない。yorozu-plans D672・Q-870）。root 自身（/sitemap.xml）も乗る

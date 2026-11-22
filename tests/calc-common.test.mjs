@@ -144,12 +144,32 @@ test('infra-dashboard（枠を持たない repo。Q-799）: --calc が site/calc
     r = run('--check', repo);
     assert.equal(r.status, 1);
     assert.match(r.stdout, /違う .*teishi\.js（計算の写しが正本 tools\/common\/calc\/teishi\.js と違う/);
-    // 枠を持たない repo の扱いは infra-dashboard だけ（ほかの repo は枠が無ければ今のまま落とす）
+    // 枠を持たない repo の扱いは FRAMELESS の repo（infra-dashboard・yorozu-cron）だけ（ほかの repo は枠が無ければ今のまま落とす）
     const other = join(tmp, 'loan-sim');
     mkdirSync(other);
     execFileSync('git', ['init', '-q'], { cwd: other });
     assert.equal(run('--calc', other).status, 0);
     assert.equal(run('--check', other).status, 1);
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test('yorozu-cron（枠を持たない repo。yorozu-plans Q-1011）: --calc が src/calc/ に 2 本を置き、写し同士で読み合え、--check は写しだけを見る', () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'calc-'));
+  try {
+    const repo = join(tmp, 'yorozu-cron');
+    mkdirSync(repo);
+    execFileSync('git', ['init', '-q'], { cwd: repo });
+    const tool = join(ROOT, 'tools', 'sync-common.mjs');
+    const run = (...a) => spawnSync(process.execPath, [tool, ...a], { encoding: 'utf8' });
+    let r = run('--calc', repo);
+    assert.equal(r.status, 0, r.stdout + r.stderr);
+    for (const m of ['teishi.js', 'infra-board.js']) assert.equal(readFileSync(join(repo, 'src', 'calc', m), 'utf8'), calcCopy(m));
+    const B = createRequire(join(repo, 'src', 'calc', 'x.js'))('./infra-board.js');
+    assert.equal(typeof B.build, 'function');
+    r = run('--check', repo);
+    assert.equal(r.status, 0, r.stdout + r.stderr);
+    writeFileSync(join(repo, 'src', 'calc', 'infra-board.js'), calcCopy('infra-board.js') + '// 手で直した\n');
+    assert.equal(run('--check', repo).status, 1);
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
 

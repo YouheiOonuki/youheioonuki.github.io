@@ -79,7 +79,7 @@ test('HONKAN は robots.txt の Sitemap 行、FRAMELESS は CALC の repo のう
   const robots = readFileSync(new URL('../robots.txt', import.meta.url), 'utf8');
   assert.equal(HONKAN.length, (robots.match(/^Sitemap: https:\/\/yorozu-craft\.com\/[^/]+\/sitemap\.xml/gm) || []).length);
   assert.deepEqual(FRAMELESS, [...new Set(CALC.map((c) => c.repo))].filter((r) => !HONKAN.includes(r)));
-  assert.deepEqual(FRAMELESS, ['infra-dashboard']);
+  assert.deepEqual(FRAMELESS, ['infra-dashboard', 'yorozu-cron']);
 });
 
 // sw.js の枠（yorozu-plans D667・D684・Q-860）: 枠の中は取り方の正本 tools/common/sw-frame.js、名前と一覧は枠の外。css の正本とは別に比べる
