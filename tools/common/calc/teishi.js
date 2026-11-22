@@ -1,6 +1,6 @@
 // ===========================
-// 止まる予定の暦（K248）の芯（純粋関数）: 台帳の決まった休止の規則と臨時の区間から、これからの止まる区間と、ある日時に止まっている物を出す
-// yorozu-plans QUEUE Q-770・D602・D606〜D609・D484。企画書 113 の 14.2・15.2
+// 止まる予定の暦（K248）の芯（純粋関数）: 台帳の臨時の区間（お知らせの出た休止）から、これからの止まる区間と、ある日時に止まっている物を出す
+// yorozu-plans QUEUE Q-770・Q-996・D602・D606〜D609・D484・D757・D761。企画書 113 の 14.2・15.2
 // 時刻はすべて日本時間（JST、+09:00。夏時間は無い）。外の口に要求を出さない。ほかのファイルを読まない（祝日の表も読まない）
 // ブラウザでは window.Teishi、Node（テスト）では module.exports で使う
 //
@@ -13,24 +13,17 @@
 //   country 国: 'global' | 国の 2 文字（'JP'）
 //   region  地域（scope が 'regional' の時だけ。ほかは null か欄なし）
 //   mode    載せ方: 'auto'（機械で読む）| 'ledger'（台帳で予定を出す）| 'link'（リンクだけ）
-//   stops   止まる物の名前（1 相手 2 つまで。規則・臨時の区間の無い相手は空でよい）
+//   stops   止まる物の名前（1 相手 2 つまで。臨時の区間の無い相手は空でよい）
 //   page    公式のページ（https）
 //   source  読み方 { method, urls, every? }（ここでは見ない。every の線は配る側〈infra-board.js〉）
 //   checked 確認: 'ledger' は最後に確かめた日 'YYYY-MM-DD'。'link' はその日か null。'auto' は最後に読めた時刻（ここでは見ない）
-//   rules   決まった休止の規則（下の 4 つの形）
-//   extra   臨時の区間 [{ service, start: 'YYYY-MM-DDTHH:MM', end: 'YYYY-MM-DDTHH:MM', url }]（JST。+09:00 を付けてもよい。url はその休止のお知らせ）
+//   extra   臨時の区間 [{ service, start: 'YYYY-MM-DDTHH:MM', end: 'YYYY-MM-DDTHH:MM', url }]（JST。+09:00 を付けてもよい。url はその休止のお知らせで、https で始まる。D761）
 //   deeplink 任意。'ledger' の相手だけで、値は true だけ（D752・Q-989）。true の相手は、臨時の区間の行き先をその区間の url にする
 //            （url が無い・http(s) でない・.csv か .pdf で終わる時は page）。欄の無い相手の行き先は、どの区間も page
-//   規則と臨時の区間は、任意の欄 limited（true は「止まる」でなく「一部が使えない」。D631）を持てる。出す区間まで運ぶ
-//
-// 規則の形 4 つ（from・to は 'hh:mm'。to が from 以下なら翌日に終わる。to は '24:00' も可）:
-//   毎日            { service, every: 'day', from, to }
-//   毎週 何曜       { service, every: 'week', dow, from, to }            dow: 0 = 日曜 〜 6 = 土曜
-//   毎月 第 n 何曜  { service, every: 'month', nth, dow, from, to }      nth: 1〜5（第 5 の無い月は出ない）
-//   毎月 n 日       { service, every: 'month', day, from, to }           day: 1〜31（その日の無い月は出ない。2 月 29 日はうるう年だけ）
-// 祝日で規則が変わる相手は、規則に持たせず臨時の区間で足す。
-// 同じ相手・同じ止まる物の区間が重なるか接する時は 1 つにまとめる（kind: 'rule' | 'extra' | 'mixed'。limited は、まとめた全部が limited の時だけ true。
-//   行き先は、まとめた全部が同じ url の臨時の区間の時だけその url で、ほかは page）。
+//   臨時の区間は、任意の欄 limited（true は「止まる」でなく「一部が使えない」。D631）を持てる。出す区間まで運ぶ
+//   決まった休止の規則（欄 rules。利用時間）は台帳に書かない（D757）。欄が在れば検査が誤りにする
+// 同じ相手・同じ止まる物の区間が重なるか接する時は 1 つにまとめる（kind は 'extra'。limited は、まとめた全部が limited の時だけ true。
+//   行き先は、まとめた全部が同じ url の時だけその url で、ほかは page）。
 // 区間は始まりを含み、終わりを含まない（終わりちょうどは止まっていない側）。
 // ===========================
 (function (root) {
@@ -51,17 +44,6 @@
   var pad = function (n) { return (n < 10 ? '0' : '') + n; };
   // 臨時の区間の url のうち、行き先にしてよい物（http(s) で、.csv・.pdf で終わらない）。ほかは null
   var deepUrl = function (u) { return typeof u === 'string' && /^https?:\/\//.test(u) && !/\.(csv|pdf)([?#].*)?$/i.test(u) ? u : null; };
-
-  // 'hh:mm' → 分。'24:00' は to の時だけ。読めなければ null
-  function minutesOf(s, allow24) {
-    var m = /^(\d{2}):(\d{2})$/.exec(String(s));
-    if (!m) return null;
-    var h = +m[1], mi = +m[2];
-    if (mi > 59) return null;
-    if (h === 24 && mi === 0 && allow24) return 1440;
-    if (h > 23) return null;
-    return h * 60 + mi;
-  }
 
   // 日時 → ミリ秒（UTC の基点から）。数・Date・ISO の文字列（時差が無ければ JST と読む）。読めなければ null
   function toMs(v) {
@@ -98,35 +80,18 @@
     return base - JST;
   }
 
-  // 規則 1 つの誤り（無ければ null）
-  function ruleProblem(row, r) {
-    if (!r || typeof r !== 'object') return '規則が物でない';
-    if (stopsOf(row).indexOf(r.service) < 0) return '規則の止まる物が stops に無い: ' + r.service;
-    if (limitedProblem(r)) return limitedProblem(r);
-    var f = minutesOf(r.from, false), t = minutesOf(r.to, true);
-    if (f === null || t === null) return '規則の時刻が hh:mm でない';
-    if (f === t) return '規則の始まりと終わりが同じ';
-    var isDow = function (x) { return Number.isInteger(x) && x >= 0 && x <= 6; };
-    if (r.every === 'day') return null;
-    if (r.every === 'week') return isDow(r.dow) ? null : '毎週の dow が 0〜6 でない';
-    if (r.every === 'month') {
-      if (r.day !== undefined) return (r.nth === undefined && Number.isInteger(r.day) && r.day >= 1 && r.day <= 31) ? null : '毎月の day が 1〜31 でない';
-      return (Number.isInteger(r.nth) && r.nth >= 1 && r.nth <= 5 && isDow(r.dow)) ? null : '毎月の nth が 1〜5 か dow が 0〜6 でない';
-    }
-    return '規則の every が day・week・month でない';
-  }
-
   function extraProblem(row, x) {
     if (!x || typeof x !== 'object') return '臨時の区間が物でない';
     if (stopsOf(row).indexOf(x.service) < 0) return '臨時の区間の止まる物が stops に無い: ' + x.service;
     if (limitedProblem(x)) return limitedProblem(x);
+    if (typeof x.url !== 'string' || !/^https:\/\//.test(x.url)) return '臨時の区間の url が https でない';
     var s = toMs(x.start), e = toMs(x.end);
     if (s === null || e === null) return '臨時の区間の日時が読めない';
     if (e <= s) return '臨時の区間の終わりが始まり以前';
     return null;
   }
 
-  // 台帳の検査: [{ id, problem }]。誤りの在る規則・区間は、ほかの関数では飛ばす
+  // 台帳の検査: [{ id, problem }]。誤りの在る区間は、ほかの関数では飛ばす
   function validate(ledger) {
     var out = [], ids = {};
     rowsOf(ledger).forEach(function (row, i) {
@@ -144,40 +109,17 @@
       if (!Array.isArray(row.stops) || row.stops.length > 2) add('stops は 0〜2 つ');
       if (typeof row.page !== 'string' || !/^https:\/\//.test(row.page)) add('page が https でない');
       if (row.mode === 'ledger' ? dateMs(row.checked) === null : (row.mode === 'link' && row.checked !== null && row.checked !== undefined && dateMs(row.checked) === null)) add('checked が YYYY-MM-DD でない');
-      if (row.mode === 'link' && ((row.rules || []).length || (row.extra || []).length)) add('link の相手が規則か区間を持つ');
+      if (row.rules !== undefined) add('rules は持たない（決まった休止の規則は台帳に書かない。D757）');
+      if (row.mode === 'link' && (row.extra || []).length) add('link の相手が区間を持つ');
       if (row.deeplink !== undefined && (row.mode !== 'ledger' || row.deeplink !== true)) add('deeplink は ledger の相手だけで、値は true だけ');
-      (row.rules || []).forEach(function (r) { add(ruleProblem(row, r)); });
       (row.extra || []).forEach(function (x) { add(extraProblem(row, x)); });
     });
     return out;
   }
 
-  // 規則 1 つの、日 day0（JST の 0 時）に始まる区間（無ければ null）
-  function ruleOn(r, day0) {
-    var d = new Date(day0 + JST);
-    var dow = d.getUTCDay(), date = d.getUTCDate();
-    if (r.every === 'week' && dow !== r.dow) return null;
-    if (r.every === 'month') {
-      if (r.day !== undefined) { if (date !== r.day) return null; }
-      else if (dow !== r.dow || Math.ceil(date / 7) !== r.nth) return null;
-    }
-    var f = minutesOf(r.from, false), t = minutesOf(r.to, true);
-    var s = day0 + f * MIN, e = day0 + t * MIN;
-    if (t <= f) e += DAY;
-    return [s, e];
-  }
-
   // 1 相手の区間（まとめた後）。[from, until) に掛かる物
   function rowSpans(row, from, until) {
     var raw = [];
-    (row.rules || []).forEach(function (r) {
-      if (ruleProblem(row, r)) return;
-      // 規則 1 回の長さは 24 時間以下なので、前の日から作れば from に掛かる回を落とさない
-      for (var day0 = dayStart(from) - DAY; day0 < until; day0 += DAY) {
-        var se = ruleOn(r, day0);
-        if (se) raw.push({ service: r.service, s: se[0], e: se[1], kind: 'rule', limited: r.limited === true, url: null });
-      }
-    });
     (row.extra || []).forEach(function (x) {
       if (extraProblem(row, x)) return;
       raw.push({ service: x.service, s: toMs(x.start), e: toMs(x.end), kind: 'extra', limited: x.limited === true, url: deepUrl(x.url) });
@@ -189,7 +131,6 @@
       list.forEach(function (a) {
         if (cur && a.s <= cur.e) {   // 重なるか接する → 1 つに
           if (a.e > cur.e) cur.e = a.e;
-          if (a.kind !== cur.kind) cur.kind = 'mixed';
           cur.limited = cur.limited && a.limited;
           if (a.url !== cur.url) cur.url = null;
         } else { cur = { service: svc, si: si, s: a.s, e: a.e, kind: a.kind, limited: a.limited, url: a.url }; out.push(cur); }
@@ -250,11 +191,11 @@
   }
 
   // (c) 相手ごとの「次に止まる」（from より後に始まる最初の区間。days 日の中に無ければ null）。台帳の行の順
-  //     規則か臨時の区間を持つ相手は、stops が 0 でも並べる（止まる物の名前は空で、next は null）。規則も臨時の区間も無い相手は並べない（D642）
+  //     臨時の区間を持つ相手は、stops が 0 でも並べる（止まる物の名前は空で、next は null）。臨時の区間の無い相手は並べない（D642）
   function nextStops(ledger, from, opts) {
     var f = toMs(from); if (f === null) throw new Error('日時が読めない: ' + from);
     var days = opts && opts.days !== undefined ? opts.days : DAYS;
-    return split(ledger, nowOf(opts, from)).shown.filter(function (row) { return (row.rules || []).length || (row.extra || []).length; }).map(function (row) {
+    return split(ledger, nowOf(opts, from)).shown.filter(function (row) { return (row.extra || []).length; }).map(function (row) {
       var n = collect([row], f, f + days * DAY).filter(function (p) { return p.a.s > f; })[0];
       return { id: row.id, name: row.name, next: n ? spanOut(row, n.a) : null };
     });

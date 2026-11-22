@@ -10,11 +10,11 @@
 //   checked … 'auto' は最後に読めた時刻（時差つきの ISO。yorozu-cron の取り込みの lastRead）、
 //             'ledger' は最後に確かめた日 'YYYY-MM-DD'、'link' はその日か null
 // 区間の並び: 2 つの形を同じ並びで受ける
-//   止まる予定（teishi.js の upcoming の出力）… { id: 相手, name, column, service: 止まる物, start, end, kind: 'rule'|'extra'|'mixed', limited, url, checked }
+//   止まる予定（teishi.js の upcoming の出力）… { id: 相手, name, column, service: 止まる物, start, end, kind: 'extra', limited, url, checked }
 //     url は teishi.js が決めた行き先（台帳の deeplink。D752・Q-989）で、そのまま出す。http(s) でなければ相手の page
 //   障害と予定メンテナンス（D618 の形）… { service: 相手, id: 障害の id, start, end|null, impact, title, url, kind? }
 //     kind は 'incident' か 'planned'。欄が無い物は 'incident' と読む
-//   形は kind で分ける（'rule'・'extra'・'mixed' なら止まる予定、ほかは障害と予定メンテナンス）
+//   形は kind で分ける（'extra' なら止まる予定、ほかは障害と予定メンテナンス）
 //
 // 置かない区間（unplaced の数に入れる）: 一覧に無い相手・時刻が読めない・終わりが始まり以前・kind が知らない値
 // end が null: 障害は続いている。予定は終わりを公式が出していない —— 始まりの時刻で ahead に並べ（end は null のまま）、始まった後は now に入れる
@@ -42,7 +42,7 @@
   var STALE_MIN = 15;           // 更新がこれより古ければ「いま」を出さない（D609）。'auto' の相手で source.every が無い時の線
   var EVERY_TIMES = 3;          // 'auto' の線は読む間隔のこの回数ぶん（D619）
   var IMPACT_RANK = { critical: 4, major: 3, minor: 2, unknown: 1, none: 0 };
-  var TEISHI_KINDS = ['rule', 'extra', 'mixed'];
+  var TEISHI_KINDS = ['extra'];
 
   var cmp = function (a, b) { return a < b ? -1 : a > b ? 1 : 0; };
 
