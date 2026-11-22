@@ -153,7 +153,7 @@ for (const sm of sitemaps) {
 // 2. トップのツール一覧と robots.txt の sitemap が一致しているか
 const top = await get(BASE);
 // サイト本体の中のページ（英語のトップ ./en/・すべての道具 ./all/・LINE 版の案内 ./line/）はツールではない。一覧は top.js の ROOT_DIRS
-const { loadTop, NOT_ON_TOP: NOT_ON_TOP_LIST, isToolPage } = await import('./build-top.mjs');
+const { loadTop, NOT_ON_TOP: NOT_ON_TOP_LIST, NOINDEX_ON_TOP: NOINDEX_ON_TOP_LIST, isToolPage } = await import('./build-top.mjs');
 const ROOT_DIRS = new Set(loadTop().ROOT_DIRS);
 const toolsOnTop = new Set(hrefs(top.body).map(h => h.match(/^\.\/([^/]+)\/$/)).filter(Boolean).map(m => m[1]).filter(t => !ROOT_DIRS.has(t)));
 // ツールの sitemap は /<ツール>/sitemap.xml。ドメイン直下の /sitemap.xml（トップ自身）は除く
@@ -161,6 +161,7 @@ const toolsInRobots = new Set(sitemaps.map(s => path(s).split('/').filter(Boolea
 for (const t of toolsOnTop) if (!toolsInRobots.has(t)) fail('robots.txt', `トップに載っている ${t} の Sitemap が無い`);
 // トップに載せないツール（sitemap には載る）。一覧と理由は tools/build-top.mjs の NOT_ON_TOP
 const NOT_ON_TOP = new Set(NOT_ON_TOP_LIST);
+const NOINDEX_ON_TOP = new Set(NOINDEX_ON_TOP_LIST);
 for (const t of toolsOnTop) if (NOT_ON_TOP.has(t)) fail('index.html', `${t} は AdSense の結果が出るまでトップに載せない（NOT_ON_TOP）`);
 for (const t of toolsInRobots) if (!toolsOnTop.has(t) && !NOT_ON_TOP.has(t)) fail('index.html', `robots.txt にある ${t} がトップのツール一覧に無い`);
 
@@ -188,7 +189,8 @@ if (pages.has(BASE + 'en/')) {
     const regPaths = new Set(reg.pages.map(p => p.path));
     const usePage = p => isToolPage(p) && !NOT_ON_TOP.has(p.split('/')[1]); // NOT_ON_TOP のツールは pages.json にも載せない
     for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
-    for (const p of regPaths) if (![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
+    // 一覧に残して索引から外したページ（build-top.mjs の NOINDEX_ON_TOP。D899）は sitemap の外でよい。noindex は sitemap の外の HTML の検査（D372）が見る
+    for (const p of regPaths) if (!NOINDEX_ON_TOP.has(p) && ![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
     const want = newToolsHtml(reg);
     if (!top.body.includes(want)) fail('index.html', '「新しいツール」の欄が data/pages.json の新しい順と違う（node tools/build-top.mjs）');
     const onTop = new Set(hrefs(top.body).filter(h => h.startsWith('./')).map(h => '/' + h.slice(2).replace(/[?#].*$/, '')));
