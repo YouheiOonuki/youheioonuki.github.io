@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { master, HONKAN, FRAMELESS, CALC } from '../tools/sync-common.mjs';
+import { master, swMaster, HONKAN, FRAMELESS, CALC } from '../tools/sync-common.mjs';
 
 const tool = fileURLToPath(new URL('../tools/sync-common.mjs', import.meta.url));
 const run = (...a) => spawnSync(process.execPath, [tool, ...a], { encoding: 'utf8' });
@@ -80,4 +80,43 @@ test('HONKAN は robots.txt の Sitemap 行、FRAMELESS は CALC の repo のう
   assert.equal(HONKAN.length, (robots.match(/^Sitemap: https:\/\/yorozu-craft\.com\/[^/]+\/sitemap\.xml/gm) || []).length);
   assert.deepEqual(FRAMELESS, [...new Set(CALC.map((c) => c.repo))].filter((r) => !HONKAN.includes(r)));
   assert.deepEqual(FRAMELESS, ['infra-dashboard']);
+});
+
+// sw.js の枠（yorozu-plans D667・D684・Q-860）: 枠の中は取り方の正本 tools/common/sw-frame.js、名前と一覧は枠の外。css の正本とは別に比べる
+function withSw(text, fn) {
+  const d = mkdtempSync(join(tmpdir(), 'yz-sw-'));
+  try { writeFileSync(join(d, 'sw.js'), text); writeFileSync(join(d, 'style.css'), `/* t */\n${master()}\n`); return fn(d); } finally { rmSync(d, { recursive: true, force: true }); }
+}
+const swText = (block) => `'use strict';\nconst CACHE_PREFIX = 'x-';\nconst CACHE_NAME = \`\${CACHE_PREFIX}v1\`;\nconst PRECACHE_URLS = ['./'];\n\n${block}\n`;
+
+test('sw.js の枠: 中身が正本 sw-frame.js と同じなら OK（CRLF でも）', () => {
+  assert.match(swMaster(), /^\/\* yorozu-common:begin sw /);
+  assert.ok(swMaster().endsWith('\n}\n/* yorozu-common:end */'));
+  for (const text of [swText(swMaster()), crlf(swText(swMaster()))]) {
+    withSw(text, (d) => {
+      const r = run('--check', d);
+      assert.equal(r.status, 0, r.stdout);
+      assert.match(r.stdout, /^同じ .*sw\.js（sw）/m);
+    });
+  }
+});
+
+test('sw.js の枠: 中が 1 字違えば NG。--write は枠の中だけを正本に戻し、枠の外（名前と一覧）は変えない', () => {
+  const one = swMaster().replace('NETWORK_TIMEOUT_MS = 4000', 'NETWORK_TIMEOUT_MS = 4001');
+  assert.notEqual(one, swMaster());
+  withSw(swText(one), (d) => {
+    const r = run('--check', d);
+    assert.equal(r.status, 1);
+    assert.match(r.stdout, /^違う .*sw\.js/m);
+    assert.equal(run('--write', d).status, 0);
+    assert.equal(readFileSync(join(d, 'sw.js'), 'utf8'), swText(swMaster()));
+  });
+});
+
+test('印の無い sw.js は見ない（枠を入れていない repo の --check は今までどおり）', () => {
+  withSw(`'use strict';\nconst NETWORK_TIMEOUT_MS = 1;\n`, (d) => {
+    const r = run('--check', d);
+    assert.equal(r.status, 0, r.stdout);
+    assert.doesNotMatch(r.stdout, /sw\.js/);
+  });
 });

@@ -7,6 +7,7 @@
 //   node tools/sync-common.mjs --used <リポジトリのフォルダ ...>    … リポジトリの最上位に used.js（正本 tools/common/used.js の写し）を置く・同じにする
 // フォルダを渡すと、その下の .css と .html（node_modules・.git を除く）のうち印のあるものを対象にする。
 // 印: /* yorozu-common:begin … */ 〜 /* yorozu-common:end */。この間は手で直さない。ツール固有の上書きは end の後に書く
+// sw.js（Service Worker）も同じ印で囲める。枠の中は取り方（正本 tools/common/sw-frame.js）、キャッシュの名前と一覧は枠の外（yorozu-plans D667・D684・Q-860）
 // （後に書いた :root や規則が勝つので、入れるだけでは見た目は変わらない。トークンの重複は配ったあとに消してよい）
 // v1 から v2 に替えたとき、v1 の見た目（和紙の色・body・リンク）は各ファイルの end の直後に /* yorozu-v1-carry … */〜/* yorozu-v1-carry:end */ で持ち込んだ。
 // 段 3 の 2〜4 で各ページを v2 のトークンに載せ替えるときに消す。--status が残りの数を出す
@@ -83,7 +84,14 @@ export const master = () => [
   readFileSync(join(V2, 'skin.css'), 'utf8').trim(),
   END,
 ].join('\n');
-export const version = (text) => (text.match(/yorozu-common:begin (v\d+)/) || [])[1] || null;
+export const version = (text) => (text.match(/yorozu-common:begin (v\d+|sw)/) || [])[1] || null;
+// sw.js の枠の正本: 取り方（install・activate・fetch・ネットワーク優先）。名前（CACHE_NAME）と一覧（PRECACHE_URLS）は配り先の枠の外が持つ
+export const swMaster = () => [
+  '/* yorozu-common:begin sw — Service Worker の取り方。正本は youheioonuki.github.io の tools/common/sw-frame.js。この begin〜end の間は手で直さない（tools/sync-common.mjs で配る。名前と一覧は枠の外） */',
+  lf(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'common', 'sw-frame.js'), 'utf8')).replace(/\n$/, ''),
+  END,
+].join('\n');
+const blockOf = (f) => (basename(f) === 'sw.js' ? swMaster() : master());
 
 // begin から end までを取り出す（無ければ null）
 export function extract(text) {
@@ -107,7 +115,7 @@ function walk(p, out = []) {
   for (const n of readdirSync(p)) {
     if (n === 'node_modules' || n.startsWith('.')) continue;
     const q = join(p, n); const st = statSync(q);
-    if (st.isDirectory()) walk(q, out); else if (/\.(css|html)$/.test(n) || WHOLE.includes(n)) out.push(q);
+    if (st.isDirectory()) walk(q, out); else if (/\.(css|html)$/.test(n) || WHOLE.includes(n) || n === 'sw.js') out.push(q);
   }
   return out;
 }
@@ -179,10 +187,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       else { console.log(`違う  ${f}（${n} が正本と違う）`); bad++; }
     }
     for (const f of files) {
-      const s = readFileSync(f, 'utf8'); const x = extract(s);
-      if (lf(x.body) === lf(block)) { console.log(`同じ  ${f}（${version(s)}）`); continue; }   // 枠も改行の形（git の autocrlf）を問わず中身で比べる（Q-595）
-      if (mode === '--write') { writeFileSync(f, replaceBlock(s, block)); console.log(`更新  ${f}（${version(s)} → ${version(block)}）`); }
-      else { console.log(`違う  ${f}（${version(s)}。正本は ${version(block)}）`); bad++; }
+      const s = readFileSync(f, 'utf8'); const x = extract(s); const want = blockOf(f);
+      if (lf(x.body) === lf(want)) { console.log(`同じ  ${f}（${version(s)}）`); continue; }   // 枠も改行の形（git の autocrlf）を問わず中身で比べる（Q-595）
+      if (mode === '--write') { writeFileSync(f, replaceBlock(s, want)); console.log(`更新  ${f}（${version(s)} → ${version(want)}）`); }
+      else { console.log(`違う  ${f}（${version(s)}。正本は ${version(want)}）`); bad++; }
     }
   }
   process.exit(bad ? 1 : 0);
