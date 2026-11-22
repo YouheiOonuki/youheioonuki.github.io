@@ -22,7 +22,6 @@ import { REVIEW_HOLD_PAGES } from './ad-lists.mjs';   // 審査の間 広告 scr
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
 const EN_ONLY_PAGES = new Set([
   '/seido-keisan/en/moving-checklist/', '/seido-keisan/en/moving-checklist/guide.html',
-  '/tameshite/en/sleep-calculator/', '/tameshite/en/sleep-calculator/guide.html',
 ]);
 // 高齢者向け（D118）の広告なしページ。先頭に「広告なし」の定型文が要る（下の R12 の突き合わせ）
 const ELDERLY_PAGES = new Set([

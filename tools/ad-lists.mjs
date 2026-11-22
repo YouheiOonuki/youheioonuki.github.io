@@ -91,7 +91,7 @@ export const REVIEW_HOLD_PAGES = new Set([
   '/gakko-keisan/', '/gakko-keisan/naishin/', '/gakko-keisan/hensachi/', '/gakko-keisan/shusseki/',
   '/quiz-hiroba/mainichi/guide.html',
   '/fitbit-export/', '/fitbit-export/en/',
-  '/tameshite/', '/tameshite/en/sleep-calculator/',
+  '/tameshite/',
   '/unplugged/', '/unplugged/en/',
   '/henkan/', '/henkan/diff/', '/henkan/json/', '/henkan/csv/', '/henkan/zenkaku/', '/henkan/pdf/',
   '/ai-log/', '/ai-log/en/',
