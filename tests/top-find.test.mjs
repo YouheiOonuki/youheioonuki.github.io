@@ -144,7 +144,7 @@ test('D604・D595: privacy-policy の 7.11 は押した時に送ると書き、�
   assert.match(read('privacy-policy.html'), /3〜200 字を入れて、Enter か「探す」を押すと、その文を/);
   assert.match(read('en/privacy-policy.html'), /on the top page and press Enter or the search button, we send that text/);
   assert.doesNotMatch(read('privacy-policy.html') + read('en/privacy-policy.html'), /入力が止まってから|stop typing/);
-  assert.match(read('index.html'), /<p class="lead">制度の計算機と、学校・星空・情シスの道具<\/p>/);
+  assert.match(read('index.html'), /<p class="lead">制度の計算機と、学校・情シスの道具<\/p>/);
   assert.match(read('privacy-policy.html'), /送った文と、そこから作った数値（埋め込み）は保存しません/);
   assert.doesNotMatch(read('index.html'), /入力は端末の外に出ません/);
 });

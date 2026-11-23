@@ -68,3 +68,6 @@
 }
 /* 検索の 2 段目「近い道具」の区切り（K166・D365）。押せない見出し */
 .yt-search .yt-near-h { padding: var(--sp-2) var(--sp-3) var(--sp-1); font-size: var(--fs-s); font-weight: 700; color: var(--muted); border-top: 1px solid var(--border); }
+/* 層の名前（たのしみ。/all/ とトップ）と、節の目次の中の同じ区切り。用事の層には置かない */
+.yt-layer { margin: var(--sp-4) 0 0; font-size: var(--fs-s); font-weight: 700; color: var(--muted); }
+.yt-toc-layer { align-self: center; font-size: var(--fs-s); color: var(--muted); }

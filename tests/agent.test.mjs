@@ -109,10 +109,10 @@ const page = (title, desc, alt = '') => `<html><head><title>${title}</title><met
 const hl = (lang, u) => `<link rel="alternate" hreflang="${lang}" href="${u}">`;
 const site = (() => {
   const pages = {
-    sections: [{ id: 'kurashi', name: 'くらし・お金' }, { id: 'it', name: '情シス・IT' }],
+    sections: [{ id: 'okane', name: 'お金と制度' }, { id: 'it', name: '情シス・PC' }],
     pages: [
-      { path: '/t/a/', title: '計算 A', section: 'kurashi', priority: 3 },
-      { path: '/t/b/', title: '計算 B', section: 'kurashi', priority: 9 },
+      { path: '/t/a/', title: '計算 A', section: 'okane', priority: 3 },
+      { path: '/t/b/', title: '計算 B', section: 'okane', priority: 9 },
       { path: '/u/', title: '道具 U', section: 'it', priority: 1 },
     ],
     en: { pages: [{ path: '/t/en/a/', title: 'Calc A' }] },
@@ -136,7 +136,7 @@ test('llms.txt: H1・要約・作成日（check.ps1 が読む形）、計算の 
   assert.ok(t.includes(`- [OpenAPI 3.1](${SITE}api/openapi.json)`));
   assert.ok(t.includes(`- [MCP](${API}/mcp): `) && t.includes(`ツール ${fx.tools.length} 本: `));
   const heads = [...t.matchAll(/^##+ (.+)$/gm)].map((m) => m[1]);
-  assert.deepEqual(heads, ['計算の API と MCP', 'データ（CC0）', '入口', '道具（日本語）', 'くらし・お金', '情シス・IT', 'English', 'Optional']);
+  assert.deepEqual(heads, ['計算の API と MCP', 'データ（CC0）', '入口', '道具（日本語）', 'お金と制度', '情シス・PC', 'English', 'Optional']);
   assert.ok(t.indexOf('[計算 B]') < t.indexOf('[計算 A]'), '節の中は priority の高い順');
 });
 
