@@ -33,12 +33,21 @@ test('pages.json: 全行に section・priority・aliases、related は無い（7
   for (const c of cardsJa(data)) assert.ok(c.rows.filter((r) => r.n != null).length >= c.vis, `${c.id} の候補が ${c.vis} 未満`);
 });
 
-test('pin は節ごとに 1 件以下', () => {
-  for (const s of data.sections) assert.ok(data.pages.filter((p) => p.section === s.id && p.pin).length <= 1, s.id);
-  // 2 件にすると build-top が止まる
+// 札のうち、札の行（別館の行は除く）の href
+const cardOf = (html, id) => { const i = html.indexOf(`<section class="yt-card`, html.indexOf(`id="${id}" data-card`) - 40); return html.slice(i, html.indexOf('</section>', i)); };
+const crows = (card) => [...card.split('<details')[0].matchAll(/<li(?: class="yt-mh")?><a href="([^"]+)"><span class="yt-cn">/g)].map((m) => m[1]);
+
+test('pin は柱の節だけ 2 件まで、ほかの節は 1 件まで（D1042）', () => {
+  for (const s of data.sections) assert.ok(data.pages.filter((p) => p.section === s.id && p.pin).length <= (s.pillar ? 2 : 1), s.id);
+  // 柱でない節に 2 件にすると build-top が止まる
   const two = structuredClone(data);
   two.pages.filter((p) => p.section === 'kazoku' && p.note != null).slice(0, 2).forEach((p) => { p.pin = true; });
+  assert.ok(!data.sections.find((s) => s.id === 'kazoku').pillar);
   assert.throws(() => sectionsJa(two), /pin が 2 件以上/);
+  // 柱の節に 3 件にすると止まる
+  const three = structuredClone(data);
+  three.pages.filter((p) => p.section === 'it' && p.note != null).slice(0, 3).forEach((p) => { p.pin = true; });
+  assert.throws(() => sectionsJa(three), /pin が 3 件以上/);
   // 1 件なら priority が低くても先頭の行に出る
   const one = structuredClone(data);
   const low = one.pages.filter((p) => p.section === 'kazoku' && p.note != null).sort((a, b) => a.priority - b.priority)[0];
@@ -46,16 +55,19 @@ test('pin は節ごとに 1 件以下', () => {
   assert.equal(sectionsJa(one).find((s) => s.id === 'kazoku').rows[0].path, low.path);
 });
 
-test('情シス・PC の札は PAC ファイル テスターに pin（優先度のままだと「ほかに」に入る。site-strategy-v2 3.5）', () => {
-  const pac = data.pages.find((p) => p.path === '/pac-tester/');
-  assert.equal(pac.section, 'it');
-  assert.equal(pac.pin, true);
-  assert.equal(sectionsJa(data).find((s) => s.id === 'it').rows[0].path, '/pac-tester/');
+test('情シス・PC の札は PAC ファイル テスターと ADSearch に pin（優先度のままだと「ほかに」に入る。2 件の中は priority の順。site-strategy-v2 3.5・D1042）', () => {
+  const pac = data.pages.find((p) => p.path === '/pac-tester/'), ad = data.pages.find((p) => p.path === '/ADSearch/');
+  assert.equal(pac.section, 'it'); assert.equal(ad.section, 'it');
+  assert.equal(pac.pin, true); assert.equal(ad.pin, true);
+  assert.deepEqual(data.pages.filter((p) => p.pin && p.section === 'it').map((p) => p.path).sort(), ['/ADSearch/', '/pac-tester/']);
+  const rows = sectionsJa(data).find((s) => s.id === 'it').rows.filter((r) => r.note != null);
+  assert.deepEqual(rows.slice(0, 2).map((r) => r.path), ['/pac-tester/', '/ADSearch/']);
+  // 札の見える順: 別館 2 行、PAC、ADSearch、FILETIME・LDAP 時刻、テキスト変換（vis 4）。375 は別館 ＋ 見える行の数の決まりのまま
+  const html = read('index.html');
+  const rowsHtml = crows(cardOf(html, 'it'));
+  assert.deepEqual(rowsHtml.filter((h) => h.startsWith('./')), ['./pac-tester/', './ADSearch/', './filetime/', './henkan/']);
+  assert.deepEqual(cardsJa(data).find((c) => c.id === 'it').rows.slice(0, 4).map((r) => r.p), ['/pac-tester/', '/ADSearch/', '/filetime/', '/henkan/']);
 });
-
-// 札のうち、札の行（別館の行は除く）の href
-const cardOf = (html, id) => { const i = html.indexOf(`<section class="yt-card`, html.indexOf(`id="${id}" data-card`) - 40); return html.slice(i, html.indexOf('</section>', i)); };
-const crows = (card) => [...card.split('<details')[0].matchAll(/<li(?: class="yt-mh")?><a href="([^"]+)"><span class="yt-cn">/g)].map((m) => m[1]);
 
 test('札ごとの行が priority の上位 vis 件（pin が先、同点は入口＞子ページ、次に公開日の古い方）。いまの時期の行は札の頭に上がる。HTML の札も同じ', () => {
   const html = read('index.html');

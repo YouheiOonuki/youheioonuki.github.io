@@ -1,6 +1,6 @@
 {
   "about": "tools/top/priority.mjs の入力（yorozu-plans ROADMAP 7.24.1）。priority ＝ 需要（demand: 根拠 A＝3・B＝2・C／なし＝1）＋ 検索（max(表示の点, 遷移の点)。入力は data/weekly-tools.json ＝ yorozu-plans の docs/data/weekly-tools.json の写し。ROADMAP 7.24.3）＋ 季節（data/season.json の month 月に入っていれば ＋2）。demand.grades は tools/top/ledger.mjs が ROADMAP 7.2 の台帳から写す（手で直さない）。demand.pages はページと K 番号の対応で手で持つ。台帳に K 行の無いページは demand.tools（台帳より前の道具の根拠。その道具の全ページに。K 行のある子ページは K 行が先）、どちらにも無ければ「なし」。month は計算に使う月（毎月の再計算で直す）",
-  "month": 10,
+  "month": 11,
   "demand": {
     "source": "yorozu-plans docs/ROADMAP.md 7.2 候補台帳の「根拠」列（389f068）。tools/top/ledger.mjs で写した",
     "tools_source": "DEMAND 7 章「既存ツールの裏づけ」/ ROADMAP 7.24.2 の 1（yorozu-plans 5f0746f、2026-10-03）",

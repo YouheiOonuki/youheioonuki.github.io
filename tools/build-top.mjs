@@ -66,7 +66,7 @@ export function newToolsHtml(data, base = './', rows = newest(data), icon = true
 
 // ---- 節 ＝ 札（yorozu-plans docs/advice/2026-11-23_site-strategy-v2.md 3.1〜3.5）----
 // 1 ページ ＝ 1 用途。節（section）はページごとに持つ。note（一言）のあるページが札の行の候補。note の無いページは「ほかに N 件」と /all/ にだけ出る
-// 行の並び: pin を先に、priority の降順、同点は 入口ページ（/<ツール>/）＞ 子ページ、次に公開日の古い方（同じ日は pages.json の順。7.24.2 の 2）
+// 行の並び: pin を先に（柱の節は 2 件まで、ほかは 1 件まで）、priority の降順、同点は 入口ページ（/<ツール>/）＞ 子ページ、次に公開日の古い方（同じ日は pages.json の順。7.24.2 の 2）
 // 札に出す行: 柱の節（pages.json の sections の pillar）は VISIBLE.pillar、そのほかは VISIBLE.other（別館の行は数えない）。節に visible があればその数（情シス・PC は別館 2 行 ＋ 4 行）。スマホで見せる行は MOBILE（別館の行も数える）。
 // 残りは札の「ほかに N 件」の中に名前で全部（スマホで隠した行も入れる）。層（layer）は節の上の束。「用事」の層には見出しを置かない
 export const VISIBLE = { pillar: 5, other: 3 };
@@ -87,7 +87,8 @@ function checkPages(data) {
   }
   for (const s of data.sections) {
     const pins = data.pages.filter((p) => p.section === s.id && p.pin);
-    if (pins.length > 1) throw new Error(`節 ${s.name} の pin が 2 件以上: ${pins.map((p) => p.path).join(' ')}`);
+    const max = s.pillar ? 2 : 1;   // 柱の節は 2 件まで、ほかの節は 1 件まで（D1042・Q-1218）
+    if (pins.length > max) throw new Error(`節 ${s.name} の pin が ${max + 1} 件以上: ${pins.map((p) => p.path).join(' ')}`);
   }
 }
 // 節ごとの全行（並びの順）。layer の無い節（site）は札にしない

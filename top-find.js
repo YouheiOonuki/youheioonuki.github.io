@@ -3,7 +3,7 @@
    yorozu-ai の /v1/find に文を送り、近い道具を 3 つ、語で当たった道具の下に足す（2 段）。同じ文を続けて押したら送らず、top.js が最初の候補を開く。
    文は yorozu-ai が保存しない（プライバシーポリシー 7.11）。
    数えるのは件数だけ（D367。/v1/ping に page と event だけ。文は送らない）: find_used（送った）・find_zero（語の一致が 0 件だった）・find_click（近い道具から進んだ）。
-   top.js は通信をしない決まりなので、通信はこのファイルに分けてトップだけが読む（top-next.js と同じ形）。3 秒で返らなければ何も足さない */
+   top.js は通信をしない決まりなので、通信はこのファイルに分けてトップだけが読む。3 秒で返らなければ何も足さない */
 (function (root) {
   'use strict';
   var API = 'https://yorozu-ai.oonuki-youhei.workers.dev/v1/find';

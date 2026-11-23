@@ -30,7 +30,6 @@
 /* いまの時期: 名前は強調色のリンク、下に一言。行は 1px の線で区切る（面の地や左の太線で飾らない。B） */
 .yt-season { list-style: none; display: grid; gap: 0; }
 .yt-season li + li { border-top: 1px solid var(--border); }
-.yt-next { margin: var(--sp-2) 0 0; font-size: 0.95rem; }
 .yt-season a { display: block; min-height: var(--tap); padding: var(--sp-1) 0; color: var(--text); text-decoration: none; line-height: 1.4; }
 .yt-season strong { color: var(--accent); font-size: 1.125rem; font-weight: 800; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 @media (hover: hover) { .yt-season a:hover strong { text-decoration-thickness: 3px; } }

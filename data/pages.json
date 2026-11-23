@@ -41,7 +41,7 @@
     {"path": "/tameshite/", "date": "2026-09-25", "title": "ためして（耳・反射・目）", "section": "oto", "priority": 6, "aliases": ["テスト"], "name": "ためして", "note": "音・反射・記憶の目安"},
     {"path": "/seido-keisan/shienkin/", "date": "2026-09-25", "title": "子ども・子育て支援金 いくら引かれる", "section": "okane", "priority": 8, "aliases": ["支援金", "健康保険料"], "chip": "子育て支援金", "name": "子育て支援金", "note": "保険料への上乗せ額"},
     {"path": "/seido-keisan/nenkin-kuriage/", "date": "2026-09-25", "title": "年金の繰上げ・繰下げの計算", "section": "okane", "priority": 9, "aliases": ["繰下げ受給", "年金"], "chip": "年金の受け取り", "name": "年金の繰上げ・繰下げ", "note": "受け取る年齢で比べる"},
-    {"path": "/seido-keisan/koko-mushoka/", "date": "2026-09-25", "title": "高校無償化の計算（2026年度）", "section": "okane", "priority": 10, "aliases": ["就学支援金", "授業料"], "chip": "高校無償化", "name": "高校無償化", "note": "授業料の自己負担"},
+    {"path": "/seido-keisan/koko-mushoka/", "date": "2026-09-25", "title": "高校無償化の計算（2026年度）", "section": "okane", "priority": 8, "aliases": ["就学支援金", "授業料"], "chip": "高校無償化", "name": "高校無償化", "note": "授業料の自己負担"},
     {"path": "/seido-keisan/kogaku-ryoyohi/", "date": "2026-09-25", "title": "高額療養費の計算", "section": "okane", "priority": 9, "aliases": ["医療費の上限", "入院"], "chip": "高額療養費", "name": "高額療養費", "note": "医療費の月の上限"},
     {"path": "/seido-keisan/kaitei/", "date": "2026-09-25", "title": "制度の改定カレンダー", "section": "okane", "priority": 8, "aliases": ["法改正", "施行日"], "chip": "改定カレンダー", "name": "制度の改定カレンダー", "note": "税・社保の施行日の一覧"},
     {"path": "/seido-keisan/invoice/", "date": "2026-09-25", "title": "2割特例の終了後の消費税", "section": "okane", "priority": 8, "aliases": ["インボイス", "2割特例", "3割特例"], "chip": "2割特例の後", "name": "2割特例の後の消費税", "note": "3割特例・簡易課税と比較"},
@@ -79,7 +79,7 @@
     {"path": "/gakushu-print/angou/", "date": "2026-09-25", "title": "暗号メーカー", "section": "gakko", "priority": 7, "aliases": ["暗号"], "chip": "暗号"},
     {"path": "/gakko-keisan/timer/", "date": "2026-09-25", "title": "宿題タイマー", "section": "gakko", "priority": 8, "aliases": ["タイマー"], "chip": "タイマー", "name": "タイマー"},
     {"path": "/gakko-keisan/shusseki/", "date": "2026-09-25", "title": "出席日数・欠課時数の計算（あと何回休めるか）", "section": "gakko", "priority": 8, "aliases": ["欠席", "単位", "留年"], "chip": "出席日数"},
-    {"path": "/gakko-keisan/naishin/", "date": "2026-09-25", "title": "内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）", "section": "gakko", "priority": 11, "aliases": ["内申", "換算内申", "高校受験"], "chip": "内申点", "name": "内申点", "note": "都立の換算内申など"},
+    {"path": "/gakko-keisan/naishin/", "date": "2026-09-25", "title": "内申点の計算（都立の換算内申・神奈川・埼玉・千葉・大阪・兵庫）", "section": "gakko", "priority": 9, "aliases": ["内申", "換算内申", "高校受験"], "chip": "内申点", "name": "内申点", "note": "都立の換算内申など"},
     {"path": "/gakko-keisan/hensachi/", "date": "2026-09-25", "title": "偏差値の計算（順位の目安・5教科）", "section": "gakko", "priority": 9, "aliases": ["偏差値"], "chip": "偏差値", "name": "偏差値", "note": "点数から偏差値と順位"},
     {"path": "/gakko-keisan/atonannichi/", "date": "2026-09-25", "title": "○○まであと何日", "section": "gakko", "priority": 8, "aliases": ["カウントダウン"]},
     {"path": "/gakko-keisan/", "date": "2026-09-25", "title": "学校の計算機", "section": "gakko", "priority": 7, "aliases": ["学校"], "chip": "学校の計算機", "name": "学校の計算機", "note": "内申点・偏差値・出席"},
@@ -104,9 +104,9 @@
     {"path": "/filetime/", "date": "2026-09-24", "title": "FILETIME・LDAP タイムスタンプ変換", "section": "it", "priority": 7, "aliases": ["pwdLastSet", "lastLogonTimestamp"], "chip": "FILETIME", "name": "FILETIME・LDAP 時刻", "note": "18 桁の時刻を日時に"},
     {"path": "/denki-dai/", "date": "2026-09-24", "title": "家電の電気代・節約額シミュレーター", "section": "okane", "priority": 3, "aliases": ["電気代", "節電", "買い替え"], "chip": "電気代", "name": "家電の電気代", "note": "買い替えの元が取れる年"},
     {"path": "/bingo/", "date": "2026-09-24", "title": "大人数ビンゴ抽選", "section": "atsumari", "priority": 6, "aliases": ["ビンゴカード", "抽選"], "chip": "ビンゴ", "name": "大人数ビンゴ抽選", "note": "大画面とカード印刷"},
-    {"path": "/ADSearch/", "date": "2026-09-24", "title": "ADSearch", "section": "it", "priority": 4, "aliases": ["Active Directory", "PowerShell", "Get-ADUser"], "chip": "ADSearch", "name": "ADSearch", "note": "RSAT なしで AD を読む"},
+    {"path": "/ADSearch/", "date": "2026-09-24", "title": "ADSearch", "section": "it", "priority": 4, "pin": true, "aliases": ["Active Directory", "PowerShell", "Get-ADUser"], "chip": "ADSearch", "name": "ADSearch", "note": "RSAT なしで AD を読む"},
     {"path": "/shaho-check/", "date": "2026-09-23", "title": "社会保険 加入チェッカー", "section": "okane", "priority": 4, "aliases": ["106万円", "扶養", "年収の壁", "パート"], "chip": "社保の加入", "name": "社会保険 加入チェック", "note": "パートの加入を質問で"},
-    {"path": "/nittei-kouho/", "date": "2026-09-23", "title": "日程調整 候補日ジェネレーター", "section": "atsumari", "priority": 4, "aliases": ["日程調整", "候補日", "忘年会"], "chip": "日程調整", "name": "日程調整 候補日", "note": "祝日を外した候補と文面"},
+    {"path": "/nittei-kouho/", "date": "2026-09-23", "title": "日程調整 候補日ジェネレーター", "section": "atsumari", "priority": 6, "aliases": ["日程調整", "候補日", "忘年会"], "chip": "日程調整", "name": "日程調整 候補日", "note": "祝日を外した候補と文面"},
     {"path": "/loan-sim/", "date": "2026-09-23", "title": "住宅ローン 返済シミュレーター", "section": "okane", "priority": 5, "aliases": ["繰上返済", "金利", "住宅ローン"], "chip": "住宅ローン", "name": "住宅ローン 返済", "note": "金利の上昇と繰上返済"},
     {"path": "/loan-sim/kinri/", "date": "2026-11-22", "title": "金利の今と昔 国債金利と物価の推移", "short": "金利の今と昔", "section": "okane", "priority": 5, "aliases": ["国債金利", "長期金利", "消費者物価指数", "物価上昇率"], "chip": "金利の今と昔", "name": "金利の今と昔", "note": "国債金利と物価の推移"},
     {"path": "/hoshizora-sanpo/zukan/", "date": "2026-09-23", "title": "星座図鑑", "section": "hoshi", "priority": 9, "aliases": ["星座の一覧"], "chip": "星座図鑑"},
@@ -114,7 +114,7 @@
     {"path": "/hoshizora-sanpo/", "date": "2026-07-11", "title": "ほしぞらさんぽ", "section": "hoshi", "priority": 9, "aliases": ["星座", "プラネタリウム", "星空"], "chip": "星空さんぽ", "name": "ほしぞらさんぽ", "note": "今夜の星空と星座"},
     {"path": "/web-roulette/", "date": "2026-03-22", "title": "無料ルーレット・くじ引きアプリ", "section": "atsumari", "priority": 5, "aliases": ["くじ引き", "抽選"], "chip": "ルーレット", "name": "ルーレット・くじ引き", "note": "回して決める"},
     {"path": "/web-metronome/", "date": "2026-03-22", "title": "無料オンラインメトロノーム", "section": "oto", "priority": 7, "aliases": ["テンポ", "BPM"], "chip": "メトロノーム", "name": "メトロノーム・ピアノ", "note": "変則拍子と裏拍"},
-    {"path": "/easy-split/", "date": "2026-03-22", "title": "easy-split", "section": "atsumari", "priority": 5, "aliases": ["割り勘", "精算", "飲み会"], "chip": "割り勘", "name": "傾斜割り勘・清算", "note": "係数つきの割り勘"}
+    {"path": "/easy-split/", "date": "2026-03-22", "title": "easy-split", "section": "atsumari", "priority": 7, "aliases": ["割り勘", "精算", "飲み会"], "chip": "割り勘", "name": "傾斜割り勘・清算", "note": "係数つきの割り勘"}
   ],
   "sections": [
     {"id": "okane", "name": "お金と制度", "layer": "用事", "pillar": true, "lead": "年末調整は令和 8 年分、住民税は令和 9 年度の制度で計算します。", "tagFromLead": true, "foot": [{"name": "制度の計算機", "href": "/seido-keisan/"}]},

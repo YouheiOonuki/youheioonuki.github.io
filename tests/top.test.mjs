@@ -330,7 +330,7 @@ test('アイコン: /all/ の全行と、いまの時期の入れ替え（1 月�
   for (const m of (top + all).matchAll(/class="yt-ico" src="(?:\.\.\/|\.\/)([^/]+)\/favicon\.svg"/g)) assert.ok(repos.has(m[1]), m[1]);
 });
 
-test('D849・Q-1081（v2）: title・og:title、description・og:description が食い違わない。屋号の下の 1 行は 柱の名前を並べた 1 行（title の後ろ半分から「出典つきの」と「星空」を除いた物。title を変えるかはオーナーが決める）。断りの文は置かない', () => {
+test('D849・Q-1081（v2）: title・og:title、description・og:description が食い違わない。屋号の下の 1 行は 柱の名前を並べた 1 行（title の後ろ半分から「出典つきの」を除いた物。title も「星空」を外した字に替えた。D1035）。断りの文は置かない', () => {
   const top = read('index.html');
   const meta = (re) => (top.match(re) || [])[1];
   const title = meta(/<title>([^<]+)<\/title>/), desc = meta(/<meta name="description" content="([^"]+)">/);
@@ -339,7 +339,8 @@ test('D849・Q-1081（v2）: title・og:title、description・og:description が
   assert.equal(meta(/<meta property="og:description" content="([^"]+)">/), desc);
   for (const w of ['無料ツール集', 'ちょっと便利', '便利ツール', '少しずつ増やして']) assert.ok(!(title + desc).includes(w), w);
   const line = '制度の計算機と、学校・情シスの道具';
-  assert.ok(title.endsWith('出典つきの制度の計算機と、学校・星空・情シスの道具'), 'title は今のまま（星空を外すかはオーナーが決める。6 章の 2）');
+  assert.equal(title, 'yorozu-craft｜出典つきの制度の計算機と、学校・情シスの道具', 'title は 3.6 の字（星空を外した。D1035・Q-1218）');
+  assert.ok(desc.endsWith('公開しています。') && !desc.includes('登録なし・無料'), 'description は末尾の「登録なし・無料。」だけ消した字');
   assert.match(top, /<header class="site-head">[\s\S]*<p class="lead">制度の計算機と、学校・情シスの道具<\/p>[\s\S]*<\/header>/);
   assert.ok(line.length > 0);
   assert.doesNotMatch(top.slice(top.indexOf('<header'), top.indexOf('<!-- top:search:begin -->')), /class="trust|。/);
