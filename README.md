@@ -248,7 +248,8 @@ GitHub Pages の仕様により、Pages を有効にしたほかのリポジト�
 本番の公開ページを巡回して、全ツールに共通の決まりを機械的に確かめる。`.github/workflows/check-site.yml` で**毎週月曜 9:00（日本時間）**に自動で実行し、失敗すると GitHub から通知メールが届く。Actions タブの「Run workflow」で手動実行もできる。
 
 ```bash
-node tools/check-site.mjs                           # 本番 https://yorozu-craft.com/ を確認
+node tools/check-site.mjs                           # 本番 https://yorozu-craft.com/ を確認（計算の API は本番の Worker と突き合わせない。既定。Q-1241）
+node tools/check-site.mjs --worker                  # 同じ。計算の API を本番の Worker と突き合わせる（週 1 回の workflow だけが付ける。--no-worker は受けて何もしない。知らない引数は使い方を出して終了コード 2）
 node tools/check-site.mjs http://127.0.0.1:8000/    # ローカル配信を確認（404 の確認は GitHub Pages でしか正しく出ない。計算の API の本番の Worker との突き合わせは飛ばす。yorozu-plans D708）
 ```
 

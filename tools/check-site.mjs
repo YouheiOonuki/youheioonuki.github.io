@@ -3,13 +3,28 @@
 // 本番の公開ページを巡回して、全ツールに共通の決まりが守られているかを機械的に確かめる。
 // 使い方: node tools/check-site.mjs            … https://yorozu-craft.com/ を確認
 //         node tools/check-site.mjs <ベースURL> … 別の場所（ローカル配信など）を確認
-//         node tools/check-site.mjs --no-worker … 計算の API の本番の Worker を呼ばずに回す（測りで回すとき。D477 の節を飛ばす）
-//         確認先が本番（https://yorozu-craft.com）でないときも、計算の API の節は飛ばす（手元を見る回に本番の Worker を呼ばない。yorozu-plans D708）
+//         node tools/check-site.mjs --worker   … 計算の API を本番の Worker と突き合わせる（D477。週 1 回の workflow だけが付ける。確認先が本番のときだけ効く）
+//         node tools/check-site.mjs --no-worker … 受けて何もしない（既定が「Worker に要求を出さない」になる前の手順書の字が落ちないように。yorozu-plans Q-1241）
+//         node tools/check-site.mjs --help      … この使い方を出して終了コード 0
+//         ほかの引数（--で始まるもの）は、使い方を 1 回出して終了コード 2。要求は 1 本も出さない（yorozu-plans D1077・条件 110）
+//         既定では計算の API の節を飛ばす（本番の Worker に要求を出さない。付け忘れで本番の上限つきの口を使わないため）。
+//         確認先が本番（https://yorozu-craft.com）でないときは --worker を付けても飛ばす（手元を見る回に本番の Worker を呼ばない。yorozu-plans D708）
 // 失敗が1件でもあれば終了コード 1。外部パッケージは使わない（Node 20 以上の fetch だけ）。
 
 const ARGS = process.argv.slice(2);
-const NO_WORKER = ARGS.includes('--no-worker');
-const BASE = (ARGS.find(a => !a.startsWith('--')) || 'https://yorozu-craft.com/').replace(/\/?$/, '/');
+const USAGE = [
+  '使い方: node tools/check-site.mjs [ベースURL] [--worker]',
+  '  （引数なし）  https://yorozu-craft.com/ を確認する。計算の API は本番の Worker と突き合わせない',
+  '  ベースURL     別の場所（ローカル配信など）を確認する',
+  '  --worker      計算の API を本番の Worker と突き合わせる（週 1 回の workflow だけが付ける）',
+  '  --no-worker   受けて何もしない（前の手順書の字のため）',
+  '  --help        この使い方を出して終了コード 0',
+].join('\n');
+if (ARGS.includes('--help')) { console.log(USAGE); process.exit(0); }
+const UNKNOWN = ARGS.filter((a) => a.startsWith('-') && a !== '--worker' && a !== '--no-worker');
+if (UNKNOWN.length) { console.error(`知らない引数: ${UNKNOWN.join(' ')}\n${USAGE}`); process.exit(2); }
+const WORKER = ARGS.includes('--worker');
+const BASE = (ARGS.find(a => !a.startsWith('-')) || 'https://yorozu-craft.com/').replace(/\/?$/, '/');
 const ORIGIN = new URL(BASE).origin;
 const PROD_ORIGIN = 'https://yorozu-craft.com';
 const ADSENSE_ID = 'ca-pub-5375267956079717';
@@ -659,8 +674,8 @@ const NOT_TOOL_SCREENS = {
 }
 // 計算の API（yorozu-plans 7.186 D477）: 本番の /api/openapi.json（build が手元の yorozu-api の原文から作る）の口 ＝ 本番の Worker の定義から作った口か。
 // build は Worker を呼ばないので、上げ忘れ・写し忘れ（Worker と原文のずれ）はここで見る。警告だけ（失敗にしない）
-// --no-worker のとき・確認先が本番でないとき（D708）は節ごと飛ばし、飛ばしたことをメモに 1 行出す（警告にも失敗にも数えない）
-if (NO_WORKER) notes.push('計算の API: Worker と突き合わせていない（--no-worker）');
+// --worker が無いとき・確認先が本番でないとき（D708）は節ごと飛ばし、飛ばしたことをメモに 1 行出す（警告にも失敗にも数えない）
+if (!WORKER) notes.push('計算の API: Worker と突き合わせていない（既定。突き合わせるときは --worker）');
 else if (ORIGIN !== PROD_ORIGIN) notes.push(`計算の API: Worker と突き合わせていない（確認先 ${ORIGIN} が本番でない。D708）`);
 else {
   const { readApi, buildOpenApi, openApiSignature } = await import('./build-agent.mjs');
