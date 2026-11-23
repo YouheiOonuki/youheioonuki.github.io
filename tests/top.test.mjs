@@ -150,11 +150,11 @@ test('札（site-strategy-v2 3.4・3.5）: 節 ＝ 札の 7 枚が木の順（�
     const card = html.slice(html.indexOf(`id="${id}" data-card`), html.indexOf('</section>', html.indexOf(`id="${id}" data-card`)));
     assert.ok(card.includes('<p class="yt-cf">' + links.map(([h, n]) => `<a href="${h}">${n}</a>`).join('') + '</p>'), id);
   }
-  // 情シス・PC の札の頭の別館 2 行は節の annex と同じ字。PAC ファイル テスターがその次
+  // 情シス・PC の札の頭の別館 2 行は節の annex と同じ字。ADSearch が先、PAC ファイル テスターがその次（pin 2 件の中は priority の順）
   const annex = data.sections.find((x) => x.id === 'it').annex;
   assert.deepEqual(annex.map((x) => [x.name, x.note]), [['ストップボード', 'サービスの障害と休止の予定'], ['エンドボード', 'サポート終了日']]);
   const it = html.slice(html.indexOf('id="it" data-card'), html.indexOf('</section>', html.indexOf('id="it" data-card')));
-  assert.deepEqual([...it.split('<details')[0].matchAll(/<li><a href="([^"]+)">/g)].map((m) => m[1]).slice(0, 3), ['https://stopboard.yorozu-craft.com/', 'https://endboard.yorozu-craft.com/', './pac-tester/']);
+  assert.deepEqual([...it.split('<details')[0].matchAll(/<li><a href="([^"]+)">/g)].map((m) => m[1]).slice(0, 4), ['https://stopboard.yorozu-craft.com/', 'https://endboard.yorozu-craft.com/', './ADSearch/', './pac-tester/']);
   // 行の名前と一言は pages.json の今の字（いまの時期の行は一言の代わりに理由）
   const byPath = new Map(data.pages.map((p) => [p.path, p]));
   const cards = new Map(cardsJa(data).map((c) => [c.id, c]));
