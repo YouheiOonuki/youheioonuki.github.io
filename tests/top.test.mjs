@@ -347,7 +347,9 @@ test('D849・Q-1081（v2）: title・og:title、description・og:description が
   assert.doesNotMatch(top, /その制度、あなたの場合はいくら|いつ上げるか。誰の障害か|法令と国税庁・厚生労働省などの資料どおりに|ちょっと計算したい|入れた文は、探すためにサーバーへ送ります|（広告なし）|確かめ方|年末調整で、いくら戻るか|保険料控除は、いくら効くか|住民税は、来年いくらか/);
   assert.ok(top.includes('<a href="./about.html#kakunin">計算の根拠</a>') && top.includes('<a href="./api/">公開データ</a>'), '脚に 計算の根拠・公開データ');
   for (const href of ['./about.html', './privacy-policy.html', './post/', 'https://stopboard.yorozu-craft.com/', 'https://endboard.yorozu-craft.com/']) assert.ok(top.includes('<a href="' + href + '">'), href);
-  assert.match(read('about.html'), /<h2 id="kakunin">道具の作り方と確かめ方<\/h2>/);
+  const about = read('about.html');
+  assert.match(about, /<h2 id="kakunin">計算の根拠<\/h2>/, 'Q-1219: 見出しは 計算の根拠（id は kakunin のまま）');
+  assert.ok(!about.includes('確かめ方'), 'Q-1219: about に「確かめ方」は無い');
 });
 
 test('D849・Q-1082: about の「内容」は柱を言い、入力の扱いは「入力したデータの扱い」の節の 1 か所だけが書く（著作権の節の「ブラウザ内でのみ」は無い）', () => {
@@ -373,7 +375,8 @@ test('節の頭の 1 文（D865・v3）: lead は柱の 3 節とたのしみの�
 
 test('D874・Q-1116: about の「このサイトについて」は節の名前を並べない。英語に確かめ方の節（日本語と同じ事実の 5 行）と、運営者の紹介の 4 文目', () => {
   const ja = read('about.html'), en = read('en/about.html');
-  assert.match(ja, /<p>道具は使う人ごとに分けて並べています。子どもが遊ぶ画面と、親・家族向けのページには広告を出していません。<\/p>/);
+  assert.ok(!ja.includes('道具は使う人ごとに分けて並べています'), 'Q-1219: 2 段落目は消した（D1012）');
+  assert.match(ja, /<h2>このサイトについて<\/h2>\s*<p>yorozu-craft は、情報システムの仕事をしている個人が作っているサイトです。/);
   assert.match(en, /<dt>What we do<\/dt>\s*<dd>Calculators for Japan's tax and benefit rules with official sources, /);
   assert.ok(!en.includes('Small, useful tools'));
   const sec = en.slice(en.indexOf('<h2 id="check">How the tools are made and checked</h2>'), en.indexOf('<h2>Disclaimer</h2>'));
