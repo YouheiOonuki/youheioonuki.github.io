@@ -134,7 +134,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     .site-head .kana { font-size: var(--fs-s); color: var(--muted); }
     .site-head .lang { justify-self: end; display: inline-flex; align-items: center; min-height: var(--tap); }
     /* 何のサイトかの 1 文は、屋号の行の下に（ROADMAP 続き 69 の答え（確定）の文案 A） */
-    .site-head .lead { grid-column: 1 / -1; font-size: var(--fs-m); font-weight: 700; color: var(--text); line-height: 1.4; }
+    .site-head .lead { grid-column: 1 / -1; font-size: var(--fs-xl); font-weight: 800; color: var(--text); line-height: 1.3; margin: var(--sp-1) 0 var(--sp-2); word-break: auto-phrase; }   /* ヒーロー: 1 画面目の主役の大きさ（h1 は屋号のまま） */
     footer p { max-width: 40em; }
     main { padding: 0 var(--sp-4) var(--sp-6); }
     h2 { margin: var(--sp-6) 0 var(--sp-2); }
@@ -183,6 +183,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     }
     @media (min-width: 720px) {
       .yt-secs .yt-narrow { display: none; }
+      .site-head .lead { font-size: 2.25rem; }
       .yt-season { grid-template-columns: repeat(3, 1fr); gap: 0 var(--sp-4); }
       .yt-now .yt-season li + li { border-top: 0; border-left: 1px solid var(--border); padding-left: var(--sp-4); }   /* top.css の行の線（上）より詳細度を上げる */
       .yt-secs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3) var(--sp-4); align-items: start; }
