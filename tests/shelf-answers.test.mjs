@@ -19,7 +19,7 @@ const card = (id) => {
 const IDS = ['okane', 'gakko', 'it', 'kazoku', 'atsumari', 'hoshi', 'oto'];
 
 test('Q-1228: 誰の棚か 1 行は、お金と制度・学校・情シス・PC の札だけ。名前の見出しの直後', () => {
-  const WHO = { okane: '年末調整・申告・給付の書類を、自分で書く人に', gakko: '生徒と親と先生に。県や学校ごとの決まりで計算します', it: '一人情シスと、AD を触る人に' };
+  const WHO = { okane: '年末調整・申告・給付の書類を、自分で書く人に', gakko: '生徒と親と先生に。県や学校ごとの決まりで計算します', it: 'システムの開発・保守をする IT 部門の人に' };
   for (const id of IDS) {
     const c = card(id);
     const n = (c.match(/class="yt-who"/g) || []).length;

@@ -45,6 +45,14 @@ test('Q-1219: /for/kaigo/ の description と /en/ の description・og:descript
 
 test('Q-1227: /for/it/ の最初の 1 行は誰の棚かを言う。「決まりごと」の節は足さない', () => {
   const html = read('for/it/index.html');
-  assert.ok(html.indexOf('<h1>情シス向けの道具</h1>\n      <p class="lead">一人で情シスをしている人と、Active Directory を触る人のための道具です。</p>') > 0);
+  assert.ok(html.indexOf('<h1>情シス向けの道具</h1>\n      <p class="lead">システムの開発・保守をする IT 部門の人のための道具です。</p>') > 0);
   assert.ok(!html.includes('決まりごと'));
+});
+
+test('Q-1239: /for/it/ の og:description は lead と同じ字（description と title は別）', () => {
+  const html = read('for/it/index.html');
+  const lead = html.match(/<p class="lead">([^<]*)<\/p>/)[1];
+  const og = html.match(/<meta property="og:description" content="([^"]*)">/)[1];
+  assert.equal(og, lead);
+  assert.equal(lead, 'システムの開発・保守をする IT 部門の人のための道具です。');
 });
