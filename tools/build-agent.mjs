@@ -339,7 +339,7 @@ export function buildLlms({ pages, urls, info }, ds, api) {
   const L = [];
   L.push('# yorozu-craft');
   L.push('');
-  L.push('> 登録なしで使える無料のブラウザの道具（制度の計算機・学校の計算・印刷物・クイズ・情シスの道具など）。入力は端末の中で計算し、サーバーに送りません。運営は個人（Youhei Oonuki）。');
+  L.push('> 登録なしで使える無料のブラウザの道具（制度の計算機・学校の計算・印刷物・クイズ・情シスの道具など）。運営は個人（Youhei Oonuki）。');
   L.push('');
   const enTop = info[SITE + 'en/'];
   if (enTop && enTop.desc) L.push(`- English: ${enTop.desc} (${enTop.url})`);
