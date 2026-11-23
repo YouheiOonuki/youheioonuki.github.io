@@ -178,10 +178,9 @@ if (pages.has(BASE + 'en/')) {
 // 2c. 道具のページの一覧（data/pages.json）と、トップからの届きやすさ（yorozu-plans 企画書 59）
 //  - sitemap にある道具のページ（build-top.mjs の isToolPage）が data/pages.json に全部ある
 //    （無ければ新しいページ: 公開日を 1 行足して node tools/build-top.mjs）
-//  - トップの「新しいツール」の欄が data/pages.json の新しい順と同じ（tools/build-top.mjs の出力）
+//  - トップに「更新の記録」の欄が在る（行は /updates/ を作っている build-updates.mjs の上から 5 件。隣のクローンの更新履歴から作るので、中身はここでは突き合わせない）
 //  - どのページもトップから 2 クリック以内（トップに直接か、トップにある入口のページから）。新しい順の上位はトップに直接
 {
-  const { newToolsHtml } = await import('./build-top.mjs');
   const pj = await get(BASE + 'data/pages.json');
   let reg = null;
   try { reg = JSON.parse(pj.body); } catch { fail('/data/pages.json', `読めない（${pj.status}）`); }
@@ -191,8 +190,7 @@ if (pages.has(BASE + 'en/')) {
     for (const u of pages) { const p = path(u); if (usePage(p) && !regPaths.has(p)) fail('/data/pages.json', `新しいページ ${p} が無い（公開日を足して node tools/build-top.mjs）`); }
     // 一覧に残して索引から外したページ（build-top.mjs の NOINDEX_ON_TOP。D899）は sitemap の外でよい。noindex は sitemap の外の HTML の検査（D372）が見る
     for (const p of regPaths) if (!NOINDEX_ON_TOP.has(p) && ![...pages].some(u => path(u) === p)) fail('/data/pages.json', `${p} が sitemap に無い（消したなら一覧からも消す）`);
-    const want = newToolsHtml(reg);
-    if (!top.body.includes(want)) fail('index.html', '「新しいツール」の欄が data/pages.json の新しい順と違う（node tools/build-top.mjs）');
+    if (!top.body.includes('<h2 id="new-h">更新の記録</h2>')) fail('index.html', '「更新の記録」の欄が無い（node tools/build-top.mjs）');
     const onTop = new Set(hrefs(top.body).filter(h => h.startsWith('./')).map(h => '/' + h.slice(2).replace(/[?#].*$/, '')));
     const twoClick = new Set(onTop);
     for (const e of [...onTop].filter(p => /^\/[^/]+\/$/.test(p) && regPaths.has(p))) {

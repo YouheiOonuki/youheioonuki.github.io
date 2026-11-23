@@ -47,7 +47,7 @@ const NO_AD_SCREENS = [
   '/seido-keisan/kogaku-ryoyohi/',
   '/seido-keisan/kogaku-ryoyohi/guide.html',
   '/for/kaigo/',           // 介護・デイサービス向けの入口（高齢者向け D118・GROWTH 10 章: 広告なし）
-  '/line/',                // LINE 版の案内（節「親・家族のために」。/for/kaigo/ と同じ扱い: yorozu-plans 企画書 76）
+  '/line/',                // LINE 版の案内（節「このサイト」。元は「親・家族のために」。/for/kaigo/ と同じ扱い: yorozu-plans 企画書 76）
   '/post/',                // 要望の投書箱（yorozu-plans 企画書 77）
   '/updates/',             // 更新情報（案内のページ。about と同じ扱いで道具の 4 つは求めない: yorozu-plans D411）
 ];

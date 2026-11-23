@@ -1,7 +1,8 @@
 /* トップ・すべての道具・用途別の入口・英語トップで共有する部品（yorozu-plans ROADMAP 7.23「トップの構成」）
    - 検索: ページに埋めた一覧（<script type="application/json" id="yt-index">、tools/build-top.mjs が data/pages.json から作る）を
      端末の中だけで絞る。このファイルは通信を一切しない（<form> を使わない）。トップでは、Enter か「探す」を押した時だけ top-find.js が文を送る（D604）
-   - いまの時期: 埋めた季節表（id="yt-season"、data/season.json から）から、今日の月の 3 枚を出す（日付の窓の間はその行と入れ替える。作った日と表が違えば入れ替える）
+   - 札の中: 日本語のトップの札（節）の行は cardBodyHtml が作る。いまの時期の行は札の頭に上がる（埋めた id="yt-cards" の行の表と、季節表から。月が変われば入れ替える）
+   - いまの時期（英語のトップ）: 埋めた季節表（id="yt-season"、data/season.json から）から、今日の月の 3 枚を出す（日付の窓の間はその行と入れ替える。作った日と表が違えば入れ替える）
    tools/build-top.mjs とテスト（tests/top.test.mjs）も同じ関数を使う（node では vm で読む） */
 (function (root) {
   'use strict';
@@ -78,7 +79,32 @@
       return '<li><a href="' + esc(base + x.path.slice(1)) + '"><strong>' + (icons ? iconHtml(x.path, base, false) : '') + esc(x.name) + '</strong><span>' + esc(x.reason) + '</span></a></li>';
     }).join('');
   }
-  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonKey: seasonKey, seasonItemsHtml: seasonItemsHtml, iconHtml: iconHtml, esc: esc, ROOT_DIRS: ROOT_DIRS };
+  // 札の中（節 ＝ 札。yorozu-plans docs/advice/2026-11-23_site-strategy-v2.md 3.4・3.5）。静的な HTML（tools/build-top.mjs）と、月が変わったときの入れ替えで同じ形
+  // card: { id, vis（札に出す行の数。別館の行は数えない）, mob（スマホで見せる行の数。別館の行も数える）, annex: [{ h, t, n }], rows: [{ p, t, n }]（その節の全行を並びの順で。n は一言で、無い行は「ほかに」にだけ出る） }
+  // items: いまの時期の行（seasonFor の答え）。その節の行は札の頭に上がり、一言の代わりに理由を出す
+  function cardBodyHtml(card, items, base) {
+    var sea = (items || []).filter(function (x) { return x.sec === card.id; }).slice(0, card.vis);
+    var seaPage = {};
+    sea.forEach(function (x) { seaPage[x.page || x.path] = true; });
+    var lines = (card.annex || []).map(function (a) { return { h: a.h, t: a.t, n: a.n }; });
+    sea.forEach(function (x) { lines.push({ h: base + x.path.slice(1), t: x.name, n: x.reason }); });
+    var shown = 0, rest = [];
+    card.rows.forEach(function (r) {
+      if (seaPage[r.p]) return;
+      if (r.n != null && shown < card.vis - sea.length) { lines.push({ h: base + r.p.slice(1), t: r.t, n: r.n }); shown++; } else rest.push(r);
+    });
+    var hidden = lines.slice(card.mob);
+    var li = lines.map(function (l, i) {
+      return '          <li' + (i >= card.mob ? ' class="yt-mh"' : '') + '><a href="' + esc(l.h) + '"><span class="yt-cn">' + esc(l.t) + '</span>' + (l.n ? ' <span class="yt-cs">' + esc(l.n) + '</span>' : '') + '</a></li>';
+    }).join('\n');
+    var more = hidden.map(function (l) { return '            <li class="yt-mo"><a href="' + esc(l.h) + '">' + esc(l.t) + '</a></li>'; })
+      .concat(rest.map(function (r) { return '            <li><a href="' + esc(base + r.p.slice(1)) + '">' + esc(r.t) + '</a></li>'; }));
+    var det = more.length
+      ? '\n        <details class="yt-more' + (rest.length ? '' : ' yt-mo') + '">\n          <summary>' + (rest.length ? '<span class="yt-pc">ほかに ' + rest.length + ' 件</span>' : '') + '<span class="yt-sp">ほかに ' + (rest.length + hidden.length) + ' 件</span></summary>\n          <ul class="yt-drows">\n' + more.join('\n') + '\n          </ul>\n        </details>'
+      : '';
+    return '\n        <ul class="yt-crows">\n' + li + '\n        </ul>' + det + '\n        ';
+  }
+  var api = { norm: norm, search: search, seasonFor: seasonFor, seasonKey: seasonKey, seasonItemsHtml: seasonItemsHtml, cardBodyHtml: cardBodyHtml, iconHtml: iconHtml, esc: esc, ROOT_DIRS: ROOT_DIRS };
   root.YorozuTop = api;
   if (typeof document === 'undefined') return;
 
@@ -97,6 +123,23 @@
         list.setAttribute('data-season-key', key);
         var mh = document.querySelector('[data-season-label]');
         if (mh) mh.textContent = mh.getAttribute('data-season-label').replace('{m}', String(m));
+      }
+    }
+  }
+
+  // 札の中のいまの時期: 作った日と今日で表の鍵（月・日付の窓）が違えば、札の中を入れ替える
+  var cardsEl = document.querySelector('.yt-cards[data-season-key]');
+  var cards = json('yt-cards');
+  if (season && cardsEl && cards) {
+    var nowC = new Date(), keyC = seasonKey(season, nowC);
+    if (keyC !== cardsEl.getAttribute('data-season-key')) {
+      var itemsC = seasonFor(season, nowC);
+      if (itemsC.length) {
+        cards.forEach(function (c) {
+          var body = cardsEl.querySelector('[data-card="' + c.id + '"] .yt-cbody');
+          if (body) body.innerHTML = cardBodyHtml(c, itemsC, cardsEl.getAttribute('data-base') || './');
+        });
+        cardsEl.setAttribute('data-season-key', keyC);
       }
     }
   }

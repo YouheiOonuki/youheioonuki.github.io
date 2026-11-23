@@ -5,21 +5,19 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadPages, loadSeason, sectionsJa, sectionsHtml, VISIBLE, CHIP_ROWS } from '../tools/build-top.mjs';
+import { loadTop, loadPages, loadSeason, sectionsJa, cardsJa } from '../tools/build-top.mjs';
 import { terms, computeAll, ranksOf, ranksFrom, aggregate, demandPoints, rankPoints, rewrite, MIN_IMPRESSIONS, MIN_PV, WEEKS, OUTAGES, overlapsOutage } from '../tools/top/priority.mjs';
 import { parseLedger } from '../tools/top/ledger.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (f) => readFileSync(join(ROOT, f), 'utf8');
+const YT = loadTop(ROOT);
 const data = loadPages(ROOT);
 const season = loadSeason(ROOT);
 const input = JSON.parse(read('data/priority-input.json'));
 const weekly = JSON.parse(read('data/weekly-tools.json'));
 const entry = (p) => (/^\/[^/]+\/$/.test(p.path) ? 1 : 0);
 const order = (a, b) => (!!b.pin - !!a.pin) || (b.priority - a.priority) || (entry(b) - entry(a)) || (a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
-// index.html の節の塊（<section> 〜 </section>）
-const block = (html, id) => { const i = html.indexOf(`<section class="yt-sec" id="${id}"`); return html.slice(i, html.indexOf('</section>', i)); };
-
 test('pages.json: 全行に section・priority・aliases、related は無い（7.98 D368。近い道具は data/near.json）', () => {
   const ids = new Set(data.sections.map((s) => s.id));
   for (const p of data.pages) {
@@ -31,59 +29,87 @@ test('pages.json: 全行に section・priority・aliases、related は無い（7
       assert.ok([...p.note].length <= 15, p.note);
     }
   }
-  for (const s of data.sections) assert.ok(data.pages.filter((p) => p.section === s.id && p.note != null).length >= 3, `${s.id} の候補が 3 未満`);
+  // 札にする節（layer のある節）は、札の行に出せる一言つきの行が札の行数（柱 5・そのほか 3。情シス・PC は 4）以上ある
+  for (const c of cardsJa(data)) assert.ok(c.rows.filter((r) => r.n != null).length >= c.vis, `${c.id} の候補が ${c.vis} 未満`);
 });
 
-test('pin は節ごとに 1 件以下', () => {
-  for (const s of data.sections) assert.ok(data.pages.filter((p) => p.section === s.id && p.pin).length <= 1, s.id);
-  // 2 件にすると build-top が止まる
+// 札のうち、札の行（別館の行は除く）の href
+const cardOf = (html, id) => { const i = html.indexOf(`<section class="yt-card`, html.indexOf(`id="${id}" data-card`) - 40); return html.slice(i, html.indexOf('</section>', i)); };
+const crows = (card) => [...card.split('<details')[0].matchAll(/<li(?: class="yt-mh")?><a href="([^"]+)"><span class="yt-cn">/g)].map((m) => m[1]);
+
+test('pin は柱の節だけ 2 件まで、ほかの節は 1 件まで（D1042）', () => {
+  for (const s of data.sections) assert.ok(data.pages.filter((p) => p.section === s.id && p.pin).length <= (s.pillar ? 2 : 1), s.id);
+  // 柱でない節に 2 件にすると build-top が止まる
   const two = structuredClone(data);
-  two.pages.filter((p) => p.section === 'oya' && p.note != null).slice(0, 2).forEach((p) => { p.pin = true; });
+  two.pages.filter((p) => p.section === 'kazoku' && p.note != null).slice(0, 2).forEach((p) => { p.pin = true; });
+  assert.ok(!data.sections.find((s) => s.id === 'kazoku').pillar);
   assert.throws(() => sectionsJa(two), /pin が 2 件以上/);
+  // 柱の節に 3 件にすると止まる
+  const three = structuredClone(data);
+  three.pages.filter((p) => p.section === 'it' && p.note != null).slice(0, 3).forEach((p) => { p.pin = true; });
+  assert.throws(() => sectionsJa(three), /pin が 3 件以上/);
   // 1 件なら priority が低くても先頭の行に出る
   const one = structuredClone(data);
-  const low = one.pages.filter((p) => p.section === 'oya' && p.note != null).sort((a, b) => a.priority - b.priority)[0];
+  const low = one.pages.filter((p) => p.section === 'kazoku' && p.note != null).sort((a, b) => a.priority - b.priority)[0];
   low.pin = true;
-  assert.equal(sectionsJa(one).find((s) => s.id === 'oya').rows[0].path, low.path);
+  assert.equal(sectionsJa(one).find((s) => s.id === 'kazoku').rows[0].path, low.path);
 });
 
-test('節ごとの行が priority の上位 VISIBLE（同点は入口＞子ページ、次に公開日の古い方）。HTML の見える行も同じ', () => {
+test('情シス・PC の札は PAC ファイル テスターと ADSearch に pin（優先度のままだと「ほかに」に入る。2 件の中は priority の順。site-strategy-v2 3.5・D1042）', () => {
+  const pac = data.pages.find((p) => p.path === '/pac-tester/'), ad = data.pages.find((p) => p.path === '/ADSearch/');
+  assert.equal(pac.section, 'it'); assert.equal(ad.section, 'it');
+  assert.equal(pac.pin, true); assert.equal(ad.pin, true);
+  assert.deepEqual(data.pages.filter((p) => p.pin && p.section === 'it').map((p) => p.path).sort(), ['/ADSearch/', '/pac-tester/']);
+  const rows = sectionsJa(data).find((s) => s.id === 'it').rows.filter((r) => r.note != null);
+  assert.deepEqual(rows.slice(0, 2).map((r) => r.path), ['/pac-tester/', '/ADSearch/']);
+  // 札の見える順: 別館 2 行、PAC、ADSearch、FILETIME・LDAP 時刻、テキスト変換（vis 4）。375 は別館 ＋ 見える行の数の決まりのまま
   const html = read('index.html');
-  for (const s of sectionsJa(data)) {
-    const cands = data.pages.filter((p) => p.section === s.id && p.note != null).sort(order);
-    const want = cands.slice(0, VISIBLE).map((p) => p.priority);
-    assert.deepEqual(s.rows.slice(0, VISIBLE).map((r) => r.priority), want, s.id);
-    const restMax = Math.max(...cands.slice(VISIBLE).map((p) => p.priority), 0);
-    // pin（節ごとに 1 件まで。オーナーの判断で常に出す: 7.24.1）は priority より先なので、低くてよい。pin でない行は残りより低くない
-    for (const r of s.rows.slice(0, VISIBLE)) if (!r.pin) assert.ok(r.priority >= restMax, `${s.id} ${r.path}`);
-    const shown = block(html, s.id).split('<details>')[0];
-    const names = [...shown.matchAll(/class="yt-name" href="\.\/([^"]+)"/g)].map((m) => '/' + m[1]);
-    assert.deepEqual(names, s.rows.slice(0, VISIBLE).map((r) => r.path), `${s.id} の HTML`);
+  const rowsHtml = crows(cardOf(html, 'it'));
+  assert.deepEqual(rowsHtml.filter((h) => h.startsWith('./')), ['./pac-tester/', './ADSearch/', './filetime/', './henkan/']);
+  assert.deepEqual(cardsJa(data).find((c) => c.id === 'it').rows.slice(0, 4).map((r) => r.p), ['/pac-tester/', '/ADSearch/', '/filetime/', '/henkan/']);
+});
+
+test('札ごとの行が priority の上位 vis 件（pin が先、同点は入口＞子ページ、次に公開日の古い方）。いまの時期の行は札の頭に上がる。HTML の札も同じ', () => {
+  const html = read('index.html');
+  const secs = new Map(sectionsJa(data).map((s) => [s.id, s]));
+  for (const c of cardsJa(data)) {
+    const s = secs.get(c.id);
+    const cands = s.rows.filter((r) => r.note != null);
+    // 季節の行なし: 上位 vis 件
+    const bare = [...YT.cardBodyHtml(c, [], './').matchAll(/<li(?: class="yt-mh")?><a href="\.\/([^"]+)"><span class="yt-cn">/g)].map((m) => '/' + m[1]);
+    assert.deepEqual(bare, cands.slice(0, c.vis).map((r) => r.path), c.id);
+    const restMax = Math.max(...cands.slice(c.vis).map((r) => r.priority), 0);
+    for (const r of cands.slice(0, c.vis)) if (!r.pin) assert.ok(r.priority >= restMax, `${c.id} ${r.path}`);
+    // 作った HTML: 別館の行（外の URL）のほか、札の行が vis 件
+    const got = crows(cardOf(html, c.id)).filter((h) => h.startsWith('./'));
+    assert.equal(got.length, c.vis, `${c.id} の HTML の行数`);
   }
 });
 
-test('同じ節に同じページが 2 回出ない（行・チップ・ほかに）。チップは 3 つまで', () => {
+test('同じ札に同じページが 2 回出ない（行・「ほかに」。スマホ用の重ね（yt-mo）は数えない）。札の行 ＋ 「ほかに」で、その節の全行', () => {
   const html = read('index.html');
-  for (const s of sectionsJa(data)) {
-    const all = s.rows.flatMap((r) => [r.path, ...r.chips.map((c) => c.path)]);
-    assert.equal(new Set(all).size, all.length, `${s.id}: ${all.join(' ')}`);
-    for (const r of s.rows) assert.ok(r.chips.length <= 3, r.path);
-    const hrefs = [...block(html, s.id).matchAll(/href="\.\/([^"#]+)"/g)].map((m) => m[1]).filter((h) => h !== 'all/');
-    assert.equal(new Set(hrefs).size, hrefs.length, `${s.id} の HTML に重複`);
+  for (const s of sectionsJa(data).filter((x) => x.layer)) {
+    const card = cardOf(html, s.id);
+    const links = [...card.matchAll(/<li(?! class="yt-mo")[^>]*><a href="([^"]+)"/g)].map((m) => m[1]).filter((h) => h.startsWith('./'));
+    assert.equal(new Set(links).size, links.length, `${s.id} の HTML に重複`);
+    assert.equal(links.length, s.rows.length, `${s.id}: 全行が 1 回ずつ`);
+    for (const r of s.rows) assert.ok(links.includes('./' + r.path.slice(1)) || links.some((l) => l.startsWith('./' + r.path.slice(1) + '#') || l === './' + r.path.slice(1)), `${s.id} ${r.path}`);
   }
 });
 
-test('チップ（第 2 版 D323）: 見える行には出さない。「ほかに」の行は近い道具（near）のうち、その節にまだ出ていないものだけ', () => {
-  const d = { sections: [{ id: 'x', name: 'X' }, { id: 'y', name: 'Y' }], pages: [
-    ...['a', 'b', 'c', 'd', 'e'].map((k, i) => ({ path: `/${k}/`, date: '2026-01-01', title: k, section: 'x', priority: 9 - i, aliases: [], note: k })),
-    { path: '/f/', date: '2026-01-01', title: 'F', section: 'x', priority: 4, aliases: [], note: 'f' },
-    { path: '/z/', date: '2026-01-01', title: 'Z', section: 'y', priority: 3, aliases: [] },
-  ], near: { '/f/': [{ url: '/a/' }, { url: '/z/' }] } };
-  const [x] = sectionsJa(d);
-  assert.deepEqual(x.rows.map((r) => r.path), ['/a/', '/b/', '/c/', '/d/', '/e/', '/f/']);
-  for (const r of x.rows.slice(0, VISIBLE)) assert.deepEqual(r.chips, []);
-  assert.deepEqual(x.rows[5].chips.map((c) => c.path), ['/z/'], '行に出ている a は出さない');
-  assert.match(sectionsHtml(d), /<details>/);
+test('「ほかに」（site-strategy-v2 3.5）: 札に出ない行は名前で全部。スマホで札から隠した行は yt-mo で同じ物を「ほかに」の中にも入れ、見出しの件数は PC とスマホで別', () => {
+  const card = { id: 'x', vis: 2, mob: 1, annex: [], rows: [{ p: '/a/', t: 'A', n: 'a' }, { p: '/b/', t: 'B', n: 'b' }, { p: '/c/', t: 'C' }, { p: '/d/', t: 'D', n: 'd' }] };
+  const h = YT.cardBodyHtml(card, [], './');
+  assert.match(h, /<li><a href="\.\/a\/"><span class="yt-cn">A<\/span> <span class="yt-cs">a<\/span><\/a><\/li>/);
+  assert.match(h, /<li class="yt-mh"><a href="\.\/b\/">/, '2 行目はスマホで隠す');
+  assert.match(h, /<span class="yt-pc">ほかに 2 件<\/span><span class="yt-sp">ほかに 3 件<\/span>/);
+  assert.match(h, /<li class="yt-mo"><a href="\.\/b\/">B<\/a><\/li>/);
+  assert.match(h, /<li><a href="\.\/c\/">C<\/a><\/li>/, '一言の無い行は「ほかに」にだけ');
+  // いまの時期の行は札の頭に上がり、一言の代わりに理由。元の行は「ほかに」から外れる
+  const s = YT.cardBodyHtml(card, [{ path: '/d/', page: '/d/', name: 'D', reason: '理由', sec: 'x' }, { path: '/q/', name: 'Q', reason: 'q', sec: 'y' }], './');
+  assert.match(s, /<ul class="yt-crows">\s*<li><a href="\.\/d\/"><span class="yt-cn">D<\/span> <span class="yt-cs">理由<\/span>/);
+  assert.equal(s.split('href="./d/"').length - 1, 1, 'd は札の 1 行目だけ（ほかには出ない）');
+  assert.ok(!s.includes('/q/'), '別の節の行は出ない');
 });
 
 test('priority.mjs の式（第 2 版 D323）: 需要＋表示＋PV＋季節（年末調整 ＝ A3＋表示3＋PV3＋季節2＝11 の形）。トップからの遷移は使わない', () => {
@@ -165,22 +191,21 @@ test('同点の順: 入口ページ ＞ 子ページ、次に公開日の古い�
   assert.deepEqual(sectionsJa(d)[0].rows.map((r) => r.path), ['/hi/x/', '/k/', '/k/old/', '/k/new/']);
 });
 
-test('節の行は 5（VISIBLE）、チップの行は 0（CHIP_ROWS。第 2 版 D323）', () => {
-  assert.equal(VISIBLE, 5);
-  assert.equal(CHIP_ROWS, 0);
+test('札の行は柱 5・そのほか 3（情シス・PC は別館 2 行 ＋ 4 行）。チップは無い（第 2 版 D323 の CHIP_ROWS は、札に替わって消えた）', () => {
   const html = read('index.html');
-  for (const s of sectionsJa(data)) {
-    const shown = block(html, s.id).split('<details>')[0];
-    assert.doesNotMatch(shown, /yt-chips/, s.id);
-  }
+  assert.deepEqual(cardsJa(data).map((c) => [c.id, c.vis, c.mob]), [['okane', 5, 3], ['gakko', 5, 3], ['it', 4, 3], ['kazoku', 3, 2], ['atsumari', 3, 2], ['hoshi', 3, 2], ['oto', 3, 2]]);
+  assert.doesNotMatch(html, /yt-chips/);
 });
+
+// /all/ の節の塊（<section> 〜 </section>）
+const block = (html, id) => { const i = html.indexOf(`<section class="yt-sec" id="${id}"`); return html.slice(i, html.indexOf('</section>', i)); };
 
 test('/all/: 1 画面目に検索欄と節の目次（7 つへのジャンプ）、各節の見出しに「トップへ」', () => {
   const h = read('all/index.html');
   const toc = h.indexOf('<nav class="yt-toc"'), firstSec = h.indexOf('<section class="yt-sec"');
   assert.ok(h.indexOf('role="combobox"') > 0 && h.indexOf('role="combobox"') < toc && toc < firstSec);
   const nav = h.slice(toc, h.indexOf('</nav>', toc));
-  assert.deepEqual([...nav.matchAll(/href="#([a-z]+)"/g)].map((m) => m[1]), data.sections.map((s) => s.id));
+  assert.deepEqual([...nav.matchAll(/href="#([a-z]+)"/g)].map((m) => m[1]), data.sections.filter((s) => s.layer).map((s) => s.id), '目次は札にする 7 節（このサイトは入れない）');
   for (const s of data.sections) assert.match(block(h, s.id), new RegExp(`<h2 id="${s.id}-h">[^<]+</h2><a href="#main">トップへ</a>`));
   assert.match(h, /<main id="main">/);
 });
