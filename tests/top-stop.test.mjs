@@ -97,3 +97,11 @@ test('トップは top-stop.js を読み、箱の場所は html に先に無い�
 test('top.js は今も通信をしない（通信は top-stop.js に分けた）', () => {
   assert.doesNotMatch(read('top.js'), /fetch\(|XMLHttpRequest|sendBeacon|WebSocket|new Image/);
 });
+
+// Q-1253（D1097）: top-stop.js が読む先の host が、プライバシーポリシーの 7.3 に字で在る（作りと文書がずれた時に落ちる）
+test('top-stop.js が読む先の host が privacy-policy.html に在り、こちらから送る内容が無い事を言っている', () => {
+  const host = new URL(/var URL_NOW = '([^']+)'/.exec(src)[1]).host;
+  const policy = read('privacy-policy.html');
+  assert.ok(policy.includes(host), `privacy-policy.html に ${host}`);
+  assert.match(policy, new RegExp(host.replace(/\./g, '\.') + '[^<]*から今の状態を読み込みます。こちらから送る内容はありません。'));
+});
