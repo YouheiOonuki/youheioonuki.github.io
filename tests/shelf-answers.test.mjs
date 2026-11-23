@@ -66,3 +66,17 @@ test('Q-1228: 375 で見える行は、情シス・PC だけ 4 行（別館 2 �
   const cards = JSON.parse(html.match(/<script type="application\/json" id="yt-cards">([\s\S]*?)<\/script>/)[1]);
   assert.deepEqual(cards.map((c) => [c.id, c.mob]), [['okane', 3], ['gakko', 3], ['it', 4], ['kazoku', 2], ['atsumari', 2], ['hoshi', 2], ['oto', 2]]);
 });
+
+// Q-1239: 学校の札の見える行に出席日数（答えの箱が指す先）。pin は学校でこの 1 件だけ。偏差値・内申点は priority のまま
+test('Q-1239: 学校の札の頭の行は出席日数（pin）。PC の 5 行・スマホの 3 行の中に入り、pin は学校でこの 1 件だけ', () => {
+  const c = card('gakko');
+  const rows = [...c.matchAll(/<li( class="yt-mh")?><a href="([^"]*)"><span class="yt-cn">([^<]*)/g)].map((m) => ({ mh: !!m[1], href: m[2], name: m[3] }));
+  assert.equal(rows.length, 5, 'PC は 5 行');
+  assert.deepEqual(rows[0], { mh: false, href: './gakko-keisan/shusseki/', name: '出席日数・欠課時数' });
+  assert.equal(rows.filter((r) => !r.mh).length, 3, 'スマホは 3 行');
+  assert.ok(rows.filter((r) => !r.mh).some((r) => r.href === './gakko-keisan/shusseki/'));
+  assert.deepEqual(data.pages.filter((p) => p.section === 'gakko' && p.pin).map((p) => p.path), ['/gakko-keisan/shusseki/']);
+  const ans = c.match(/<a class="yt-ans" href="([^"]*)"/)[1];
+  assert.ok(rows.some((r) => r.href === ans), '答えの箱の行き先が札の行に在る');
+  for (const p of ['/gakko-keisan/naishin/', '/gakko-keisan/hensachi/']) assert.equal(data.pages.find((x) => x.path === p).pin, undefined, p + ' は pin にしない');
+});
