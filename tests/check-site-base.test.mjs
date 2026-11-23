@@ -57,7 +57,7 @@ test('確認先が手元のとき、本番の host への要求は 0 で、計�
   });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   try {
-    const { out, outside } = await run([`http://127.0.0.1:${server.address().port}/`], preload);
+    const { out, outside } = await run(['--worker', `http://127.0.0.1:${server.address().port}/`], preload);   // --worker を付けても確認先が本番でなければ飛ばす（D708）
     assert.ok(outside, '差し替えが動いていない');
     assert.deepEqual(outside, [], '手元を見る回に外へ出た要求: ' + outside.join(', '));
     const skipped = out.split('\n').filter((l) => l.startsWith('メモ  計算の API: Worker と突き合わせていない'));
@@ -68,11 +68,58 @@ test('確認先が手元のとき、本番の host への要求は 0 で、計�
   } finally { server.close(); }
 }));
 
-test('確認先が本番のとき、計算の API の節は前と同じく Worker と突き合わせる（要求は差し替えが止める）', withPreload(async (preload) => {
-  const { out, outside } = await run(['https://yorozu-craft.com/'], preload);
+test('--worker を付けて確認先が本番のとき、計算の API の節は Worker と突き合わせる（要求は差し替えが止める）', withPreload(async (preload) => {
+  const { out, outside } = await run(['--worker', 'https://yorozu-craft.com/'], preload);
   assert.ok(outside, '差し替えが動いていない');
   assert.ok(outside.includes('yorozu-craft.com/api/openapi.json'));
   assert.ok(outside.some((h) => h.startsWith('yorozu-api.oonuki-youhei.workers.dev/')), 'Worker を呼びに行っていない');
   assert.doesNotMatch(out, /D708/);
   assert.match(out, /警告  \/api\/openapi\.json: 本番の Worker と突き合わせられない/);
+}));
+
+// Q-1241（D1077・条件 110）: 既定は本番の Worker に要求を出さない。出すのは --worker だけ。知らない引数は何もせず終わる
+const isWorker = (h) => h.startsWith('yorozu-api.oonuki-youhei.workers.dev/');
+
+test('引数なし（確認先は本番）では計算の API の節を飛ばし、Worker への要求は 0', withPreload(async (preload) => {
+  const { out, outside } = await run([], preload);
+  assert.ok(outside, '差し替えが動いていない');
+  assert.equal(outside.filter(isWorker).length, 0, 'Worker へ出た要求: ' + outside.filter(isWorker).join(', '));
+  assert.ok(!outside.includes('yorozu-craft.com/api/openapi.json'), 'openapi.json を取りに行っている');
+  assert.match(out, /メモ  計算の API: Worker と突き合わせていない（既定。突き合わせるときは --worker）/);
+}));
+
+test('--no-worker は受けて何もしない（引数なしと同じ。Worker への要求は 0）', withPreload(async (preload) => {
+  const { out, outside } = await run(['--no-worker'], preload);
+  assert.ok(outside);
+  assert.equal(outside.filter(isWorker).length, 0);
+  assert.match(out, /メモ  計算の API: Worker と突き合わせていない/);
+}));
+
+test('知らない引数（--help の綴り違い・--wroker）は使い方を出して終了コード 2。要求は 1 本も出さない', withPreload(async (preload) => {
+  for (const arg of ['--wroker', '-h', '--foo']) {
+    const { code, err, out, outside } = await run([arg], preload);
+    assert.equal(code, 2, arg);
+    assert.deepEqual(outside, [], `${arg}: 出た要求 ${outside}`);
+    assert.match(err, /知らない引数/);
+    assert.match(err, /使い方: node tools\/check-site\.mjs/);
+    assert.equal(out, '');
+  }
+}));
+
+test('--help は使い方を出して終了コード 0。要求は 1 本も出さない', withPreload(async (preload) => {
+  const { code, out, outside } = await run(['--help'], preload);
+  assert.equal(code, 0);
+  assert.deepEqual(outside, []);
+  assert.match(out, /使い方: node tools\/check-site\.mjs/);
+  assert.match(out, /--worker/);
+}));
+
+test('URL の形の引数は今のまま受ける（手元の確認先で動く）', withPreload(async (preload) => {
+  const server = createServer((req, res) => { res.writeHead(404, { 'content-type': 'text/plain' }); res.end(''); });
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  try {
+    const { code, outside } = await run([`http://127.0.0.1:${server.address().port}/`], preload);
+    assert.notEqual(code, 2);
+    assert.deepEqual(outside, []);
+  } finally { server.close(); }
 }));
