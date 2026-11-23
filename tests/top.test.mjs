@@ -152,7 +152,7 @@ test('札（site-strategy-v2 3.4・3.5）: 節 ＝ 札の 7 枚が木の順（�
   }
   // 情シス・PC の札の頭の別館 2 行は節の annex と同じ字。PAC ファイル テスターがその次
   const annex = data.sections.find((x) => x.id === 'it').annex;
-  assert.deepEqual(annex.map((x) => [x.name, x.note]), [['ストップボード', 'サービスの障害と休止の予定'], ['エンドボード', 'サポートが切れる日']]);
+  assert.deepEqual(annex.map((x) => [x.name, x.note]), [['ストップボード', 'サービスの障害と休止の予定'], ['エンドボード', 'サポート終了日']]);
   const it = html.slice(html.indexOf('id="it" data-card'), html.indexOf('</section>', html.indexOf('id="it" data-card')));
   assert.deepEqual([...it.split('<details')[0].matchAll(/<li><a href="([^"]+)">/g)].map((m) => m[1]).slice(0, 3), ['https://stopboard.yorozu-craft.com/', 'https://endboard.yorozu-craft.com/', './pac-tester/']);
   // 行の名前と一言は pages.json の今の字（いまの時期の行は一言の代わりに理由）
@@ -369,7 +369,7 @@ test('節の頭の 1 文（D865・v3）: lead は柱の 3 節とたのしみの�
     assert.equal(all.split(`<p class="yt-lead">${s.lead}</p>`).length - 1, 1, s.id + ': /all/ に 1 回');
   }
   assert.ok(html.includes('<li><a href="https://stopboard.yorozu-craft.com/"><span class="yt-cn">ストップボード</span> <span class="yt-cs">サービスの障害と休止の予定</span></a></li>'));
-  assert.ok(html.includes('<li><a href="https://endboard.yorozu-craft.com/"><span class="yt-cn">エンドボード</span> <span class="yt-cs">サポートが切れる日</span></a></li>'));
+  assert.ok(html.includes('<li><a href="https://endboard.yorozu-craft.com/"><span class="yt-cn">エンドボード</span> <span class="yt-cs">サポート終了日</span></a></li>'));
   assert.match(html, /<h2 id="new-h">更新の記録<\/h2><a href="\.\/updates\/">更新情報<\/a>/);
 });
 

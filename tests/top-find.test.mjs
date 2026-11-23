@@ -136,7 +136,7 @@ test('D625: 英語のトップの箱も Search のボタンと送ることの 1 
   assert.match(en, /<div class="yt-row"><input id="yt-q"[^>]*aria-describedby="yt-q-send"[^>]*><button type="button" class="yt-go">Search<\/button><\/div>/);
   assert.match(en, /<p class="yt-send" id="yt-q-send">The text you enter is sent to a server to find tools\. It is not stored\.<\/p>/);
   assert.match(en, /<script src="\.\.\/top-find\.js" defer><\/script>/);
-  assert.match(en, /<p class="lead">Small, free tools\. No sign-up\. The browser tools keep what you enter in your browser\.<\/p>/);
+  assert.match(en, /<p class="lead">Small, free tools\. The browser tools keep what you enter in your browser\.<\/p>/);
   assert.match(en, /<link rel="stylesheet" href="\.\.\/top\.css">/);
 });
 
