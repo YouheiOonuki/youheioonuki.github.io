@@ -61,12 +61,12 @@ test('情シス・PC の札は PAC ファイル テスターと ADSearch に pin
   assert.equal(pac.pin, true); assert.equal(ad.pin, true);
   assert.deepEqual(data.pages.filter((p) => p.pin && p.section === 'it').map((p) => p.path).sort(), ['/ADSearch/', '/pac-tester/']);
   const rows = sectionsJa(data).find((s) => s.id === 'it').rows.filter((r) => r.note != null);
-  assert.deepEqual(rows.slice(0, 2).map((r) => r.path), ['/pac-tester/', '/ADSearch/']);
-  // 札の見える順: 別館 2 行、PAC、ADSearch、FILETIME・LDAP 時刻、テキスト変換（vis 4）。375 は別館 ＋ 見える行の数の決まりのまま
+  assert.deepEqual(rows.slice(0, 2).map((r) => r.path), ['/ADSearch/', '/pac-tester/']);
+  // 札の見える順: 別館 2 行、ADSearch、PAC、テキスト変換、PDF 結合・分割（vis 4。pin 2 件の中は priority の順。Q-1228 の weekly-tools の写しの後）。375 は mobile 4（別館 2 ＋ ADSearch ＋ PAC）
   const html = read('index.html');
   const rowsHtml = crows(cardOf(html, 'it'));
-  assert.deepEqual(rowsHtml.filter((h) => h.startsWith('./')), ['./pac-tester/', './ADSearch/', './filetime/', './henkan/']);
-  assert.deepEqual(cardsJa(data).find((c) => c.id === 'it').rows.slice(0, 4).map((r) => r.p), ['/pac-tester/', '/ADSearch/', '/filetime/', '/henkan/']);
+  assert.deepEqual(rowsHtml.filter((h) => h.startsWith('./')), ['./ADSearch/', './pac-tester/', './henkan/', './henkan/pdf/']);
+  assert.deepEqual(cardsJa(data).find((c) => c.id === 'it').rows.filter((r) => r.n != null).slice(0, 4).map((r) => r.p), ['/ADSearch/', '/pac-tester/', '/henkan/', '/henkan/pdf/']);
 });
 
 test('札ごとの行が priority の上位 vis 件（pin が先、同点は入口＞子ページ、次に公開日の古い方）。いまの時期の行は札の頭に上がる。HTML の札も同じ', () => {
@@ -193,7 +193,7 @@ test('同点の順: 入口ページ ＞ 子ページ、次に公開日の古い�
 
 test('札の行は柱 5・そのほか 3（情シス・PC は別館 2 行 ＋ 4 行）。チップは無い（第 2 版 D323 の CHIP_ROWS は、札に替わって消えた）', () => {
   const html = read('index.html');
-  assert.deepEqual(cardsJa(data).map((c) => [c.id, c.vis, c.mob]), [['okane', 5, 3], ['gakko', 5, 3], ['it', 4, 3], ['kazoku', 3, 2], ['atsumari', 3, 2], ['hoshi', 3, 2], ['oto', 3, 2]]);
+  assert.deepEqual(cardsJa(data).map((c) => [c.id, c.vis, c.mob]), [['okane', 5, 3], ['gakko', 5, 3], ['it', 4, 4], ['kazoku', 3, 2], ['atsumari', 3, 2], ['hoshi', 3, 2], ['oto', 3, 2]]);
   assert.doesNotMatch(html, /yt-chips/);
 });
 

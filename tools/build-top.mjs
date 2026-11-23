@@ -67,7 +67,7 @@ export function newToolsHtml(data, base = './', rows = newest(data), icon = true
 // ---- 節 ＝ 札（yorozu-plans docs/advice/2026-11-23_site-strategy-v2.md 3.1〜3.5）----
 // 1 ページ ＝ 1 用途。節（section）はページごとに持つ。note（一言）のあるページが札の行の候補。note の無いページは「ほかに N 件」と /all/ にだけ出る
 // 行の並び: pin を先に（柱の節は 2 件まで、ほかは 1 件まで）、priority の降順、同点は 入口ページ（/<ツール>/）＞ 子ページ、次に公開日の古い方（同じ日は pages.json の順。7.24.2 の 2）
-// 札に出す行: 柱の節（pages.json の sections の pillar）は VISIBLE.pillar、そのほかは VISIBLE.other（別館の行は数えない）。節に visible があればその数（情シス・PC は別館 2 行 ＋ 4 行）。スマホで見せる行は MOBILE（別館の行も数える）。
+// 札に出す行: 柱の節（pages.json の sections の pillar）は VISIBLE.pillar、そのほかは VISIBLE.other（別館の行は数えない）。節に visible があればその数（情シス・PC は別館 2 行 ＋ 4 行）。スマホで見せる行は MOBILE（別館の行も数える。節に mobile があればその数）。節の who は名前の下の 1 行、ans は実際に出る答えの箱（入力の例・結果・リンク先）。
 // 残りは札の「ほかに N 件」の中に名前で全部（スマホで隠した行も入れる）。層（layer）は節の上の束。「用事」の層には見出しを置かない
 export const VISIBLE = { pillar: 5, other: 3 };
 export const MOBILE = { pillar: 3, other: 2 };
@@ -86,6 +86,7 @@ function checkPages(data) {
     } else if (p.related || p.pin) throw new Error(`${p.path} に note が無いのに related か pin がある`);
   }
   for (const s of data.sections) {
+    for (const a of s.ans || []) if (!data.pages.some((p) => p.path === a.href)) throw new Error(`節 ${s.name} の ans の href ${a.href} が pages に無い`);
     const pins = data.pages.filter((p) => p.section === s.id && p.pin);
     const max = s.pillar ? 2 : 1;   // 柱の節は 2 件まで、ほかの節は 1 件まで（D1042・Q-1218）
     if (pins.length > max) throw new Error(`節 ${s.name} の pin が ${max + 1} 件以上: ${pins.map((p) => p.path).join(' ')}`);
@@ -96,14 +97,14 @@ export function sectionsJa(data) {
   checkPages(data);
   const pages = data.pages.map((p, i) => ({ ...p, i }));
   return data.sections.map((s) => ({
-    id: s.id, name: s.name, layer: s.layer, pillar: !!s.pillar, visible: s.visible, lead: s.lead, annex: s.annex, foot: s.foot, tagFromLead: !!s.tagFromLead,
+    id: s.id, name: s.name, layer: s.layer, pillar: !!s.pillar, visible: s.visible, mobile: s.mobile, who: s.who, ans: s.ans, lead: s.lead, annex: s.annex, foot: s.foot, tagFromLead: !!s.tagFromLead,
     rows: pages.filter((p) => p.section === s.id).sort(order).map((p) => ({ path: p.path, name: rowName(p), note: p.note, date: p.date, priority: p.priority, pin: !!p.pin, i: p.i })),
   }));
 }
 // top.js の cardBodyHtml に渡す形（ページに埋める id="yt-cards" も同じ）
 export function cardsJa(data) {
   return sectionsJa(data).filter((s) => s.layer).map((s) => ({
-    id: s.id, vis: s.visible || (s.pillar ? VISIBLE.pillar : VISIBLE.other), mob: s.pillar ? MOBILE.pillar : MOBILE.other,
+    id: s.id, vis: s.visible || (s.pillar ? VISIBLE.pillar : VISIBLE.other), mob: s.mobile || (s.pillar ? MOBILE.pillar : MOBILE.other),
     annex: (s.annex || []).map((x) => ({ h: x.href, t: x.name, n: x.note })),
     rows: s.rows.map((r) => ({ p: r.path, t: r.name, ...(r.note != null ? { n: r.note } : {}) })),
   }));
@@ -128,9 +129,14 @@ export function cardsHtml(data, season, date = new Date(), base = './') {
   for (const s of secs) {
     if (s.layer !== layer) { layer = s.layer; out.push(`      <h2 class="yt-layer">${esc(s.layer)}</h2>`); }
     const tag = s.tagFromLead ? ` <span class="yt-tag">${cardTag(data, s.id).split('・').map((x) => `<span>${esc(x)}</span>`).join('・')}</span>` : '';
+    // 節の名前の下の 1 行（誰の棚か）と、実際に出る答えの箱（Q-1228。字は pages.json の who・ans。ans の href は pages.json に在るページ）
+    const who = s.who ? `
+        <p class="yt-who">${esc(s.who)}</p>` : '';
+    const ans = (s.ans || []).map((a) => `
+        <a class="yt-ans" href="${esc(url(a.href))}"><span class="yt-ai">${esc(a.in)}</span><span class="yt-ao">${esc(a.out)}</span><span class="yt-ag">${esc(a.go)}</span></a>`).join('');
     const foot = (s.foot || []).length ? `\n        <p class="yt-cf">${s.foot.map((f) => `<a href="${esc(url(f.href))}">${esc(f.name)}</a>`).join('')}</p>` : '';
     out.push(`      <section class="yt-card${s.pillar ? ' yt-pillar' : ''}" id="${s.id}" data-card="${s.id}" aria-labelledby="${s.id}-h">
-        <h2 id="${s.id}-h">${esc(s.name)}${tag}</h2>
+        <h2 id="${s.id}-h">${esc(s.name)}${tag}</h2>${who}${ans}
         <div class="yt-cbody">${YT.cardBodyHtml(cards.get(s.id), items, base)}</div>${foot}
       </section>`);
   }
