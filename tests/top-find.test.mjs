@@ -120,10 +120,10 @@ test('D604: 打つだけでは送らない（待ちのタイマーも打つた�
   assert.equal(t.calls.length, 2);
 });
 
-test('D604: トップの箱は「探す」のボタンと送ることの 1 行を持つ（すべての道具・使う人からの箱は今のまま）', () => {
+test('D604: トップの箱は「探す」のボタンを持つ（送ることの 1 行は Q-1207 で外した。送る内容は privacy-policy.html の 7.11。すべての道具・使う人からの箱は今のまま）', () => {
   const top = read('index.html');
-  assert.match(top, /<div class="yt-row"><input id="yt-q"[^>]*aria-describedby="yt-q-hint yt-q-send"[^>]*><button type="button" class="yt-go">探す<\/button><\/div>/);
-  assert.match(top, /<p class="yt-send" id="yt-q-send">入れた文は、探すためにサーバーへ送ります。保存しません。<\/p>/);
+  assert.match(top, /<div class="yt-row"><input id="yt-q"[^>]*aria-describedby="yt-q-hint"[^>]*><button type="button" class="yt-go">探す<\/button><\/div>/);
+  assert.doesNotMatch(top, /yt-send|入れた文は、探すためにサーバーへ送ります/, "Q-1207: 検索の箱の下の 1 行は外した（条件 107: 送る物・残る所は privacy-policy.html の 7.11）");
   assert.match(read('top.css'), /\.yt-search \.yt-go \{[^}]*min-height: 52px; min-width: var\(--tap\);/);
   assert.doesNotMatch(top, /\.yt-search \.yt-go \{/, '押す所の形は top.css の 1 か所だけ');
   assert.match(read('top.js'), /goBtn\.addEventListener\('click'/);
@@ -140,10 +140,11 @@ test('D625: 英語のトップの箱も Search のボタンと送ることの 1 
   assert.match(en, /<link rel="stylesheet" href="\.\.\/top\.css">/);
 });
 
-test('D604・D595: privacy-policy の 7.11 は押した時に送ると書き、トップの lead は全体を言い切らない', () => {
+test('D604・D595: privacy-policy の 7.11 は押した時に送ると書き、トップの 1 文は入力の扱いを言い切らない', () => {
   assert.match(read('privacy-policy.html'), /3〜200 字を入れて、Enter か「探す」を押すと、その文を/);
   assert.match(read('en/privacy-policy.html'), /on the top page and press Enter or the search button, we send that text/);
   assert.doesNotMatch(read('privacy-policy.html') + read('en/privacy-policy.html'), /入力が止まってから|stop typing/);
-  assert.match(read('index.html'), /登録なし。多くの道具は、入力を端末の外に出しません。<\/p>/);
+  assert.match(read('index.html'), /<p class="lead">その制度、あなたの場合はいくら。<\/p>/);
+  assert.match(read('privacy-policy.html'), /送った文と、そこから作った数値（埋め込み）は保存しません/);
   assert.doesNotMatch(read('index.html'), /入力は端末の外に出ません/);
 });

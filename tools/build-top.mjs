@@ -1,7 +1,7 @@
 // トップ・すべての道具・用途別の入口・英語トップの、データから作る欄を作り直す（yorozu-plans 企画書 59・ROADMAP 7.23「トップの構成」）
 // 使い方: node tools/build-top.mjs          … 下の PAGES の <!-- top:<欄>:begin --> 〜 end と <!-- new-tools:begin --> 〜 end を書き換える
 //         node tools/build-top.mjs --check  … 書き換えが要るか（要れば終了コード 1。「いまの時期」の月の違いは見ない）
-// データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 最大 3 ページと理由。日付の窓 windows はその間だけ 1 行を入れ替える）
+// データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 3 つの問いと行き先。英語は月 → 最大 3 ページと理由）
 // 欄:
 //   search   … 検索欄（端末の中だけで絞る。top.js）       season … いまの時期（作った日の月。ページを開いた月が違えば top.js が入れ替える）
 //   sections … 用途の節（各節 priority の上位 VISIBLE 行、残りは <details>。節の頭に lead の 1 文。新しいツールの節は最後の節の後。7.24.1・D323・D865）   all … すべての道具（/all/）
@@ -111,7 +111,7 @@ export function sectionsJa(data) {
     const mk = (p, chips) => ({ path: p.path, name: rowName(p), note: p.note, date: p.date, priority: p.priority, pin: !!p.pin, i: p.i,
       chips: chips.map((c) => ({ path: c, name: map.get(c).chip || rowName(map.get(c)) })) });
     const rows = [...top.map((p, n) => mk(p, topChips[n])), ...rest.map((p, n) => mk(p, restChips[n]))];
-    return { id: s.id, name: s.name, lead: s.lead, rows };
+    return { id: s.id, name: s.name, lead: s.lead, annex: s.annex, rows };
   });
 }
 // どのページがどの節か（pages.json の section）
@@ -134,8 +134,9 @@ function sectionBlock(s, base, allHref, more) {
   const det = rest.length
     ? `\n      <details>\n        <summary>${more.other(rest.length)}</summary>\n        <ul class="yt-rows">\n${rest.map((r) => rowHtml(r, base, pad + '  ', more.icon)).join('\n')}\n        </ul>\n      </details>`
     : '';
+  const annex = (s.annex || []).map((x) => `        <li class="yt-annex"><a class="yt-name" href="${x.href}">${esc(x.name)}</a> <span class="yt-note">${esc(x.note)}</span></li>\n`).join('');   // 節の頭の別館の行（pages.json の sections の annex。外のサブドメイン）
   const lead = s.lead ? `\n      <p class="yt-lead">${esc(s.lead)}</p>` : '';   // 節の頭の 1 文（pages.json の sections の lead。柱の 4 節だけ。D865）
-  return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n${head}${lead}\n      <ul class="yt-rows">\n${shown.map((r) => rowHtml(r, base, pad, more.icon)).join('\n')}\n      </ul>${det}\n    </section>`;
+  return `    <section class="yt-sec" id="${s.id}" aria-labelledby="${s.id}-h">\n${head}${lead}\n      <ul class="yt-rows">\n${annex}${shown.map((r) => rowHtml(r, base, pad, more.icon)).join('\n')}\n      </ul>${det}\n    </section>`;
 }
 // restLink: スマホでは「ほかに」の折りたたみを出さず、見出しのリンク（/all/ のその節）を「ほかに N 件 →」と読ませる（第 2 版 D323。2.5 画面に収める）
 const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件`, restLink: (n) => `ほかに ${n} 件 →` };
@@ -143,7 +144,7 @@ const EN = { icon: false, all: 'See all', other: (n) => `${n} more` };
 // 新しいツールの節は最後の節の後に置く（D865: 上から柱の 4 節が読めるように。D323 の「親・家族の前」から移した）。中に new-tools の印を持つので apply が中身を入れ直せる
 function newToolsSection(data, base = './') {
   return `    <section class="yt-sec" id="new" aria-labelledby="new-h">
-      <div class="yt-head"><h2 id="new-h">新しいツール</h2><span class="yt-links"><a href="${base}updates/">更新情報</a><a href="${base}all/">すべての道具（一覧・印刷）</a></span></div>
+      <div class="yt-head"><h2 id="new-h">最近の更新</h2><span class="yt-links"><a href="${base}updates/">更新情報</a><a href="${base}all/">すべての道具（一覧・印刷）</a></span></div>
       <!-- 公開日の新しい順に newCount 件（data/pages.json から。check-site が最新かを確かめる） -->
       ${newToolsHtml(data, base)}
     </section>`;
@@ -209,7 +210,7 @@ const TEXT = {
 const ASK = { label: '何に困っていますか', hint: '例: 親の医療費が高い、年末調整', ph: 'ここに書く', list: '道具の候補' };
 // トップ（日本語と英語）の押す所と、送ることの 1 行（D604・D625）。英文は yorozu-plans ROADMAP 続き 42 の答えの文案（関門を通したもの）
 const SEND = {
-  ja: { go: '探す', send: '入れた文は、探すためにサーバーへ送ります。保存しません。' },
+  ja: { go: '探す' },   // 送ることの 1 行は、トップの頭の整理で外した（送る内容は privacy-policy.html の 7.11）
   en: { go: 'Search', send: 'The text you enter is sent to a server to find tools. It is not stored.' },
 };
 // 検索欄。<form> を使わない。Enter は top.js が候補を開く。top: トップの箱 —— 押す所と、送ることの 1 行（D604。英語も D625）。日本語はさらに窓の形（ASK）。
@@ -220,17 +221,18 @@ function searchHtml(lang = 'ja', base = './', id = 'yt-q', top = false) {
   const s = top ? SEND[lang] : null;
   const label = w ? `<label for="${id}" class="yt-ask">${w.label}</label>
         <p class="yt-hint" id="${id}-hint">${w.hint}</p>` : `<label for="${id}">${t.label}</label>`;
-  const desc = s ? ` aria-describedby="${w ? `${id}-hint ` : ''}${id}-send"` : '';
+  const desc = s ? ` aria-describedby="${[w && `${id}-hint`, s.send && `${id}-send`].filter(Boolean).join(' ')}"` : '';
   return `<div class="yt-search" role="search" data-base="${base}">
         ${label}
-        ${s ? '<div class="yt-row">' : ''}<input id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list"${desc} autocomplete="off" enterkeyhint="go" placeholder="${w ? w.ph : t.ph}">${s ? `<button type="button" class="yt-go">${s.go}</button></div>
-        <p class="yt-send" id="${id}-send">${s.send}</p>` : ''}
+        ${s ? '<div class="yt-row">' : ''}<input id="${id}" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-list"${desc} autocomplete="off" enterkeyhint="go" placeholder="${w ? w.ph : t.ph}">${s ? `<button type="button" class="yt-go">${s.go}</button></div>${s.send ? `
+        <p class="yt-send" id="${id}-send">${s.send}</p>` : ''}` : ''}
         <ul id="${id}-list" role="listbox" aria-label="${w ? w.list : t.list}" hidden></ul>
         <p class="yt-status visually-hidden" aria-live="polite"></p>
         <p class="yt-empty" hidden>${t.empty}<a href="${base}${t.allHref}">${t.all}</a></p>
       </div>`;
 }
-// 季節表（名前を足したもの）。path は pages にあるものだけ
+// 季節表。日本語は問い（q）が名前で、一言（reason）は無い（4〜10 月は 3 月の表を置いてある。文案 A: 4 月から先の字は 3 月に書く）。
+// 英語は名前（英語ページの題名）と一言。path は pages にあるものだけ
 export function seasonData(data, season, lang = 'ja') {
   const pages = lang === 'en' ? data.en.pages : data.pages;
   const map = new Map(pages.map((p) => [p.path, p]));
@@ -242,30 +244,16 @@ export function seasonData(data, season, lang = 'ja') {
       const p = map.get(x.path);
       if (!p) throw new Error(`season ${lang} ${m} 月の ${x.path} が pages に無い（公開前のページは入れない）`);
       if (!x.source) throw new Error(`season ${lang} ${m} 月の ${x.path} に出典（source）が無い`);
-      return { path: x.path, name: lang === 'en' ? p.title : label(p), reason: x.reason };
+      if (lang === 'ja' && !x.q) throw new Error(`season ja ${m} 月の ${x.path} に問い（q）が無い`);
+      return lang === 'en' ? { path: x.path, name: p.title, reason: x.reason } : { path: x.path, name: x.q };
     });
   }
-  // 日付の窓（日本語だけ）: page は pages.json の行（名前とアイコン）、path はリンク先（そのページの使い方の節など）。
-  // 入れ替える行（replaces[月]）がその月の表に無ければ止める（件数は月の表のまま変わらない）
-  const windows = lang === 'en' ? [] : (season.windows || []).map((w) => {
-    const p = map.get(w.page);
-    const at = `season window ${w.year}-${w.from}`;
-    if (!p) throw new Error(`${at} の page ${w.page} が pages に無い`);
-    if (!w.path || !w.path.startsWith(w.page)) throw new Error(`${at} の path ${w.path} が page ${w.page} の下に無い`);
-    if (!Number.isInteger(w.year) || !/^\d\d-\d\d$/.test(w.from) || !/^\d\d-\d\d$/.test(w.to) || w.from > w.to) throw new Error(`${at} の year・from・to（"MM-DD"）`);
-    if (!w.source) throw new Error(`${at} に出典（source）が無い`);
-    const ms = Object.keys(w.replaces || {});
-    if (!ms.length) throw new Error(`${at} に replaces が無い`);
-    for (const m of ms) if (!(months[m] || []).some((x) => x.path === w.replaces[m])) throw new Error(`${at} の ${m} 月に ${w.replaces[m]} が無い`);
-    return { year: w.year, from: w.from, to: w.to, replaces: w.replaces, path: w.path, name: label(p), reason: w.reason };
-  });
-  return { months, windows };
+  return { months };
 }
 function seasonHtml(data, season, lang = 'ja', base = './', date = new Date()) {
   const sd = seasonData(data, season, lang);
   const m = date.getMonth() + 1;
-  const icons = lang === 'ja';
-  return `<ul class="yt-season" data-season-month="${m}" data-season-key="${YT.seasonKey(sd, date)}" data-base="${base}"${icons ? ' data-icons' : ''}>${YT.seasonItemsHtml(YT.seasonFor(sd, date), base, icons)}</ul>`;
+  return `<ul class="yt-season" data-season-month="${m}" data-season-key="${YT.seasonKey(sd, date)}" data-base="${base}">${YT.seasonItemsHtml(YT.seasonFor(sd, date), base)}</ul>`;
 }
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 function dataHtml(data, season, lang = 'ja') {
@@ -292,7 +280,7 @@ export function buildAll(data, season, date = new Date()) {
   return {
     'index.html': (h) => {
       h = replaceRegion(h, 'search', searchHtml('ja', './', 'yt-q', true), 'index.html');
-      h = replaceRegion(h, 'season', `<h2 id="season-h" data-season-label="いまの時期（{m} 月）">いまの時期（${date.getMonth() + 1} 月）</h2>\n        ` + seasonHtml(data, season, 'ja', './', date), 'index.html');
+      h = replaceRegion(h, 'season', `<h2 id="season-h">いまの時期</h2>\n        ` + seasonHtml(data, season, 'ja', './', date), 'index.html');
       h = replaceRegion(h, 'sections', '\n' + sectionsHtml(data, './') + '\n    ', 'index.html');
       h = replaceRegion(h, 'data', dataHtml(data, season, 'ja'), 'index.html');
       return apply(h, data);

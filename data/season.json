@@ -1,71 +1,68 @@
 {
-  "about": "トップの「いまの時期」（yorozu-plans ROADMAP 7.23）。月 → 最大 3 ページと理由 1 文。初版の表は 7.23 の「season.json の初版」。各行の source は理由の根拠: MAINTENANCE は yorozu-plans docs/MAINTENANCE.md の行番号（2026-10-03 の main 379a30b）、GROWTH 5-3 は docs/GROWTH.md の季節の告知。どちらにも行が無いもの（季節の行事・学校の年度）は「7.23 初版」と書く。path は data/pages.json にあるページだけ（tools/build-top.mjs とテストが確かめる。公開前のページ・lifeplan は入れない）。月が変わると、ページの中の top.js が今日の月の行に入れ替える。windows（日本語だけ、ROADMAP 7.183 Q-081）は日付の窓: year の年の from〜to（\"MM-DD\"、両端を含む）の間だけ、その月の replaces[月] の行をこの行と入れ替える（件数は変わらない）。page は名前とアイコンを取る pages.json の行、path はリンク先。年は毎年書き直す（過ぎた窓は出ない）",
-  "checked": "2026-10-03",
+  "about": "トップの「いまの時期」。日本語は、月 → 問い 3 つ（問いの字 q と行き先 path）。11・12 月と 1〜3 月が文案 A の字。4〜10 月は 3 月の 3 つをそのまま置いてある（4 月から先の字は 3 月に書いて、その月の行を書き換える。yorozu-plans ROADMAP 続き 69 の答え（確定）の文案 A）。各行の source は字の出どころ。path は data/pages.json にあるページだけ（tools/build-top.mjs とテストが確かめる。公開前のページは入れない）。月が変わると、ページの中の top.js が今日の月の行に入れ替える。英語は en（月 → 最大 3 ページと理由 1 文）",
+  "checked": "2026-11-23",
   "months": {
     "1": [
-      {"path": "/gengo/yakudoshi/", "reason": "新しい年の厄年・還暦を早見表で。", "source": "MAINTENANCE L20（12 月に題名の年を翌年へ）"},
-      {"path": "/quiz-hiroba/hyakunin/", "reason": "お正月のかるたに、読み上げを。", "source": "7.23 初版（季節の行事）"},
-      {"path": "/seido-keisan/iryohi/", "reason": "確定申告の前に、去年の医療費を。", "source": "MAINTENANCE L37（9〜12 月に翌年分へ）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"}
     ],
     "2": [
-      {"path": "/seido-keisan/iryohi/", "reason": "確定申告の時期に。", "source": "MAINTENANCE L37"},
-      {"path": "/gengo/gakunen/", "reason": "4 月の入学・進級の前に。", "source": "7.23 初版（学校の年度）・MAINTENANCE L24（3 月に翌年度へ）"},
-      {"path": "/seido-keisan/koko-mushoka/", "reason": "進学先を決める時期に。", "source": "7.23 初版（学校の年度）・MAINTENANCE L25（4 月に新年度の額）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"}
     ],
     "3": [
-      {"path": "/gengo/gakunen/", "reason": "新年度の学年を生年月日から。", "source": "MAINTENANCE L24"},
-      {"path": "/gakushu-print/", "reason": "春休みの復習と、入学の準備に。", "source": "7.23 初版（学校の年度）"},
-      {"path": "/seido-keisan/iryohi/", "reason": "確定申告の期限の前に、去年の医療費を。", "source": "7.47-1 (c)（BUILDLOG 2026-10-12 昼）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"}
     ],
     "4": [
-      {"path": "/sekigae/", "reason": "新学期の席決めに。", "source": "7.23 初版（学校の年度）"},
-      {"path": "/toban/", "reason": "新しいクラスの当番表に。", "source": "7.23 初版（学校の年度）"},
-      {"path": "/seido-keisan/yobosesshu/", "reason": "入園・入学の時期に、接種の予定を。", "source": "7.23 初版（学校の年度）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"}
     ],
     "5": [
-      {"path": "/seido-keisan/juminzei/", "reason": "住民税の決定通知書が届く時期です。", "source": "GROWTH 5-3（5 月下旬）・MAINTENANCE L42"},
-      {"path": "/tabi-shiori/", "reason": "夏の旅行の計画に、しおりを。", "source": "7.23 初版（GROWTH 5-3 の旅行は 4 月中旬・7 月中旬）"},
-      {"path": "/otasuke/", "reason": "母の日に、親に紹介する道具を。", "source": "7.23 初版（季節の行事）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"}
     ],
     "6": [
-      {"path": "/seido-keisan/kogaku-ryoyohi/", "reason": "年間の上限額は 8 月から翌 7 月で数えます。", "source": "MAINTENANCE L28・健康保険法施行令 41 条の 3（seido-keisan lib/kogaku-values.js の出典）"},
-      {"path": "/seido-keisan/ikukyu/", "reason": "8 月 1 日に給付の上限額が変わります。", "source": "MAINTENANCE L33（毎年 8 月 1 日改定）"},
-      {"path": "/hoshizora-sanpo/", "reason": "梅雨の晴れ間に、夏の星座を。", "source": "7.23 初版（季節の行事）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"}
     ],
     "7": [
-      {"path": "/hoshizora-sanpo/", "reason": "夏休みの夜空に。", "source": "7.23 初版（季節の行事）"},
-      {"path": "/hoshizora-sanpo/hayamiban/", "reason": "星座早見盤を作って外へ。", "source": "7.23 初版（季節の行事）"},
-      {"path": "/gakushu-print/booklet/", "reason": "夏のおでかけに、冊子を作る。", "source": "GROWTH 5-3（7 月中旬 旅行）・MAINTENANCE L42"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"}
     ],
     "8": [
-      {"path": "/hoshizora-sanpo/calendar/", "reason": "ペルセウス座流星群の夜を確かめる。", "source": "MAINTENANCE L22（天文カレンダー。国立天文台の暦要項）"},
-      {"path": "/unplugged/", "reason": "自由研究に、プログラミングの盤面を。", "source": "7.23 初版（学校の年度）"},
-      {"path": "/seido-keisan/ikukyu/", "reason": "8 月 1 日から給付の上限額が新しくなります。", "source": "MAINTENANCE L33（毎年 8 月 1 日改定）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"}
     ],
     "9": [
-      {"path": "/gakko-keisan/naishin/", "reason": "東京都の入試の要綱が出る時期です。", "source": "MAINTENANCE L34（東京都は 9 月中旬に公表）"},
-      {"path": "/seido-keisan/nenmatsu/", "reason": "年末調整の準備に。", "source": "MAINTENANCE L35（9 月末に翌年版）"},
-      {"path": "/otasuke/kenshin/", "reason": "健診の結果を並べて見る。", "source": "7.23 初版"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"}
     ],
     "10": [
-      {"path": "/seido-keisan/nenmatsu/", "reason": "年末調整の書類が配られる時期です。", "source": "GROWTH 5-3（10 月中旬）・MAINTENANCE L35・L42"},
-      {"path": "/gakko-keisan/naishin/", "reason": "入試の要項が出そろう時期です。", "source": "MAINTENANCE L34・L41（大阪府は 10 月中旬）"},
-      {"path": "/seido-keisan/koko-mushoka/", "reason": "進路を考える時期に、支援の額を。", "source": "7.23 初版（学校の年度）"}
+      {"path": "/seido-keisan/iryohi/", "q": "医療費控除で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/seido-keisan/kogaku-ryoyohi/", "q": "高額療養費の上限は、いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"},
+      {"path": "/gakko-keisan/naishin/", "q": "内申点は、何点になるか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A（4 月から先は 3 月の 3 つをそのまま出す。字は 3 月に書く）"}
     ],
     "11": [
-      {"path": "/seido-keisan/nenmatsu/", "reason": "年末調整の書類を出す前に。", "source": "GROWTH 5-3・MAINTENANCE L35"},
-      {"path": "/nittei-kouho/", "reason": "忘年会の日程を決める。", "source": "GROWTH 5-3（11 月中旬 忘年会）・MAINTENANCE L42"},
-      {"path": "/easy-split/", "reason": "忘年会の割り勘に。", "source": "GROWTH 5-3（11 月中旬 忘年会）・MAINTENANCE L42"}
+      {"path": "/seido-keisan/nenmatsu/", "q": "年末調整で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/seido-keisan/nenmatsu/hoken/", "q": "保険料控除は、いくら効くか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/seido-keisan/juminzei/", "q": "住民税は、来年いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"}
     ],
     "12": [
-      {"path": "/seido-keisan/nenmatsu/", "reason": "年末調整の結果を確かめる。", "source": "MAINTENANCE L35"},
-      {"path": "/bingo/", "reason": "忘年会・クリスマス会のビンゴに。", "source": "7.23 初版（GROWTH 5-3 の忘年会は 11 月中旬の告知）"},
-      {"path": "/gengo/yakudoshi/", "reason": "来年の厄年・還暦を。", "source": "MAINTENANCE L20（12 月に翌年へ）"}
+      {"path": "/seido-keisan/nenmatsu/", "q": "年末調整で、いくら戻るか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/seido-keisan/nenmatsu/hoken/", "q": "保険料控除は、いくら効くか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"},
+      {"path": "/seido-keisan/juminzei/", "q": "住民税は、来年いくらか", "source": "ROADMAP 続き 69 の答え（確定）の文案 A"}
     ]
   },
-  "windows": [
-    {"year": 2027, "from": "01-20", "to": "02-03", "replaces": {"1": "/quiz-hiroba/hyakunin/", "2": "/seido-keisan/koko-mushoka/"}, "page": "/gengo/", "path": "/gengo/guide.html#q-eho", "reason": "2027 年の恵方は北北西です。", "source": "ROADMAP 7.183 Q-081。方角は農林水産省「節分と恵方巻レシピ」の十干の組み合わせ（丁・壬の年は北北西）、2027 年の干支 丁未は国立天文台「六十干支」、節分 2 月 3 日は国立天文台「令和 9 年暦要項」（確認 2026-11-05）"}
-  ],
   "en": {
     "1": [
       {"path": "/gengo/en/", "reason": "New year: convert dates to the Reiwa era.", "source": "7.23 初版（季節の行事）"}
