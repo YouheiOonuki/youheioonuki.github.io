@@ -1,15 +1,18 @@
 // トップ・すべての道具・用途別の入口・英語トップの、データから作る欄を作り直す（yorozu-plans 企画書 59・ROADMAP 7.23「トップの構成」）
-// 使い方: node tools/build-top.mjs          … 下の PAGES の <!-- top:<欄>:begin --> 〜 end と <!-- new-tools:begin --> 〜 end を書き換える
+// 使い方: node tools/build-top.mjs          … 下の PAGES の <!-- top:<欄>:begin --> 〜 end（英語トップは <!-- new-tools:begin --> 〜 end も）を書き換える
 //         node tools/build-top.mjs --check  … 書き換えが要るか（要れば終了コード 1。「いまの時期」の月の違いは見ない）
-// データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 3 つの問いと行き先。英語は月 → 最大 3 ページと理由）
+// データ: data/pages.json（ページ・別名・用途の節・英語の行）と data/season.json（月 → 最大 3 ページと理由。日付の窓 windows はその間だけ 1 行を入れ替える）
 // 欄:
 //   search   … 検索欄（端末の中だけで絞る。top.js）       season … いまの時期（作った日の月。ページを開いた月が違えば top.js が入れ替える）
 //   sections … 用途の節（各節 priority の上位 VISIBLE 行、残りは <details>。節の頭に lead の 1 文。新しいツールの節は最後の節の後。7.24.1・D323・D865）   all … すべての道具（/all/）
-//   data     … 検索の一覧と季節表の JSON（top.js が読む）  new-tools … 新しいツール（公開日の新しい順に newCount 件）
+//   data     … 検索の一覧と季節表の JSON（top.js が読む）  new-tools … 新しいツール（英語トップだけ。公開日の新しい順に newCount 件）
+//   cards    … 札 4 枚（data/pages.json の cards）          next … これからの改定（../seido-keisan/data/kaitei.json の今日より後の 3 件。読めなければ段ごと出さない）
+//   updates  … 更新の記録（build-updates.mjs の行の上から 5 件。各道具の guide.html は隣のクローンから）
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
+import { updateRows } from './build-updates.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // トップに載せないツール（sitemap には載る）。5000兆円欲しい館は AdSense の結果が出るまでトップの外（ROADMAP 7.46.1）。結果が出たら消して pages.json に足す。
@@ -141,16 +144,102 @@ function sectionBlock(s, base, allHref, more) {
 // restLink: スマホでは「ほかに」の折りたたみを出さず、見出しのリンク（/all/ のその節）を「ほかに N 件 →」と読ませる（第 2 版 D323。2.5 画面に収める）
 const JA = { icon: true, all: 'この節をすべて見る', other: (n) => `ほかに ${n} 件`, restLink: (n) => `ほかに ${n} 件 →` };
 const EN = { icon: false, all: 'See all', other: (n) => `${n} more` };
-// 新しいツールの節は最後の節の後に置く（D865: 上から柱の 4 節が読めるように。D323 の「親・家族の前」から移した）。中に new-tools の印を持つので apply が中身を入れ直せる
-function newToolsSection(data, base = './') {
-  return `    <section class="yt-sec" id="new" aria-labelledby="new-h">
-      <div class="yt-head"><h2 id="new-h">最近の更新</h2><span class="yt-links"><a href="${base}updates/">更新情報</a><a href="${base}all/">すべての道具（一覧・印刷）</a></span></div>
-      <!-- 公開日の新しい順に newCount 件（data/pages.json から。check-site が最新かを確かめる） -->
-      ${newToolsHtml(data, base)}
-    </section>`;
-}
 export function sectionsHtml(data, base = './') {
-  return [...sectionsJa(data).map((s) => sectionBlock(s, base, `${base}all/`, JA)), newToolsSection(data, base)].join('\n');
+  return sectionsJa(data).map((s) => sectionBlock(s, base, `${base}all/`, JA)).join('\n');
+}
+
+// ---- トップの札（制度の計算・学校・星空・情シス。yorozu-plans docs/advice/2026-11-23_site-strategy-v2.md 3.2・3.3）----
+// 札の行は data/pages.json の cards。行 ＝ { path }（pages.json の名前と一言）か、{ path, name, note }（長い名前の 3 枚だけ短くする。語は今の名前の中の語）か、
+// { annex: 'it' }（節の頭の別館の行と同じ字。pages.json の sections の annex）。tagFrom: その節の lead の「令和 N 年分」「令和 N 年度」を札の見出しの横に出す
+export function cardTag(data, id) {
+  const lead = (data.sections.find((x) => x.id === id) || {}).lead || '';
+  const tag = [...lead.matchAll(/令和 \d+ 年[分度]/g)].map((m) => m[0]);
+  if (!tag.length) throw new Error(`節 ${id} の lead に「令和 N 年分・年度」が無い（札の見出しの横の字の元）`);
+  return tag.join('・');
+}
+export function cardsData(data) {
+  const map = new Map(data.pages.map((p) => [p.path, p]));
+  return (data.cards || []).map((c) => ({
+    ...c,
+    tag: c.tagFrom ? cardTag(data, c.tagFrom) : '',
+    rows: c.rows.flatMap((r) => {
+      if (r.annex) {
+        const sec = data.sections.find((x) => x.id === r.annex);
+        if (!sec || !sec.annex) throw new Error(`札 ${c.id} の annex ${r.annex} が節に無い`);
+        return sec.annex.map((x) => ({ href: x.href, name: x.name, note: x.note }));
+      }
+      const p = map.get(r.path);
+      if (!p) throw new Error(`札 ${c.id} の ${r.path} が pages に無い`);
+      return [{ href: r.path, name: r.name || rowName(p), note: r.note !== undefined ? r.note : p.note }];
+    }),
+  }));
+}
+export function cardsHtml(data, base = './') {
+  const url = (h) => (/^https?:/.test(h) ? h : h.startsWith('#') ? h : base + h.slice(1));
+  return cardsData(data).map((c) => {
+    const rows = c.rows.map((r) => `          <li><a href="${esc(url(r.href))}"><span class="yt-cn">${esc(r.name)}</span>${r.note ? ` <span class="yt-cs">${esc(r.note)}</span>` : ''}</a></li>`).join('\n');
+    const foot = c.foot.map((f) => `<a href="${esc(url(f.href))}">${esc(f.name)}</a>`).join('');
+    return `      <section class="yt-card" aria-labelledby="card-${c.id}-h">
+        <h2 id="card-${c.id}-h">${esc(c.name)}${c.tag ? ` <span class="yt-tag">${c.tag.split('・').map((x) => `<span>${esc(x)}</span>`).join('・')}</span>` : ''}</h2>
+        <ul class="yt-crows">
+${rows}
+        </ul>
+        <p class="yt-cf">${foot}</p>
+      </section>`;
+  }).join('\n');
+}
+
+// ---- これからの改定（seido-keisan の data/kaitei.json の items のうち、今日より後の 3 件。日付と題はそのまま）----
+// kaitei.json は隣のクローン（../seido-keisan/data/kaitei.json。KAITEI_JSON で変えられる）。読めなければ null（段ごと出さない）
+export function loadKaitei(root = ROOT) {
+  const f = process.env.KAITEI_JSON || join(root, '..', 'seido-keisan', 'data', 'kaitei.json');
+  try { const j = JSON.parse(readFileSync(f, 'utf8')); return Array.isArray(j.items) ? j.items : null; } catch { return null; }
+}
+const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+export function nextKaitei(items, date = new Date(), n = 3) {
+  if (!items) return [];
+  const today = ymd(date);
+  return items.filter((x) => x.date > today).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)).slice(0, n);
+}
+export function nextHtml(items, date = new Date(), base = './') {
+  const rows = nextKaitei(items, date);
+  if (!rows.length) return '';
+  const li = rows.map((x) => {
+    const u = String(x.url || '').replace(/^https:\/\/yorozu-craft\.com\//, '');
+    return `          <li><time datetime="${x.date}">${x.date}</time> <a href="${base}${esc(u)}">${esc(x.title)}</a></li>`;
+  }).join('\n');
+  return `
+      <section class="yt-up" aria-labelledby="up-h">
+        <h2 id="up-h">これからの改定</h2>
+        <ul class="yt-urows">
+${li}
+        </ul>
+        <p class="yt-uf"><a href="${base}seido-keisan/kaitei/">改定カレンダー</a></p>
+      </section>
+      `;
+}
+
+// ---- 更新の記録（/updates/ を作っている build-updates.mjs の行の上から 5 件。各道具の更新履歴の最新の行）----
+// 各道具の guide.html は、隣のクローン（../<道具>/guide.html）か、このリポジトリの中。読めなければ pages.json の「公開」の行だけになる
+export const UPDATES_ROWS = 5;
+export function updatesRows(data, root = ROOT) {
+  const readGuide = (p) => {
+    const segs = p.split('/').filter(Boolean);
+    for (const f of [join(root, '..', ...segs), join(root, ...segs)]) { if (existsSync(f)) return readFileSync(f, 'utf8'); }
+    return null;
+  };
+  return updateRows(data.pages, readGuide).slice(0, UPDATES_ROWS);
+}
+export function updatesSection(rows, base = './') {
+  const li = rows.map((r) => `        <li><time datetime="${r.date}">${r.date}</time> <a href="${base}${esc(r.url.slice(1))}">${esc(r.name)}</a> <span class="yt-note">${esc(r.what)}</span></li>`).join('\n');
+  return `
+    <section class="yt-sec" id="new" aria-labelledby="new-h">
+      <div class="yt-head"><h2 id="new-h">更新の記録</h2><a href="${base}updates/">更新情報</a></div>
+      <ul class="yt-rows yt-log">
+${li}
+      </ul>
+    </section>
+    `;
 }
 
 // 英語トップの節（行は英語ページ。チップなし）
@@ -231,8 +320,7 @@ function searchHtml(lang = 'ja', base = './', id = 'yt-q', top = false) {
         <p class="yt-empty" hidden>${t.empty}<a href="${base}${t.allHref}">${t.all}</a></p>
       </div>`;
 }
-// 季節表。日本語は問い（q）が名前で、一言（reason）は無い（4〜10 月は 3 月の表を置いてある。文案 A: 4 月から先の字は 3 月に書く）。
-// 英語は名前（英語ページの題名）と一言。path は pages にあるものだけ
+// 季節表（名前を足したもの）。path は pages にあるものだけ
 export function seasonData(data, season, lang = 'ja') {
   const pages = lang === 'en' ? data.en.pages : data.pages;
   const map = new Map(pages.map((p) => [p.path, p]));
@@ -244,16 +332,30 @@ export function seasonData(data, season, lang = 'ja') {
       const p = map.get(x.path);
       if (!p) throw new Error(`season ${lang} ${m} 月の ${x.path} が pages に無い（公開前のページは入れない）`);
       if (!x.source) throw new Error(`season ${lang} ${m} 月の ${x.path} に出典（source）が無い`);
-      if (lang === 'ja' && !x.q) throw new Error(`season ja ${m} 月の ${x.path} に問い（q）が無い`);
-      return lang === 'en' ? { path: x.path, name: p.title, reason: x.reason } : { path: x.path, name: x.q };
+      return { path: x.path, name: lang === 'en' ? p.title : label(p), reason: x.reason };
     });
   }
-  return { months };
+  // 日付の窓（日本語だけ）: page は pages.json の行（名前とアイコン）、path はリンク先（そのページの使い方の節など）。
+  // 入れ替える行（replaces[月]）がその月の表に無ければ止める（件数は月の表のまま変わらない）
+  const windows = lang === 'en' ? [] : (season.windows || []).map((w) => {
+    const p = map.get(w.page);
+    const at = `season window ${w.year}-${w.from}`;
+    if (!p) throw new Error(`${at} の page ${w.page} が pages に無い`);
+    if (!w.path || !w.path.startsWith(w.page)) throw new Error(`${at} の path ${w.path} が page ${w.page} の下に無い`);
+    if (!Number.isInteger(w.year) || !/^\d\d-\d\d$/.test(w.from) || !/^\d\d-\d\d$/.test(w.to) || w.from > w.to) throw new Error(`${at} の year・from・to（"MM-DD"）`);
+    if (!w.source) throw new Error(`${at} に出典（source）が無い`);
+    const ms = Object.keys(w.replaces || {});
+    if (!ms.length) throw new Error(`${at} に replaces が無い`);
+    for (const m of ms) if (!(months[m] || []).some((x) => x.path === w.replaces[m])) throw new Error(`${at} の ${m} 月に ${w.replaces[m]} が無い`);
+    return { year: w.year, from: w.from, to: w.to, replaces: w.replaces, path: w.path, name: label(p), reason: w.reason };
+  });
+  return { months, windows };
 }
 function seasonHtml(data, season, lang = 'ja', base = './', date = new Date()) {
   const sd = seasonData(data, season, lang);
   const m = date.getMonth() + 1;
-  return `<ul class="yt-season" data-season-month="${m}" data-season-key="${YT.seasonKey(sd, date)}" data-base="${base}">${YT.seasonItemsHtml(YT.seasonFor(sd, date), base)}</ul>`;
+  const icons = lang === 'ja';
+  return `<ul class="yt-season" data-season-month="${m}" data-season-key="${YT.seasonKey(sd, date)}" data-base="${base}"${icons ? ' data-icons' : ''}>${YT.seasonItemsHtml(YT.seasonFor(sd, date), base, icons)}</ul>`;
 }
 const json = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 function dataHtml(data, season, lang = 'ja') {
@@ -268,22 +370,19 @@ function replaceRegion(html, name, body, file = '') {
   if (i < 0 || j < 0) throw new Error(`${file} に top:${name}:begin / end が無い`);
   return html.slice(0, i + b.length) + body + html.slice(j);
 }
-export function apply(html, data) {
-  const b = html.indexOf(BEGIN), e = html.indexOf(END);
-  if (b < 0 || e < 0) throw new Error('index.html に new-tools:begin / end が無い');
-  return html.slice(0, b) + newToolsHtml(data) + html.slice(e + END.length);
-}
 const enNewest = (data) => data.en.pages.map((p, i) => ({ ...p, i, short: p.title })).sort(byDate).slice(0, data.newCount || 6);
 
 // ページごとの欄
 export function buildAll(data, season, date = new Date()) {
   return {
     'index.html': (h) => {
+      h = replaceRegion(h, 'cards', '\n' + cardsHtml(data, './') + '\n      ', 'index.html');
+      h = replaceRegion(h, 'next', nextHtml(loadKaitei(), date, './'), 'index.html');
       h = replaceRegion(h, 'search', searchHtml('ja', './', 'yt-q', true), 'index.html');
-      h = replaceRegion(h, 'season', `<h2 id="season-h">いまの時期</h2>\n        ` + seasonHtml(data, season, 'ja', './', date), 'index.html');
+      h = replaceRegion(h, 'season', `<h2 id="season-h" data-season-label="いまの時期（{m} 月）">いまの時期（${date.getMonth() + 1} 月）</h2>\n        ` + seasonHtml(data, season, 'ja', './', date), 'index.html');
       h = replaceRegion(h, 'sections', '\n' + sectionsHtml(data, './') + '\n    ', 'index.html');
-      h = replaceRegion(h, 'data', dataHtml(data, season, 'ja'), 'index.html');
-      return apply(h, data);
+      h = replaceRegion(h, 'updates', updatesSection(updatesRows(data), './'), 'index.html');
+      return replaceRegion(h, 'data', dataHtml(data, season, 'ja'), 'index.html');
     },
     'en/index.html': (h) => {
       h = replaceRegion(h, 'search', searchHtml('en', '../', 'yt-q', true), 'en/index.html');
@@ -306,7 +405,8 @@ export function buildAll(data, season, date = new Date()) {
   };
 }
 // --check で月の違いを見ないように、いまの時期の欄を空にして比べる
-export const stripSeason = (h) => h.replace(/(<!-- top:season:begin -->)[\s\S]*?(<!-- top:season:end -->)/g, '$1$2');
+// 「これからの改定」（日付で変わる）と「更新の記録」（隣のクローンの更新履歴が要る）も同じ扱い
+export const stripSeason = (h) => h.replace(/(<!-- top:(season|next|updates):begin -->)[\s\S]*?(<!-- top:\2:end -->)/g, '$1$3');
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const data = loadPages(), season = loadSeason();

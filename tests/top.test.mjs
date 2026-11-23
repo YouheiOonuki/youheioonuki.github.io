@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadTop, loadPages, loadSeason, buildAll, stripSeason, searchRows, seasonData, sectionsJa, allRows, newest } from '../tools/build-top.mjs';
+import { loadTop, loadPages, loadSeason, buildAll, stripSeason, searchRows, seasonData, sectionsJa, allRows, newest, cardsData, nextKaitei, nextHtml, updatesSection, UPDATES_ROWS } from '../tools/build-top.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (f) => readFileSync(join(ROOT, f), 'utf8');
@@ -59,19 +59,44 @@ test('検索は送信しない: top.js に通信が無く、ページに <form> 
 test('いまの時期: 日付で月が切り替わる', () => {
   const sd = seasonData(data, season, 'ja');
   const oct = YT.seasonFor(sd, new Date(2026, 9, 3)).map((x) => x.path);
-  assert.deepEqual([...oct], ['/seido-keisan/iryohi/', '/seido-keisan/kogaku-ryoyohi/', '/gakko-keisan/naishin/'], '4〜10 月は 3 月の 3 つ');
+  assert.deepEqual([...oct], ['/seido-keisan/nenmatsu/', '/gakko-keisan/naishin/', '/seido-keisan/koko-mushoka/']);
   const jan = YT.seasonFor(sd, new Date(2027, 0, 1)).map((x) => x.path);
-  assert.equal(jan[0], '/seido-keisan/iryohi/');
+  assert.equal(jan[0], '/gengo/yakudoshi/');
   const nov30 = YT.seasonFor(sd, new Date(2026, 10, 30)).map((x) => x.path);
   const dec1 = YT.seasonFor(sd, new Date(2026, 11, 1)).map((x) => x.path);
-  assert.deepEqual([...nov30], [...dec1], '11 月と 12 月は同じ 3 つ');
-  assert.deepEqual([...dec1], ['/seido-keisan/nenmatsu/', '/seido-keisan/nenmatsu/hoken/', '/seido-keisan/juminzei/']);
-  assert.notDeepEqual([...dec1], [...jan]);
+  assert.notDeepEqual([...nov30], [...dec1]);
+  assert.ok(dec1.includes('/bingo/'));
   for (let m = 0; m < 12; m++) assert.ok(YT.seasonFor(sd, new Date(2026, m, 15)).length >= 1, `${m + 1} 月が空`);
   // 静的な HTML も作った日の月で出る
   const html = buildAll(data, season, new Date(2027, 6, 10))['index.html'](read('index.html'));
   assert.match(html, /data-season-month="7"/);
-  assert.match(html, /<li><a href="\.\/seido-keisan\/iryohi\/"><strong>医療費控除で、いくら戻るか<\/strong><\/a><\/li>/);
+  assert.match(html, /hayamiban/);
+});
+
+test('いまの時期の日付の窓（Q-081）: 2027-01-20〜02-03 だけ 3 枠目が恵方の行に入れ替わる。件数は 3 のまま', () => {
+  const sd = seasonData(data, season, 'ja');
+  const at = (y, m, d) => YT.seasonFor(sd, new Date(y, m - 1, d)).map((x) => x.path);
+  const EHO = '/gengo/guide.html#q-eho';
+  // 境目の 4 日: 窓の外は月の表のまま、窓の中は replaces の行（1 月 hyakunin、2 月 koko-mushoka）だけがその位置で恵方の行になる
+  const OLD = { 1: '/quiz-hiroba/hyakunin/', 2: '/seido-keisan/koko-mushoka/' };
+  for (const [[y, m, d], on] of [[[2027, 1, 19], false], [[2027, 1, 20], true], [[2027, 2, 3], true], [[2027, 2, 4], false]]) {
+    const p = at(y, m, d), name = `${y}-${m}-${d}`, month = season.months[String(m)].map((x) => x.path);
+    assert.equal(p.length, 3, name);
+    assert.equal(p.includes(EHO), on, name);
+    assert.deepEqual(p, on ? month.map((x) => (x === OLD[m] ? EHO : x)) : month, name);
+  }
+  // 窓は year の年だけ（2028 年の同じ日は出ない）
+  assert.ok(!at(2028, 1, 25).includes(EHO));
+  // 鍵が窓の出入りで変わる（top.js はこれで入れ替える）
+  assert.notEqual(YT.seasonKey(sd, new Date(2027, 0, 19)), YT.seasonKey(sd, new Date(2027, 0, 20)));
+  assert.notEqual(YT.seasonKey(sd, new Date(2027, 1, 3)), YT.seasonKey(sd, new Date(2027, 1, 4)));
+  // 静的な HTML も作った日で出る（行の形は月の行と同じ、3 件）
+  const html = buildAll(data, season, new Date(2027, 0, 25))['index.html'](read('index.html'));
+  const ul = html.match(/<ul class="yt-season"[\s\S]*?<\/ul>/)[0];
+  assert.match(ul, /<li><a href="\.\/gengo\/guide\.html#q-eho"><strong><img class="yt-ico" src="\.\/gengo\/favicon\.svg"[^>]*>[^<]+<\/strong><span>2027 年の恵方は北北西です。<\/span><\/a><\/li>/);
+  assert.equal([...ul.matchAll(/<li><a href=/g)].length, 3);
+  // 英語の表には窓が無い
+  assert.deepEqual(seasonData(data, season, 'en').windows, []);
 });
 
 test('season.json: 各行のページが pages.json にあり、出典があり、各月 3 件まで（日英）', () => {
@@ -83,19 +108,77 @@ test('season.json: 各行のページが pages.json にあり、出典があり�
       for (const x of list) {
         assert.ok(have.has(x.path), `${lang} ${m} 月 ${x.path} が無い`);
         assert.ok(x.source && x.source.length > 3, `${lang} ${m} 月 ${x.path} の出典`);
-        if (lang === 'en') assert.ok(x.reason && !/[。.].+[。.]/.test(x.reason), `${lang} ${m} 月 ${x.path} の理由は 1 文`);
-        else assert.ok(x.q && !x.reason, `${lang} ${m} 月 ${x.path} は問い（q）だけ`);
+        assert.ok(x.reason && !/[。.].+[。.]/.test(x.reason), `${lang} ${m} 月 ${x.path} の理由は 1 文`);
       }
     }
   }
 });
 
-test('新しいツール: pages.json の公開日から自動（newCount 件＝3、新しい順。7.96 の高さ 3.6）', () => {
+test('更新の記録（v2）: 「新しいツール」の見出しは無く、/updates/ を作っている行の上から 5 件（日付・道具の名前・更新履歴の 1 行）。英語トップの新着は今のまま', () => {
   const html = read('index.html');
-  for (const p of newest(data)) assert.ok(html.includes(`href="./${p.path.slice(1)}"`), p.path);
+  assert.ok(!html.includes('新しいツール') && !html.includes('最近の更新'));
+  const at = html.indexOf('<section class="yt-sec" id="new"');
+  const sec = html.slice(at, html.indexOf('</section>', at));
+  assert.match(sec, /<h2 id="new-h">更新の記録<\/h2><a href="\.\/updates\/">更新情報<\/a>/);
+  const rows = [...sec.matchAll(/<li><time datetime="(\d{4}-\d{2}-\d{2})">[^<]+<\/time> <a href="([^"]+)">([^<]+)<\/a> <span class="yt-note">([^<]+)<\/span><\/li>/g)];
+  assert.equal(rows.length, UPDATES_ROWS);
+  const dates = rows.map((m) => m[1]);
+  assert.deepEqual([...dates].sort().reverse(), dates, '新しい順');
+  assert.match(updatesSection([{ date: '2026-11-22', url: '/x/guide.html', name: '道具', what: '直した' }]), /<time datetime="2026-11-22">2026-11-22<\/time> <a href="\.\/x\/guide\.html">道具<\/a> <span class="yt-note">直した<\/span>/);
   assert.equal(newest(data).length, 3);
-  // 他の節と同じ行の形: 名前（yt-name）と一言（pages.json の note）。D360・7.100
-  for (const p of newest(data)) assert.ok(html.includes(`<a class="yt-name" href="./${p.path.slice(1)}">`) && html.includes(`<span class="yt-note">${p.note}</span>`), p.path);
+  assert.match(read('en/index.html'), /class="yt-rows yt-new"/);
+});
+
+test('札（v2）: 制度の計算・学校・星空・情シスの 4 枚。行の名前と 1 行は pages.json の今の字（長い 3 枚だけ短い名前）。見出しの横の「令和 8 年分・令和 9 年度」は節の頭の文と同じ元', () => {
+  const cards = cardsData(data);
+  assert.deepEqual(cards.map((c) => c.name), ['制度の計算', '学校', '星空', '情シス']);
+  assert.equal(cards[0].tag, '令和 8 年分・令和 9 年度');
+  const lead = data.sections.find((x) => x.id === 'kurashi').lead;
+  assert.ok(lead.includes('令和 8 年分') && lead.includes('令和 9 年度'));
+  const byHref = new Map(data.pages.map((p) => [p.path, p]));
+  const LONG = ['/gakko-keisan/shusseki/', '/sekigae/', '/gakushu-print/'];
+  for (const c of cards) for (const r of c.rows) {
+    const p = byHref.get(r.href);
+    if (!p || LONG.includes(r.href)) continue;   // 別館（外のサブドメイン）の行と、短くする 3 枚
+    assert.equal(r.name, p.name || (p.short || p.title.replace(/（[^）]*）/g, '').trim()), r.href);
+    assert.equal(r.note, p.note, r.href);
+  }
+  assert.deepEqual(cards[1].rows.filter((r) => LONG.includes(r.href)).map((r) => r.name), ['出席日数', '席替え', '学習プリント']);
+  assert.equal(cards[1].rows.find((r) => r.href === '/gakko-keisan/shusseki/').note, 'あと何回休めるか');
+  // 短い名前は今の名前の中の語
+  for (const r of cards[1].rows.filter((r) => LONG.includes(r.href))) assert.ok((byHref.get(r.href).name || byHref.get(r.href).title).includes(r.name), r.href);
+  // 情シスの札の頭の 2 行は、一覧の情シスの節の頭の 2 行と同じ字
+  const annex = data.sections.find((x) => x.id === 'it').annex;
+  assert.deepEqual(cards[3].rows.slice(0, 2).map((r) => [r.name, r.href, r.note]), annex.map((x) => [x.name, x.href, x.note]));
+  assert.deepEqual(annex.map((x) => [x.name, x.note]), [['ストップボード', 'サービスの障害と休止の予定'], ['エンドボード', 'サポートが切れる日']]);
+  const html = read('index.html');
+  assert.equal((html.match(/<section class="yt-card"/g) || []).length, 4);
+  for (const c of cards) assert.ok(html.includes('<h2 id="card-' + c.id + '-h">' + c.name), c.name);
+  assert.ok(html.includes('<h2 id="card-seido-h">制度の計算 <span class="yt-tag"><span>令和 8 年分</span>・<span>令和 9 年度</span></span></h2>'));
+  // 学校の「すべて見る」は同じページの節、先生へ。ほかの札の「すべて見る」は入口
+  assert.ok(html.includes('<a href="#manabi">すべて見る</a><a href="./for/teachers/">先生へ</a>'));
+  for (const h of ['./seido-keisan/', './hoshizora-sanpo/', './for/it/']) assert.ok(html.includes('<a href="' + h + '">すべて見る</a>'), h);
+  // 札は屋号の下の 1 行の後、いまの時期の前
+  assert.ok(html.indexOf('class="yt-cards"') > html.indexOf('<p class="lead">制度の計算機と、学校・星空・情シスの道具</p>') && html.indexOf('class="yt-cards"') < html.indexOf('class="yt-now"'));
+});
+
+test('これからの改定（v2）: kaitei.json の items のうち今日より後の 3 件を、日付と題のまま。読めなければ段ごと出さない', () => {
+  const items = [
+    { date: '2026-11-22', title: '過去', url: 'https://yorozu-craft.com/seido-keisan/kaitei/#i-a' },
+    { date: '2026-12-01', title: '甲', url: 'https://yorozu-craft.com/seido-keisan/kaitei/#i-b' },
+    { date: '2027-01-01', title: '乙', url: 'https://yorozu-craft.com/seido-keisan/kaitei/#i-c' },
+    { date: '2027-01-01', title: '丙', url: 'https://yorozu-craft.com/seido-keisan/kaitei/#i-d' },
+    { date: '2027-04-01', title: '丁', url: 'https://yorozu-craft.com/seido-keisan/kaitei/#i-e' },
+  ];
+  const d = new Date(2026, 10, 23);
+  assert.deepEqual(nextKaitei(items, d).map((x) => x.title), ['甲', '乙', '丙']);
+  assert.deepEqual(nextKaitei(items, new Date(2026, 11, 1)).map((x) => x.title), ['乙', '丙', '丁'], '当日は「今日より後」に入れない');
+  const h = nextHtml(items, d, './');
+  assert.match(h, /<h2 id="up-h">これからの改定<\/h2>/);
+  assert.match(h, /<li><time datetime="2026-12-01">2026-12-01<\/time> <a href="\.\/seido-keisan\/kaitei\/#i-b">甲<\/a><\/li>/);
+  assert.match(h, /<a href="\.\/seido-keisan\/kaitei\/">改定カレンダー<\/a>/);
+  assert.equal(nextHtml(null, d), '', '読めなければ段ごと出さない');
+  assert.equal(nextHtml([], d), '');
 });
 
 test('トップの窓（D366）: 問いの見出し・例の一行を aria-describedby で結ぶ。/all/ は「道具を探す」のまま', () => {
@@ -113,12 +196,12 @@ test('作った欄が data と同じ（node tools/build-top.mjs 済み）', () =
   }
 });
 
-test('トップの構造（第 2 版 D323・D865・Q-1207）: 節 7 の順（くらし・お金 → 情シス・IT → 子どもの学び → 親・家族 → 星空 → 変換 → 集まり）・各節の表示 5 行まで・残りは details と見出しの「ほかに N 件 →」・最近の更新は最後・行にチップなし', () => {
+test('トップの構造（第 2 版 D323・D865・v2）: 節 7 の順（今の main の順）・各節の表示 5 行まで・残りは details と見出しの「ほかに N 件 →」・更新の記録は最後・行にチップなし', () => {
   const secs = sectionsJa(data);
-  assert.deepEqual(secs.map((s) => s.id), ['kurashi', 'it', 'manabi', 'oya', 'asobu', 'henkan', 'atsumari']);
+  assert.deepEqual(secs.map((s) => s.id), ['kurashi', 'manabi', 'asobu', 'it', 'oya', 'henkan', 'atsumari']);
   const html = read('index.html');
   const at = (id) => html.indexOf(`<section class="yt-sec" id="${id}"`);
-  assert.ok(at('new') > at('atsumari'), '最近の更新は最後の節の後');
+  assert.ok(at('new') > at('atsumari'), '更新の記録は最後の節の後');
   for (const s of secs) {
     const block = html.slice(at(s.id), html.indexOf('</section>', at(s.id)));
     const shown = block.split('<details>')[0];
@@ -214,20 +297,20 @@ test('アイコン: 節・「ほかに」・/all/ の全行と「いまの時期
   const row = /<li><a class="yt-name" href="([^"]+)">(<img class="yt-ico"[^>]*>)?/g;
   const top = read('index.html'), all = read('all/index.html');
   // 節の行に、新しいツールの行（7.100 で同じ形に）を足した数
-  assert.equal(check(top, row, true, 'index.html'), sectionsJa(data).reduce((n, s) => n + s.rows.length, 0) + newest(data).length);
+  assert.equal(check(top, row, true, 'index.html'), sectionsJa(data).reduce((n, s) => n + s.rows.length, 0));
   assert.equal(check(all, row, true, 'all/index.html'), allRows(data).reduce((n, s) => n + s.items.length, 0));
-  // いまの時期（問い 3 つ）は字だけで、アイコンを付けない（Q-1207）。月が変わったときの入れ替え（top.js）も同じ形
-  const seasonUl = top.match(/<ul class="yt-season"[\s\S]*?<\/ul>/)[0];
-  assert.equal([...seasonUl.matchAll(/<li><a href="[^"]+"><strong>[^<]+<\/strong><\/a><\/li>/g)].length, 3);
-  assert.doesNotMatch(seasonUl, /yt-ico|data-icons/);
+  assert.equal(check(top, /<li><a href="([^"]+)"><strong>(<img class="yt-ico"[^>]*>)?/g, false, 'いまの時期'), 3);
+  // 月が変わったときの入れ替え（top.js）も同じ形
   const sd = seasonData(data, season, 'ja');
-  assert.doesNotMatch(YT.seasonItemsHtml(YT.seasonFor(sd, new Date(2027, 0, 1)), './'), /yt-ico|<span>/);
+  const h = YT.seasonItemsHtml(YT.seasonFor(sd, new Date(2027, 0, 1)), './', true);
+  assert.equal(check(h, /<li><a href="([^"]+)"><strong>(<img class="yt-ico"[^>]*>)?/g, false, '1 月'), YT.seasonFor(sd, new Date(2027, 0, 1)).length);
+  assert.match(top, /class="yt-season"[^>]*data-icons/);
   // 新しい画像は作らない: 指す先はすべて既存のリポジトリ（pages.json の第 1 階層）
   const repos = new Set(data.pages.map((p) => p.path.split('/')[1]));
   for (const m of (top + all).matchAll(/class="yt-ico" src="(?:\.\.\/|\.\/)([^/]+)\/favicon\.svg"/g)) assert.ok(repos.has(m[1]), m[1]);
 });
 
-test('D849・Q-1081: トップの名乗りは柱（出典つきの制度の計算）で、title・og:title、description・og:description が食い違わない。1 文の下に、2 本柱の札（計算の根拠・改定カレンダー・公開データ）', () => {
+test('D849・Q-1081（v2）: title・og:title、description・og:description が食い違わない。屋号の下の 1 行は title の後ろ半分から「出典つきの」を除いた物。断りの文は置かない', () => {
   const top = read('index.html');
   const meta = (re) => (top.match(re) || [])[1];
   const title = meta(/<title>([^<]+)<\/title>/), desc = meta(/<meta name="description" content="([^"]+)">/);
@@ -235,17 +318,14 @@ test('D849・Q-1081: トップの名乗りは柱（出典つきの制度の計�
   assert.equal(meta(/<meta property="og:title" content="([^"]+)">/), title);
   assert.equal(meta(/<meta property="og:description" content="([^"]+)">/), desc);
   for (const w of ['無料ツール集', 'ちょっと便利', '便利ツール', '少しずつ増やして']) assert.ok(!(title + desc).includes(w), w);
-  assert.match(top, /<header class="site-head">[\s\S]*<p class="lead">その制度、あなたの場合はいくら。<\/p>[\s\S]*<\/header>/);
-  assert.doesNotMatch(top.slice(top.indexOf('<header'), top.indexOf('</header>')), /class="trust|説明/);
-  const main = top.slice(top.indexOf('<main'), top.indexOf('</main>'));
-  for (const href of ['./seido-keisan/', './about.html#kakunin', './seido-keisan/kaitei/', 'https://stopboard.yorozu-craft.com/', './for/it/']) assert.ok(main.includes(`href="${href}"`), href);
+  const line = '制度の計算機と、学校・星空・情シスの道具';
+  assert.ok(title.endsWith(line.replace('制度の計算機', '出典つきの制度の計算機')));
+  assert.match(top, /<header class="site-head">[\s\S]*<p class="lead">制度の計算機と、学校・星空・情シスの道具<\/p>[\s\S]*<\/header>/);
+  assert.doesNotMatch(top.slice(top.indexOf('<header'), top.indexOf('</header>')), /class="trust|。/);
+  assert.doesNotMatch(top, /その制度、あなたの場合はいくら|いつ上げるか。誰の障害か|法令と国税庁・厚生労働省などの資料どおりに|ちょっと計算したい|入れた文は、探すためにサーバーへ送ります|（広告なし）|確かめ方|年末調整で、いくら戻るか|保険料控除は、いくら効くか|住民税は、来年いくらか/);
   assert.ok(top.includes('<a href="./about.html#kakunin">計算の根拠</a>') && top.includes('<a href="./api/">公開データ</a>'), '脚に 計算の根拠・公開データ');
-  // 運営者情報・プライバシーポリシー・ご要望は、トップの HTML から直に届く（脚）
-  for (const href of ['./about.html', './privacy-policy.html', './post/']) assert.ok(top.includes(`<a href="${href}">`), href);
-  assert.ok(!top.includes('確かめ方'), 'トップに「確かめ方」の語が無い');
-  assert.ok(!top.includes('endboard.yorozu-craft.com'), 'エンドボードの字は Q-1211 の配信の後に足す');
-  assert.ok(top.indexOf('class="yt-pillar"') < top.indexOf('class="yt-now"') && top.indexOf('class="yt-now"') < top.indexOf('class="yt-search"'), '1 文 → 札 → 問い → 検索の順');
-  assert.equal((top.match(/class="yt-pillar"/g) || []).length, 2);
+  for (const href of ['./about.html', './privacy-policy.html', './post/', 'https://stopboard.yorozu-craft.com/', 'https://endboard.yorozu-craft.com/']) assert.ok(top.includes('<a href="' + href + '">'), href);
+  assert.match(read('about.html'), /<h2 id="kakunin">道具の作り方と確かめ方<\/h2>/);
 });
 
 test('D849・Q-1082: about の「内容」は柱を言い、入力の扱いは「入力したデータの扱い」の節の 1 か所だけが書く（著作権の節の「ブラウザ内でのみ」は無い）', () => {
@@ -256,13 +336,14 @@ test('D849・Q-1082: about の「内容」は柱を言い、入力の扱いは�
   assert.match(about, /<h2>入力したデータの扱い<\/h2>\s*<p>多くの道具は、入力した内容をお使いのブラウザの中だけで計算します。/);
 });
 
-test('節の頭の 1 文（D865）: 柱の 4 節だけに lead、HTML に 1 回ずつ。最近の更新の見出しの右に更新情報。情シスの節の頭に別館の行', () => {
+test('節の頭の 1 文（D865）: 柱の 4 節だけに lead、HTML に 1 回ずつ。情シスの節の頭に別館の 2 行。更新の記録の見出しの右に更新情報', () => {
   const html = read('index.html');
   const leads = data.sections.filter((s) => s.lead).map((s) => s.id);
-  assert.deepEqual(leads, ['kurashi', 'it', 'manabi', 'asobu']);
+  assert.deepEqual(leads, ['kurashi', 'manabi', 'asobu', 'it']);
   for (const s of data.sections.filter((x) => x.lead)) assert.equal(html.split(`<p class="yt-lead">${s.lead}</p>`).length - 1, 1, s.id);
-  assert.ok(html.includes('<li class="yt-annex"><a class="yt-name" href="https://stopboard.yorozu-craft.com/">ストップボード</a> <span class="yt-note">公式が発表した障害と休止を、1 枚に</span></li>'));
-  assert.match(html, /<h2 id="new-h">最近の更新<\/h2><span class="yt-links"><a href="\.\/updates\/">更新情報<\/a>/);
+  assert.ok(html.includes('<li class="yt-annex"><a class="yt-name" href="https://stopboard.yorozu-craft.com/">ストップボード</a> <span class="yt-note">サービスの障害と休止の予定</span></li>'));
+  assert.ok(html.includes('<li class="yt-annex"><a class="yt-name" href="https://endboard.yorozu-craft.com/">エンドボード</a> <span class="yt-note">サポートが切れる日</span></li>'));
+  assert.match(html, /<h2 id="new-h">更新の記録<\/h2><a href="\.\/updates\/">更新情報<\/a>/);
 });
 
 test('D874・Q-1116: about の「このサイトについて」は節の名前を並べない。英語に確かめ方の節（日本語と同じ事実の 5 行）と、運営者の紹介の 4 文目', () => {

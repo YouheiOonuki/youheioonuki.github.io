@@ -49,6 +49,7 @@
 /* 道具のアイコン（各リポジトリの favicon.svg、20px）。行の高さは変えない（名前の 44px の中に収める）。
    favicon はタブ用に色を持つので、一覧では灰色にする（強調は 1 色だけ。DESIGN 6 章「色を持つアイコン」） */
 .yt-ico { flex: none; width: 20px; height: 20px; margin-right: var(--sp-1); filter: grayscale(1); }
+.yt-season .yt-ico { display: inline-block; vertical-align: -3px; margin-block: -2px; margin-right: var(--sp-1); }
 .yt-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-3); flex-basis: 100%; }
 /* チップ: 見た目は小さく、当たり判定は 44px（上下の余白を含めて） */
 .yt-chips a { display: inline-flex; align-items: center; min-height: var(--tap); font-size: var(--fs-s); color: var(--text); text-underline-offset: 3px; }

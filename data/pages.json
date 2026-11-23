@@ -41,8 +41,8 @@
     {"path": "/tameshite/", "date": "2026-09-25", "title": "ためして（耳・反射・目）", "section": "asobu", "priority": 6, "aliases": ["テスト"], "name": "ためして", "note": "音・反射・記憶の目安"},
     {"path": "/seido-keisan/shienkin/", "date": "2026-09-25", "title": "子ども・子育て支援金 いくら引かれる", "section": "kurashi", "priority": 8, "aliases": ["支援金", "健康保険料"], "chip": "子育て支援金", "name": "子育て支援金", "note": "保険料への上乗せ額"},
     {"path": "/seido-keisan/nenkin-kuriage/", "date": "2026-09-25", "title": "年金の繰上げ・繰下げの計算", "section": "oya", "priority": 9, "aliases": ["繰下げ受給", "年金"], "chip": "年金の受け取り", "name": "年金の繰上げ・繰下げ", "note": "受け取る年齢で比べる"},
-    {"path": "/seido-keisan/koko-mushoka/", "date": "2026-09-25", "title": "高校無償化の計算（2026年度）", "section": "kurashi", "priority": 8, "aliases": ["就学支援金", "授業料"], "chip": "高校無償化", "name": "高校無償化", "note": "授業料の自己負担"},
-    {"path": "/seido-keisan/kogaku-ryoyohi/", "date": "2026-09-25", "title": "高額療養費の計算", "section": "oya", "priority": 11, "aliases": ["医療費の上限", "入院"], "chip": "高額療養費", "name": "高額療養費", "note": "医療費の月の上限"},
+    {"path": "/seido-keisan/koko-mushoka/", "date": "2026-09-25", "title": "高校無償化の計算（2026年度）", "section": "kurashi", "priority": 10, "aliases": ["就学支援金", "授業料"], "chip": "高校無償化", "name": "高校無償化", "note": "授業料の自己負担"},
+    {"path": "/seido-keisan/kogaku-ryoyohi/", "date": "2026-09-25", "title": "高額療養費の計算", "section": "oya", "priority": 9, "aliases": ["医療費の上限", "入院"], "chip": "高額療養費", "name": "高額療養費", "note": "医療費の月の上限"},
     {"path": "/seido-keisan/kaitei/", "date": "2026-09-25", "title": "制度の改定カレンダー", "section": "kurashi", "priority": 8, "aliases": ["法改正", "施行日"], "chip": "改定カレンダー", "name": "制度の改定カレンダー", "note": "税・社保の施行日の一覧"},
     {"path": "/seido-keisan/invoice/", "date": "2026-09-25", "title": "2割特例の終了後の消費税", "section": "kurashi", "priority": 8, "aliases": ["インボイス", "2割特例", "3割特例"], "chip": "2割特例の後", "name": "2割特例の後の消費税", "note": "3割特例・簡易課税と比較"},
     {"path": "/quiz-hiroba/shuto/", "date": "2026-09-25", "title": "世界の首都クイズ（191か国）", "section": "manabi", "priority": 9, "aliases": ["首都"], "chip": "首都クイズ"},
@@ -88,10 +88,10 @@
     {"path": "/todofuken-quiz/", "date": "2026-09-24", "title": "こども都道府県クイズ", "section": "manabi", "priority": 4, "aliases": ["日本地図"], "chip": "都道府県", "name": "こども都道府県クイズ", "note": "地図をタッチして覚える"},
     {"path": "/tabi-shiori/", "date": "2026-09-24", "title": "旅のしおりメーカー", "section": "atsumari", "priority": 6, "aliases": ["しおり", "修学旅行", "行程表"], "chip": "旅のしおり", "name": "旅のしおり", "note": "行程と持ち物を印刷"},
     {"path": "/sekigae/", "date": "2026-09-24", "title": "座席表を作る・席替え", "section": "atsumari", "priority": 5, "aliases": ["席替え", "席順", "席決め"], "chip": "席替え", "name": "席替え・席順くじ", "note": "前回と同じ席を避ける"},
-    {"path": "/seido-keisan/nenmatsu/", "date": "2026-09-24", "title": "年末調整の計算（令和8年分）", "section": "kurashi", "priority": 9, "aliases": ["年調", "源泉徴収", "還付"], "name": "年末調整", "note": "還付か追徴かの目安"},
+    {"path": "/seido-keisan/nenmatsu/", "date": "2026-09-24", "title": "年末調整の計算（令和8年分）", "section": "kurashi", "priority": 11, "aliases": ["年調", "源泉徴収", "還付"], "name": "年末調整", "note": "還付か追徴かの目安"},
     {"path": "/seido-keisan/nenmatsu/hoken/", "date": "2026-11-02", "title": "保険料控除の計算（令和8年分）", "section": "kurashi", "priority": 7, "aliases": ["生命保険料控除", "地震保険料控除", "保険料控除申告書"], "chip": "保険料控除", "name": "保険料控除", "note": "生命保険・地震保険の控除"},
     {"path": "/seido-keisan/juminzei/", "date": "2026-09-24", "title": "住民税の計算・非課税判定（令和9年度）", "section": "kurashi", "priority": 9, "aliases": ["非課税世帯", "住民税決定通知書"], "name": "住民税", "note": "税額と非課税の判定"},
-    {"path": "/seido-keisan/iryohi/", "date": "2026-09-24", "title": "医療費控除の計算（令和8年分）", "section": "kurashi", "priority": 11, "aliases": ["確定申告", "セルフメディケーション"], "name": "医療費控除", "note": "いくら戻るかの目安"},
+    {"path": "/seido-keisan/iryohi/", "date": "2026-09-24", "title": "医療費控除の計算（令和8年分）", "section": "kurashi", "priority": 9, "aliases": ["確定申告", "セルフメディケーション"], "name": "医療費控除", "note": "いくら戻るかの目安"},
     {"path": "/seido-keisan/iryohi/meisai/", "date": "2026-11-05", "title": "医療費控除の明細書を作る（令和8年分）", "section": "kurashi", "priority": 9, "aliases": ["医療費控除の明細書", "領収書"], "chip": "医療費の明細書", "name": "医療費控除の明細書", "note": "領収書を明細書の形に"},
     {"path": "/seido-keisan/ikukyu/", "date": "2026-09-24", "title": "育休・産休の給付金の計算", "section": "kurashi", "priority": 9, "aliases": ["育児休業給付金", "出産手当金", "産休"], "chip": "育休の給付金", "name": "育休・産休の給付金", "note": "給付金の額と時短の比較"},
     {"path": "/seido-keisan/dattai-ichiji/", "date": "2026-09-24", "title": "脱退一時金の計算", "section": "kurashi", "priority": 7, "aliases": ["年金の払い戻し", "帰国"], "chip": "脱退一時金", "name": "脱退一時金", "note": "帰国後の年金の払い戻し"},
@@ -116,12 +116,26 @@
     {"path": "/web-metronome/", "date": "2026-03-22", "title": "無料オンラインメトロノーム", "section": "asobu", "priority": 7, "aliases": ["テンポ", "BPM"], "chip": "メトロノーム", "name": "メトロノーム・ピアノ", "note": "変則拍子と裏拍"},
     {"path": "/easy-split/", "date": "2026-03-22", "title": "easy-split", "section": "atsumari", "priority": 5, "aliases": ["割り勘", "精算", "飲み会"], "chip": "割り勘", "name": "傾斜割り勘・清算", "note": "係数つきの割り勘"}
   ],
+  "cards": [
+    {"id": "seido", "name": "制度の計算", "tagFrom": "kurashi", "rows": [
+      {"path": "/seido-keisan/nenmatsu/"}, {"path": "/seido-keisan/juminzei/"}, {"path": "/seido-keisan/iryohi/"}, {"path": "/seido-keisan/ikukyu/"}, {"path": "/seido-keisan/kaitei/"}
+    ], "foot": [{"name": "すべて見る", "href": "/seido-keisan/"}]},
+    {"id": "gakko", "name": "学校", "rows": [
+      {"path": "/gakko-keisan/naishin/"}, {"path": "/gakko-keisan/hensachi/"}, {"path": "/gakko-keisan/shusseki/", "name": "出席日数", "note": "あと何回休めるか"}, {"path": "/sekigae/", "name": "席替え"}, {"path": "/gakushu-print/", "name": "学習プリント"}
+    ], "foot": [{"name": "すべて見る", "href": "#manabi"}, {"name": "先生へ", "href": "/for/teachers/"}]},
+    {"id": "hoshi", "name": "星空", "rows": [
+      {"path": "/hoshizora-sanpo/"}, {"path": "/hoshizora-sanpo/calendar/"}, {"path": "/hoshizora-sanpo/tsuki/"}, {"path": "/hoshizora-sanpo/hayamiban/"}, {"path": "/hoshizora-sanpo/zukan/"}
+    ], "foot": [{"name": "すべて見る", "href": "/hoshizora-sanpo/"}]},
+    {"id": "joshis", "name": "情シス", "rows": [
+      {"annex": "it"}, {"path": "/pac-tester/"}, {"path": "/filetime/"}, {"path": "/ADSearch/"}
+    ], "foot": [{"name": "すべて見る", "href": "/for/it/"}]}
+  ],
   "sections": [
     {"id": "kurashi", "name": "くらし・お金", "lead": "年末調整は令和 8 年分、住民税は令和 9 年度の制度で計算します。"},
-    {"id": "it", "name": "情シス・IT", "lead": "ADSearch は、RSAT を入れられない端末で Active Directory を読む PowerShell モジュールで、ここで配っています。", "annex": [{"name": "ストップボード", "href": "https://stopboard.yorozu-craft.com/", "note": "公式が発表した障害と休止を、1 枚に"}]},
     {"id": "manabi", "name": "子どもの学び", "lead": "内申点は、東京・神奈川・埼玉・千葉・大阪・兵庫の入試の式で計算します。"},
-    {"id": "oya", "name": "親・家族のために"},
     {"id": "asobu", "name": "星空・あそぶ・ためす", "lead": "星の位置と月の出入りはこのサイトの天文計算で、流星群と日食・月食の日時は国立天文台の発表で載せています。"},
+    {"id": "it", "name": "情シス・IT", "lead": "ADSearch は、RSAT を入れられない端末で Active Directory を読む PowerShell モジュールで、ここで配っています。", "annex": [{"name": "ストップボード", "href": "https://stopboard.yorozu-craft.com/", "note": "サービスの障害と休止の予定"}, {"name": "エンドボード", "href": "https://endboard.yorozu-craft.com/", "note": "サポートが切れる日"}]},
+    {"id": "oya", "name": "親・家族のために"},
     {"id": "henkan", "name": "変換・データ"},
     {"id": "atsumari", "name": "集まり・イベント"}
   ],
