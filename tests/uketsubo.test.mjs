@@ -42,3 +42,9 @@ test('Q-1219: /for/kaigo/ の description と /en/ の description・og:descript
   assert.equal(en.split('Made by one person. No sign-up.').length - 1, 0);
   assert.equal(en.split('IT admin tools (PAC file tester, ADSearch, FILETIME converter). Made by one person.">').length - 1, 2);
 });
+
+test('Q-1227: /for/it/ の最初の 1 行は誰の棚かを言う。「決まりごと」の節は足さない', () => {
+  const html = read('for/it/index.html');
+  assert.ok(html.indexOf('<h1>情シス向けの道具</h1>\n      <p class="lead">一人で情シスをしている人と、Active Directory を触る人のための道具です。</p>') > 0);
+  assert.ok(!html.includes('決まりごと'));
+});
