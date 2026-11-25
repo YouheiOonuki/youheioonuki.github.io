@@ -12,11 +12,11 @@
 //   scope   範囲: 'world' | 'national' | 'regional'（拠点の値は持たない）
 //   country 国: 'global' | 国の 2 文字（'JP'）
 //   region  地域（scope が 'regional' の時だけ。ほかは null か欄なし）
-//   mode    載せ方: 'auto'（機械で読む）| 'ledger'（台帳で予定を出す）| 'link'（リンクだけ）
+//   mode    載せ方: 'auto'（機械で読む）| 'ledger'（台帳で予定を出す）。リンクだけの 'link' は 2026-11-23 に無くした（yorozu-plans Q-1256・条件 112）
 //   stops   止まる物の名前（1 相手 2 つまで。臨時の区間の無い相手は空でよい）
 //   page    公式のページ（https）
 //   source  読み方 { method, urls, every? }（ここでは見ない。every の線は配る側〈infra-board.js〉）
-//   checked 確認: 'ledger' は最後に確かめた日 'YYYY-MM-DD'。'link' はその日か null。'auto' は最後に読めた時刻（ここでは見ない）
+//   checked 確認: 'ledger' は最後に確かめた日 'YYYY-MM-DD'。'auto' は最後に読めた時刻（ここでは見ない）
 //   extra   臨時の区間 [{ service, start: 'YYYY-MM-DDTHH:MM', end: 'YYYY-MM-DDTHH:MM', url }]（JST。+09:00 を付けてもよい。url はその休止のお知らせで、https で始まる。D761）
 //   deeplink 任意。'ledger' の相手だけで、値は true だけ（D752・Q-989）。true の相手は、臨時の区間の行き先をその区間の url にする
 //            （url が無い・http(s) でない・.csv か .pdf で終わる時は page）。欄の無い相手の行き先は、どの区間も page
@@ -36,7 +36,7 @@
   var JST = 9 * 60 * MIN;
   var DAYS = 60;          // 出す区間の長さ（日）
   var STALE_DAYS = 8;     // 確かめた日がこれより古い 'ledger' の相手は予定を出さない（D602 の (5)）
-  var MODES = ['auto', 'ledger', 'link'];
+  var MODES = ['auto', 'ledger'];
   var COLUMNS = ['shigoto', 'kurashi'];
   var SCOPES = ['world', 'national', 'regional'];
 
@@ -107,12 +107,11 @@
       if (SCOPES.indexOf(row.scope) < 0) add('scope が world・national・regional でない');
       if (typeof row.country !== 'string' || !/^(global|[A-Z]{2})$/.test(row.country)) add('country が global か国の 2 文字でない');
       if (row.scope === 'regional' ? !row.region : (row.region !== undefined && row.region !== null)) add('region は scope が regional の時だけ');
-      if (MODES.indexOf(row.mode) < 0) add('mode が auto・ledger・link でない');
+      if (MODES.indexOf(row.mode) < 0) add('mode が auto・ledger でない');
       if (!Array.isArray(row.stops) || row.stops.length > 2) add('stops は 0〜2 つ');
       if (typeof row.page !== 'string' || !/^https:\/\//.test(row.page)) add('page が https でない');
-      if (row.mode === 'ledger' ? dateMs(row.checked) === null : (row.mode === 'link' && row.checked !== null && row.checked !== undefined && dateMs(row.checked) === null)) add('checked が YYYY-MM-DD でない');
+      if (row.mode === 'ledger' && dateMs(row.checked) === null) add('checked が YYYY-MM-DD でない');
       if (row.rules !== undefined) add('rules は持たない（決まった休止の規則は台帳に書かない。D757）');
-      if (row.mode === 'link' && (row.extra || []).length) add('link の相手が区間を持つ');
       if (row.deeplink !== undefined && (row.mode !== 'ledger' || row.deeplink !== true)) add('deeplink は ledger の相手だけで、値は true だけ');
       if (row.page_top !== undefined && (row.mode !== 'ledger' || row.page_top !== true)) add('page_top は ledger の相手だけで、値は true だけ');
       (row.extra || []).forEach(function (x) { add(extraProblem(row, x)); });
@@ -142,21 +141,20 @@
     return out.filter(function (a) { return a.e > from && a.s < until; });
   }
 
-  // 相手を「予定を出す」と「出さない」（link・確かめた日が 8 日より古い ledger）に分ける。now は判断の時刻
+  // 相手を「予定を出す」と「出さない」（確かめた日が 8 日より古い ledger）に分ける。now は判断の時刻
   // shown は 'auto' と確かめた 'ledger'（止まる物の無い相手も入る。区間は出ない）
   function split(ledger, now) {
     var nowMs = toMs(now), today = dayStart(nowMs);
-    var shown = [], link = [], stale = [];
+    var shown = [], stale = [];
     rowsOf(ledger).forEach(function (row) {
       if (!row || typeof row !== 'object') return;
-      if (row.mode === 'link') { link.push(row); return; }
       if (row.mode === 'ledger') {
         var c = dateMs(row.checked);
         if (c === null || (today - c) / DAY > STALE_DAYS) { stale.push(row); return; }
       }
       shown.push(row);
     });
-    return { shown: shown, link: link, stale: stale };
+    return { shown: shown, stale: stale };
   }
 
   var nowOf = function (opts, t) { return opts && opts.now !== undefined ? opts.now : t; };
@@ -204,7 +202,7 @@
     });
   }
 
-  // (d) 予定を出さない相手（link・古い）と、確かめた 'ledger' の相手のうち now から days 日に区間が 1 つも無い相手（発表なし）。名前は台帳の行の順
+  // (d) 予定を出さない相手（古い）と、確かめた 'ledger' の相手のうち now から days 日に区間が 1 つも無い相手（発表なし）。名前は台帳の行の順
   //     'auto' の相手は「発表なし」に数えない（更新できているかは読めた時刻で決まり、ここでは見ない。配る側〈infra-board.js〉が数える）
   function summary(ledger, now, opts) {
     var n = toMs(now); if (n === null) throw new Error('日時が読めない: ' + now);
@@ -213,7 +211,6 @@
     var names = function (rows) { return rows.map(function (r) { return r.name; }); };
     var none = sp.shown.filter(function (row) { return row.mode === 'ledger' && !rowSpans(row, n, n + days * DAY).length; });
     return {
-      link: { count: sp.link.length, names: names(sp.link) },
       stale: { count: sp.stale.length, names: names(sp.stale) },
       none: { count: none.length, names: names(none) }
     };
