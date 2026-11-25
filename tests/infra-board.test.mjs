@@ -24,18 +24,16 @@ const ex = (service, start, end, o = {}) => ({ service, start, end, url: `https:
 const SA = auto('sa', '相手 A');
 const SB = auto('sb', '相手 B');
 const SC = auto('sc', '相手 C');
-const SM = { ...auto('sm', '相手 M'), mode: 'link', checked: '2026-11-20' };            // しごとのリンクだけ
 const KA = kurashi({ id: 'ka', name: '相手 K', stops: ['ネットバンキング', 'ATM'],
   extra: [ex('ATM', '2026-11-23T23:30', '2026-11-24T05:00'), ex('ATM', '2026-11-24T23:30', '2026-11-25T05:00'),
           ex('ATM', '2026-11-27T23:30', '2026-11-28T05:00'), ex('ネットバンキング', '2026-11-28T00:00', '2026-11-28T06:00')] });
 const KN = kurashi({ id: 'kn', name: '相手 N', stops: ['ATM'] });                    // 予定なし
 const KO = kurashi({ id: 'ko', name: '相手 O', checked: '2026-11-15', stops: ['ATM'],  // 9 日前 → 古い
   extra: [ex('ATM', '2026-11-24T00:00', '2026-11-24T06:00')] });
-const KL = kurashi({ id: 'kl', name: '相手 L', mode: 'link', stops: ['ATM'] });
-const PARTNERS = [SA, SB, SC, SM, KA, KN, KO, KL];
+const PARTNERS = [SA, SB, SC, KA, KN, KO];
 
-// 止まる予定（Q-770 の出力）。古い KO・リンクだけの KL の分も、わざと混ぜる
-const teishi = T.upcoming([KA, KN, KO, KL].map(r => ({ ...r, checked: '2026-11-19', mode: 'ledger' })), NOW);
+// 止まる予定（Q-770 の出力）。古い KO の分も、わざと混ぜる
+const teishi = T.upcoming([KA, KN, KO].map(r => ({ ...r, checked: '2026-11-19', mode: 'ledger' })), NOW);
 // 障害と予定メンテナンス（yorozu-cron の Q-739・Q-777・Q-779 の形。時刻は UTC）
 const inc = (o) => ({ id: 'i1', start: '2026-11-23T17:00:00.000Z', end: null, impact: 'major', title: '作った題', url: 'https://status.example.com/i/1', ...o });
 const SPANS_BUSY = [
@@ -54,10 +52,7 @@ test('何も止まっていない: stopped は空で nothing が真。区間の�
   assert.equal(now.ingestedAt, '2026-11-24T11:58+09:00');
   // sa・sb・sc は 5 分前でなく 12 時から見て 9 時間前に読めた → 確かめられていない
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['sa', 'sb', 'sc', 'ko']);
-  assert.deepEqual(now.link, { count: 2, partners: [
-    { id: 'sm', name: '相手 M', column: 'shigoto', field: '業務の SaaS', url: 'https://status.example.com/sm' },
-    { id: 'kl', name: '相手 L', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kl', url_lang: 'ja' }] });
-  assert.deepEqual(ahead.link, now.link);
+  assert.ok(!('link' in now) && !('link' in ahead));   // リンクだけの型は無くした（Q-1256）
   assert.deepEqual(now.none, { count: 1, partners: [{ id: 'kn', name: '相手 N', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kn', checked: '2026-11-19', url_lang: 'ja' }] });
   assert.equal(ahead.items[0].start, '2026-11-24T23:30+09:00');
 });
@@ -73,7 +68,7 @@ test('同時に 3 つ: 重い順（major → minor → 欄の無い止まる予�
   // 同じ重さ（minor）: sc の障害は 0 時から、sb の予定メンテナンスは 1 時から → sc が先
   const more = build([...SPANS_BUSY, inc({ service: 'sc', id: 'c1', start: '2026-11-23T15:00:00Z', impact: 'minor' })]).now;
   assert.deepEqual(more.stopped.map(x => x.id), ['sa', 'sc', 'sb', 'ka']);
-  // 古い KO・リンクだけの KL の止まる予定は出ない
+  // 古い KO の止まる予定は出ない
   assert.ok(!more.stopped.some(x => x.id === 'ko' || x.id === 'kl'));
 });
 
@@ -110,19 +105,17 @@ test('t が先の日時: その時点に止まっている物、「ほか N 件�
   assert.equal(B.at(ahead, '2026-11-24T02:59').inRange, false);       // ahead の始まりより前
 });
 
-test('確かめられていない相手は「予定なし」に入らない（auto 15 分超・ledger 8 日超）。link は別の並びで、どちらにも入らない', () => {
+test('確かめられていない相手は「予定なし」に入らない（auto 15 分超・ledger 8 日超）', () => {
   const late = { ...SC, checked: '2026-11-23T17:44:59Z' };            // 15 分 1 秒前
   const edge = { ...SB, checked: '2026-11-23T17:45:00Z' };            // ちょうど 15 分前 → まだ確かめられている
   const none = { ...SA, checked: undefined };                          // 一度も読めていない
-  const { now, ahead } = build([], { partners: [none, edge, late, SM, KN, KO, KL] });
+  const { now, ahead } = build([], { partners: [none, edge, late, KN, KO] });
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['sa', 'sc', 'ko']);
   // 「時点」は渡された checked をそのまま出す。auto も null にしない。渡さなければ null（D660・Q-841）
   assert.deepEqual(now.unconfirmed.map(p => [p.id, p.checked]), [['sa', null], ['sc', '2026-11-23T17:44:59Z'], ['ko', '2026-11-15']]);
   assert.deepEqual(now.none.partners.map(p => [p.id, p.checked]), [['sb', '2026-11-23T17:45:00Z'], ['kn', '2026-11-19']]);
   assert.deepEqual(ahead.partners.map(p => [p.id, p.checked]), [['sb', '2026-11-23T17:45:00Z'], ['kn', '2026-11-19']]);
   assert.deepEqual(now.none.partners.map(p => p.id), ['sb', 'kn']);
-  assert.deepEqual(now.link.partners.map(p => p.id), ['sm', 'kl']);
-  assert.equal(now.link.count, 2);
   assert.deepEqual(ahead.partners.map(p => p.id), ['sb', 'kn']);
   assert.deepEqual(B.at(ahead, '2026-11-25T00:00').none.partners.map(p => p.id), ['sb', 'kn']);
   // 8 日の境目: 11-16 は 8 日前でまだ出す、11-15 は 9 日前で出さない（teishi.js と同じ線）
@@ -223,12 +216,11 @@ test('線は相手ごと: source.every の 3 回ぶん（15 分おきなら 45 �
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['r46', 's16', 'd16']);
 });
 
-test('台帳の形をそのまま受ける: { targets }・region null・stops 空・link の checked null・区間の limited を運ぶ', () => {
+test('台帳の形をそのまま受ける: { targets }・region null・stops 空・区間の limited を運ぶ', () => {
   const ledger = { version: 1, targets: [
     { ...auto('g', '相手 G'), region: null, stops: [] },
     { ...kurashi({ id: 'kx', name: '相手 X', checked: '2026-11-25', stops: ['ネットバンキング'], extra: [ex('ネットバンキング', '2026-11-29T21:00', '2026-11-30T07:00', { limited: true })] }), region: null },
     { ...kurashi({ id: 'ke', name: '相手 E', checked: '2026-11-25', stops: [] }), region: null },
-    { ...kurashi({ id: 'kz', name: '相手 Z', mode: 'link', stops: [] }), region: null, checked: null },
   ] };
   assert.deepEqual(T.validate(ledger), []);
   const spans = T.upcoming(ledger, NOW);
@@ -236,7 +228,6 @@ test('台帳の形をそのまま受ける: { targets }・region null・stops �
   const { now, ahead } = B.build(ledger, spans, '2026-11-29T22:00', '2026-11-29T21:58');   // 日曜 22 時
   assert.deepEqual(now.stopped.map(x => [x.id, x.limited, x.color]), [['kx', true, 'blue']]);
   assert.ok(ahead.items.every(x => x.limited === true));
-  assert.deepEqual(now.link.partners, [{ id: 'kz', name: '相手 Z', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kz', url_lang: 'ja' }]);
   assert.deepEqual(now.unconfirmed.map(p => p.id), ['g']);       // 11-29 から見て読めた時刻は古い
   assert.deepEqual(now.none.partners.map(p => p.id), ['ke']);    // stops の無い ledger の相手も「予定なし」
 });
@@ -266,8 +257,7 @@ test('出す字は名前・止まる物・題・URL・日時だけ（notes・規
 test('英語の欄（Q-944・D725）: 台帳に在る時だけ行の末に通す。page_en は url_en、stops_en は同じ順の service_en、くらしは url_lang: ja、しごとは足さない', () => {
   const KE = { ...KA, name_en: 'K Bank', stops_en: ['Online banking', 'ATMs'], page_en: 'https://example.invalid/ka/en' };
   const KF = { ...KN, field_en: 'bank' };
-  const KM = { ...KL, name_en: 'L Bank' };
-  const { now, ahead } = build(SPANS_BUSY, { partners: [SA, SB, SC, SM, KE, KF, KO, KM] });
+  const { now, ahead } = build(SPANS_BUSY, { partners: [SA, SB, SC, KE, KF, KO] });
   const ka = now.stopped.find(x => x.id === 'ka');
   assert.deepEqual(Object.keys(ka).slice(-4), ['name_en', 'service_en', 'url_en', 'url_lang']);
   assert.equal(ka.service, 'ATM');
@@ -276,8 +266,6 @@ test('英語の欄（Q-944・D725）: 台帳に在る時だけ行の末に通す
   assert.ok(ahead.items.filter(x => x.id === 'ka' && x.service === 'ネットバンキング').every(x => x.service_en === 'Online banking'));
   assert.deepEqual(now.none.partners.find(p => p.id === 'kn'),
     { id: 'kn', name: '相手 N', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kn', checked: '2026-11-19', field_en: 'bank', url_lang: 'ja' });
-  assert.deepEqual(now.link.partners.find(p => p.id === 'kl'),
-    { id: 'kl', name: '相手 L', column: 'kurashi', field: '銀行', url: 'https://example.invalid/kl', name_en: 'L Bank', url_lang: 'ja' });
   assert.ok(ahead.partners.some(p => p.id === 'ka' && p.name_en === 'K Bank' && !('service_en' in p)));
   // しごとの行と、英語の欄を持たないくらしの行（url_lang だけ）
   const sa = now.stopped.find(x => x.id === 'sa');
@@ -286,7 +274,7 @@ test('英語の欄（Q-944・D725）: 台帳に在る時だけ行の末に通す
   // 英語の欄の無い台帳では、英語の欄は 0（足すのはくらしの url_lang だけ）。stops_en に同じ順の名前が無い止まる物は service_en を持たない
   const plain = build(SPANS_BUSY);
   assert.ok(!/_en"/.test(B.toJson(plain.now) + B.toJson(plain.ahead)));
-  const short = build(SPANS_BUSY, { partners: [SA, SB, SC, SM, { ...KA, stops_en: ['Online banking'] }, KN, KO, KL] }).now;
+  const short = build(SPANS_BUSY, { partners: [SA, SB, SC, { ...KA, stops_en: ['Online banking'] }, KN, KO] }).now;
   assert.ok(!('service_en' in short.stopped.find(x => x.id === 'ka')));
 });
 
@@ -320,7 +308,7 @@ test('field: 行と相手の 1 行の全部に、台帳の分野がそのまま�
   const KS = { ...KN, id: 'ks', name: '相手 S', field: '証券' };
   const { now, ahead } = build(SPANS_BUSY, { partners: [...PARTNERS, KS] });
   const fieldOf = Object.fromEntries([...PARTNERS, KS].map((p) => [p.id, p.field]));
-  const rows = [...now.stopped, ...ahead.items, ...ahead.partners, ...now.none.partners, ...now.unconfirmed, ...now.link.partners];
+  const rows = [...now.stopped, ...ahead.items, ...ahead.partners, ...now.none.partners, ...now.unconfirmed];
   assert.ok(rows.length > 10 && rows.some((x) => x.field === '証券'));
   for (const x of rows) {
     assert.equal(x.field, fieldOf[x.id], x.id);

@@ -8,7 +8,7 @@
 //   page    … 公式のページ（出す URL の基点）
 //   source.every … 機械で読む間隔（分）。'auto' の線はその 3 回ぶん、欄が無ければ 15 分（D619）
 //   checked … 'auto' は最後に読めた時刻（時差つきの ISO。yorozu-cron の取り込みの lastRead）、
-//             'ledger' は最後に確かめた日 'YYYY-MM-DD'、'link' はその日か null
+//             'ledger' は最後に確かめた日 'YYYY-MM-DD'
 // 区間の並び: 2 つの形を同じ並びで受ける
 //   止まる予定（teishi.js の upcoming の出力）… { id: 相手, name, column, service: 止まる物, start, end, kind: 'extra', limited, url, checked }
 //     url は teishi.js が決めた行き先（台帳の deeplink。D752・Q-989）で、そのまま出す。http(s) でなければ相手の page
@@ -28,7 +28,6 @@
 //   更新できていない（unconfirmed）… 'auto' で線を超えた（読めた時刻が無い・読めない時も）、'ledger' で確かめた日が 8 日より古い
 //     'auto' の更新できていない相手の区間は出し、その相手を最後に読めた時刻を lastRead に付ける（取り込みは前の値を消さない）
 //     'ledger' の古い相手の区間は出さない（D602）
-//   リンクだけ（link）… 区間を出さず、名前と公式のページだけを別の並びに。数も別
 //   「発表なし」（none）… 'auto'・'ledger' で更新できていて、いまにも 60 日の中にも区間が無い相手
 // 出す字は、相手の名前・止まる物の名前（台帳に在れば英語の名前も。Q-944）・公式の題（しごとの列だけ）・URL・日時だけ。日時は 'YYYY-MM-DDTHH:MM+09:00'
 // 行と相手の 1 行には、台帳の分野 field をそのまま通す（column の次。画面のジャンルの切り替えが読む。企画書 113 の 14.2・D768・Q-1001）
@@ -65,21 +64,19 @@
     return typeof e === 'number' && isFinite(e) && e > 0 ? e * EVERY_TIMES : STALE_MIN;
   }
 
-  // 相手を、更新できている（ok）・更新できていない（un）・リンクだけ（link）に分ける。並びは一覧の行の順
+  // 相手を、更新できている（ok）・更新できていない（un）に分ける。並びは一覧の行の順
   function partition(partners, nowMs) {
     var sp = T.split(partners, nowMs);
-    var link = {}, stale = {};
-    sp.link.forEach(function (p) { link[p.id] = true; });
+    var stale = {};
     sp.stale.forEach(function (p) { stale[p.id] = true; });
-    var ok = [], un = [], li = [];
+    var ok = [], un = [];
     partners.forEach(function (p) {
       if (!p || typeof p !== 'object' || typeof p.id !== 'string') return;
-      if (link[p.id]) { li.push(p); return; }
       var bad = stale[p.id];
       if (!bad && p.mode === 'auto') { var r = toMs(p.checked); bad = r === null || nowMs - r > lineMin(p) * MIN; }
       (bad ? un : ok).push(p);
     });
-    return { ok: ok, un: un, link: li };
+    return { ok: ok, un: un };
   }
 
   // 区間 1 つを、一覧の相手に当てて読む。置けなければ null
@@ -139,13 +136,9 @@
     if (go) o.go = go;
     return enFields(o, p, a.service);
   }
-  // 相手の 1 行。checked は渡された値をそのまま（'auto' は最後に読めた時刻、'ledger'・'link' は最後に確かめた日。欄が無ければ null。D660）
+  // 相手の 1 行。checked は渡された値をそのまま（'auto' は最後に読めた時刻、'ledger' は最後に確かめた日。欄が無ければ null。D660）
   var partnerOut = function (p) {
     return enFields({ id: p.id, name: p.name, column: p.column, field: p.field, url: pageOf(p), checked: p.checked === undefined ? null : p.checked }, p);
-  };
-  var linkOut = function (list) {
-    var ps = list.map(function (p) { return enFields({ id: p.id, name: p.name, column: p.column, field: p.field, url: pageOf(p) }, p); });
-    return { count: ps.length, partners: ps };
   };
 
   // 入力を読み、確かめた相手と区間に分ける
@@ -154,7 +147,7 @@
     var parts = partition(partners, nowMs);
     var byId = {};
     parts.ok.forEach(function (row) { byId[row.id] = { row: row, ri: partners.indexOf(row), lastRead: null }; });
-    // 更新できていない 'auto' の相手の区間は、最後に読めた時刻を付けて出す（ledger の古い相手と link は出さない）
+    // 更新できていない 'auto' の相手の区間は、最後に読めた時刻を付けて出す（ledger の古い相手は出さない）
     parts.un.forEach(function (row) {
       if (row.mode !== 'auto') return;
       var r = toMs(row.checked);
@@ -191,15 +184,14 @@
     var busy = {};
     current.concat(ahead).forEach(function (a) { busy[a.partner.id] = true; });
     var un = pre.parts.un.map(partnerOut);
-    var link = linkOut(pre.parts.link);
     var ingOut = ing === null ? null : T.toJst(ing);
     // 取り込みが古い（か一度も無い）間は、機械で取る相手（'auto'）の行だけを出さない。台帳から来る最中の休止は、取り込みの時刻と関わりが無いので出す（D766）
     var stopped = (old ? current.filter(function (a) { return a.partner.mode !== 'auto'; }) : current).map(itemOut);
     return {
       now: { version: 1, at: T.toJst(n), ingestedAt: ingOut, ingestOld: old, stopped: stopped, nothing: !old && !stopped.length,
-        none: noneOf(pre.parts.ok, busy), unconfirmed: un, link: link, unplaced: pre.unplaced },
+        none: noneOf(pre.parts.ok, busy), unconfirmed: un, unplaced: pre.unplaced },
       ahead: { version: 1, from: T.toJst(n), until: T.toJst(until), ingestedAt: ingOut, items: ahead.map(itemOut),
-        partners: pre.parts.ok.map(partnerOut), unconfirmed: un, link: link, unplaced: pre.unplaced }
+        partners: pre.parts.ok.map(partnerOut), unconfirmed: un, unplaced: pre.unplaced }
     };
   }
 
