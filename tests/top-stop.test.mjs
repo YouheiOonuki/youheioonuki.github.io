@@ -103,5 +103,5 @@ test('top-stop.js が読む先の host が privacy-policy.html に在り、こ�
   const host = new URL(/var URL_NOW = '([^']+)'/.exec(src)[1]).host;
   const policy = read('privacy-policy.html');
   assert.ok(policy.includes(host), `privacy-policy.html に ${host}`);
-  assert.match(policy, new RegExp(host.replace(/\./g, '\.') + '[^<]*から今の状態を読み込みます。こちらから送る内容はありません。'));
+  assert.match(policy, new RegExp(host.replace(/\./g, '\.') + '[^<]*から今の状態を読み込みます。入力した内容は送りません。'));
 });
