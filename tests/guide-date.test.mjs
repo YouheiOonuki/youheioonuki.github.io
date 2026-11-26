@@ -65,6 +65,12 @@ test('drawn のページに手で書いた日付が在れば落ちる', () => {
   assert.ok(run({ ...HTML_OK, 'drawn.html': hand }, VALUES) > 0);
 });
 
+test('"#oldest:名前" は値の木の中のいちばん古い日付', () => {
+  const page = { 'guide.html': '<p>最終確認日 2026-09-01。</p>' };
+  assert.equal(run(page, { html: { 'guide.html': 'constants.js#oldest:CHECKED' } }), 0);
+  assert.ok(run(page, { html: { 'guide.html': 'constants.js#CHECKED' } }) > 0);
+});
+
 test('値のファイルに知らない名前が在れば落ちる', () => {
   assert.ok(run(HTML_OK, { ...VALUES, expect: {} }) > 0);
 });
