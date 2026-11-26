@@ -29,6 +29,14 @@ test('Worker の口（workers.dev の道・/v1/…）の字と呼び出しが在
   assert.deepEqual(sendPorts("ws = new WebSocket(WS)", '', ORIGIN), ['WebSocket']);
 });
 
+test('自分のオリジンの外の http(s) へ: fetch の GET・sendBeacon・XMLHttpRequest の open を数える。自分のオリジン・ping・cloudflareinsights は数えない', () => {
+  assert.deepEqual(sendPorts("fetch('https://api.example.com/q?x=' + v)", '', ORIGIN), ['外のホストへ api.example.com']);
+  assert.deepEqual(sendPorts("navigator.sendBeacon('https://ext.example.com/c', d)", '', ORIGIN), ['外のホストへ ext.example.com']);
+  assert.deepEqual(sendPorts("const x = new XMLHttpRequest(); x.open('POST', 'https://ext.example.com/p'); x.send(b)", '', ORIGIN), ['外のホストへ ext.example.com']);
+  assert.deepEqual(sendPorts("fetch('https://yorozu-craft.com/furigana/dict.json')", '', ORIGIN), []);
+  assert.deepEqual(sendPorts("navigator.sendBeacon('https://yorozu-ai.example.workers.dev/v1/ping', d); navigator.sendBeacon('https://static.cloudflareinsights.com/beacon', d)", '', ORIGIN), []);
+});
+
 test('form: method="dialog"・onsubmit="return false"・自分への get は数えない。post と外への action は数える', () => {
   assert.deepEqual(sendPorts('', '<form method="dialog" id="a"></form><form id="b" onsubmit="return false"></form><form action="./"></form>', ORIGIN), []);
   assert.deepEqual(sendPorts('', '<form method="post" action="/post/"></form>', ORIGIN), ['form post /post/']);

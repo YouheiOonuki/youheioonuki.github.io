@@ -4,6 +4,7 @@
 // 送る口に数える物:
 //   - fetch・sendBeacon・XMLHttpRequest・WebSocket が在り、Worker の口（workers.dev・/v1/〈ping を除く〉）の字がコードに在る
 //   - fetch( の後 400 字以内に method: POST/PUT/PATCH か body: が在る（自分の data/*.json・辞書を読むだけの GET は数えない）
+//   - fetch・sendBeacon の第 1 引数、XMLHttpRequest の .open の第 2 引数が、自分のオリジンの外の http(s) の字（GET も）
 //   - new WebSocket(
 //   - <form> の method="post"、または action が http(s) の外の URL
 // 数えない物: 計測の口（near.js・used.js・top-click.js の sendBeacon(PING) → /v1/ping）。method="dialog"・onsubmit="return false" の form。
@@ -37,6 +38,17 @@ export function sendPorts(code, html, origin) {
   for (const m of code.matchAll(/\bfetch\s*\(/g)) {
     const after = code.slice(m.index, m.index + 400);
     if (/method\s*:\s*['"](POST|PUT|PATCH)['"]|\bbody\s*:/i.test(after)) { out.push('fetch で送る（method・body）'); break; }
+  }
+  // 自分のオリジンの外の http(s) へ: fetch・sendBeacon の第 1 引数、XMLHttpRequest の .open の第 2 引数が字で書かれた物（GET も数える）。
+  // 自分のオリジン・計測の /v1/ping・cloudflareinsights.com の beacon は数えない
+  const Q = `['"\`]`;
+  const ext = new RegExp(`(?:\\bfetch|sendBeacon)\\s*\\(\\s*${Q}(https?:\\/\\/[^'"\`\\s]+)|\\.open\\s*\\(\\s*${Q}\\w+${Q}\\s*,\\s*${Q}(https?:\\/\\/[^'"\`\\s]+)`, 'g');
+  for (const m of code.matchAll(ext)) {
+    const u = m[1] || m[2];
+    let host;
+    try { const x = new URL(u); if (x.origin === origin) continue; host = x.host; } catch { continue; }
+    if (/\/v1\/ping\b/.test(u) || /(^|\.)cloudflareinsights\.com$/.test(host)) continue;
+    out.push(`外のホストへ ${host}`);
   }
   if (/new\s+WebSocket\s*\(/.test(code)) out.push('WebSocket');
   for (const m of html.matchAll(/<form\b[^>]*>/gi)) {
