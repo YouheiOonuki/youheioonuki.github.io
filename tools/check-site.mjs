@@ -33,6 +33,7 @@ const BEACON_TOKEN = 'b79bf821e1fd4b6683866d493b1de426';
 // 決まりの例外（理由つき）
 import { META_ONLY_PAGES, META_ONLY_PREFIXES, isMetaOnly, CHILD_SCREEN_PAGES } from './ad-lists.mjs';   // 広告なしの画面の一覧（正本は ad-lists.mjs）
 import { ldBlocks, nameMismatches, faqDiff } from './jsonld.mjs';                     // JSON-LD と画面の突き合わせ（Q-074）
+import { judge as judgeSendClaim, groupEntries, stripComments } from './send-claim.mjs';   // 「送らない」の字と送る口（yorozu-plans D1017・Q-1212）
 import { REVIEW_HOLD_PAGES } from './ad-lists.mjs';   // 審査の間 広告 script を外すページ（正本は ad-lists.mjs。yorozu-plans の content-classes.csv も読む。Q-1118）
 // 日本語版の無い英語だけのページ（hreflang は en と x-default の自己参照だけ。D248）
 const EN_ONLY_PAGES = new Set([
@@ -228,20 +229,24 @@ if (pages.has(BASE + 'en/')) {
 // ブラウザに保存するページか（インラインと同じオリジンの <script src> に localStorage・indexedDB がある。コメントの中の語は数えない）
 // 消すボタンの部品 reset-storage.js 自身は数えない
 async function usesStorage(html, url) {
+  return /\blocalStorage\b|\bindexedDB\b/.test(stripComments(await pageCode(html, url, /reset-storage\.js$/)));
+}
+// ページのコード: インラインの script と、同じオリジンの <script src> の中身をつないだもの（skip に当たる src は読まない）
+async function pageCode(html, url, skip = null) {
   let code = '';
   for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
     const src = (m[1].match(/\ssrc=["']([^"']+)["']/) || [])[1];
     if (!src) { code += m[2] + '\n'; continue; }
     let u;
     try { u = new URL(toBase(src.replace(/&amp;/g, '&')), url); } catch { continue; }
-    if (u.origin !== ORIGIN || /reset-storage\.js$/.test(u.pathname)) continue;
+    if (u.origin !== ORIGIN || (skip && skip.test(u.pathname))) continue;
     u.hash = ''; u.search = '';
     const r = await get(u.href);
     if (r.status === 200) code += r.body + '\n';
   }
-  code = code.replace(/(^|[^:\\'"])\/\/.*$/gm, '$1').replace(/\/\*[\s\S]*?\*\//g, '');   // 行のコメントが先（「topics/*.js」を /* と読まないように）
-  return /\blocalStorage\b|\bindexedDB\b/.test(code);
+  return code;
 }
+const sendClaims = new Map(); // ページ → judgeSendClaim の結果（「送らない」の字と送る口。群の入口はあとでまとめて見る）
 const attr = (tag, name) => ((tag.match(new RegExp(`\\s${name}="([^"]*)"`)) || [])[1] || '').split(/[\s,]+/).filter(Boolean);
 const resetButtons = []; // { p, prefixes, legacy }（ツールの画面の「保存した内容をすべて消す」）
 
@@ -316,6 +321,14 @@ await pool([...pages], 6, async (url) => {
   if (/広告なし/.test(desc) && !isMetaOnly(p)) fail(p, 'title か description に「広告なし」とあるのに META_ONLY_PAGES・META_ONLY_PREFIXES に無い（広告が出る）');
   if (isElderly(p)) {
     if (!isMetaOnly(p)) fail(p, '高齢者向けのページ（ELDERLY_PAGES）なのに META_ONLY に無い（D118: 広告なし）');
+  }
+
+  // 「送らない」の字 ⇔ 送る口（yorozu-plans WRITING 2.2 の守る線の 1・5、D1017、Q-1212。判定は tools/send-claim.mjs）。
+  // 送る口が在るのに「サーバー」の断りを書かずに「送らない」と言い切るページを落とす。about・privacy-policy は送る口ごとの表を持つ側なので見ない
+  if (!COMMON_JA.concat(COMMON_EN).includes(p)) {
+    const sc = judgeSendClaim({ text, code: await pageCode(html, url), html, origin: ORIGIN });
+    sendClaims.set(p, sc);
+    if (sc.bad) fail(p, `「${sc.claims.join('」「')}」と書いているのに送る口がある（${sc.ports.join('・')}）。「サーバー」の断りが無い（WRITING 2.2、D1017）`);
   }
 
   // 医療・効能の NG 語（REVIEW C7 R4）。定型文と、ページごとに認めた打ち消しの文は除いて数える
@@ -412,6 +425,9 @@ await pool([...pages], 6, async (url) => {
     if (!internalLinks.has(key)) internalLinks.set(key, p);
   }
 });
+
+// 3a. 群の入口（/<群>/）が「送らない」と書き、同じ群のページが送る口を持つ（WRITING 2.2 の守る線の 1。判定は tools/send-claim.mjs）
+for (const g of groupEntries(sendClaims)) fail(g.entry, `群の入口が「${g.claims.join('」「')}」と書いているのに、同じ群のページに送る口がある（${g.senders.join(' ')}）。「サーバー」の断りが無い（D1017）`);
 
 // 4. サイト内リンクの存在確認（リンク切れ）
 await pool([...internalLinks.keys()], 6, async (u) => {
