@@ -315,3 +315,27 @@ test('field: 行と相手の 1 行の全部に、台帳の分野がそのまま�
     assert.deepEqual(Object.keys(x).slice(0, 4), ['id', 'name', 'column', 'field'], x.id);
   }
 });
+
+// 地域（yorozu-plans QUEUE Q-1289・Q-1257 の (4)(5)、D1095・D1106・D1142）: 相手の行の japan に無い地域の区間は stopped に出さず otherRegions へ。
+// 地域の無い区間はいつも stopped。発表なし・nothing は stopped の側だけで決める。version は 1 のまま
+test('地域: japan に無い地域は otherRegions、japan の地域と地域の無い件は stopped。符号は題の次、version 1', () => {
+  const AW = { ...auto('aw', '相手 W'), field: 'クラウド・開発の基盤', japan: ['jp-east-1'] };
+  const rg = (id, regionCode) => inc({ service: 'aw', id, impact: 'unknown', serviceCode: 'svc', regionCode });
+  const { now } = build([rg('far', 'xx-west-1'), rg('home', 'jp-east-1'), rg('all', null)], { partners: [AW, SA] });
+  assert.equal(now.version, 1);
+  assert.deepEqual(now.stopped.map((x) => x.regionCode), [null, 'jp-east-1']);
+  assert.deepEqual(now.otherRegions.map((x) => x.regionCode), ['xx-west-1']);
+  assert.deepEqual(Object.keys(now.stopped[0]).slice(0, 8), ['id', 'name', 'column', 'field', 'service', 'title', 'serviceCode', 'regionCode']);
+  assert.deepEqual(Object.keys(now).slice(0, 6), ['version', 'at', 'ingestedAt', 'ingestOld', 'stopped', 'otherRegions']);
+  // 地域の外の件だけの相手は、既定の見え方では区間が無いので「発表なし」に入り、nothing も立つ
+  const only = build([rg('far', 'xx-west-1')], { partners: [AW, SA] }).now;
+  assert.deepEqual(only.stopped, []);
+  assert.equal(only.otherRegions.length, 1);
+  assert.equal(only.nothing, true);
+  assert.deepEqual(only.none.partners.map((p) => p.id), ['aw', 'sa']);
+  // 符号を持たない区間には欄を足さない（ほかの相手の行の形は変わらない）
+  assert.ok(!('regionCode' in build(SPANS_BUSY).now.stopped[0]));
+  assert.deepEqual(build(SPANS_BUSY).now.otherRegions, []);
+  // 取り込みが古い間は、ほかの地域も出さない（機械で取る相手の行）
+  assert.deepEqual(build([rg('far', 'xx-west-1')], { partners: [AW, SA], ing: '2026-11-23T17:00:00.000Z' }).now.otherRegions, []);
+});
