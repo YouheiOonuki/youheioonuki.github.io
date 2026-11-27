@@ -14,8 +14,12 @@
 //     url は teishi.js が決めた行き先（台帳の deeplink。D752・Q-989）で、そのまま出す。http(s) でなければ相手の page
 //     'ledger' の相手の行には、行き先の種類 go を付ける（企画書 113 の 14.7・14.8。Q-1000）: 'notice'（行き先が page と違う = 告知の個別のページ）、
 //     'page'（行き先が page で、台帳の page_top が true = お知らせの一覧でない。D830）、'list'（ほか = お知らせの一覧）。'ledger' でない相手の行には付けない
-//   障害と予定メンテナンス（D618 の形）… { service: 相手, id: 障害の id, start, end|null, impact, title, url, kind? }
+//   障害と予定メンテナンス（D618 の形）… { service: 相手, id: 障害の id, start, end|null, impact, title, url, kind?, serviceCode?, regionCode? }
 //     kind は 'incident' か 'planned'。欄が無い物は 'incident' と読む
+//     serviceCode・regionCode は、公式が 1 件の鍵に書いたサービスと地域の符号（AWS の guid。yorozu-plans QUEUE Q-1289、D1142）。無い・字でない時は null
+// 地域（yorozu-plans QUEUE Q-1289・Q-1257 の (4)(5)、D1095・D1106）: regionCode を持つ区間のうち、相手の行の japan（日本に当たる地域の符号の並び）に無い物は
+//   「ほかの地域」。now.json の stopped には出さず、otherRegions に同じ形で出す。regionCode の無い区間はいつも stopped の側。
+//   「発表なし」（none）と nothing は stopped の側だけで決める（既定の見え方の数）。version は変えない（本館の top-stop.js が version 1 と stopped を読む）
 //   形は kind で分ける（'extra' なら止まる予定、ほかは障害と予定メンテナンス）
 //
 // 置かない区間（unplaced の数に入れる）: 一覧に無い相手・時刻が読めない・終わりが始まり以前・kind が知らない値
@@ -91,6 +95,8 @@
     var st = toMs(s.start), en = s.end === null ? null : toMs(s.end);
     if (st === null || (en === null && s.end !== null) || (en !== null && en <= st)) return null;
     var impact = !teishi && Object.prototype.hasOwnProperty.call(IMPACT_RANK, s.impact) ? s.impact : 'unknown';
+    var code = function (v) { return !teishi && typeof v === 'string' && v ? v : null; };
+    var region = code(s.regionCode);
     return {
       partner: p.row, ri: p.ri, kind: kind, s: st, e: en,
       service: teishi && typeof s.service === 'string' ? s.service : null,
@@ -101,7 +107,10 @@
       limited: teishi && s.limited === true,
       url: httpUrl(s.url) || pageOf(p.row),
       lastRead: p.lastRead,
-      sid: teishi ? '' : String(s.id === undefined ? '' : s.id)
+      sid: teishi ? '' : String(s.id === undefined ? '' : s.id),
+      serviceCode: code(s.serviceCode), regionCode: region,
+      // 既定の見え方か: 地域の無い区間と、相手の japan に当たる地域の区間
+      home: region === null || (Array.isArray(p.row.japan) && p.row.japan.indexOf(region) >= 0)
     };
   }
 
@@ -129,9 +138,11 @@
   // 出す 1 行（欄の順は固定。英語の欄は末）
   function itemOut(a) {
     var p = a.partner;
-    var o = { id: p.id, name: p.name, column: p.column, field: p.field, service: a.service, title: a.title, kind: a.kind, impact: a.impact,
-      color: a.color, limited: a.limited, start: T.toJst(a.s), end: a.e === null ? null : T.toJst(a.e), url: a.url,
-      checked: p.mode === 'ledger' ? p.checked : null, lastRead: a.lastRead };
+    var o = { id: p.id, name: p.name, column: p.column, field: p.field, service: a.service, title: a.title };
+    // サービスと地域の符号は、符号を持つ区間だけ（題の次。Q-1289）。地域の無い件の regionCode は null
+    if (a.serviceCode !== null || a.regionCode !== null) { o.serviceCode = a.serviceCode; o.regionCode = a.regionCode; }
+    o.kind = a.kind; o.impact = a.impact; o.color = a.color; o.limited = a.limited; o.start = T.toJst(a.s); o.end = a.e === null ? null : T.toJst(a.e);
+    o.url = a.url; o.checked = p.mode === 'ledger' ? p.checked : null; o.lastRead = a.lastRead;
     var go = goOf(p, a.url);
     if (go) o.go = go;
     return enFields(o, p, a.service);
@@ -181,14 +192,17 @@
     current.sort(function (a, b) { return IMPACT_RANK[b.impact] - IMPACT_RANK[a.impact] || order(a, b); });
     // これから: 予定（止まる予定と予定メンテナンス）だけ。障害は終わりが決まらないので「いま」だけに出す（14.2）
     var ahead = pre.placed.filter(function (a) { return a.kind === 'planned' && (a.e === null || a.e > n) && a.s < until; }).sort(order);
+    var home = current.filter(function (a) { return a.home; });
     var busy = {};
-    current.concat(ahead).forEach(function (a) { busy[a.partner.id] = true; });
+    home.concat(ahead).forEach(function (a) { busy[a.partner.id] = true; });
     var un = pre.parts.un.map(partnerOut);
     var ingOut = ing === null ? null : T.toJst(ing);
     // 取り込みが古い（か一度も無い）間は、機械で取る相手（'auto'）の行だけを出さない。台帳から来る最中の休止は、取り込みの時刻と関わりが無いので出す（D766）
-    var stopped = (old ? current.filter(function (a) { return a.partner.mode !== 'auto'; }) : current).map(itemOut);
+    var shown = function (a) { return !old || a.partner.mode !== 'auto'; };
+    var stopped = home.filter(shown).map(itemOut);
+    var others = current.filter(function (a) { return !a.home && shown(a); }).map(itemOut);
     return {
-      now: { version: 1, at: T.toJst(n), ingestedAt: ingOut, ingestOld: old, stopped: stopped, nothing: !old && !stopped.length,
+      now: { version: 1, at: T.toJst(n), ingestedAt: ingOut, ingestOld: old, stopped: stopped, otherRegions: others, nothing: !old && !stopped.length,
         none: noneOf(pre.parts.ok, busy), unconfirmed: un, unplaced: pre.unplaced },
       ahead: { version: 1, from: T.toJst(n), until: T.toJst(until), ingestedAt: ingOut, items: ahead.map(itemOut),
         partners: pre.parts.ok.map(partnerOut), unconfirmed: un, unplaced: pre.unplaced }
