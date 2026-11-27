@@ -88,11 +88,47 @@ test('weekGrid: 区間 19 は null、20 は升', () => {
   assert.deepEqual(g.map((row) => row[9]), [2, 3, 3, 3, 3, 3, 3]);
 });
 
-test('weekGrid: 曜日と時は JST の始まりで。置かない区間は 20 に数えない', () => {
+test('weekGrid: 曜日と時は JST で。置かない区間は 20 に数えない', () => {
   const xs = many(19).concat([{ start: '2026-11-07T15:30:00.000Z', end: null }]);   // JST 11/8〈日〉0:30、終わっていない
   const g = K.weekGrid(xs);
   assert.equal(g[0][0], 1);
   assert.equal(K.weekGrid(many(19).concat([{ start: 'x', end: null }])), null);
+});
+
+test('weekGrid: 2 時から 4 時間の区間は 2・3・4・5 時の 4 升に 1 ずつ（終わりちょうどの 6 時は含めない）', () => {
+  const g = K.weekGrid(many(19).concat([{ start: '2026-11-08T02:00+09:00', end: '2026-11-08T06:00+09:00' }]));   // 11/8〈日〉
+  assert.deepEqual(g[0].slice(2, 6), [1, 1, 1, 1]);
+  assert.equal(g[0][1], 0);
+  assert.equal(g[0][6], 0);
+  assert.equal(sum(g.map(sum)), 19 + 4);
+});
+
+test('weekGrid: 8 日続く区間は、同じ升に 2 回掛かっても 1（全 168 升に 1 ずつ）', () => {
+  const g = K.weekGrid([{ start: '2026-11-02T09:30+09:00', end: '2026-11-10T09:30+09:00' }].concat(Array.from({ length: 19 }, () => ({ start: '2026-11-02T09:30+09:00', end: '2026-11-02T09:45+09:00' }))));
+  // 長い 1 つ: 全升に 1。短い 19: 月曜 9 時の升に 1 ずつ
+  g.forEach((row, w) => row.forEach((n, h) => assert.equal(n, (w === 1 && h === 9) ? 20 : 1, `曜日 ${w} 時 ${h}`)));
+});
+
+test('weekGrid: 日をまたぐ区間は翌日の曜日の升にも（土 23:30 〜 日 0:30 は 土 23 時と 日 0 時）', () => {
+  const g = K.weekGrid(many(19).concat([{ start: '2026-11-07T23:30+09:00', end: '2026-11-08T00:30+09:00' }]));
+  assert.equal(g[6][23], 1);
+  assert.equal(g[0][0], 1);
+});
+
+test('skippedCount: 読めない始まり・読めない終わり・逆向き・区間でないものの数。終わっていない区間と普通の区間は数えない', () => {
+  const xs = [
+    { start: '2026-11-10T10:00+09:00', end: '2026-11-10T11:00+09:00' },
+    { start: '2026-11-10T10:00+09:00', end: null },
+    { start: 'x', end: null },
+    { start: '2026-11-10T10:00+09:00', end: 'y' },
+    { start: '2026-11-10T11:00+09:00', end: '2026-11-10T10:00+09:00' },
+    { start: '2026-11-10T10:00+09:00', end: '2026-11-10T10:00+09:00' },
+    null,
+  ];
+  assert.equal(K.skippedCount(xs), 5);
+  assert.equal(K.skippedCount(xs.slice(0, 2)), 0);
+  assert.equal(K.skippedCount([]), 0);
+  assert.equal(K.skippedCount(undefined), 0);
 });
 
 test('monthTable: 月をまたぐ区間は、回数は始まった月、分は月ごとに割る', () => {

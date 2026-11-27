@@ -7,7 +7,7 @@
 //
 // 区間: { start, end } の並び（ほかの欄は読まない）。yorozu-cron の D1 の infra_interval と同じ形で、時刻は ISO（秒の小数・時差つきも読む）
 //   end が null・undefined … 終わっていない区間
-//   置かない区間（どこにも数えない）: start が読めない・end が読めない・end が start 以前
+//   置かない区間（どこにも数えない）: start が読めない・end が読めない・end が start 以前。置かなかった数は skippedCount で返す
 //   どの区間を渡すか（障害だけか、予定メンテナンスも含めるか）は呼ぶ側が決める。ここでは kind で絞らない
 // 分の数え方: 区間の始まりは分に切り捨て、終わりは分に切り上げる（1 分に満たない区間も 1 分に出る）。
 //   重なる区間は、和（どこかの区間が掛かっている分）で数える。同じ分を二重に数えない
@@ -105,7 +105,10 @@
     return days;
   }
 
-  // (2) 曜日 × 時間帯の升。区間の始まりの曜日（JST）と時（JST）の升に、区間の数を 1 つずつ（升の合計は区間の数）
+  // (2) 曜日 × 時間帯の升。区間が掛かった升（曜日 × 時、JST）の全部に、区間を 1 つずつ（D1165）
+  //   1 つの区間は、同じ升に 2 回以上掛かっても 1（8 日続く区間は 168 升の全部に 1）。升の合計は区間の数より大きくなり得る
+  //   掛かる升は分の数え方と同じ向き（始まりは分に切り捨て、終わりは分に切り上げ、終わりちょうどの升は含めない）
+  //   終わっていない区間は終わりが分からないので、始まりの升にだけ数える（この関数に to は無い）
   //   区間が WEEK_MIN_COUNT に満たない時は null
   //   返り値: 7 行（0 が日曜。Date#getDay と同じ順）× 24 列（0 時〜23 時）の数の並び
   function weekGrid(intervals) {
@@ -113,8 +116,18 @@
     if (spans.length < WEEK_MIN_COUNT) return null;
     var grid = [];
     for (var w = 0; w < 7; w++) grid.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-    spans.forEach(function (a) { var d = jstDate(a.s); grid[d.getUTCDay()][d.getUTCHours()] += 1; });
+    spans.forEach(function (a) {
+      var first = Math.floor(floorMin(a.s) / HOUR) * HOUR;
+      var hours = a.e === null ? 1 : Math.min(Math.ceil((ceilMin(a.e) - first) / HOUR), 7 * 24);   // 1 週間より長くても、升は 168 個で打ち止め
+      for (var i = 0; i < hours; i++) { var d = jstDate(first + i * HOUR); grid[d.getUTCDay()][d.getUTCHours()] += 1; }
+    });
     return grid;
+  }
+
+  // 読めなくて置かなかった区間の数（読めない始まり・読めない終わり・終わりが始まり以前・区間でないもの）。
+  //   dayGrid・weekGrid・monthTable はこれらを黙って落とすので、取り込みの形が変わって全部落ちた時に、暦が空なのか読めていないのかを、呼ぶ側が分けて言える
+  function skippedCount(intervals) {
+    return Array.isArray(intervals) ? intervals.length - read(intervals).length : 0;
   }
 
   // (3) 月ごとの回数と合計の分。回数は区間が始まった月に 1 つ。分は月ごとに割り、重なりは和で数える
@@ -141,7 +154,7 @@
     return rows;
   }
 
-  var api = { WEEK_MIN_COUNT: WEEK_MIN_COUNT, dayGrid: dayGrid, weekGrid: weekGrid, monthTable: monthTable };
+  var api = { WEEK_MIN_COUNT: WEEK_MIN_COUNT, dayGrid: dayGrid, weekGrid: weekGrid, monthTable: monthTable, skippedCount: skippedCount };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.InfraKoyomi = api;
 })(typeof window !== 'undefined' ? window : this);
